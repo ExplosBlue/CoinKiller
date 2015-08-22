@@ -1,0 +1,63 @@
+#ifndef FILEBASE
+#define FILEBASE
+
+#include "shit.h"
+
+
+class FileBase
+{
+public:
+
+    // base shit
+    virtual void open()=0;
+    virtual void close()=0;
+    virtual quint64 readData(quint8* data, quint64 len)=0;
+    virtual quint64 writeData(quint8* data, quint64 len)=0;
+    virtual quint64 pos()=0;
+    virtual bool seek(quint64 pos)=0;
+    virtual quint64 size()=0;
+    virtual bool resize(quint64 size)=0;
+
+
+    // conveniency
+
+    quint8 read8()
+    {
+        quint8 ret;
+        readData((quint8*)&ret, 1);
+        return ret;
+    }
+
+    quint16 read16()
+    {
+        quint16 ret;
+        readData((quint8*)&ret, 2);
+        return ret;
+    }
+
+    quint32 read32()
+    {
+        quint32 ret;
+        readData((quint8*)&ret, 4);
+        return ret;
+    }
+
+    void write8(quint8 val)
+    {
+        writeData((quint8*)&val, 1);
+    }
+
+    void write16(quint16 val)
+    {
+        writeData((quint8*)&val, 2);
+    }
+
+    void write32(quint32 val)
+    {
+        writeData((quint8*)&val, 4);
+    }
+};
+
+
+#endif // FILEBASE
+
