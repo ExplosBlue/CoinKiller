@@ -42,6 +42,38 @@ public:
         return ret;
     }
 
+    QString readStringASCII(quint32 len) // len=0 for NULL terminated string
+    {
+        char temp8[64];
+        QChar temp16[64];
+        QString ret = "";
+
+        if (!len) len = 0xFFFFFFFF; // lazy
+
+        bool terminated = false;
+        quint32 lenread = 0;
+        while (lenread < len && !terminated)
+        {
+            quint32 thislen = (lenread+64 > len) ? len : lenread+64;
+            readData((quint8*)temp8, thislen);
+            lenread += thislen;
+
+            for (quint32 i = 0; i < thislen; i++)
+            {
+                temp16[i] = (QChar)temp8[i];
+                if (!temp8[i])
+                {
+                    terminated = true;
+                    break;
+                }
+            }
+
+            ret.append(temp16, thislen);
+        }
+
+        return ret;
+    }
+
     void write8(quint8 val)
     {
         writeData((quint8*)&val, 1);
