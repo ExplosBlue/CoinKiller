@@ -8,7 +8,7 @@ class FilesystemBase
 {
 public:
 
-    virtual FileBase* openFile(char* path)=0;
+    virtual FileBase* openFile(QString path)=0;
     virtual bool save()=0;
 };
 

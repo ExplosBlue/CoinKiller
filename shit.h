@@ -7,6 +7,7 @@
 #include <QtGlobal>
 #include <QString>
 #include <QFile>
+#include <QMap>
 
 #endif // SHIT_H
 

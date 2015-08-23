@@ -57,6 +57,7 @@ public:
             quint32 thislen = (lenread+64 > len) ? len : lenread+64;
             readData((quint8*)temp8, thislen);
 
+            quint32 actuallen = 0;
             for (quint32 i = 0; i < thislen; i++)
             {
                 temp16[i] = (QChar)temp8[i];
@@ -65,10 +66,11 @@ public:
                     terminated = true;
                     break;
                 }
-                lenread++;
+                actuallen++;
             }
 
-            ret.append(temp16, thislen);
+            ret.append(temp16, actuallen);
+            lenread += actuallen;
         }
 
         return lenread;
@@ -87,6 +89,11 @@ public:
     void write32(quint32 val)
     {
         writeData((quint8*)&val, 4);
+    }
+
+    void skip(qint64 num)
+    {
+        seek(pos()+num);
     }
 };
 

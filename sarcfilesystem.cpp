@@ -19,7 +19,7 @@ SarcFilesystem::SarcFilesystem(FileBase* file)
         return; // TODO proper error handling!!!
     }
 
-    file->seek(0x98);
+    /*file->seek(0x98);
     QString perefouras;
     file->readStringASCII(perefouras, 0);
     file->seek(0xB4);
@@ -29,8 +29,57 @@ SarcFilesystem::SarcFilesystem(FileBase* file)
     qDebug("père fouras");
     qDebug(perefouras.toStdString().c_str());
     qDebug("maître des ténèbres");
-    qDebug(maitredestenebres.toStdString().c_str());
+    qDebug(maitredestenebres.toStdString().c_str());*/
+
+    // SARC header
+    file->skip(0x8);
+    dataOffset = file->read32();
+    file->skip(0x4);
+
+    // SFAT header
+    sfatOffset = (quint32)file->pos();
+    file->skip(0x6);
+    numFiles = file->read16();
+    hashMult = file->read32();
+
+    sfntOffset = sfatOffset + 0xC + (numFiles * 0x10);
+
+    qDebug("dataoffset %08X | numfiles %d | hashmult %08X", dataOffset, numFiles, hashMult);
+    qDebug("sfatOffset %08X | sfntOffset %08X", sfatOffset, sfntOffset);
+    QString darp = "course/course1_bgdatL1.bin"; qDebug("hash: %08X", filenameHash(darp));
+
+    for (quint32 i = 0; i < numFiles; i++)
+    {
+        file->seek(sfatOffset + 0xC + (i * 0x10));
+        InternalSarcFile* entry = new InternalSarcFile();
+
+        entry->nameHash = file->read32();
+        entry->nameOffset = (file->read32() & 0x00FFFFFF) << 2;
+        entry->offset = file->read32();
+        entry->size = file->read32() - entry->offset;
+
+        file->seek(sfntOffset + 0x8 + entry->nameOffset);
+        file->readStringASCII(entry->name, 0);
+
+        qDebug("---------------");
+        qDebug(entry->name.toStdString().c_str());
+        qDebug(" -- OFFSET %08X SIZE %08X HASH %08X/%08X", entry->offset, entry->size, entry->nameHash, filenameHash(entry->name));
+
+        files.insert(entry->name, *entry);
+    }
 
     file->close();
 }
 
+
+
+quint32 SarcFilesystem::filenameHash(QString& name)
+{
+    quint32 ret = 0;
+    for (int i = 0; i < name.size(); i++)
+    {
+        ret *= hashMult;
+        ret += name[i].toLatin1();
+    }
+    return ret;
+}
