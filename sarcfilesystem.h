@@ -13,7 +13,11 @@ public:
 private:
     struct InternalSarcFile
     {
+        QString name;
+        quint32 offset, size;
 
+        quint32 nameOffset;
+        quint32 nameHash;
     };
 };
 

@@ -20,9 +20,11 @@ SarcFilesystem::SarcFilesystem(FileBase* file)
     }
 
     file->seek(0x98);
-    QString perefouras = file->readStringASCII(0);
+    QString perefouras;
+    file->readStringASCII(perefouras, 0);
     file->seek(0xB4);
-    QString maitredestenebres = file->readStringASCII(0);
+    QString maitredestenebres;
+    file->readStringASCII(maitredestenebres, 0);
 
     qDebug("père fouras");
     qDebug(perefouras.toStdString().c_str());
