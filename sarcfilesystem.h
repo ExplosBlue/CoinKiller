@@ -1,8 +1,6 @@
 #ifndef SARCFILESYSTEM_H
 #define SARCFILESYSTEM_H
 
-#include "filesystembase.h"
-
 
 class SarcFilesystem : public FilesystemBase
 {
@@ -10,11 +8,13 @@ public:
     SarcFilesystem(FileBase* file);
 
     // temp.
-    FileBase* openFile(QString path) { return NULL; }
-    bool save() {}
+    FileBase* openFile(QString path);
+    bool save(FileBase* file);
 
 
 private:
+    FileBase* sarc;
+
     struct InternalSarcFile
     {
         QString name;

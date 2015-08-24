@@ -1,8 +1,6 @@
 #ifndef FILEBASE
 #define FILEBASE
 
-#include "shit.h"
-
 
 class FileBase
 {
@@ -95,6 +93,23 @@ public:
     {
         seek(pos()+num);
     }
+
+
+    FileBase* getSubfile(FilesystemBase* container, quint64 offset, quint64 size);
+
+
+    void setIdPath(QString path)
+    {
+        if (idPath.isEmpty())
+            idPath = path;
+    }
+
+
+protected:
+    FilesystemBase* parent;
+    QString idPath; // identifies the file in its parent FS
+
+    int openCount;
 };
 
 

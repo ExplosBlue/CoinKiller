@@ -1,5 +1,4 @@
-#include "externalfilesystem.h"
-#include "externalfile.h"
+#include "filesystem.h"
 
 ExternalFilesystem::ExternalFilesystem(QString base)
 {
@@ -16,8 +15,9 @@ FileBase* ExternalFilesystem::openFile(QString path)
     return new ExternalFile(this, basepath + path);
 }
 
-bool ExternalFilesystem::save()
+bool ExternalFilesystem::save(FileBase *file)
 {
-    // dunno!
+    // no real need to do shit here!
+    return true;
 }
 

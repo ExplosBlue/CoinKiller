@@ -1,13 +1,12 @@
-#ifndef EXTERNALFILE_H
-#define EXTERNALFILE_H
+#ifndef MEMORYFILE_H
+#define MEMORYFILE_H
 
 
-class ExternalFile : public FileBase
+class MemoryFile : public FileBase
 {
 public:
-    ExternalFile(FilesystemBase* fs, QString path);
-    ExternalFile(FilesystemBase* fs);
-    ~ExternalFile();
+    MemoryFile(FilesystemBase *fs, quint8* blob, quint32 size);
+    ~MemoryFile();
 
     void open();
     void close();
@@ -20,7 +19,10 @@ public:
 
 
 private:
-    QFile* file;
+    quint8* data;
+    quint32 _size;
+
+    quint32 _pos;
 };
 
-#endif // EXTERNALFILE_H
+#endif // MEMORYFILE_H

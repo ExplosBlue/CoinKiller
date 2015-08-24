@@ -1,22 +1,47 @@
 
-#include "externalfile.h"
+#include "filesystem.h"
 
-ExternalFile::ExternalFile(ExternalFilesystem* fs, QString path)
+ExternalFile::ExternalFile(FilesystemBase *fs, QString path)
 {
     parent = fs;
     file = new QFile(path);
+
+    openCount = 0;
+}
+
+ExternalFile::ExternalFile(FilesystemBase* fs)
+{
+    parent = fs;
+    file = new QTemporaryFile();
+
+    openCount = 0;
+}
+
+ExternalFile::~ExternalFile()
+{
+    delete file;
 }
 
 
 void ExternalFile::open()
 {
-    file->open(QIODevice::ReadWrite);
+    if (openCount == 0)
+        file->open(QIODevice::ReadWrite);
+
+    openCount++;
 }
 
 void ExternalFile::close()
 {
-    file->close();
-    parent->save(); // we never know
+    openCount--;
+    if (openCount == 0)
+    {
+        file->close();
+        parent->save(this); // we never know
+    }
+
+    if (openCount < 0)
+        throw std::logic_error("MemoryFile: openCount<0");
 }
 
 quint64 ExternalFile::readData(quint8* data, quint64 len)

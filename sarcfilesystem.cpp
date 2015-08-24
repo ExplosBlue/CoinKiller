@@ -1,35 +1,19 @@
-#include "sarcfilesystem.h"
+#include "filesystem.h"
 
 SarcFilesystem::SarcFilesystem(FileBase* file)
 {
-    quint32 header[8];
+    sarc = file;
 
     // TODO: someshit if the file was already opened??
     file->open();
 
-    /*file->readData((quint8*)header, 8*4);
-    qDebug("SARC: %08X %08X %08X %08X | %08X %08X %08X %08X",
-           header[0], header[1], header[2], header[3],
-           header[4], header[5], header[6], header[7]);*/
     file->seek(0);
     quint32 tag = file->read32();
     if (tag != 0x43524153)
     {
         qDebug("SARC: bad tag %08X", tag);
-        return; // TODO proper error handling!!!
+        throw std::runtime_error("SARC: invalid file");
     }
-
-    /*file->seek(0x98);
-    QString perefouras;
-    file->readStringASCII(perefouras, 0);
-    file->seek(0xB4);
-    QString maitredestenebres;
-    file->readStringASCII(maitredestenebres, 0);
-
-    qDebug("père fouras");
-    qDebug(perefouras.toStdString().c_str());
-    qDebug("maître des ténèbres");
-    qDebug(maitredestenebres.toStdString().c_str());*/
 
     // SARC header
     file->skip(0x8);
@@ -46,7 +30,6 @@ SarcFilesystem::SarcFilesystem(FileBase* file)
 
     qDebug("dataoffset %08X | numfiles %d | hashmult %08X", dataOffset, numFiles, hashMult);
     qDebug("sfatOffset %08X | sfntOffset %08X", sfatOffset, sfntOffset);
-    QString darp = "course/course1_bgdatL1.bin"; qDebug("hash: %08X", filenameHash(darp));
 
     for (quint32 i = 0; i < numFiles; i++)
     {
@@ -69,6 +52,31 @@ SarcFilesystem::SarcFilesystem(FileBase* file)
     }
 
     file->close();
+}
+
+
+FileBase* SarcFilesystem::openFile(QString path)
+{
+    if (path[0] == '/')
+        path.remove(0,1);
+
+    if (!files.contains(path))
+    {
+        throw std::runtime_error("SARC: file "+path.toStdString()+" doesn't exist");
+    }
+
+    InternalSarcFile& entry = files[path];
+
+    FileBase* ret = sarc->getSubfile(this, dataOffset+entry.offset, entry.size);
+    ret->setIdPath(path);
+    return ret;
+}
+
+bool SarcFilesystem::save(FileBase *file)
+{
+    // todo: do shit here
+
+    return true;
 }
 
 

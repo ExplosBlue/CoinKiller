@@ -16,7 +16,9 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     sarcfilesystem.cpp \
     externalfilesystem.cpp \
-    externalfile.cpp
+    externalfile.cpp \
+    memoryfile.cpp \
+    filebase.cpp
 
 HEADERS  += mainwindow.h \
     filesystembase.h \
@@ -24,6 +26,8 @@ HEADERS  += mainwindow.h \
     sarcfilesystem.h \
     externalfilesystem.h \
     externalfile.h \
-    shit.h
+    shit.h \
+    memoryfile.h \
+    filesystem.h
 
 FORMS    += mainwindow.ui
