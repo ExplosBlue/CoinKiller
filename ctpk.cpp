@@ -62,8 +62,8 @@ QImage* Ctpk::getTexture(quint32 num)
                     data[((y*width)+x)*4 + 2] = 255;
                     data[((y*width)+x)*4 + 3] = 255;*/
 
-                    quint64 alpha = file->read32();
-                    alpha |= (file->read32() << 32ULL);
+                    quint64 alpha = (quint64)file->read32();
+                    alpha |= ((quint64)file->read32() << 32);
 
                     quint16 subindexes = file->read16();
                     quint16 negative = file->read16();
@@ -132,14 +132,19 @@ QImage* Ctpk::getTexture(quint32 num)
                             g = clampColor(g + mod);
                             b = clampColor(b + mod);
 
+                            // TODO: premultiplied alpha
+                            quint8 a = alpha & 0xF;
+                            a |= (a << 4);
+
                             quint32 dstpos = ((sy + ty + y) * width + sx + tx + x) * 4;
                             data[dstpos + 0] = r;
                             data[dstpos + 1] = g;
                             data[dstpos + 2] = b;
-                            data[dstpos + 3] = 255;
+                            data[dstpos + 3] = a;
 
                             subindexes >>= 1;
                             negative >>= 1;
+                            alpha >>= 4ULL;
                         }
                     }
                 }
