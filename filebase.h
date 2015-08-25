@@ -102,6 +102,13 @@ public:
     {
         if (idPath.isEmpty())
             idPath = path;
+        else
+            throw std::logic_error("FileBase: cannot set ID path twice!");
+    }
+
+    QString& getIdPath()
+    {
+        return idPath;
     }
 
 

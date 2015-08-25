@@ -18,7 +18,10 @@ SOURCES += main.cpp\
     externalfilesystem.cpp \
     externalfile.cpp \
     memoryfile.cpp \
-    filebase.cpp
+    filebase.cpp \
+    leveleditorwindow.cpp \
+    levelview.cpp \
+    ctpk.cpp
 
 HEADERS  += mainwindow.h \
     filesystembase.h \
@@ -28,6 +31,10 @@ HEADERS  += mainwindow.h \
     externalfile.h \
     shit.h \
     memoryfile.h \
-    filesystem.h
+    filesystem.h \
+    leveleditorwindow.h \
+    levelview.h \
+    ctpk.h
 
-FORMS    += mainwindow.ui
+FORMS    += mainwindow.ui \
+    leveleditorwindow.ui
