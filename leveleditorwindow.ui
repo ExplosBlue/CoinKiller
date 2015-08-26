@@ -6,30 +6,62 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>798</width>
-    <height>515</height>
+    <width>957</width>
+    <height>622</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QHBoxLayout" name="horizontalLayout">
+   <layout class="QVBoxLayout" name="verticalLayout">
     <item>
      <widget class="QSplitter" name="splitter">
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
       </property>
-      <widget class="QWidget" name="widget_2" native="true">
-       <property name="baseSize">
-        <size>
-         <width>200</width>
-         <height>0</height>
-        </size>
-       </property>
-       <zorder>widget</zorder>
+      <widget class="QWidget" name="widget" native="true">
+       <layout class="QVBoxLayout" name="verticalLayout_2">
+        <item>
+         <widget class="QSplitter" name="splitter_2">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <widget class="QTabWidget" name="tabWidget">
+           <property name="currentIndex">
+            <number>1</number>
+           </property>
+           <widget class="QWidget" name="tab">
+            <attribute name="title">
+             <string>Tab 1</string>
+            </attribute>
+           </widget>
+           <widget class="QWidget" name="tab_2">
+            <attribute name="title">
+             <string>Tab 2</string>
+            </attribute>
+           </widget>
+          </widget>
+          <widget class="QWidget" name="widget_2" native="true"/>
+         </widget>
+        </item>
+       </layout>
       </widget>
-      <widget class="QWidget" name="widget" native="true"/>
+      <widget class="QScrollArea" name="levelViewArea">
+       <property name="widgetResizable">
+        <bool>true</bool>
+       </property>
+       <widget class="QWidget" name="scrollAreaWidgetContents">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>0</y>
+          <width>503</width>
+          <height>551</height>
+         </rect>
+        </property>
+       </widget>
+      </widget>
      </widget>
     </item>
    </layout>
@@ -39,7 +71,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>798</width>
+     <width>957</width>
      <height>21</height>
     </rect>
    </property>

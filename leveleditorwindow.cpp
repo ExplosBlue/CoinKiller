@@ -19,10 +19,13 @@ LevelEditorWindow::LevelEditorWindow(QWidget *parent, SarcFilesystem* level) :
     levelView = new LevelView(this, level);//crapshit->getTexture(0));
     /*levelView->setMinimumHeight(600);
     levelView->setMaximumWidth(800);*/
-    QHBoxLayout* crappyshit = new QHBoxLayout(this);
+    //QHBoxLayout* crappyshit = new QHBoxLayout(this);
     //this->setLayout(crappyshit);
-    this->ui->widget->setLayout(crappyshit);
-    crappyshit->addWidget(levelView);
+    //this->ui->widget->setLayout(crappyshit);
+    //crappyshit->addWidget(levelView);
+    ui->levelViewArea->setWidget(levelView);
+    levelView->setMinimumSize(4096*20, 4096*20);
+    levelView->setMaximumSize(4096*20, 4096*20);
 
     //this->ui->splitter->setStretchFactor(0, 0); // useless
 
