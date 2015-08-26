@@ -4,6 +4,7 @@
 #include "levelview.h"
 
 #include <QHBoxLayout>
+#include <QSizePolicy>
 
 LevelEditorWindow::LevelEditorWindow(QWidget *parent, SarcFilesystem* level) :
     QMainWindow(parent),
@@ -26,6 +27,14 @@ LevelEditorWindow::LevelEditorWindow(QWidget *parent, SarcFilesystem* level) :
     ui->levelViewArea->setWidget(levelView);
     levelView->setMinimumSize(4096*20, 4096*20);
     levelView->setMaximumSize(4096*20, 4096*20);
+
+    QList<int> derpshit;
+    derpshit.append(200);
+    derpshit.append(999999999);
+    ui->splitter->setSizes(derpshit);
+
+    ui->sidebar->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Ignored);
+    ui->sidebar->setMinimumSize(200, 20);
 
     //this->ui->splitter->setStretchFactor(0, 0); // useless
 
