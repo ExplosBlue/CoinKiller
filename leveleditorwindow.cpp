@@ -5,15 +5,18 @@
 
 #include <QHBoxLayout>
 
-LevelEditorWindow::LevelEditorWindow(QWidget *parent, Ctpk *testcrap) :
+LevelEditorWindow::LevelEditorWindow(QWidget *parent, SarcFilesystem* level) :
     QMainWindow(parent),
     ui(new Ui::LevelEditorWindow)
 {
+    levelArchive = level;
+    // some extra shit here
+
     ui->setupUi(this);
 
-    crapshit = testcrap;
+    //crapshit = testcrap;
 
-    levelView = new LevelView(this, crapshit->getTexture(0));
+    levelView = new LevelView(this, level);//crapshit->getTexture(0));
     /*levelView->setMinimumHeight(600);
     levelView->setMaximumWidth(800);*/
     QHBoxLayout* crappyshit = new QHBoxLayout(this);
