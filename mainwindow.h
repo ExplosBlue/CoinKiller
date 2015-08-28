@@ -21,6 +21,8 @@ private slots:
 
     void on_actionLoadROM_triggered();
 
+    void on_actionDebug_test_triggered();
+
 private:
     Ui::MainWindow *ui;
 };

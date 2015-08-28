@@ -6,6 +6,7 @@
 #include "filesystem.h"
 
 #include "leveleditorwindow.h"
+#include "sillytest.h" // REMOVE ME!!
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -49,4 +50,10 @@ void MainWindow::on_actionLoadROM_triggered()
 
     LevelEditorWindow* crap = new LevelEditorWindow(this, sarc);//new Ctpk(sarc2->openFile("/BG_tex/J_Kihon.ctpk")));
     crap->show(); // derp
+}
+
+void MainWindow::on_actionDebug_test_triggered()
+{
+    SillyTest* silly = new SillyTest(this);
+    silly->show();
 }

@@ -28,6 +28,7 @@
      <string>File</string>
     </property>
     <addaction name="actionLoadROM"/>
+    <addaction name="actionDebug_test"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -55,6 +56,11 @@
   <action name="actionAbout">
    <property name="text">
     <string>About CoinKiller</string>
+   </property>
+  </action>
+  <action name="actionDebug_test">
+   <property name="text">
+    <string>debug/test</string>
    </property>
   </action>
  </widget>
