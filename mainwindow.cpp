@@ -47,14 +47,16 @@ void MainWindow::on_actionLoadROM_triggered()
     qDebug("load ROM");
 
     // testing shit
-    QFile lol("C:/Documents/1-1.sarc");
-    qDebug("%s", lol.exists()?"good":"bad");
+    /*QFile lol("C:/Documents/1-1.sarc");
+    qDebug("%s", lol.exists()?"good":"bad");*/
 
-    ExternalFilesystem* exfs = new ExternalFilesystem("C:/Documents");
-    ExternalFile* exfile = (ExternalFile*)exfs->openFile("/1-1.sarc");
+    QString level=QFileDialog::getOpenFileName(this,tr("Open Level"),"C://", "Level Files (*.sarc)";
+
+    ExternalFilesystem* exfs = new ExternalFilesystem("");
+    ExternalFile* exfile = (ExternalFile*)exfs->openFile(level);
     SarcFilesystem* sarc = new SarcFilesystem(exfile);
 
-    SarcFilesystem* sarc2 = new SarcFilesystem(exfs->openFile("/J_Kihon.sarc"));
+    SarcFilesystem* sarc2 = new SarcFilesystem(exfs->openFile("/Unit/J_Kihon.sarc"));
 
     /*FileBase* durp = sarc->openFile("/course/course1_bgdatL1.bin");
     durp->open(); durp->seek(0);
