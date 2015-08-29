@@ -15,43 +15,16 @@
     with CoinKiller. If not, see http://www.gnu.org/licenses/.
 */
 
-#ifndef SARCFILESYSTEM_H
-#define SARCFILESYSTEM_H
+#ifndef LEVEL_H
+#define LEVEL_H
+
+#include "filesystem.h"
 
 
-class SarcFilesystem : public FilesystemBase
+class Level
 {
 public:
-    SarcFilesystem(FileBase* file);
-
-    // temp.
-    FileBase* openFile(QString path);
-    bool save(FileBase* file);
-
-
-private:
-    FileBase* sarc;
-
-    struct InternalSarcFile
-    {
-        QString name;
-        quint32 offset, size;
-
-        quint32 nameOffset;
-        quint32 nameHash;
-    };
-
-    quint32 numFiles;
-    quint32 hashMult;
-
-    quint32 sfatOffset;
-    quint32 sfntOffset;
-    quint32 dataOffset;
-
-    QMap<QString,InternalSarcFile> files;
-
-
-    quint32 filenameHash(QString &name);
+    Level(SarcFilesystem* archive);
 };
 
-#endif // SARCFILESYSTEM_H
+#endif // LEVEL_H

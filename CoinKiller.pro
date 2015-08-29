@@ -22,7 +22,9 @@ SOURCES += main.cpp\
     leveleditorwindow.cpp \
     levelview.cpp \
     ctpk.cpp \
-    sillytest.cpp
+    sillytest.cpp \
+    level.cpp \
+    tileset.cpp
 
 HEADERS  += mainwindow.h \
     filesystembase.h \
@@ -36,7 +38,9 @@ HEADERS  += mainwindow.h \
     leveleditorwindow.h \
     levelview.h \
     ctpk.h \
-    sillytest.h
+    sillytest.h \
+    level.h \
+    tileset.h
 
 FORMS    += mainwindow.ui \
     leveleditorwindow.ui
