@@ -24,7 +24,8 @@ SOURCES += main.cpp\
     ctpk.cpp \
     sillytest.cpp \
     level.cpp \
-    tileset.cpp
+    tileset.cpp \
+    game.cpp
 
 HEADERS  += mainwindow.h \
     filesystembase.h \
@@ -40,7 +41,8 @@ HEADERS  += mainwindow.h \
     ctpk.h \
     sillytest.h \
     level.h \
-    tileset.h
+    tileset.h \
+    game.h
 
 FORMS    += mainwindow.ui \
     leveleditorwindow.ui

@@ -19,12 +19,21 @@
 #define TILESET_H
 
 #include "filesystem.h"
+#include "ctpk.h"
+
+class Game;
 
 
 class Tileset
 {
 public:
-    Tileset(SarcFilesystem* archive);
+    Tileset(Game* game, QString name);
+
+
+private:
+    Game* game;
+    SarcFilesystem* archive;
+    Ctpk* texture;
 };
 
 #endif // TILESET_H

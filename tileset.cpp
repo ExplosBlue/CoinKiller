@@ -16,9 +16,13 @@
 */
 
 #include "tileset.h"
+#include "game.h"
 
-Tileset::Tileset(SarcFilesystem *archive)
+Tileset::Tileset(Game *game, QString name)
 {
+    this->game = game;
 
+    archive = new SarcFilesystem(game->fs->openFile("/Unit/"+name+".arc"));
+    texture = new Ctpk(archive->openFile("/BG_tex/"+name+".ctpk"));
 }
 
