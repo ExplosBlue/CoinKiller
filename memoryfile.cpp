@@ -43,7 +43,9 @@ void MemoryFile::close()
 {
     openCount--;
     if (openCount == 0)
-        parent->save(this);
+    {
+        if (parent) parent->save(this);
+    }
 
     if (openCount < 0)
         throw std::logic_error("MemoryFile: openCount<0");

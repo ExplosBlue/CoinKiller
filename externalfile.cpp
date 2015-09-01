@@ -53,7 +53,7 @@ void ExternalFile::close()
     if (openCount == 0)
     {
         file->close();
-        parent->save(this); // we never know
+        if (parent) parent->save(this); // we never know
     }
 
     if (openCount < 0)
