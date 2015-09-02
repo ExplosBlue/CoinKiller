@@ -23,12 +23,13 @@
 #include <QList>
 
 #include "filesystem.h"
+#include "level.h"
 
 class LevelView : public QWidget
 {
     Q_OBJECT
 public:
-    explicit LevelView(QWidget *parent, SarcFilesystem* level);
+    explicit LevelView(QWidget *parent, Level* level);
 
 signals:
 
@@ -38,21 +39,11 @@ protected:
     void paintEvent(QPaintEvent *) Q_DECL_OVERRIDE;
 
 private:
-    SarcFilesystem* levelArchive;
+    Level* level;
     QImage* imgtest; // REMOVE ME!!!
 
 
-    // MOVE THIS SHIT ELSEWHERE!!!!! TEST!!!
-    struct BgdatObject
-    {
-        quint16 id;
-        quint16 x, y; // [RoadrunnerWMC] signed position??? needs investigation
-        quint16 width, height;
 
-        // extra crap, but it's all zeroes
-    };
-
-    QList<BgdatObject> objects;
 };
 
 #endif // LEVELVIEW_H

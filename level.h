@@ -20,11 +20,33 @@
 
 #include "filesystem.h"
 
+class Game;
+
+
+struct BgdatObject
+{
+    quint16 id;
+    quint16 x, y; // [RoadrunnerWMC] signed position??? needs investigation
+    quint16 width, height;
+
+    // extra crap, but it's all zeroes
+};
+
 
 class Level
 {
 public:
-    Level(SarcFilesystem* archive);
+    Level(Game* game, int world, int level, int area);
+    ~Level();
+
+
+    QList<BgdatObject> objects[3];
+
+
+private:
+    Game* game;
+    SarcFilesystem* archive;
+    int area;
 };
 
 #endif // LEVEL_H

@@ -27,6 +27,7 @@ class Ctpk
 {
 public:
     Ctpk(FileBase* file);
+    ~Ctpk();
 
     QImage* getTexture(quint32 num);
 

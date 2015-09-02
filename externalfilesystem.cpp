@@ -23,6 +23,11 @@ ExternalFilesystem::ExternalFilesystem(QString base)
 }
 
 
+bool ExternalFilesystem::fileExists(QString path)
+{
+    return QFile(path).exists();
+}
+
 // path be like: /game/course/level.bin
 // (completely fictive filename invented for the sake of this example)
 FileBase* ExternalFilesystem::openFile(QString path)

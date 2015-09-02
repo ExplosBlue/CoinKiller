@@ -33,6 +33,11 @@ Ctpk::Ctpk(FileBase* file)
     file->close();
 }
 
+Ctpk::~Ctpk()
+{
+    delete file;
+}
+
 
 QImage* Ctpk::getTexture(quint32 num)
 {

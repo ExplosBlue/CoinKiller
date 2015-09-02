@@ -23,6 +23,7 @@
 #include "filesystem.h"
 #include "levelview.h"
 #include "ctpk.h"
+#include "level.h"
 
 namespace Ui {
 class LevelEditorWindow;
@@ -33,7 +34,7 @@ class LevelEditorWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit LevelEditorWindow(QWidget *parent, SarcFilesystem* voltmeter);
+    explicit LevelEditorWindow(QWidget *parent, Level* voltmeter);
     ~LevelEditorWindow();
 
     Ctpk* crapshit; // REMOVE ME!!!!!
@@ -41,7 +42,8 @@ public:
 private:
     Ui::LevelEditorWindow *ui;
 
-    SarcFilesystem* levelArchive;
+    //SarcFilesystem* levelArchive;
+    Level* level;
     LevelView* levelView;
 };
 

@@ -28,6 +28,7 @@ class Tileset
 {
 public:
     Tileset(Game* game, QString name);
+    ~Tileset();
 
 
 private:

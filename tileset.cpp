@@ -26,3 +26,9 @@ Tileset::Tileset(Game *game, QString name)
     texture = new Ctpk(archive->openFile("/BG_tex/"+name+".ctpk"));
 }
 
+Tileset::~Tileset()
+{
+    delete texture;
+    delete archive;
+}
+

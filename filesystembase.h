@@ -23,6 +23,7 @@ class FilesystemBase
 {
 public:
 
+    virtual bool fileExists(QString path)=0;
     virtual FileBase* openFile(QString path)=0;
     virtual bool save(FileBase* file)=0;
 };

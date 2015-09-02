@@ -16,9 +16,50 @@
 */
 
 #include "level.h"
+#include "game.h"
 
-Level::Level(SarcFilesystem *archive)
+Level::Level(Game *game, int world, int level, int area)
 {
+    this->game = game;
 
+    QString arcpath = QString("/Course/%1-%2.sarc").arg(world).arg(level);
+    qDebug(arcpath.toStdString().c_str());
+    archive = new SarcFilesystem(game->fs->openFile(arcpath));
+    this->area = area;
+
+
+    // read bgdat
+    QString bgdatfiletemp = QString("/course/course%1_bgdatL%2.bin").arg(area);
+    for (int l = 0; l < 3; l++)
+    {
+        QString bgdatfile = bgdatfiletemp.arg(l+1);
+        if (!archive->fileExists(bgdatfile)) continue;
+
+        FileBase* bgdat = archive->openFile(bgdatfile);
+        bgdat->open();
+        bgdat->seek(0);
+        for (;;)
+        {
+            if (bgdat->pos() >= bgdat->size()) break;
+            quint16 id = bgdat->read16();
+            if (id == 0xFFFF) break;
+
+            BgdatObject* obj = new BgdatObject;
+            obj->id = id;
+            obj->x = bgdat->read16();
+            obj->y = bgdat->read16();
+            obj->width = bgdat->read16();
+            obj->height = bgdat->read16();
+            objects[l].append(*obj);
+
+            bgdat->skip(6);
+        }
+        bgdat->close();
+    }
+}
+
+Level::~Level()
+{
+    delete archive;
 }
 

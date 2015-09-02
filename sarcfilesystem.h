@@ -24,7 +24,7 @@ class SarcFilesystem : public FilesystemBase
 public:
     SarcFilesystem(FileBase* file);
 
-    // temp.
+    bool fileExists(QString path);
     FileBase* openFile(QString path);
     bool save(FileBase* file);
 

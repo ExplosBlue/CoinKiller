@@ -3,6 +3,7 @@
 
 #include "filesystem.h"
 #include "tileset.h"
+#include "level.h"
 
 
 class Game
@@ -12,6 +13,7 @@ public:
 
 
     Tileset* getTileset(QString name);
+    Level* getLevel(int world, int level, int area);
 
 
     FilesystemBase* fs;

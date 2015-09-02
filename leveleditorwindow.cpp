@@ -23,11 +23,11 @@
 #include <QHBoxLayout>
 #include <QSizePolicy>
 
-LevelEditorWindow::LevelEditorWindow(QWidget *parent, SarcFilesystem* level) :
+LevelEditorWindow::LevelEditorWindow(QWidget *parent, Level* level) :
     QMainWindow(parent),
     ui(new Ui::LevelEditorWindow)
 {
-    levelArchive = level;
+    this->level = level;
     // some extra shit here
 
     ui->setupUi(this);
@@ -61,5 +61,6 @@ LevelEditorWindow::LevelEditorWindow(QWidget *parent, SarcFilesystem* level) :
 
 LevelEditorWindow::~LevelEditorWindow()
 {
+    delete level;
     delete ui;
 }

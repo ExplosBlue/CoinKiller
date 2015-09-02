@@ -34,6 +34,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
+    delete game;
     delete ui;
 }
 
@@ -44,28 +45,13 @@ void MainWindow::on_actionAbout_triggered()
 
 void MainWindow::on_actionLoadROM_triggered()
 {
-    qDebug("load ROM");
-
-    // testing shit
-    QFile lol("C:/Documents/1-1.sarc");
-    qDebug("%s", lol.exists()?"good":"bad");
-
-    ExternalFilesystem* exfs = new ExternalFilesystem("C:/Documents");
-    ExternalFile* exfile = (ExternalFile*)exfs->openFile("/1-1.sarc");
-    SarcFilesystem* sarc = new SarcFilesystem(exfile);
-
-    SarcFilesystem* sarc2 = new SarcFilesystem(exfs->openFile("/J_Kihon.sarc"));
-
-    /*FileBase* durp = sarc->openFile("/course/course1_bgdatL1.bin");
-    durp->open(); durp->seek(0);
-    quint32 da = durp->read32(), db = durp->read32();
-    qDebug("%08X %08X %08X", da, db, durp->size());*/
-
     // full tile: 24x24
     // gfx: 20x20
 
+    game = new Game(new ExternalFilesystem("G:/3DS_ROMs/nsmb2/romfs")); // hax!!
 
-    LevelEditorWindow* crap = new LevelEditorWindow(this, sarc);//new Ctpk(sarc2->openFile("/BG_tex/J_Kihon.ctpk")));
+
+    LevelEditorWindow* crap = new LevelEditorWindow(this, game->getLevel(1, 1, 1));
     crap->show(); // derp
 }
 
