@@ -61,13 +61,14 @@ void LevelView::paintEvent(QPaintEvent* evt)
         }*/
 
         //painter.drawRect(QRect(obj.x*20, obj.y*20, obj.width*20 - 1, obj.height*20 - 1));
-        for (int y = 0; y < obj.height; y++)
+        /*for (int y = 0; y < obj.height; y++)
         {
             for (int x = 0; x < obj.width; x++)
             {
                 tileset->drawTile(painter, x, obj.x+x, obj.y+y, 1);
             }
-        }
+        }*/
+        tileset->drawObject(painter, obj.id&0x0FFF, obj.x, obj.y, obj.width, obj.height, 1);
     }
 }
 

@@ -22,6 +22,7 @@
 #include "ctpk.h"
 
 #include <QPainter>
+#include <QList>
 
 class Game;
 
@@ -34,6 +35,7 @@ public:
 
 
     void drawTile(QPainter& painter, int num, int x, int y, float zoom);
+    void drawObject(QPainter& painter, int num, int x, int y, int w, int h, float zoom);
 
 
     Game* game;
@@ -44,6 +46,31 @@ private:
     Ctpk* texture;
 
     QImage* texImage;
+
+
+    struct ObjectRow
+    {
+        quint8 slopeFlags;
+        quint8 xRepeatStart, xRepeatEnd;
+
+        QList<quint8> data;
+    };
+
+    struct ObjectDef
+    {
+        quint8 width, height;
+        quint8 flags1, flags2; // whatever those are
+
+        quint8 yRepeatStart, yRepeatEnd;
+
+        QList<ObjectRow> rows;
+    };
+
+    int numObjects;
+    ObjectDef* objectDef;
+
+
+    void drawRow(QPainter& painter, ObjectDef& def, ObjectRow& row, int x, int y, int w, float zoom);
 };
 
 #endif // TILESET_H
