@@ -44,6 +44,7 @@ private:
 
     //SarcFilesystem* levelArchive;
     Level* level;
+    Tileset* tileset;
     LevelView* levelView;
 };
 

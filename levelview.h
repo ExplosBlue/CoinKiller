@@ -24,12 +24,13 @@
 
 #include "filesystem.h"
 #include "level.h"
+#include "tileset.h"
 
 class LevelView : public QWidget
 {
     Q_OBJECT
 public:
-    explicit LevelView(QWidget *parent, Level* level);
+    explicit LevelView(QWidget *parent, Level* level, Tileset* tileset);
 
 signals:
 
@@ -40,7 +41,7 @@ protected:
 
 private:
     Level* level;
-    QImage* imgtest; // REMOVE ME!!!
+    Tileset* tileset;
 
 
 

@@ -19,6 +19,7 @@
 #include "ui_leveleditorwindow.h"
 
 #include "levelview.h"
+#include "game.h"
 
 #include <QHBoxLayout>
 #include <QSizePolicy>
@@ -30,11 +31,15 @@ LevelEditorWindow::LevelEditorWindow(QWidget *parent, Level* level) :
     this->level = level;
     // some extra shit here
 
+
+    // TEST!!!!!
+    this->tileset = level->game->getTileset("M_Nohara");
+
     ui->setupUi(this);
 
     //crapshit = testcrap;
 
-    levelView = new LevelView(this, level);//crapshit->getTexture(0));
+    levelView = new LevelView(this, level, tileset);
     /*levelView->setMinimumHeight(600);
     levelView->setMaximumWidth(800);*/
     //QHBoxLayout* crappyshit = new QHBoxLayout(this);

@@ -23,6 +23,7 @@ class SarcFilesystem : public FilesystemBase
 {
 public:
     SarcFilesystem(FileBase* file);
+    ~SarcFilesystem();
 
     bool fileExists(QString path);
     FileBase* openFile(QString path);

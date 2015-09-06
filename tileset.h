@@ -21,6 +21,8 @@
 #include "filesystem.h"
 #include "ctpk.h"
 
+#include <QPainter>
+
 class Game;
 
 
@@ -31,10 +33,17 @@ public:
     ~Tileset();
 
 
-private:
+    void drawTile(QPainter& painter, int num, int x, int y, float zoom);
+
+
     Game* game;
+
+
+private:
     SarcFilesystem* archive;
     Ctpk* texture;
+
+    QImage* texImage;
 };
 
 #endif // TILESET_H

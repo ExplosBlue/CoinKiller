@@ -23,6 +23,7 @@ class ExternalFilesystem : public FilesystemBase
 {
 public:
     ExternalFilesystem(QString base);
+    ~ExternalFilesystem();
 
     bool fileExists(QString path);
     FileBase* openFile(QString path);

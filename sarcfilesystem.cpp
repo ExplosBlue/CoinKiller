@@ -71,6 +71,11 @@ SarcFilesystem::SarcFilesystem(FileBase* file)
     file->close();
 }
 
+SarcFilesystem::~SarcFilesystem()
+{
+    delete sarc;
+}
+
 
 bool SarcFilesystem::fileExists(QString path)
 {

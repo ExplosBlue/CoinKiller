@@ -40,11 +40,12 @@ public:
     ~Level();
 
 
+    Game* game;
+
     QList<BgdatObject> objects[3];
 
 
 private:
-    Game* game;
     SarcFilesystem* archive;
     int area;
 };

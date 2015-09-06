@@ -22,6 +22,10 @@ ExternalFilesystem::ExternalFilesystem(QString base)
     basepath = base;
 }
 
+ExternalFilesystem::~ExternalFilesystem()
+{
+}
+
 
 bool ExternalFilesystem::fileExists(QString path)
 {

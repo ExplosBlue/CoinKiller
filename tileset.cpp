@@ -22,13 +22,31 @@ Tileset::Tileset(Game *game, QString name)
 {
     this->game = game;
 
-    archive = new SarcFilesystem(game->fs->openFile("/Unit/"+name+".arc"));
+    archive = new SarcFilesystem(game->fs->openFile("/Unit/"+name+".sarc"));
     texture = new Ctpk(archive->openFile("/BG_tex/"+name+".ctpk"));
+
+    texImage = texture->getTexture(0);
 }
 
 Tileset::~Tileset()
 {
+    delete texImage;
+
     delete texture;
     delete archive;
+}
+
+
+// x and y in tile coords
+void Tileset::drawTile(QPainter& painter, int num, int x, int y, float zoom)
+{
+    int tsize = (int)(20*zoom);
+    x *= tsize;
+    y *= tsize;
+
+    QRect rsrc(2 + ((num&0xF)*24), 2 + ((num>>4)*24), 20, 20);
+    QRect rdst(x, y, tsize, tsize);
+
+    painter.drawImage(rdst, *texImage, rsrc);
 }
 
