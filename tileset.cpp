@@ -44,7 +44,7 @@ void Tileset::drawTile(QPainter& painter, int num, int x, int y, float zoom)
     x *= tsize;
     y *= tsize;
 
-    QRect rsrc(2 + ((num&0xF)*24), 2 + ((num>>4)*24), 20, 20);
+    QRect rsrc(2 + ((num%21)*24), 2 + ((num/21)*24), 20, 20);
     QRect rdst(x, y, tsize, tsize);
 
     painter.drawImage(rdst, *texImage, rsrc);
