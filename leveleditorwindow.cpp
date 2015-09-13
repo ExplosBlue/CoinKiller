@@ -32,14 +32,11 @@ LevelEditorWindow::LevelEditorWindow(QWidget *parent, Level* level) :
     // some extra shit here
 
 
-    // TEST!!!!!
-    this->tileset = level->game->getTileset("M_Nohara");
-
     ui->setupUi(this);
 
     //crapshit = testcrap;
 
-    levelView = new LevelView(this, level, tileset);
+    levelView = new LevelView(this, level);
     /*levelView->setMinimumHeight(600);
     levelView->setMaximumWidth(800);*/
     //QHBoxLayout* crappyshit = new QHBoxLayout(this);

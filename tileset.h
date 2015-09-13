@@ -61,6 +61,7 @@ private:
         quint8 width, height;
         quint8 flags1, flags2; // whatever those are
 
+        quint8 slopeY; // where the second slope block starts
         quint8 yRepeatStart, yRepeatEnd;
 
         QList<ObjectRow> rows;

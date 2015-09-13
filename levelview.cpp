@@ -25,10 +25,9 @@
 #include <QRectF>
 #include <QPaintEvent>
 
-LevelView::LevelView(QWidget *parent, Level* level, Tileset* tileset) : QWidget(parent)
+LevelView::LevelView(QWidget *parent, Level* level) : QWidget(parent)
 {
     this->level = level;
-    this->tileset = tileset;
 }
 
 
@@ -51,24 +50,16 @@ void LevelView::paintEvent(QPaintEvent* evt)
         if (!drawrect.intersects(QRect(obj.x*20, obj.y*20, obj.width*20, obj.height*20)))
             continue;
 
-        /*switch (obj.id & 0xF000)
+        quint16 tsid = (obj.id >> 12) & 0x3;
+        if (level->tilesets[tsid])
         {
-        case 0x0000: painter.setBrush(mariobrosse); break;
-        case 0x1000: painter.setBrush(luigibrosse); break;
-        case 0x2000: painter.setBrush(peachbrosse); break;
-        case 0x3000: painter.setBrush(yoshibrosse); break;
-        default: painter.setBrush(wariobrosse); break;
-        }*/
-
-        //painter.drawRect(QRect(obj.x*20, obj.y*20, obj.width*20 - 1, obj.height*20 - 1));
-        /*for (int y = 0; y < obj.height; y++)
+            level->tilesets[tsid]->drawObject(painter, obj.id&0x0FFF, obj.x, obj.y, obj.width, obj.height, 1);
+        }
+        else
         {
-            for (int x = 0; x < obj.width; x++)
-            {
-                tileset->drawTile(painter, x, obj.x+x, obj.y+y, 1);
-            }
-        }*/
-        tileset->drawObject(painter, obj.id&0x0FFF, obj.x, obj.y, obj.width, obj.height, 1);
+            // TODO fallback
+            qDebug("attempt to draw obj %04X with non-existing tileset", obj.id);
+        }
     }
 }
 

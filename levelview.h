@@ -30,7 +30,7 @@ class LevelView : public QWidget
 {
     Q_OBJECT
 public:
-    explicit LevelView(QWidget *parent, Level* level, Tileset* tileset);
+    explicit LevelView(QWidget *parent, Level* level);
 
 signals:
 
@@ -41,7 +41,6 @@ protected:
 
 private:
     Level* level;
-    Tileset* tileset;
 
 
 

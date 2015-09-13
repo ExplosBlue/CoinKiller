@@ -28,6 +28,44 @@ Level::Level(Game *game, int world, int level, int area)
     this->area = area;
 
 
+    QString headerfile = QString("/course/course%1.bin").arg(area);
+    if (!archive->fileExists(headerfile))
+        throw std::runtime_error("Level has no header!!");
+
+    // read header
+    FileBase* header = archive->openFile(headerfile);
+    header->open();
+    header->seek(0);
+
+    quint32 block0offset = header->read32();
+    for (int t = 0; t < 4; t++)
+    {
+        header->seek(block0offset + (t*32));
+
+        QString tilesetname;
+        header->readStringASCII(tilesetname, 32);
+
+        if (tilesetname.isEmpty())
+        {
+            tilesets[t] = NULL;
+            continue;
+        }
+
+        try
+        {
+            tilesets[t] = game->getTileset(tilesetname);
+        }
+        catch ( const std::exception & e )
+        {
+            qDebug("Tileset %s not found", tilesetname.toStdString().c_str());
+            tilesets[t] = NULL;
+        }
+    }
+
+    header->close();
+    delete header;
+
+
     // read bgdat
     QString bgdatfiletemp = QString("/course/course%1_bgdatL%2.bin").arg(area);
     for (int l = 0; l < 3; l++)
@@ -55,11 +93,24 @@ Level::Level(Game *game, int world, int level, int area)
             bgdat->skip(6);
         }
         bgdat->close();
+        delete bgdat;
     }
 }
 
 Level::~Level()
 {
+    for (int t = 0; t < 4; t++)
+    {
+        if (tilesets[t])
+            delete tilesets[t];
+    }
+
+    /*for (int l = 0; l < 3; l++)
+    {
+        for (int o = 0; o < objects[l].size(); o++)
+            //
+    }*/
+
     delete archive;
 }
 

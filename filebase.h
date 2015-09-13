@@ -22,6 +22,7 @@
 class FileBase
 {
 public:
+    virtual ~FileBase() {}
 
     // base shit
     virtual void open()=0;

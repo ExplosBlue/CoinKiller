@@ -19,6 +19,7 @@
 #define LEVEL_H
 
 #include "filesystem.h"
+#include "tileset.h"
 
 class Game;
 
@@ -41,6 +42,8 @@ public:
 
 
     Game* game;
+
+    Tileset* tilesets[4];
 
     QList<BgdatObject> objects[3];
 

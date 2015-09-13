@@ -104,6 +104,9 @@ Tileset::Tileset(Game *game, QString name)
 
             if (b & 0x80) // slope shit
             {
+                if (b == 0x84) // checkme
+                    obj->slopeY = cury;
+
                 row->slopeFlags = b;
                 b = objdata->read8();
             }
@@ -254,7 +257,56 @@ void Tileset::drawObject(QPainter& painter, int num, int x, int y, int w, int h,
 
     if (def.rows[0].slopeFlags & 0x80)
     {
-        qDebug("!! SLOPE TODO");
+        // slope junk
+
+        quint8 slopeflag = def.rows[0].slopeFlags;
+
+        //if ((slopeflag&0x3) == 0x1) return;
+
+        int cury, yinc;
+        if (slopeflag & 0x02) // slope that goes down
+        {
+            cury = 0;
+            yinc = def.slopeY;
+        }
+        else
+        {
+            cury = h - def.height;
+            yinc = -def.slopeY;
+        }
+
+        int curx;
+        if (slopeflag & 0x01) // slope that goes left
+        {
+            curx = w - def.width;
+            while (curx >= 0)
+            {
+                for (int by = 0; by < def.height; by++)
+                {
+                    ObjectRow& row = def.rows[by];
+                    drawRow(painter, def, row, x+curx, y+cury+by, def.width, zoom);
+                }
+
+                curx -= def.width;
+                cury += yinc;
+            }
+        }
+        else
+        {
+            curx = 0;
+            while (curx < w)
+            {
+                for (int by = 0; by < def.height; by++)
+                {
+                    ObjectRow& row = def.rows[by];
+                    drawRow(painter, def, row, x+curx, y+cury+by, def.width, zoom);
+                }
+
+                curx += def.width;
+                cury += yinc;
+            }
+        }
+
         return;
     }
 
