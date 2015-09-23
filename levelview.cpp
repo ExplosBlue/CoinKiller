@@ -115,7 +115,7 @@ void LevelView::mousePressEvent(QMouseEvent* evt)
                 //dragY = evt->y() - (obj.y*20);
                 dragX = x - obj.x;
                 dragY = y - obj.y;
-
+qDebug("OBJ %04X", obj.id);
                 break;
             }
         }

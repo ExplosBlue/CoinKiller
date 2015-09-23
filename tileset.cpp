@@ -77,6 +77,7 @@ Tileset::Tileset(Game *game, QString name)
         row->slopeFlags = 0;
         row->xRepeatStart = 0xFF;
         bool xrepeat = false;
+        int shittyxrepeat = 0;
         bool yrepeat = false;
 
         for (;;)
@@ -96,6 +97,7 @@ Tileset::Tileset(Game *game, QString name)
                 row->slopeFlags = 0;
                 row->xRepeatStart = 0xFF;
                 xrepeat = false;
+                shittyxrepeat = 0;
 
                 curx = 0;
                 cury++;
@@ -110,6 +112,25 @@ Tileset::Tileset(Game *game, QString name)
                 row->slopeFlags = b;
                 b = objdata->read8();
             }
+
+
+            if (b & 0x04)
+            {
+                if (shittyxrepeat == 2)
+                {
+                    shittyxrepeat = 3;
+                    row->xRepeatEnd = curx;
+                }
+                else if (!shittyxrepeat)
+                    shittyxrepeat = 1;
+            }
+            else if (shittyxrepeat == 1)
+            {
+                shittyxrepeat = 2;
+                row->xRepeatStart = curx;
+                row->xRepeatEnd = width; // failsafe
+            }
+
 
             if ((b & 0x01) && !xrepeat)
             {
