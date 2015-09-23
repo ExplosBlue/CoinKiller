@@ -28,6 +28,8 @@
 LevelView::LevelView(QWidget *parent, Level* level) : QWidget(parent)
 {
     this->level = level;
+
+    selType = 0;
 }
 
 
@@ -61,5 +63,78 @@ void LevelView::paintEvent(QPaintEvent* evt)
             qDebug("attempt to draw obj %04X with non-existing tileset", obj.id);
         }
     }
+
+    if (selType == 1)
+    {
+        QRect objrect(selObject->x*20, selObject->y*20, selObject->width*20, selObject->height*20);
+
+        objrect.adjust(-1, -1, 0, 0);
+        painter.setPen(QColor(0,0,0));
+        painter.drawRect(objrect);
+
+        objrect.adjust(1, 1, -1, -1);
+        painter.setPen(QColor(255,255,255));
+        painter.drawRect(objrect);
+    }
+}
+
+
+void LevelView::mousePressEvent(QMouseEvent* evt)
+{
+    if (evt->button() != Qt::LeftButton)
+        return;
+
+    int x = evt->x() / 20;
+    int y = evt->y() / 20;
+
+    selType = 0;
+
+    // TODO layers!!
+    for (int i = level->objects[0].size()-1; i >= 0; i--)
+    {
+        BgdatObject& obj = level->objects[0][i];
+
+        if (x >= obj.x && x < obj.x+obj.width && y >= obj.y && y < obj.y+obj.height)
+        {
+            // hit!
+            selType = 1;
+            selObject = &obj;
+
+            //dragX = evt->x() - (obj.x*20);
+            //dragY = evt->y() - (obj.y*20);
+            dragX = x - obj.x;
+            dragY = y - obj.y;
+
+            break;
+        }
+    }
+
+    update();
+}
+
+
+void LevelView::mouseMoveEvent(QMouseEvent* evt)
+{
+    if (evt->buttons() != Qt::LeftButton) // checkme?
+        return;
+
+    if (selType == 1)
+    {
+        //selObject->x = (evt->x() - dragX) / 20;
+        //selObject->y = (evt->y() - dragY) / 20;
+        int finalX = (evt->x() / 20) - dragX;
+        int finalY = (evt->y() / 20) - dragY;
+
+        // clamp coords
+        if (finalX < 0) finalX = 0;
+        else if (finalX > 0xFFFF) finalX = 0xFFFF;
+        if (finalY < 0) finalY = 0;
+        else if (finalY > 0xFFFF) finalY = 0xFFFF;
+
+        selObject->x = finalX;
+        selObject->y = finalY;
+    }
+
+    update();
 }
 

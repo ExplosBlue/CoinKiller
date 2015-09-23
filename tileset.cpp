@@ -46,7 +46,7 @@ Tileset::Tileset(Game *game, QString name)
         quint8 crap1 = objindex->read8();
         quint8 crap2 = objindex->read8();
 
-        qDebug("OBJECT %d -- %04X %dx%d %02X %02X", o, offset, width, height, crap1, crap2);
+        //qDebug("OBJECT %d -- %04X %dx%d %02X %02X", o, offset, width, height, crap1, crap2);
 
         ObjectDef* obj = &objectDef[o];//new ObjectDef();
         obj->width = width;

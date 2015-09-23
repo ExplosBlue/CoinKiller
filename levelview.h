@@ -38,12 +38,16 @@ public slots:
 
 protected:
     void paintEvent(QPaintEvent *) Q_DECL_OVERRIDE;
+    void mousePressEvent(QMouseEvent *) Q_DECL_OVERRIDE;
+    void mouseMoveEvent(QMouseEvent *) Q_DECL_OVERRIDE;
 
 private:
     Level* level;
 
+    int selType;
+    BgdatObject* selObject;
 
-
+    int dragX, dragY;
 };
 
 #endif // LEVELVIEW_H

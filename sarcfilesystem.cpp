@@ -45,9 +45,6 @@ SarcFilesystem::SarcFilesystem(FileBase* file)
 
     sfntOffset = sfatOffset + 0xC + (numFiles * 0x10);
 
-    qDebug("dataoffset %08X | numfiles %d | hashmult %08X", dataOffset, numFiles, hashMult);
-    qDebug("sfatOffset %08X | sfntOffset %08X", sfatOffset, sfntOffset);
-
     for (quint32 i = 0; i < numFiles; i++)
     {
         file->seek(sfatOffset + 0xC + (i * 0x10));
@@ -60,10 +57,6 @@ SarcFilesystem::SarcFilesystem(FileBase* file)
 
         file->seek(sfntOffset + 0x8 + entry->nameOffset);
         file->readStringASCII(entry->name, 0);
-
-        qDebug("---------------");
-        qDebug(entry->name.toStdString().c_str());
-        qDebug(" -- OFFSET %08X SIZE %08X HASH %08X/%08X", entry->offset, entry->size, entry->nameHash, filenameHash(entry->name));
 
         files.insert(entry->name, *entry);
     }
