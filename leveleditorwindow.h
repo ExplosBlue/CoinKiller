@@ -37,7 +37,12 @@ public:
     explicit LevelEditorWindow(QWidget *parent, Level* voltmeter);
     ~LevelEditorWindow();
 
-    Ctpk* crapshit; // REMOVE ME!!!!!
+private slots:
+    void on_actionToggleLayer1_toggled(bool arg1);
+
+    void on_actionToggleLayer2_toggled(bool arg1);
+
+    void on_actionToggleLayer3_toggled(bool arg1);
 
 private:
     Ui::LevelEditorWindow *ui;
@@ -46,6 +51,9 @@ private:
     Level* level;
     Tileset* tileset;
     LevelView* levelView;
+
+
+    quint8 layerMask;
 };
 
 #endif // LEVELEDITORWINDOW_H

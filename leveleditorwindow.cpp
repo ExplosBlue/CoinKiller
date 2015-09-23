@@ -59,10 +59,40 @@ LevelEditorWindow::LevelEditorWindow(QWidget *parent, Level* level) :
 
     //this->ui->widget->layout()->addWidget(levelView);
 
+
+    layerMask = 0x7;
+    ui->actionToggleLayer1->setChecked(true);
+    ui->actionToggleLayer2->setChecked(true);
+    ui->actionToggleLayer3->setChecked(true);
+    levelView->setLayerMask(layerMask);
 }
 
 LevelEditorWindow::~LevelEditorWindow()
 {
     delete level;
     delete ui;
+}
+
+void LevelEditorWindow::on_actionToggleLayer1_toggled(bool toggle)
+{
+    if (toggle) layerMask |=  0x1;
+    else        layerMask &= ~0x1;
+    levelView->setLayerMask(layerMask);
+    update();
+}
+
+void LevelEditorWindow::on_actionToggleLayer2_toggled(bool toggle)
+{
+    if (toggle) layerMask |=  0x2;
+    else        layerMask &= ~0x2;
+    levelView->setLayerMask(layerMask);
+    update();
+}
+
+void LevelEditorWindow::on_actionToggleLayer3_toggled(bool toggle)
+{
+    if (toggle) layerMask |=  0x4;
+    else        layerMask &= ~0x4;
+    levelView->setLayerMask(layerMask);
+    update();
 }

@@ -32,6 +32,8 @@ class LevelView : public QWidget
 public:
     explicit LevelView(QWidget *parent, Level* level);
 
+    void setLayerMask(quint8 mask) { layerMask = mask; update(); }
+
 signals:
 
 public slots:
@@ -48,6 +50,8 @@ private:
     BgdatObject* selObject;
 
     int dragX, dragY;
+
+    quint8 layerMask;
 };
 
 #endif // LEVELVIEW_H

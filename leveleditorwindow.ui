@@ -86,8 +86,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>512</width>
-          <height>569</height>
+          <width>69</width>
+          <height>556</height>
          </rect>
         </property>
        </widget>
@@ -124,10 +124,46 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
+   <addaction name="actionToggleLayer1"/>
+   <addaction name="actionToggleLayer2"/>
+   <addaction name="actionToggleLayer3"/>
   </widget>
   <action name="actionDo_shit_I_guess">
    <property name="text">
     <string>do shit, I guess</string>
+   </property>
+  </action>
+  <action name="actionToggleLayer1">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Layer 1</string>
+   </property>
+   <property name="toolTip">
+    <string>blarg</string>
+   </property>
+  </action>
+  <action name="actionToggleLayer2">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Layer 2</string>
+   </property>
+   <property name="toolTip">
+    <string>derp</string>
+   </property>
+  </action>
+  <action name="actionToggleLayer3">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Layer 3</string>
+   </property>
+   <property name="toolTip">
+    <string>berp</string>
    </property>
   </action>
  </widget>

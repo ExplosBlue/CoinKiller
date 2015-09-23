@@ -29,6 +29,7 @@ LevelView::LevelView(QWidget *parent, Level* level) : QWidget(parent)
 {
     this->level = level;
 
+    layerMask = 0x7; // failsafe
     selType = 0;
 }
 
@@ -43,24 +44,30 @@ void LevelView::paintEvent(QPaintEvent* evt)
     painter.fillRect(drawrect, QColor(200,220,255));
 
 
-    for (int i = 0; i < level->objects[0].size(); i++)
+    for (int l = 2; l >= 0; l--)
     {
-        const BgdatObject& obj = level->objects[0].at(i);
-
-        // don't draw shit that is outside of the view
-        // (TODO: also eliminate individual out-of-view tiles)
-        if (!drawrect.intersects(QRect(obj.x*20, obj.y*20, obj.width*20, obj.height*20)))
+        if (!(layerMask & (1<<l)))
             continue;
 
-        quint16 tsid = (obj.id >> 12) & 0x3;
-        if (level->tilesets[tsid])
+        for (int i = 0; i < level->objects[l].size(); i++)
         {
-            level->tilesets[tsid]->drawObject(painter, obj.id&0x0FFF, obj.x, obj.y, obj.width, obj.height, 1);
-        }
-        else
-        {
-            // TODO fallback
-            qDebug("attempt to draw obj %04X with non-existing tileset", obj.id);
+            const BgdatObject& obj = level->objects[l].at(i);
+
+            // don't draw shit that is outside of the view
+            // (TODO: also eliminate individual out-of-view tiles)
+            if (!drawrect.intersects(QRect(obj.x*20, obj.y*20, obj.width*20, obj.height*20)))
+                continue;
+
+            quint16 tsid = (obj.id >> 12) & 0x3;
+            if (level->tilesets[tsid])
+            {
+                level->tilesets[tsid]->drawObject(painter, obj.id&0x0FFF, obj.x, obj.y, obj.width, obj.height, 1);
+            }
+            else
+            {
+                // TODO fallback
+                qDebug("attempt to draw obj %04X with non-existing tileset", obj.id);
+            }
         }
     }
 
@@ -89,24 +96,31 @@ void LevelView::mousePressEvent(QMouseEvent* evt)
 
     selType = 0;
 
-    // TODO layers!!
-    for (int i = level->objects[0].size()-1; i >= 0; i--)
+    for (int l = 0; l < 3; l++)
     {
-        BgdatObject& obj = level->objects[0][i];
+        if (!(layerMask & (1<<l)))
+            continue;
 
-        if (x >= obj.x && x < obj.x+obj.width && y >= obj.y && y < obj.y+obj.height)
+        for (int i = level->objects[l].size()-1; i >= 0; i--)
         {
-            // hit!
-            selType = 1;
-            selObject = &obj;
+            BgdatObject& obj = level->objects[l][i];
 
-            //dragX = evt->x() - (obj.x*20);
-            //dragY = evt->y() - (obj.y*20);
-            dragX = x - obj.x;
-            dragY = y - obj.y;
+            if (x >= obj.x && x < obj.x+obj.width && y >= obj.y && y < obj.y+obj.height)
+            {
+                // hit!
+                selType = 1;
+                selObject = &obj;
 
-            break;
+                //dragX = evt->x() - (obj.x*20);
+                //dragY = evt->y() - (obj.y*20);
+                dragX = x - obj.x;
+                dragY = y - obj.y;
+
+                break;
+            }
         }
+
+        if (selType) break;
     }
 
     update();
