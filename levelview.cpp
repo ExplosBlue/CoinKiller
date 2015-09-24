@@ -52,7 +52,7 @@ void LevelView::paintEvent(QPaintEvent* evt)
 
         tileGrid[0xFFFFFFFF] = l+1;
 
-        for (int i = 0; i < level->objects[l].size(); i++)
+        for (int i = level->objects[l].size()-1; i >= 0; i--)
         {
             const BgdatObject& obj = level->objects[l].at(i);
 
