@@ -51,7 +51,7 @@ void MainWindow::on_actionLoadROM_triggered()
     game = new Game(new ExternalFilesystem("G:/3DS_ROMs/nsmb2/romfs")); // hax!!
 
 
-    LevelEditorWindow* crap = new LevelEditorWindow(this, game->getLevel(2, 1, 1));
+    LevelEditorWindow* crap = new LevelEditorWindow(this, game->getLevel(1, 3, 1));
     crap->show(); // derp
 }
 

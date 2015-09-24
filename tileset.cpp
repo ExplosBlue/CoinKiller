@@ -285,12 +285,15 @@ void Tileset::drawObject(QPainter& painter, TileGrid& grid, int num, int x, int 
     {
         // slope junk
 
+        // slope 00: start from bottom-left (top-right?? checkme)
+        // slope 01: start from top-left
+        // slope 02: same as 00, reverse Y
+        // slope 03: same as 01, reverse Y
+
         quint8 slopeflag = def.rows[0].slopeFlags;
 
-        //if ((slopeflag&0x3) == 0x1) return;
-
         int cury, yinc;
-        if (slopeflag & 0x02) // slope that goes down
+        if (slopeflag & 0x01)
         {
             cury = 0;
             yinc = def.slopeY;
@@ -301,36 +304,27 @@ void Tileset::drawObject(QPainter& painter, TileGrid& grid, int num, int x, int 
             yinc = -def.slopeY;
         }
 
-        int curx;
-        if (slopeflag & 0x01) // slope that goes left
+        int curx = 0;
+        while (curx < w)
         {
-            curx = w - def.width;
-            while (curx >= 0)
-            {
-                for (int by = 0; by < def.height; by++)
-                {
-                    ObjectRow& row = def.rows[by];
-                    drawRow(painter, grid, def, row, x+curx, y+cury+by, def.width, zoom);
-                }
+            if ((curx+def.width) > w)
+                break;
 
-                curx -= def.width;
-                cury += yinc;
-            }
-        }
-        else
-        {
-            curx = 0;
-            while (curx < w)
+            for (int by = 0; by < def.height; by++)
             {
-                for (int by = 0; by < def.height; by++)
-                {
-                    ObjectRow& row = def.rows[by];
-                    drawRow(painter, grid, def, row, x+curx, y+cury+by, def.width, zoom);
-                }
+                ObjectRow& row = def.rows[by];
 
-                curx += def.width;
-                cury += yinc;
+                int tiley = cury+by;
+                if (slopeflag & 0x02) tiley = h - 1 - tiley;
+
+                if (tiley < 0 || tiley >= h)
+                    break;
+
+                drawRow(painter, grid, def, row, x+curx, y+tiley, def.width, zoom);
             }
+
+            curx += def.width;
+            cury += yinc;
         }
 
         return;
