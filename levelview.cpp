@@ -45,7 +45,7 @@ void LevelView::paintEvent(QPaintEvent* evt)
     tileGrid.clear();
 
 
-    for (int l = 2; l >= 0; l--)
+    for (int l = 1; l >= 0; l--)
     {
         if (!(layerMask & (1<<l)))
             continue;
@@ -99,7 +99,7 @@ void LevelView::mousePressEvent(QMouseEvent* evt)
 
     selType = 0;
 
-    for (int l = 0; l < 3; l++)
+    for (int l = 0; l < 2; l++)
     {
         if (!(layerMask & (1<<l)))
             continue;
@@ -119,7 +119,7 @@ void LevelView::mousePressEvent(QMouseEvent* evt)
                 dragX = x - obj.x;
                 dragY = y - obj.y;
 
-                //qDebug("OBJ %04X", obj.id);
+                qDebug("OBJ %04X", obj.id);
 
                 break;
             }

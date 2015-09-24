@@ -42,8 +42,6 @@ private slots:
 
     void on_actionToggleLayer2_toggled(bool arg1);
 
-    void on_actionToggleLayer3_toggled(bool arg1);
-
 private:
     Ui::LevelEditorWindow *ui;
 

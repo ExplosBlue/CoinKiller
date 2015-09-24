@@ -68,7 +68,7 @@ Level::Level(Game *game, int world, int level, int area)
 
     // read bgdat
     QString bgdatfiletemp = QString("/course/course%1_bgdatL%2.bin").arg(area);
-    for (int l = 0; l < 3; l++)
+    for (int l = 0; l < 2; l++)
     {
         QString bgdatfile = bgdatfiletemp.arg(l+1);
         if (!archive->fileExists(bgdatfile)) continue;

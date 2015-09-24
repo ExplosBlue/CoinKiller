@@ -45,7 +45,7 @@ public:
 
     Tileset* tilesets[4];
 
-    QList<BgdatObject> objects[3];
+    QList<BgdatObject> objects[2];
 
 
 private:

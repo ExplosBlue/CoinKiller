@@ -126,7 +126,6 @@
    </attribute>
    <addaction name="actionToggleLayer1"/>
    <addaction name="actionToggleLayer2"/>
-   <addaction name="actionToggleLayer3"/>
   </widget>
   <action name="actionDo_shit_I_guess">
    <property name="text">
@@ -153,17 +152,6 @@
    </property>
    <property name="toolTip">
     <string>derp</string>
-   </property>
-  </action>
-  <action name="actionToggleLayer3">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Layer 3</string>
-   </property>
-   <property name="toolTip">
-    <string>berp</string>
    </property>
   </action>
  </widget>

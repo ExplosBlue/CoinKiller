@@ -22,6 +22,8 @@ Tileset::Tileset(Game *game, QString name)
 {
     this->game = game;
 
+    //qDebug("LOAD TILESET %s", name.toStdString().c_str());
+
     archive = new SarcFilesystem(game->fs->openFile("/Unit/"+name+".sarc"));
     texture = new Ctpk(archive->openFile("/BG_tex/"+name+".ctpk"));
 
@@ -164,8 +166,12 @@ Tileset::Tileset(Game *game, QString name)
             b = objdata->read8();
             row->data.append(b); // tile #
 
-            b = objdata->read8();
-            if (b != 0x02) qDebug("!!! UNUSUAL EXTRA %02X @ %d,%d OBJ %d %02X", b, curx, cury, o, offset);
+            // extra
+            // 00: blank tile???
+            // 02: typical
+            // other values also seen here: dunno
+            b = objdata->read8();if (b==0) qDebug("ZERO!!! %d", o);
+            //if (b != 0x00 && b != 0x02) qDebug("!!! UNUSUAL EXTRA %02X @ %d,%d OBJ %d %02X", b, curx, cury, o, offset);
             row->data.append(b); // extra shit? always 02
 
             curx++;
@@ -222,7 +228,8 @@ void Tileset::drawRow(QPainter& painter, TileGrid& grid, ObjectDef& def, ObjectR
         sx = 0;
         while (dx < rstart)
         {
-            drawTile(painter, grid, row.data[sx*3 + 1], x+dx, y, zoom);
+            //if (row.data[sx*3 + 2])
+                drawTile(painter, grid, row.data[sx*3 + 1], x+dx, y, zoom);
 
             dx++;
             sx++;
@@ -233,7 +240,8 @@ void Tileset::drawRow(QPainter& painter, TileGrid& grid, ObjectDef& def, ObjectR
         sx = row.xRepeatStart;
         while (dx < rend)
         {
-            drawTile(painter, grid, row.data[sx*3 + 1], x+dx, y, zoom);
+            //if (row.data[sx*3 + 2])
+                drawTile(painter, grid, row.data[sx*3 + 1], x+dx, y, zoom);
 
             dx++;
             sx++;
@@ -244,7 +252,8 @@ void Tileset::drawRow(QPainter& painter, TileGrid& grid, ObjectDef& def, ObjectR
         sx = row.xRepeatEnd;
         while (dx < w)
         {
-            drawTile(painter, grid, row.data[sx*3 + 1], x+dx, y, zoom);
+            //if (row.data[sx*3 + 2])
+                drawTile(painter, grid, row.data[sx*3 + 1], x+dx, y, zoom);
 
             dx++;
             sx++;
@@ -259,7 +268,8 @@ void Tileset::drawRow(QPainter& painter, TileGrid& grid, ObjectDef& def, ObjectR
         sx = 0;
         while (dx < w)
         {
-            drawTile(painter, grid, row.data[sx*3 + 1], x+dx, y, zoom);
+            //if (row.data[sx*3 + 2])
+                drawTile(painter, grid, row.data[sx*3 + 1], x+dx, y, zoom);
 
             dx++;
             sx++;
