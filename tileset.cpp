@@ -191,8 +191,12 @@ Tileset::~Tileset()
 
 
 // x and y in tile coords
-void Tileset::drawTile(QPainter& painter, int num, int x, int y, float zoom)
+void Tileset::drawTile(QPainter& painter, TileGrid& grid, int num, int x, int y, float zoom)
 {
+    quint32 gridid = x | (y<<16);
+    if (grid[gridid] == grid[0xFFFFFFFF])
+        return;
+
     int tsize = (int)(20*zoom);
     x *= tsize;
     y *= tsize;
@@ -201,9 +205,10 @@ void Tileset::drawTile(QPainter& painter, int num, int x, int y, float zoom)
     QRect rdst(x, y, tsize, tsize);
 
     painter.drawImage(rdst, *texImage, rsrc);
+    grid[gridid] = grid[0xFFFFFFFF];
 }
 
-void Tileset::drawRow(QPainter& painter, ObjectDef& def, ObjectRow& row, int x, int y, int w, float zoom)
+void Tileset::drawRow(QPainter& painter, TileGrid& grid, ObjectDef& def, ObjectRow& row, int x, int y, int w, float zoom)
 {
     int sx = 0, dx = 0;
     int end = row.data.length()/3;
@@ -217,7 +222,7 @@ void Tileset::drawRow(QPainter& painter, ObjectDef& def, ObjectRow& row, int x, 
         sx = 0;
         while (dx < rstart)
         {
-            drawTile(painter, row.data[sx*3 + 1], x+dx, y, zoom);
+            drawTile(painter, grid, row.data[sx*3 + 1], x+dx, y, zoom);
 
             dx++;
             sx++;
@@ -228,7 +233,7 @@ void Tileset::drawRow(QPainter& painter, ObjectDef& def, ObjectRow& row, int x, 
         sx = row.xRepeatStart;
         while (dx < rend)
         {
-            drawTile(painter, row.data[sx*3 + 1], x+dx, y, zoom);
+            drawTile(painter, grid, row.data[sx*3 + 1], x+dx, y, zoom);
 
             dx++;
             sx++;
@@ -239,7 +244,7 @@ void Tileset::drawRow(QPainter& painter, ObjectDef& def, ObjectRow& row, int x, 
         sx = row.xRepeatEnd;
         while (dx < w)
         {
-            drawTile(painter, row.data[sx*3 + 1], x+dx, y, zoom);
+            drawTile(painter, grid, row.data[sx*3 + 1], x+dx, y, zoom);
 
             dx++;
             sx++;
@@ -254,7 +259,7 @@ void Tileset::drawRow(QPainter& painter, ObjectDef& def, ObjectRow& row, int x, 
         sx = 0;
         while (dx < w)
         {
-            drawTile(painter, row.data[sx*3 + 1], x+dx, y, zoom);
+            drawTile(painter, grid, row.data[sx*3 + 1], x+dx, y, zoom);
 
             dx++;
             sx++;
@@ -264,7 +269,7 @@ void Tileset::drawRow(QPainter& painter, ObjectDef& def, ObjectRow& row, int x, 
     }
 }
 
-void Tileset::drawObject(QPainter& painter, int num, int x, int y, int w, int h, float zoom)
+void Tileset::drawObject(QPainter& painter, TileGrid& grid, int num, int x, int y, int w, int h, float zoom)
 {
     if (num >= numObjects) // TODO handle properly
     {
@@ -305,7 +310,7 @@ void Tileset::drawObject(QPainter& painter, int num, int x, int y, int w, int h,
                 for (int by = 0; by < def.height; by++)
                 {
                     ObjectRow& row = def.rows[by];
-                    drawRow(painter, def, row, x+curx, y+cury+by, def.width, zoom);
+                    drawRow(painter, grid, def, row, x+curx, y+cury+by, def.width, zoom);
                 }
 
                 curx -= def.width;
@@ -320,7 +325,7 @@ void Tileset::drawObject(QPainter& painter, int num, int x, int y, int w, int h,
                 for (int by = 0; by < def.height; by++)
                 {
                     ObjectRow& row = def.rows[by];
-                    drawRow(painter, def, row, x+curx, y+cury+by, def.width, zoom);
+                    drawRow(painter, grid, def, row, x+curx, y+cury+by, def.width, zoom);
                 }
 
                 curx += def.width;
@@ -345,7 +350,7 @@ void Tileset::drawObject(QPainter& painter, int num, int x, int y, int w, int h,
         while (dy < rstart)
         {
             ObjectRow& row = def.rows[sy];
-            drawRow(painter, def, row, x, y+dy, w, zoom);
+            drawRow(painter, grid, def, row, x, y+dy, w, zoom);
 
             dy++;
             sy++;
@@ -357,7 +362,7 @@ void Tileset::drawObject(QPainter& painter, int num, int x, int y, int w, int h,
         while (dy < rend)
         {
             ObjectRow& row = def.rows[sy];
-            drawRow(painter, def, row, x, y+dy, w, zoom);
+            drawRow(painter, grid, def, row, x, y+dy, w, zoom);
 
             dy++;
             sy++;
@@ -369,7 +374,7 @@ void Tileset::drawObject(QPainter& painter, int num, int x, int y, int w, int h,
         while (dy < h)
         {
             ObjectRow& row = def.rows[sy];
-            drawRow(painter, def, row, x, y+dy, w, zoom);
+            drawRow(painter, grid, def, row, x, y+dy, w, zoom);
 
             dy++;
             sy++;
@@ -385,7 +390,7 @@ void Tileset::drawObject(QPainter& painter, int num, int x, int y, int w, int h,
         while (dy < h)
         {
             ObjectRow& row = def.rows[sy];
-            drawRow(painter, def, row, x, y+dy, w, zoom);
+            drawRow(painter, grid, def, row, x, y+dy, w, zoom);
 
             dy++;
             sy++;

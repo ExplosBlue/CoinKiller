@@ -24,6 +24,8 @@
 #include <QPainter>
 #include <QList>
 
+typedef QHash<quint32,quint8> TileGrid;
+
 class Game;
 
 
@@ -34,8 +36,8 @@ public:
     ~Tileset();
 
 
-    void drawTile(QPainter& painter, int num, int x, int y, float zoom);
-    void drawObject(QPainter& painter, int num, int x, int y, int w, int h, float zoom);
+    void drawTile(QPainter& painter, TileGrid& grid, int num, int x, int y, float zoom);
+    void drawObject(QPainter& painter, TileGrid& grid, int num, int x, int y, int w, int h, float zoom);
 
 
     Game* game;
@@ -71,7 +73,7 @@ private:
     ObjectDef* objectDef;
 
 
-    void drawRow(QPainter& painter, ObjectDef& def, ObjectRow& row, int x, int y, int w, float zoom);
+    void drawRow(QPainter& painter, TileGrid& grid, ObjectDef& def, ObjectRow& row, int x, int y, int w, float zoom);
 };
 
 #endif // TILESET_H

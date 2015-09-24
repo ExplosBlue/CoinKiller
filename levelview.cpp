@@ -42,12 +42,15 @@ void LevelView::paintEvent(QPaintEvent* evt)
     //qDebug("draw %d,%d %d,%d", drawrect.x(), drawrect.y(), drawrect.width(), drawrect.height());
 
     painter.fillRect(drawrect, QColor(200,220,255));
+    tileGrid.clear();
 
 
     for (int l = 2; l >= 0; l--)
     {
         if (!(layerMask & (1<<l)))
             continue;
+
+        tileGrid[0xFFFFFFFF] = l+1;
 
         for (int i = 0; i < level->objects[l].size(); i++)
         {
@@ -61,7 +64,7 @@ void LevelView::paintEvent(QPaintEvent* evt)
             quint16 tsid = (obj.id >> 12) & 0x3;
             if (level->tilesets[tsid])
             {
-                level->tilesets[tsid]->drawObject(painter, obj.id&0x0FFF, obj.x, obj.y, obj.width, obj.height, 1);
+                level->tilesets[tsid]->drawObject(painter, tileGrid, obj.id&0x0FFF, obj.x, obj.y, obj.width, obj.height, 1);
             }
             else
             {
@@ -115,7 +118,9 @@ void LevelView::mousePressEvent(QMouseEvent* evt)
                 //dragY = evt->y() - (obj.y*20);
                 dragX = x - obj.x;
                 dragY = y - obj.y;
-qDebug("OBJ %04X", obj.id);
+
+                //qDebug("OBJ %04X", obj.id);
+
                 break;
             }
         }

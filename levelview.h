@@ -52,6 +52,9 @@ private:
     int dragX, dragY;
 
     quint8 layerMask;
+
+    // determines which tiles are already occupied
+    TileGrid tileGrid;
 };
 
 #endif // LEVELVIEW_H
