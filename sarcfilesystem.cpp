@@ -70,6 +70,17 @@ SarcFilesystem::~SarcFilesystem()
 }
 
 
+bool SarcFilesystem::directoryExists(QString path)
+{
+    throw std::logic_error("SARC DIRECTORY CRAP NOT IMPLEMENTED");
+}
+
+void SarcFilesystem::directoryContents(QString path, QDir::Filter filter, QList<QString>& out)
+{
+    throw std::logic_error("SARC DIRECTORY CRAP NOT IMPLEMENTED");
+}
+
+
 bool SarcFilesystem::fileExists(QString path)
 {
     if (path[0] == '/')

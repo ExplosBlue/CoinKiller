@@ -24,6 +24,9 @@ class FilesystemBase
 public:
     virtual ~FilesystemBase() {}
 
+    virtual bool directoryExists(QString path)=0;
+    virtual void directoryContents(QString path, QDir::Filter filter, QList<QString>& out)=0;
+
     virtual bool fileExists(QString path)=0;
     virtual FileBase* openFile(QString path)=0;
     virtual bool save(FileBase* file)=0;

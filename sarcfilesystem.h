@@ -25,6 +25,9 @@ public:
     SarcFilesystem(FileBase* file);
     ~SarcFilesystem();
 
+    bool directoryExists(QString path);
+    void directoryContents(QString path, QDir::Filter filter, QList<QString>& out);
+
     bool fileExists(QString path);
     FileBase* openFile(QString path);
     bool save(FileBase* file);

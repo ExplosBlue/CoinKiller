@@ -27,9 +27,26 @@ ExternalFilesystem::~ExternalFilesystem()
 }
 
 
+bool ExternalFilesystem::directoryExists(QString path)
+{
+    return QDir(basepath + path).exists();
+}
+
+void ExternalFilesystem::directoryContents(QString path, QDir::Filter filter, QList<QString>& out)
+{
+    out.clear();
+
+    QStringList res = QDir(basepath + path).entryList(filter|QDir::NoDotAndDotDot, QDir::Name|QDir::IgnoreCase|QDir::DirsFirst);
+    for (int i = 0; i < res.size(); i++)
+    {
+        out.append(res[i]);
+    }
+}
+
+
 bool ExternalFilesystem::fileExists(QString path)
 {
-    return QFile(path).exists();
+    return QFile(basepath + path).exists();
 }
 
 // path be like: /game/course/level.bin

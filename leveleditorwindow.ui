@@ -140,7 +140,7 @@
     <string>Layer 1</string>
    </property>
    <property name="toolTip">
-    <string>blarg</string>
+    <string>they say you don't get a layer 0 here</string>
    </property>
   </action>
   <action name="actionToggleLayer2">
@@ -151,7 +151,7 @@
     <string>Layer 2</string>
    </property>
    <property name="toolTip">
-    <string>derp</string>
+    <string>maybe someday you will... who knows</string>
    </property>
   </action>
  </widget>

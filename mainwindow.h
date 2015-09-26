@@ -42,10 +42,15 @@ private slots:
 
     void on_actionDebug_test_triggered();
 
+    void on_levelList_doubleClicked(const QModelIndex &index);
+
 private:
     Ui::MainWindow *ui;
 
     Game* game;
+
+
+    QHash<QString,QString> defaultLevelNames;
 };
 
 #endif // MAINWINDOW_H

@@ -28,6 +28,7 @@
 #include <QString>
 #include <QFile>
 #include <QTemporaryFile>
+#include <QDir>
 #include <QHash>
 
 #endif // SHIT_H
