@@ -72,12 +72,56 @@ SarcFilesystem::~SarcFilesystem()
 
 bool SarcFilesystem::directoryExists(QString path)
 {
-    throw std::logic_error("SARC DIRECTORY CRAP NOT IMPLEMENTED");
+    if (path[0] == '/')
+        path.remove(0,1);
+
+    for (int i = 0; i < files.size(); i++)
+    {
+        QString thispath = files.keys()[i];
+        if (thispath.size() <= path.size())
+            continue;
+
+        QString thispathbase = thispath;
+        thispathbase.truncate(path.size());
+        if (thispathbase == path)
+            return true;
+    }
+
+    return false;
 }
 
 void SarcFilesystem::directoryContents(QString path, QDir::Filter filter, QList<QString>& out)
 {
-    throw std::logic_error("SARC DIRECTORY CRAP NOT IMPLEMENTED");
+    if (path[0] == '/')
+        path.remove(0,1);
+
+    out.clear();
+
+    for (int i = 0; i < files.size(); i++)
+    {
+        QString thispath = files.keys()[i];
+        if (thispath.size() <= path.size())
+            continue;
+
+        QString thispathbase = thispath;
+        thispathbase.truncate(path.size());
+        if (thispathbase == path)
+        {
+            QString pathindir = thispath;
+            if (path.size())
+                pathindir.remove(0, path.size()+1);
+
+            int slashidx = pathindir.indexOf('/');
+            bool isdir = slashidx != -1;
+            if ((isdir && (filter & QDir::Dirs)) || ((!isdir) && (filter & QDir::Files)))
+            {
+                if (isdir) pathindir.truncate(slashidx);
+
+                if (!out.contains(pathindir))
+                    out.append(pathindir);
+            }
+        }
+    }
 }
 
 
