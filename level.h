@@ -20,19 +20,9 @@
 
 #include "filesystem.h"
 #include "tileset.h"
+#include "objects.h"
 
 class Game;
-
-
-struct BgdatObject
-{
-    quint16 id;
-    quint16 x, y; // [RoadrunnerWMC] signed position??? needs investigation
-    quint16 width, height;
-
-    // extra crap, but it's all zeroes
-};
-
 
 class Level
 {
@@ -46,6 +36,7 @@ public:
     Tileset* tilesets[4];
 
     QList<BgdatObject> objects[2];
+    QList<Sprite> sprites;
 
 
 private:
