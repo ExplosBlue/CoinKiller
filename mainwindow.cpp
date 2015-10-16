@@ -18,6 +18,9 @@
 #include <QMessageBox>
 #include <QStandardItemModel>
 #include <QStandardItem>
+#include <QCoreApplication>
+#include <QFileDialog>
+#include <QSettings>
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
@@ -32,6 +35,11 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    setWindowTitle("CoinKiller");
+
+
+    QCoreApplication::setOrganizationName("Blarg City");
+    QCoreApplication::setApplicationName("CoinKiller");
 
 
     // DEFAULT LEVEL NAMES
@@ -51,10 +59,20 @@ void MainWindow::on_actionAbout_triggered()
 
 void MainWindow::on_actionLoadROM_triggered()
 {
+    QSettings settings;
     // full tile: 24x24
     // gfx: 20x20
 
-    FilesystemBase* fs = new ExternalFilesystem("Z:/NSMB2/romfs"); // TEST!!!
+    QString basepath = settings.value("LastRomFSPath", "").toString();
+
+    QString dirpath = QFileDialog::getExistingDirectory(this, "Open a RomFS folder", basepath);
+    if (dirpath.isNull())
+        return; // whatever
+
+    settings.setValue("LastRomFSPath", dirpath);
+
+
+    FilesystemBase* fs = new ExternalFilesystem(dirpath);
     game = new Game(fs); // hax!!/
 
 

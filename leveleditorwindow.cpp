@@ -34,7 +34,9 @@ LevelEditorWindow::LevelEditorWindow(QWidget *parent, Level* level) :
 
     ui->setupUi(this);
 
-    //crapshit = testcrap;
+    QString title;
+    level->getName(title);
+    setWindowTitle(title + " - CoinKiller");
 
     levelView = new LevelView(this, level);
     /*levelView->setMinimumHeight(600);

@@ -41,9 +41,15 @@ public:
     QList<Zone> zones;
 
 
+    void getName(QString& name)
+    {
+        name = QString("%1-%2 area %3").arg(world).arg(level).arg(area);
+    }
+
+
 private:
     SarcFilesystem* archive;
-    int area;
+    int world, level, area;
 };
 
 #endif // LEVEL_H

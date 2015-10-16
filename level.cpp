@@ -23,6 +23,9 @@ Level::Level(Game *game, int world, int level, int area)
 {
     this->game = game;
 
+    this->world = world;
+    this->level = level;
+
     QString arcpath = QString("/Course/%1-%2.sarc").arg(world).arg(level);
     qDebug(arcpath.toStdString().c_str());
     archive = new SarcFilesystem(game->fs->openFile(arcpath));
