@@ -82,7 +82,7 @@ void LevelView::paintEvent(QPaintEvent* evt)
     {
         const Sprite& spr = level->sprites.at(i);
 
-        QRect sprrect(spr.getx()/16*20, spr.gety()/16*20, 20, 20);
+        QRect sprrect(spr.getx()/16*20, spr.gety()/16*20, spr.getwidth(), spr.getheight());
 
         painter.setPen(QColor(0,0,0));
 
@@ -96,6 +96,43 @@ void LevelView::paintEvent(QPaintEvent* evt)
         painter.setFont(QFont("Arial", 7, QFont::Normal));
         painter.drawText(sprrect, spriteText, Qt::AlignHCenter | Qt::AlignVCenter);
     }
+
+    // Render Entrences
+    for (int i = 0; i < level->entrances.size(); i++)
+    {
+        const Entrance& entr = level->entrances.at(i);
+
+        QRect entrrect(entr.getx()/16*20, entr.gety()/16*20, 20, 20);
+
+        painter.setPen(QColor(0,0,0));
+
+        QPainterPath path;
+        path.addRoundedRect(entrrect, 2.0, 2.0);
+        QColor color(182,3,3,200);
+        painter.fillPath(path, color);
+        painter.drawPath(path);
+
+        QString entrText = QString("%1").arg(entr.getid());
+        painter.setFont(QFont("Arial", 7, QFont::Normal));
+        painter.drawText(entrrect, entrText, Qt::AlignHCenter | Qt::AlignVCenter);
+    }
+
+    // Render Zones
+    for (int i = 0; i < level->zones.size(); i++)
+    {
+        const Zone& zone = level->zones.at(i);
+
+        QRect zonerect(zone.getx()/16*20, zone.gety()/16*20, zone.getwidth()/16*20, zone.getheight()/16*20);
+
+        painter.setPen(QColor(255,255,255));
+
+        painter.drawRect(zonerect);
+
+        QString zoneText = QString("Zone %1").arg(zone.getid());
+        painter.setFont(QFont("Arial", 7, QFont::Normal));
+        painter.drawText(zonerect, zoneText);
+    }
+
 
     if (selType == 1)
     {
