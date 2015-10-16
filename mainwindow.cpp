@@ -54,8 +54,8 @@ void MainWindow::on_actionLoadROM_triggered()
     // full tile: 24x24
     // gfx: 20x20
 
-    FilesystemBase* fs = new ExternalFilesystem("G:/3DS_ROMs/nsmb2/romfs"); // TEST!!!
-    game = new Game(fs); // hax!!
+    FilesystemBase* fs = new ExternalFilesystem("Z:/NSMB2/romfs"); // TEST!!!
+    game = new Game(fs); // hax!!/
 
 
 
@@ -108,8 +108,8 @@ void MainWindow::on_actionLoadROM_triggered()
     ui->levelList->setModel(levels);
 
 
-    //LevelEditorWindow* crap = new LevelEditorWindow(this, game->getLevel(4, 1, 1));
-    //crap->show(); // derp
+    LevelEditorWindow* crap = new LevelEditorWindow(this, game->getLevel(1, 1, 1));
+    crap->show(); // derp
 }
 
 void MainWindow::on_actionDebug_test_triggered()

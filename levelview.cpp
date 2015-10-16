@@ -37,14 +37,16 @@ LevelView::LevelView(QWidget *parent, Level* level) : QWidget(parent)
 void LevelView::paintEvent(QPaintEvent* evt)
 {
     QPainter painter(this);
+    painter.setRenderHint(QPainter::Antialiasing);
+
     QRect drawrect = evt->rect();
 
     //qDebug("draw %d,%d %d,%d", drawrect.x(), drawrect.y(), drawrect.width(), drawrect.height());
 
-    painter.fillRect(drawrect, QColor(200,220,255));
+    painter.fillRect(drawrect, QColor(119,136,153));
     tileGrid.clear();
 
-
+    // Render Tiles
     for (int l = 1; l >= 0; l--)
     {
         if (!(layerMask & (1<<l)))
@@ -58,25 +60,46 @@ void LevelView::paintEvent(QPaintEvent* evt)
 
             // don't draw shit that is outside of the view
             // (TODO: also eliminate individual out-of-view tiles)
-            if (!drawrect.intersects(QRect(obj.x*20, obj.y*20, obj.width*20, obj.height*20)))
+            if (!drawrect.intersects(QRect(obj.getx()*20, obj.gety()*20, obj.getwidth()*20, obj.getheight()*20)))
                 continue;
 
-            quint16 tsid = (obj.id >> 12) & 0x3;
+            quint16 tsid = (obj.getid() >> 12) & 0x3;
             if (level->tilesets[tsid])
             {
-                level->tilesets[tsid]->drawObject(painter, tileGrid, obj.id&0x0FFF, obj.x, obj.y, obj.width, obj.height, 1);
+                level->tilesets[tsid]->drawObject(painter, tileGrid, obj.getid()&0x0FFF, obj.getx(), obj.gety(), obj.getwidth(), obj.getheight(), 1);
             }
             else
             {
                 // TODO fallback
-                qDebug("attempt to draw obj %04X with non-existing tileset", obj.id);
+                qDebug("attempt to draw obj %04X with non-existing tileset", obj.getid());
             }
         }
     }
 
+
+    // Render Sprites
+    for (int i = 0; i < level->sprites.size(); i++)
+    {
+        const Sprite& spr = level->sprites.at(i);
+
+        QRect sprrect(spr.getx()/16*20, spr.gety()/16*20, 20, 20);
+
+        painter.setPen(QColor(0,0,0));
+
+        QPainterPath path;
+        path.addRoundedRect(sprrect, 2.0, 2.0);
+        QColor color(0,90,150,200);
+        painter.fillPath(path, color);
+        painter.drawPath(path);
+
+        QString spriteText = QString("%1").arg(spr.getid());
+        painter.setFont(QFont("Arial", 7, QFont::Normal));
+        painter.drawText(sprrect, spriteText, Qt::AlignHCenter | Qt::AlignVCenter);
+    }
+
     if (selType == 1)
     {
-        QRect objrect(selObject->x*20, selObject->y*20, selObject->width*20, selObject->height*20);
+        QRect objrect(selObject->getx()*20, selObject->gety()*20, selObject->getwidth()*20, selObject->getheight()*20);
 
         objrect.adjust(-1, -1, 0, 0);
         painter.setPen(QColor(0,0,0));
@@ -108,7 +131,7 @@ void LevelView::mousePressEvent(QMouseEvent* evt)
         {
             BgdatObject& obj = level->objects[l][i];
 
-            if (x >= obj.x && x < obj.x+obj.width && y >= obj.y && y < obj.y+obj.height)
+            if (x >= obj.getx() && x < obj.getx()+obj.getwidth() && y >= obj.gety() && y < obj.gety()+obj.getheight())
             {
                 // hit!
                 selType = 1;
@@ -116,10 +139,10 @@ void LevelView::mousePressEvent(QMouseEvent* evt)
 
                 //dragX = evt->x() - (obj.x*20);
                 //dragY = evt->y() - (obj.y*20);
-                dragX = x - obj.x;
-                dragY = y - obj.y;
+                dragX = x - obj.getx();
+                dragY = y - obj.gety();
 
-                qDebug("OBJ %04X", obj.id);
+                qDebug("OBJ %04X", obj.getid());
 
                 break;
             }
@@ -150,8 +173,7 @@ void LevelView::mouseMoveEvent(QMouseEvent* evt)
         if (finalY < 0) finalY = 0;
         else if (finalY > 0xFFFF) finalY = 0xFFFF;
 
-        selObject->x = finalX;
-        selObject->y = finalY;
+        selObject->setPosition(finalX, finalY);
     }
 
     update();
