@@ -46,4 +46,27 @@ protected:
     int id;
 };
 
+
+// Entrance Object
+class Entrance: public Object
+{
+public:
+    Entrance();
+    Entrance(int x, int y, int id);
+    int getid() const;
+protected:
+    int id;
+};
+
+// Zone Object
+class Zone: public Object
+{
+public:
+    Zone();
+    Zone(int x, int y, int width, int height, int id);
+    int getid() const;
+protected:
+    int id;
+};
+
 #endif // OBJECTS_H

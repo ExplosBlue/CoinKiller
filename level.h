@@ -37,6 +37,8 @@ public:
 
     QList<BgdatObject> objects[2];
     QList<Sprite> sprites;
+    QList<Entrance> entrances;
+    QList<Zone> zones;
 
 
 private:

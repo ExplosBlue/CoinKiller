@@ -39,10 +39,11 @@ Level::Level(Game *game, int world, int level, int area)
     header->seek(0);
 
     quint32 blockOffsets[17];
+    quint32 blockSizes[17];
     for (int b = 0; b < 17; b++)
     {
         blockOffsets[b] = header->read32();
-        header->skip(4);
+        blockSizes[b] = header->read32();
     }
 
     // Block 1: Tilesets
@@ -70,7 +71,17 @@ Level::Level(Game *game, int world, int level, int area)
         }
     }
     // Block 2: Area Options
+
     // Block 7: Entrances
+    header->seek(blockOffsets[6]);
+    for (int e = 0; e < (int)(blockSizes[6]/24); e++)
+    {
+        Entrance* entr = new Entrance(header->read16(), header->read16(), e);
+        qDebug("Found Entrance with x: %d, y: %d", entr->getx(), entr->gety());
+        entrances.append(*entr);
+
+        header->skip(20); // data we don't care about right now (id is in here, too. For now simply e)
+    }
 
     // Block 8: Sprites
     header->seek(blockOffsets[7]);
@@ -87,6 +98,16 @@ Level::Level(Game *game, int world, int level, int area)
     }
 
     // Block 10: Zones
+    header->seek(blockOffsets[9]);
+    for (int z = 0; z < (int)(blockSizes[9]/24); z++)
+    {
+        Zone* zone = new Zone(header->read16(), header->read16(), header->read16(), header->read16(), z);
+        qDebug("Found Zone with x: %d, y: %d, width: %d, height: %d", zone->getx(), zone->gety(), zone->getwidth(), zone->getheight());
+        zones.append(*zone);
+
+        header->skip(20); // data we don't care about right now (id is in here, too. For now simply z)
+    }
+
     // Block 11: Locations
     // Block 12/13: Paths
     // Block: 16/17. Progess Paths
