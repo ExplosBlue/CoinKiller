@@ -101,3 +101,47 @@ Zone::Zone(int x, int y, int width, int height, int id)
 }
 
 int Zone::getid() const { return id; }
+
+
+// Location
+Location::Location()
+{
+
+}
+
+Location::Location(int x, int y, int width, int height, int id)
+{
+    this->x = x;
+    this->y = y;
+    this->width = width;
+    this->height = height;
+    this->id = id;
+}
+
+int Location::getid() const { return id; }
+
+
+// Progress Path
+ProgressPath::ProgressPath(int id, int nodesOffset, int numberOfNodes)
+{
+    this->id = id;
+    this->nodeOffset = nodesOffset;
+    this->numberOfNodes = numberOfNodes;
+}
+
+void ProgressPath::insertNode(ProgressPathNode &node)
+{
+    nodes.append(node);
+}
+
+int ProgressPath::getid() const { return id; }
+int ProgressPath::getNodesOffset() const { return nodeOffset; }
+int ProgressPath::getNumberOfNodes() const { return numberOfNodes; }
+QList<ProgressPathNode> ProgressPath::getNodes() const { return nodes; }
+
+// Progress Path Node
+ProgressPathNode::ProgressPathNode(int x, int y)
+{
+    this->x = x;
+    this->y = y;
+}

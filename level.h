@@ -35,11 +35,14 @@ public:
 
     Tileset* tilesets[4];
 
+    quint16 timeLimit;
+
     QList<BgdatObject> objects[2];
     QList<Sprite> sprites;
     QList<Entrance> entrances;
     QList<Zone> zones;
-
+    QList<Location> locations;
+    QList<ProgressPath> progressPaths;
 
     void getName(QString& name)
     {

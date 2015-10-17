@@ -1,6 +1,7 @@
 #ifndef OBJECTS_H
 #define OBJECTS_H
 
+#include <QtCore>
 
 // Obj Baseclass
 class Object
@@ -58,6 +59,7 @@ protected:
     int id;
 };
 
+
 // Zone Object
 class Zone: public Object
 {
@@ -67,6 +69,46 @@ public:
     int getid() const;
 protected:
     int id;
+};
+
+
+// Location Object
+class Location: public Object
+{
+public:
+    Location();
+    Location(int x, int y, int width, int height, int id);
+    int getid() const;
+protected:
+    int id;
+};
+
+
+// Progress Path Node
+class ProgressPathNode: public Object
+{
+public:
+    ProgressPathNode();
+    ProgressPathNode(int x, int y);
+};
+
+// Progress Path
+class ProgressPath
+{
+public:
+    ProgressPath();
+    ProgressPath(int id, int nodesOffset, int numberOfNodes);
+    void insertNode(ProgressPathNode &node);
+    //void removeNodeAt(int id);
+    int getid() const;
+    int getNodesOffset() const;
+    int getNumberOfNodes() const;
+    QList<ProgressPathNode> getNodes() const;
+protected:
+    int id;
+    int nodeOffset;
+    int numberOfNodes;
+    QList<ProgressPathNode> nodes;
 };
 
 #endif // OBJECTS_H

@@ -73,7 +73,7 @@ void MainWindow::on_actionLoadROM_triggered()
 
 
     FilesystemBase* fs = new ExternalFilesystem(dirpath);
-    game = new Game(fs); // hax!!/
+    game = new Game(fs); // hax!!
 
 
 
@@ -126,7 +126,7 @@ void MainWindow::on_actionLoadROM_triggered()
     ui->levelList->setModel(levels);
 
 
-    LevelEditorWindow* crap = new LevelEditorWindow(this, game->getLevel(1, 14, 1));
+    LevelEditorWindow* crap = new LevelEditorWindow(this, game->getLevel(1, 1, 1));
     crap->show(); // derp
 }
 

@@ -73,7 +73,12 @@ Level::Level(Game *game, int world, int level, int area)
             tilesets[t] = NULL;
         }
     }
-    // Block 2: Area Options
+
+    // Block 2: Area Settings
+    header->seek(blockOffsets[1]);
+    header->skip(10); // 8 Zeros + Unk1
+    timeLimit = header->read16();
+    qDebug("Time Limit: %d", timeLimit);
 
     // Block 7: Entrances
     header->seek(blockOffsets[6]);
@@ -112,8 +117,33 @@ Level::Level(Game *game, int world, int level, int area)
     }
 
     // Block 11: Locations
+    header->seek(blockOffsets[10]);
+    for (int l = 0; l < (int)(blockSizes[10]/12); l++)
+    {
+        Location* loc = new Location(header->read16(), header->read16(), header->read16(), header->read16(), header->read8());
+        qDebug("Found Location with x: %d, y: %d, width: %d, height: %d", loc->getx(), loc->gety(), loc->getwidth(), loc->getheight());
+        locations.append(*loc);
+
+        header->skip(3);
+    }
+
     // Block 12/13: Paths
-    // Block: 16/17. Progess Paths
+
+    // Block: 15/16 Progress Paths
+    for (int p = 0; p < (int)(blockSizes[15]/12); p++)
+    {
+        header->seek(blockOffsets[15]+p*12);
+        ProgressPath* pPath = new ProgressPath(header->read16(), header->read16(), header->read16());
+        qDebug("Found Progress Path with ID %d, %d Nodes, Node Offset: %d", pPath->getid(), pPath->getNumberOfNodes(), pPath->getNodesOffset());
+        for (int i = 0; i < pPath->getNumberOfNodes(); i++)
+        {
+            header->seek(blockOffsets[16]+i*20+pPath->getNodesOffset()*20);
+            ProgressPathNode* pPathN = new ProgressPathNode(header->read16(), header->read16());
+            pPath->insertNode(*pPathN);
+        }
+        progressPaths.append(*pPath);
+    }
+
 
 
     header->close();

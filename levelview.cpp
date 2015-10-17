@@ -76,6 +76,23 @@ void LevelView::paintEvent(QPaintEvent* evt)
         }
     }
 
+    // Render Locations
+    for (int i = 0; i < level->locations.size(); i++)
+    {
+        const Location& loc = level->locations.at(i);
+
+        QRect locrect(loc.getx()/16*20, loc.gety()/16*20, loc.getwidth()/16*20, loc.getheight()/16*20);
+
+        painter.fillRect(locrect, QBrush(QColor(255,255,0,100)));
+
+        painter.setPen(QColor(0,0,0));
+        painter.drawRect(locrect);
+
+        QString locText = QString("%1").arg(loc.getid());
+        painter.setFont(QFont("Arial", 10, QFont::Bold));
+        painter.setPen(QColor(255,255,255));
+        painter.drawText(locrect.adjusted(5,5,0,0), locText);
+    }
 
     // Render Sprites
     for (int i = 0; i < level->sprites.size(); i++)
@@ -117,6 +134,38 @@ void LevelView::paintEvent(QPaintEvent* evt)
         painter.drawText(entrrect, entrText, Qt::AlignHCenter | Qt::AlignVCenter);
     }
 
+    // Render Progress Paths
+    for (int i = 0; i < level->progressPaths.size(); i++)
+    {
+        const ProgressPath& pPath = level->progressPaths.at(i);
+        QList<ProgressPathNode> nodes  = pPath.getNodes();
+
+        for (int j = 0; j < nodes.size() - 1; j++)
+        {
+            QPen pen(QColor(0,255,20));
+            pen.setWidth(2);
+            painter.setPen(pen);
+            painter.drawLine(QPoint(nodes[j].getx()/16*20, nodes[j].gety()/16*20), QPoint(nodes[j+1].getx()/16*20, nodes[j+1].gety()/16*20));
+        }
+
+        for (int j = 0; j < nodes.size(); j++)
+        {
+            QRect ppathrect(nodes[j].getx()/16*20, nodes[j].gety()/16*20, 20, 20);
+
+            painter.setPen(QColor(0,0,0));
+
+            QPainterPath path;
+            path.addRoundedRect(ppathrect, 2.0, 2.0);
+            QColor color(0,255,20,200);
+            painter.fillPath(path, color);
+            painter.drawPath(path);
+
+            QString pPathText = QString("%1-%2").arg(pPath.getid()).arg(j+1);
+            painter.setFont(QFont("Arial", 7, QFont::Normal));
+            painter.drawText(ppathrect, pPathText, Qt::AlignHCenter | Qt::AlignVCenter);
+        }
+    }
+
     // Render Zones
     for (int i = 0; i < level->zones.size(); i++)
     {
@@ -129,13 +178,14 @@ void LevelView::paintEvent(QPaintEvent* evt)
         painter.drawRect(zonerect);
 
         QString zoneText = QString("Zone %1").arg(zone.getid());
-        painter.setFont(QFont("Arial", 7, QFont::Normal));
-        painter.drawText(zonerect, zoneText);
+        painter.setFont(QFont("Arial", 10, QFont::Normal));
+        painter.drawText(zonerect.adjusted(5,5,0,0), zoneText);
     }
-
 
     if (selType == 1)
     {
+        painter.setRenderHint(QPainter::Antialiasing, false);
+
         QRect objrect(selObject->getx()*20, selObject->gety()*20, selObject->getwidth()*20, selObject->getheight()*20);
 
         objrect.adjust(-1, -1, 0, 0);
