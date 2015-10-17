@@ -84,6 +84,38 @@ protected:
 };
 
 
+// Path Node
+class PathNode: public Object
+{
+public:
+    PathNode();
+    PathNode(int x, int y, float speed, float accel);
+protected:
+    float speed;
+    float accel;
+};
+
+
+// Path
+class Path
+{
+public:
+    Path();
+    Path(int id, int nodesOffset, int numberOfNodes);
+    void insertNode(PathNode &node);
+    //void removeNodeAt(int id);
+    int getid() const;
+    int getNodesOffset() const;
+    int getNumberOfNodes() const;
+    QList<PathNode> getNodes() const;
+protected:
+    int id;
+    int nodeOffset;
+    int numberOfNodes;
+    QList<PathNode> nodes;
+};
+
+
 // Progress Path Node
 class ProgressPathNode: public Object
 {
@@ -91,6 +123,7 @@ public:
     ProgressPathNode();
     ProgressPathNode(int x, int y);
 };
+
 
 // Progress Path
 class ProgressPath

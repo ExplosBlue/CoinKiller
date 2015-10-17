@@ -126,7 +126,7 @@ void MainWindow::on_actionLoadROM_triggered()
     ui->levelList->setModel(levels);
 
 
-    LevelEditorWindow* crap = new LevelEditorWindow(this, game->getLevel(1, 1, 1));
+    LevelEditorWindow* crap = new LevelEditorWindow(this, game->getLevel(1, 3, 1));
     crap->show(); // derp
 }
 

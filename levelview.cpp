@@ -134,6 +134,38 @@ void LevelView::paintEvent(QPaintEvent* evt)
         painter.drawText(entrrect, entrText, Qt::AlignHCenter | Qt::AlignVCenter);
     }
 
+    // Render Paths
+    for (int i = 0; i < level->paths.size(); i++)
+    {
+        const Path& path = level->paths.at(i);
+        QList<PathNode> nodes  = path.getNodes();
+
+        for (int j = 0; j < nodes.size() - 1; j++)
+        {
+            QPen pen(QColor(220,255,0));
+            pen.setWidth(2);
+            painter.setPen(pen);
+            painter.drawLine(QPoint(nodes[j].getx()/16*20+10, nodes[j].gety()/16*20+10), QPoint(nodes[j+1].getx()/16*20+10, nodes[j+1].gety()/16*20+10));
+        }
+
+        for (int j = 0; j < nodes.size(); j++)
+        {
+            QRect pathrect(nodes[j].getx()/16*20, nodes[j].gety()/16*20, 20, 20);
+
+            painter.setPen(QColor(0,0,0));
+
+            QPainterPath painterPath;
+            painterPath.addRoundedRect(pathrect, 2.0, 2.0);
+            QColor color(220,255,0,200);
+            painter.fillPath(painterPath, color);
+            painter.drawPath(painterPath);
+
+            QString pathText = QString("%1-%2").arg(path.getid()).arg(j+1);
+            painter.setFont(QFont("Arial", 7, QFont::Normal));
+            painter.drawText(pathrect, pathText, Qt::AlignHCenter | Qt::AlignVCenter);
+        }
+    }
+
     // Render Progress Paths
     for (int i = 0; i < level->progressPaths.size(); i++)
     {
@@ -145,7 +177,7 @@ void LevelView::paintEvent(QPaintEvent* evt)
             QPen pen(QColor(0,255,20));
             pen.setWidth(2);
             painter.setPen(pen);
-            painter.drawLine(QPoint(nodes[j].getx()/16*20, nodes[j].gety()/16*20), QPoint(nodes[j+1].getx()/16*20, nodes[j+1].gety()/16*20));
+            painter.drawLine(QPoint(nodes[j].getx()/16*20+10, nodes[j].gety()/16*20+10), QPoint(nodes[j+1].getx()/16*20+10, nodes[j+1].gety()/16*20+10));
         }
 
         for (int j = 0; j < nodes.size(); j++)
@@ -243,7 +275,7 @@ void LevelView::mousePressEvent(QMouseEvent* evt)
 
 
 void LevelView::mouseMoveEvent(QMouseEvent* evt)
-{
+{    
     if (evt->buttons() != Qt::LeftButton) // checkme?
         return;
 

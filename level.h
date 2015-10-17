@@ -42,6 +42,7 @@ public:
     QList<Entrance> entrances;
     QList<Zone> zones;
     QList<Location> locations;
+    QList<Path> paths;
     QList<ProgressPath> progressPaths;
 
     void getName(QString& name)

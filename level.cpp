@@ -127,9 +127,24 @@ Level::Level(Game *game, int world, int level, int area)
         header->skip(3);
     }
 
-    // Block 12/13: Paths
+    // Block 14/15: Paths
+    for (int p = 0; p < (int)(blockSizes[13]/12); p++)
+    {
+        header->seek(blockOffsets[13]+p*12);
+        int id = header->read8();
+        header->skip(1);
+        Path* path = new Path(id, header->read16(), header->read16());
+        qDebug("Found Path with ID %d, %d Nodes, Node Offset: %d", path->getid(), path->getNumberOfNodes(), path->getNodesOffset());
+        for (int i = 0; i < path->getNumberOfNodes(); i++)
+        {
+            header->seek(blockOffsets[14]+i*20+path->getNodesOffset()*20);
+            PathNode* pathN = new PathNode(header->read16(), header->read16(), header->read32(), header->read32());
+            path->insertNode(*pathN);
+        }
+        paths.append(*path);
+    }
 
-    // Block: 15/16 Progress Paths
+    // Block: 16/17 Progress Paths
     for (int p = 0; p < (int)(blockSizes[15]/12); p++)
     {
         header->seek(blockOffsets[15]+p*12);

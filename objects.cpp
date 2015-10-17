@@ -121,6 +121,35 @@ Location::Location(int x, int y, int width, int height, int id)
 int Location::getid() const { return id; }
 
 
+// Path
+Path::Path(int id, int nodesOffset, int numberOfNodes)
+{
+    this->id = id;
+    this->nodeOffset = nodesOffset;
+    this->numberOfNodes = numberOfNodes;
+}
+
+void Path::insertNode(PathNode &node)
+{
+    nodes.append(node);
+}
+
+int Path::getid() const { return id; }
+int Path::getNodesOffset() const { return nodeOffset; }
+int Path::getNumberOfNodes() const { return numberOfNodes; }
+QList<PathNode> Path::getNodes() const { return nodes; }
+
+
+// Path Node
+PathNode::PathNode(int x, int y, float speed, float accel)
+{
+    this->x = x;
+    this->y = y;
+    this->speed = speed;
+    this->accel = accel;
+}
+
+
 // Progress Path
 ProgressPath::ProgressPath(int id, int nodesOffset, int numberOfNodes)
 {
