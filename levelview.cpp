@@ -17,6 +17,7 @@
 
 #include "leveleditorwindow.h"
 #include "levelview.h"
+#include "unitsconvert.h"
 
 #include <QPainter>
 #include <QBrush>
@@ -24,6 +25,7 @@
 #include <QRect>
 #include <QRectF>
 #include <QPaintEvent>
+
 
 LevelView::LevelView(QWidget *parent, Level* level) : QWidget(parent)
 {
@@ -60,13 +62,13 @@ void LevelView::paintEvent(QPaintEvent* evt)
 
             // don't draw shit that is outside of the view
             // (TODO: also eliminate individual out-of-view tiles)
-            if (!drawrect.intersects(QRect(obj.getx()*20, obj.gety()*20, obj.getwidth()*20, obj.getheight()*20)))
+            if (!drawrect.intersects(QRect(obj.getx(), obj.gety(), obj.getwidth(), obj.getheight())))
                 continue;
 
             quint16 tsid = (obj.getid() >> 12) & 0x3;
             if (level->tilesets[tsid])
             {
-                level->tilesets[tsid]->drawObject(painter, tileGrid, obj.getid()&0x0FFF, obj.getx(), obj.gety(), obj.getwidth(), obj.getheight(), 1);
+                level->tilesets[tsid]->drawObject(painter, tileGrid, obj.getid()&0x0FFF, obj.getx()/20, obj.gety()/20, obj.getwidth()/20, obj.getheight()/20, 1);
             }
             else
             {
@@ -81,7 +83,7 @@ void LevelView::paintEvent(QPaintEvent* evt)
     {
         const Location& loc = level->locations.at(i);
 
-        QRect locrect(loc.getx()/16*20, loc.gety()/16*20, loc.getwidth()/16*20, loc.getheight()/16*20);
+        QRect locrect(loc.getx(), loc.gety(), loc.getwidth(), loc.getheight());
 
         painter.fillRect(locrect, QBrush(QColor(255,255,0,100)));
 
@@ -99,7 +101,7 @@ void LevelView::paintEvent(QPaintEvent* evt)
     {
         const Sprite& spr = level->sprites.at(i);
 
-        QRect sprrect(spr.getx()/16*20, spr.gety()/16*20, spr.getwidth(), spr.getheight());
+        QRect sprrect(spr.getx(), spr.gety(), spr.getwidth(), spr.getheight());
 
         painter.setPen(QColor(0,0,0));
 
@@ -119,7 +121,7 @@ void LevelView::paintEvent(QPaintEvent* evt)
     {
         const Entrance& entr = level->entrances.at(i);
 
-        QRect entrrect(entr.getx()/16*20, entr.gety()/16*20, 20, 20);
+        QRect entrrect(entr.getx(), entr.gety(), 20, 20);
 
         painter.setPen(QColor(0,0,0));
 
@@ -142,21 +144,21 @@ void LevelView::paintEvent(QPaintEvent* evt)
 
         for (int j = 0; j < nodes.size() - 1; j++)
         {
-            QPen pen(QColor(220,255,0));
+            QPen pen(QColor(0,255,20));
             pen.setWidth(2);
             painter.setPen(pen);
-            painter.drawLine(QPoint(nodes[j].getx()/16*20+10, nodes[j].gety()/16*20+10), QPoint(nodes[j+1].getx()/16*20+10, nodes[j+1].gety()/16*20+10));
+            painter.drawLine(QPoint(nodes[j].getx()+10, nodes[j].gety()+10), QPoint(nodes[j+1].getx()+10, nodes[j+1].gety()+10));
         }
 
         for (int j = 0; j < nodes.size(); j++)
         {
-            QRect pathrect(nodes[j].getx()/16*20, nodes[j].gety()/16*20, 20, 20);
+            QRect pathrect(nodes[j].getx(), nodes[j].gety(), 20, 20);
 
             painter.setPen(QColor(0,0,0));
 
             QPainterPath painterPath;
             painterPath.addRoundedRect(pathrect, 2.0, 2.0);
-            QColor color(220,255,0,200);
+            QColor color(0,255,20,200);
             painter.fillPath(painterPath, color);
             painter.drawPath(painterPath);
 
@@ -174,21 +176,21 @@ void LevelView::paintEvent(QPaintEvent* evt)
 
         for (int j = 0; j < nodes.size() - 1; j++)
         {
-            QPen pen(QColor(0,255,20));
+            QPen pen(QColor(220,255,0));
             pen.setWidth(2);
             painter.setPen(pen);
-            painter.drawLine(QPoint(nodes[j].getx()/16*20+10, nodes[j].gety()/16*20+10), QPoint(nodes[j+1].getx()/16*20+10, nodes[j+1].gety()/16*20+10));
+            painter.drawLine(QPoint(nodes[j].getx()+10, nodes[j].gety()+10), QPoint(nodes[j+1].getx()+10, nodes[j+1].gety()+10));
         }
 
         for (int j = 0; j < nodes.size(); j++)
         {
-            QRect ppathrect(nodes[j].getx()/16*20, nodes[j].gety()/16*20, 20, 20);
+            QRect ppathrect(nodes[j].getx(), nodes[j].gety(), 20, 20);
 
             painter.setPen(QColor(0,0,0));
 
             QPainterPath path;
             path.addRoundedRect(ppathrect, 2.0, 2.0);
-            QColor color(0,255,20,200);
+            QColor color(220,255,0,200);
             painter.fillPath(path, color);
             painter.drawPath(path);
 
@@ -203,7 +205,7 @@ void LevelView::paintEvent(QPaintEvent* evt)
     {
         const Zone& zone = level->zones.at(i);
 
-        QRect zonerect(zone.getx()/16*20, zone.gety()/16*20, zone.getwidth()/16*20, zone.getheight()/16*20);
+        QRect zonerect(zone.getx(), zone.gety(), zone.getwidth(), zone.getheight());
 
         painter.setPen(QColor(255,255,255));
 
@@ -218,7 +220,7 @@ void LevelView::paintEvent(QPaintEvent* evt)
     {
         painter.setRenderHint(QPainter::Antialiasing, false);
 
-        QRect objrect(selObject->getx()*20, selObject->gety()*20, selObject->getwidth()*20, selObject->getheight()*20);
+        QRect objrect(selObject->getx(), selObject->gety(), selObject->getwidth(), selObject->getheight());
 
         objrect.adjust(-1, -1, 0, 0);
         painter.setPen(QColor(0,0,0));
@@ -236,11 +238,9 @@ void LevelView::mousePressEvent(QMouseEvent* evt)
     if (evt->button() != Qt::LeftButton)
         return;
 
-    int x = evt->x() / 20;
-    int y = evt->y() / 20;
-
     selType = 0;
 
+    // Check for Tiles
     for (int l = 0; l < 2; l++)
     {
         if (!(layerMask & (1<<l)))
@@ -250,16 +250,14 @@ void LevelView::mousePressEvent(QMouseEvent* evt)
         {
             BgdatObject& obj = level->objects[l][i];
 
-            if (x >= obj.getx() && x < obj.getx()+obj.getwidth() && y >= obj.gety() && y < obj.gety()+obj.getheight())
+            if (evt->x() >= obj.getx() && evt->x() < obj.getx()+obj.getwidth() && evt->y() >= obj.gety() && evt->y() < obj.gety()+obj.getheight())
             {
                 // hit!
                 selType = 1;
                 selObject = &obj;
 
-                //dragX = evt->x() - (obj.x*20);
-                //dragY = evt->y() - (obj.y*20);
-                dragX = x - obj.getx();
-                dragY = y - obj.gety();
+                dragX = evt->x() - obj.getx();
+                dragY = evt->y() - obj.gety();
 
                 qDebug("OBJ %04X", obj.getid());
 
@@ -279,18 +277,17 @@ void LevelView::mouseMoveEvent(QMouseEvent* evt)
     if (evt->buttons() != Qt::LeftButton) // checkme?
         return;
 
+    // Rounded to next 20*20
     if (selType == 1)
     {
-        //selObject->x = (evt->x() - dragX) / 20;
-        //selObject->y = (evt->y() - dragY) / 20;
-        int finalX = (evt->x() / 20) - dragX;
-        int finalY = (evt->y() / 20) - dragY;
+        int finalX = toNext20(evt->x() - dragX);
+        int finalY = toNext20(evt->y() - dragY);
 
         // clamp coords
         if (finalX < 0) finalX = 0;
-        else if (finalX > 0xFFFF) finalX = 0xFFFF;
+        else if (finalX > 0xFFFF*20) finalX = 0xFFFF*20;
         if (finalY < 0) finalY = 0;
-        else if (finalY > 0xFFFF) finalY = 0xFFFF;
+        else if (finalY > 0xFFFF*20) finalY = 0xFFFF*20;
 
         selObject->setPosition(finalX, finalY);
     }

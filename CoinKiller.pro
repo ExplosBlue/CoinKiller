@@ -26,7 +26,8 @@ SOURCES += main.cpp\
     level.cpp \
     tileset.cpp \
     game.cpp \
-    objects.cpp
+    objects.cpp \
+    unitsconvert.cpp
 
 HEADERS  += mainwindow.h \
     filesystembase.h \
@@ -44,7 +45,8 @@ HEADERS  += mainwindow.h \
     level.h \
     tileset.h \
     game.h \
-    objects.h
+    objects.h \
+    unitsconvert.h
 
 FORMS    += mainwindow.ui \
     leveleditorwindow.ui

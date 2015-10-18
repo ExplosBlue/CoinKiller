@@ -18,6 +18,7 @@
 #include "level.h"
 #include "game.h"
 #include "objects.h"
+#include "unitsconvert.h"
 
 Level::Level(Game *game, int world, int level, int area)
 {
@@ -84,7 +85,7 @@ Level::Level(Game *game, int world, int level, int area)
     header->seek(blockOffsets[6]);
     for (int e = 0; e < (int)(blockSizes[6]/24); e++)
     {
-        Entrance* entr = new Entrance(header->read16(), header->read16(), e);
+        Entrance* entr = new Entrance(to20(header->read16()), to20(header->read16()), e);
         qDebug("Found Entrance with x: %d, y: %d", entr->getx(), entr->gety());
         entrances.append(*entr);
 
@@ -98,7 +99,7 @@ Level::Level(Game *game, int world, int level, int area)
         quint16 id = header->read16();
         if (id == 0xFFFF) break;
 
-        Sprite* spr = new Sprite(header->read16(), header->read16(), id);
+        Sprite* spr = new Sprite(to20(header->read16()), to20(header->read16()), id);
         qDebug("Found Sprite with ID %d, x: %d, y: %d", spr->getid(), spr->getx(), spr->gety());
         sprites.append(*spr);
 
@@ -109,7 +110,7 @@ Level::Level(Game *game, int world, int level, int area)
     header->seek(blockOffsets[9]);
     for (int z = 0; z < (int)(blockSizes[9]/24); z++)
     {
-        Zone* zone = new Zone(header->read16(), header->read16(), header->read16(), header->read16(), z);
+        Zone* zone = new Zone(to20(header->read16()), to20(header->read16()), to20(header->read16()), to20(header->read16()), z);
         qDebug("Found Zone with x: %d, y: %d, width: %d, height: %d", zone->getx(), zone->gety(), zone->getwidth(), zone->getheight());
         zones.append(*zone);
 
@@ -120,7 +121,7 @@ Level::Level(Game *game, int world, int level, int area)
     header->seek(blockOffsets[10]);
     for (int l = 0; l < (int)(blockSizes[10]/12); l++)
     {
-        Location* loc = new Location(header->read16(), header->read16(), header->read16(), header->read16(), header->read8());
+        Location* loc = new Location(to20(header->read16()), to20(header->read16()), to20(header->read16()), to20(header->read16()), header->read8());
         qDebug("Found Location with x: %d, y: %d, width: %d, height: %d", loc->getx(), loc->gety(), loc->getwidth(), loc->getheight());
         locations.append(*loc);
 
@@ -138,7 +139,7 @@ Level::Level(Game *game, int world, int level, int area)
         for (int i = 0; i < path->getNumberOfNodes(); i++)
         {
             header->seek(blockOffsets[14]+i*20+path->getNodesOffset()*20);
-            PathNode* pathN = new PathNode(header->read16(), header->read16(), header->read32(), header->read32());
+            PathNode* pathN = new PathNode(to20(header->read16()), to20(header->read16()), header->read32(), header->read32());
             path->insertNode(*pathN);
         }
         paths.append(*path);
@@ -153,12 +154,11 @@ Level::Level(Game *game, int world, int level, int area)
         for (int i = 0; i < pPath->getNumberOfNodes(); i++)
         {
             header->seek(blockOffsets[16]+i*20+pPath->getNodesOffset()*20);
-            ProgressPathNode* pPathN = new ProgressPathNode(header->read16(), header->read16());
+            ProgressPathNode* pPathN = new ProgressPathNode(to20(header->read16()), to20(header->read16()));
             pPath->insertNode(*pPathN);
         }
         progressPaths.append(*pPath);
     }
-
 
 
     header->close();
@@ -181,7 +181,7 @@ Level::Level(Game *game, int world, int level, int area)
             quint16 id = bgdat->read16();
             if (id == 0xFFFF) break;
 
-            BgdatObject* obj = new BgdatObject(bgdat->read16(), bgdat->read16(), bgdat->read16(), bgdat->read16(), id);
+            BgdatObject* obj = new BgdatObject(bgdat->read16()*20, bgdat->read16()*20, bgdat->read16()*20, bgdat->read16()*20, id);
             objects[l].append(*obj);
 
             bgdat->skip(6);

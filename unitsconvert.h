@@ -15,44 +15,12 @@
     with CoinKiller. If not, see http://www.gnu.org/licenses/.
 */
 
-#ifndef LEVEL_H
-#define LEVEL_H
+#ifndef UNITSCONVERT_H
+#define UNITSCONVERT_H
 
-#include "filesystem.h"
-#include "tileset.h"
-#include "objects.h"
+int to20(int nbr);
+int to16(int nbr);
+int toNext10(int nbr);
+int toNext20(int nbr);
 
-class Game;
-
-class Level
-{
-public:
-    Level(Game* game, int world, int level, int area);
-    ~Level();
-
-
-    Game* game;
-
-    Tileset* tilesets[4];
-
-    quint16 timeLimit;
-
-    QList<BgdatObject> objects[2];
-    QList<Sprite> sprites;
-    QList<Entrance> entrances;
-    QList<Zone> zones;
-    QList<Location> locations;
-    QList<Path> paths;
-    QList<ProgressPath> progressPaths;
-
-    void getName(QString& name)
-    {
-        name = QString("%1-%2 area %3").arg(world).arg(level).arg(area);
-    }
-
-private:
-    SarcFilesystem* archive;
-    int world, level, area;
-};
-
-#endif // LEVEL_H
+#endif // UNITSCONVERT_H
