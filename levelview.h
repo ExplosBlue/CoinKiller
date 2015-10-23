@@ -47,6 +47,15 @@ private:
     Level* level;
 
     int selType;
+    // 0: Nothing selected
+    // 1: BgdatObject
+    // 2: Sprite
+    // 3: Entrance
+    // 4: Zone
+    // 5: Location
+    // 6: Path Node
+    // 7: Progress Path Node
+
     Object* selObject;
 
     int dragX, dragY;

@@ -126,6 +126,7 @@ public:
     int getNodesOffset() const;
     int getNumberOfNodes() const;
     QList<PathNode> getNodes() const;
+    PathNode& getNodeReference(int id);
 protected:
     int id;
     int nodeOffset;
@@ -155,6 +156,7 @@ public:
     int getNodesOffset() const;
     int getNumberOfNodes() const;
     QList<ProgressPathNode> getNodes() const;
+    ProgressPathNode& getNodeReference(int id);
 protected:
     int id;
     int nodeOffset;

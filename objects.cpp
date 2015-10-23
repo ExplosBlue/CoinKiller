@@ -160,6 +160,7 @@ int Path::getid() const { return id; }
 int Path::getNodesOffset() const { return nodeOffset; }
 int Path::getNumberOfNodes() const { return numberOfNodes; }
 QList<PathNode> Path::getNodes() const { return nodes; }
+PathNode& Path::getNodeReference(int id) { return nodes[id]; }
 
 
 // Path Node
@@ -189,6 +190,7 @@ int ProgressPath::getid() const { return id; }
 int ProgressPath::getNodesOffset() const { return nodeOffset; }
 int ProgressPath::getNumberOfNodes() const { return numberOfNodes; }
 QList<ProgressPathNode> ProgressPath::getNodes() const { return nodes; }
+ProgressPathNode& ProgressPath::getNodeReference(int id) { return nodes[id]; }
 
 // Progress Path Node
 ProgressPathNode::ProgressPathNode(int x, int y)

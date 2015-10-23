@@ -240,6 +240,56 @@ void LevelView::mousePressEvent(QMouseEvent* evt)
 
     selType = 0;
 
+    // Check for Progress Path Nodes
+    if (selType == 0)
+    {
+        for (int p = level->progressPaths.size()-1; p >= 0; p--)
+        {
+            for (int i = level->progressPaths[p].getNodes().size()-1; i >= 0; i--)
+            {
+                ProgressPathNode& node = level->progressPaths[p].getNodeReference(i);
+
+                if (node.clickDetection(evt->x(), evt->y()))
+                {
+                    selType = 7;
+                    selObject = &node;
+
+                    dragX = evt->x() - node.getx();
+                    dragY = evt->y() - node.gety();
+
+                    break;
+                }
+            }
+
+            if (selType) break;
+        }
+    }
+
+    // Check for Path Nodes
+    if (selType == 0)
+    {
+        for (int p = level->paths.size()-1; p >= 0; p--)
+        {
+            for (int i = level->paths[p].getNodes().size()-1; i >= 0; i--)
+            {
+                PathNode& node = level->paths[p].getNodeReference(i);
+
+                if (node.clickDetection(evt->x(), evt->y()))
+                {
+                    selType = 6;
+                    selObject = &node;
+
+                    dragX = evt->x() - node.getx();
+                    dragY = evt->y() - node.gety();
+
+                    break;
+                }
+            }
+
+            if (selType) break;
+        }
+    }
+
     // Check for Entrances
     if (selType == 0)
     {
