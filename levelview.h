@@ -47,7 +47,7 @@ private:
     Level* level;
 
     int selType;
-    BgdatObject* selObject;
+    Object* selObject;
 
     int dragX, dragY;
 

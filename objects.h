@@ -31,6 +31,7 @@ public:
     int gety() const;
     int getwidth() const;
     int getheight() const;
+    bool clickDetection(int x, int y);
 
 protected:
     int x, y;

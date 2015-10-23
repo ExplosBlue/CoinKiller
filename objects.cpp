@@ -37,6 +37,12 @@ void Object::resize(int width, int height)
     this->height = height;
 }
 
+bool Object::clickDetection(int xClick, int yClick)
+{
+    if (xClick >= x && xClick < x+width && yClick >= y && yClick < y+height) return true;
+    else return false;
+}
+
 int Object::getx() const { return x; }
 int Object::gety() const { return y; }
 int Object::getwidth() const { return width; }

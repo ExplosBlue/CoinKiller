@@ -216,7 +216,7 @@ void LevelView::paintEvent(QPaintEvent* evt)
         painter.drawText(zonerect.adjusted(5,5,0,0), zoneText);
     }
 
-    if (selType == 1)
+    if (selType != 0)
     {
         painter.setRenderHint(QPainter::Antialiasing, false);
 
@@ -240,32 +240,72 @@ void LevelView::mousePressEvent(QMouseEvent* evt)
 
     selType = 0;
 
-    // Check for Tiles
-    for (int l = 0; l < 2; l++)
+    // Check for Entrances
+    if (selType == 0)
     {
-        if (!(layerMask & (1<<l)))
-            continue;
-
-        for (int i = level->objects[l].size()-1; i >= 0; i--)
+        for (int i = level->entrances.size()-1; i >= 0; i--)
         {
-            BgdatObject& obj = level->objects[l][i];
-
-            if (evt->x() >= obj.getx() && evt->x() < obj.getx()+obj.getwidth() && evt->y() >= obj.gety() && evt->y() < obj.gety()+obj.getheight())
+            Entrance& entr = level->entrances[i];
+            if (entr.clickDetection(evt->x(), evt->y()))
             {
-                // hit!
-                selType = 1;
-                selObject = &obj;
+                selType = 3;
+                selObject = &entr;
 
-                dragX = evt->x() - obj.getx();
-                dragY = evt->y() - obj.gety();
-
-                qDebug("OBJ %04X", obj.getid());
+                dragX = evt->x() - entr.getx();
+                dragY = evt->y() - entr.gety();
 
                 break;
             }
         }
+    }
 
-        if (selType) break;
+    // Check for Sprites
+    if (selType == 0)
+    {
+        for (int i = level->sprites.size()-1; i >= 0; i--)
+        {
+            Sprite& spr = level->sprites[i];
+            if (spr.clickDetection(evt->x(), evt->y()))
+            {
+                selType = 2;
+                selObject = &spr;
+
+                dragX = evt->x() - spr.getx();
+                dragY = evt->y() - spr.gety();
+
+                break;
+            }
+        }
+    }
+
+    // Check for Tiles
+    if (selType == 0)
+    {
+        for (int l = 0; l < 2; l++)
+        {
+            if (!(layerMask & (1<<l)))
+                continue;
+
+            for (int i = level->objects[l].size()-1; i >= 0; i--)
+            {
+                BgdatObject& obj = level->objects[l][i];
+                if (obj.clickDetection(evt->x(), evt->y()))
+                {
+                    // hit!
+                    selType = 1;
+                    selObject = &obj;
+
+                    dragX = evt->x() - obj.getx();
+                    dragY = evt->y() - obj.gety();
+
+                    qDebug("OBJ %04X", obj.getid());
+
+                    break;
+                }
+            }
+
+            if (selType) break;
+        }
     }
 
     update();
@@ -277,11 +317,33 @@ void LevelView::mouseMoveEvent(QMouseEvent* evt)
     if (evt->buttons() != Qt::LeftButton) // checkme?
         return;
 
-    // Rounded to next 20*20
-    if (selType == 1)
+    if (selType != 0)
     {
-        int finalX = toNext20(evt->x() - dragX);
-        int finalY = toNext20(evt->y() - dragY);
+        int finalX, finalY;
+
+        // Rounded to next Tile
+        if (selType == 1)
+        {
+            finalX = toNext20(evt->x() - dragX);
+            finalY = toNext20(evt->y() - dragY);
+        }
+
+        // For Based on 16
+        else
+        {
+            // Drag stuff freely
+            if (evt->modifiers() & Qt::AltModifier)
+            {
+                finalX = toNext16Compatible(evt->x() - dragX);
+                finalY = toNext16Compatible(evt->y() - dragY);
+            }
+            // Rounded to next half Tile
+            else
+            {
+                finalX = toNext10(evt->x() - dragX);
+                finalY = toNext10(evt->y() - dragY);
+            }
+        }
 
         // clamp coords
         if (finalX < 0) finalX = 0;
