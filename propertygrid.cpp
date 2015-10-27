@@ -60,6 +60,9 @@ QVariant PropertyGridModel::data(const QModelIndex & index, int role) const
     case Qt::StatusTipRole:
         return QVariant::Invalid;
 
+    //case Qt::SizeHintRole:
+    //    return QSize(parent->width()/2, 1);
+
     case Qt::TextAlignmentRole:
         return QVariant(Qt::AlignLeft | Qt::AlignVCenter);
 
@@ -80,9 +83,19 @@ QVariant PropertyGridModel::data(const QModelIndex & index, int role) const
     return QVariant::Invalid;
 }
 
-QVariant PropertyGridModel::headerData(int section, Qt::Orientation orientation, int role)
+Qt::ItemFlags PropertyGridModel::flags(const QModelIndex & index) const
 {
-    qDebug("header %d %d", section, orientation);
-    return QVariant("head0r");
+    Qt::ItemFlags ret = Qt::ItemNeverHasChildren | Qt::ItemIsEnabled;
+
+    if (index.column() == 1)
+        ret |= Qt::ItemIsSelectable | Qt::ItemIsEditable;
+
+    return ret;
+}
+
+bool PropertyGridModel::setData(const QModelIndex & index, const QVariant & value, int role)
+{
+    // todo, eventually
+    return false;
 }
 
