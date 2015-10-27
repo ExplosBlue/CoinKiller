@@ -101,19 +101,28 @@ void LevelView::paintEvent(QPaintEvent* evt)
     {
         const Sprite& spr = level->sprites.at(i);
 
-        QRect sprrect(spr.getx(), spr.gety(), spr.getwidth(), spr.getheight());
+        QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/");
 
-        painter.setPen(QColor(0,0,0));
+        switch (spr.getid()) {
+        case 135:
+            painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(),QPixmap(basePath + "goomba.png"));
+            break;
+        default:
+            QRect sprrect(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight());
 
-        QPainterPath path;
-        path.addRoundedRect(sprrect, 2.0, 2.0);
-        QColor color(0,90,150,200);
-        painter.fillPath(path, color);
-        painter.drawPath(path);
+            painter.setPen(QColor(0,0,0));
 
-        QString spriteText = QString("%1").arg(spr.getid());
-        painter.setFont(QFont("Arial", 7, QFont::Normal));
-        painter.drawText(sprrect, spriteText, Qt::AlignHCenter | Qt::AlignVCenter);
+            QPainterPath path;
+            path.addRoundedRect(sprrect, 2.0, 2.0);
+            QColor color(0,90,150,200);
+            painter.fillPath(path, color);
+            painter.drawPath(path);
+
+            QString spriteText = QString("%1").arg(spr.getid());
+            painter.setFont(QFont("Arial", 7, QFont::Normal));
+            painter.drawText(sprrect, spriteText, Qt::AlignHCenter | Qt::AlignVCenter);
+            break;
+        }
     }
 
     // Render Entrences
@@ -216,11 +225,12 @@ void LevelView::paintEvent(QPaintEvent* evt)
         painter.drawText(zonerect.adjusted(5,5,0,0), zoneText);
     }
 
+    // Render Selection
     if (selType != 0)
     {
         painter.setRenderHint(QPainter::Antialiasing, false);
 
-        QRect objrect(selObject->getx(), selObject->gety(), selObject->getwidth(), selObject->getheight());
+        QRect objrect(selObject->getx()+selObject->getOffsetX(), selObject->gety()+selObject->getOffsetY(), selObject->getwidth(), selObject->getheight());
 
         objrect.adjust(-1, -1, 0, 0);
         painter.setPen(QColor(0,0,0));

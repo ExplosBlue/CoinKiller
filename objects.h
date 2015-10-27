@@ -19,6 +19,7 @@
 #define OBJECTS_H
 
 #include <QtCore>
+# include <QPainter>
 
 // Obj Baseclass
 class Object
@@ -31,11 +32,14 @@ public:
     int gety() const;
     int getwidth() const;
     int getheight() const;
+    int getOffsetX() const;
+    int getOffsetY() const;
     bool clickDetection(int x, int y);
 
 protected:
     int x, y;
     int width, height;
+    int offsetx, offsety;
 };
 
 
@@ -57,12 +61,15 @@ class Sprite: public Object
 public:
     Sprite();
     Sprite(int x, int y, int id);
-    void setSpriteOffset(int offsetx, int offsety);
+    bool clickDetection(int x, int y);
     int getid() const;
+    void setNybble(int id, qint8 nbr);
+    qint8 getNybble(int id);
+    void setRect();
 
 protected:
-    int offsetx, offsety;
     int id;
+    qint8 spriteData[12];
 };
 
 

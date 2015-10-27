@@ -100,10 +100,23 @@ Level::Level(Game *game, int world, int level, int area)
         if (id == 0xFFFF) break;
 
         Sprite* spr = new Sprite(to20(header->read16()), to20(header->read16()), id);
-        qDebug("Found Sprite with ID %d, x: %d, y: %d", spr->getid(), spr->getx(), spr->gety());
+
+        for (int i=0; i<10; i++) spr->setNybble(i, header->read8());
+        header->skip(2); // Zone
+        spr->setNybble(10, header->read8());
+        spr->setNybble(11, header->read8());
+
         sprites.append(*spr);
 
-        header->skip(18); // Spritedata
+        //qDebug("Found Sprite with ID %d, x: %d, y: %d", spr->getid(), spr->getx(), spr->gety());
+        if (spr->getid() == 165)
+        {
+            for (int i=0; i<12; i++) qDebug("Nybble %d: %d", i, spr->getNybble(i));
+            //if (spr->getNybble(6) == 1) qDebug("This Koopa Troopa is red!");
+            //else qDebug("This Koopa Troopa is green!");
+        }
+
+        header->skip(4); // Nothing
     }
 
     // Block 10: Zones

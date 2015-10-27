@@ -17,12 +17,16 @@
 
 #include "objects.h"
 
+#include <QPainter>
+
 Object::Object()
 {
     x = 0;
     y = 0;
     width = 20;
     height = 20;
+    offsetx = 0;
+    offsety = 0;
 }
 
 void Object::setPosition(int x, int y)
@@ -47,7 +51,8 @@ int Object::getx() const { return x; }
 int Object::gety() const { return y; }
 int Object::getwidth() const { return width; }
 int Object::getheight() const { return height; }
-
+int Object::getOffsetX() const { return offsetx; }
+int Object::getOffsetY() const { return offsety; }
 
 // BgdatObject
 BgdatObject::BgdatObject()
@@ -78,18 +83,35 @@ Sprite::Sprite(int x, int y, int id)
     this->x = x;
     this->y = y;
     this->id = id;
-    width = 20;
-    height = 20;
+    setRect();
 }
 
-void Sprite::setSpriteOffset(int offsetx, int offsety)
+bool Sprite::clickDetection(int xClick, int yClick)
 {
-    this->offsetx = offsetx;
-    this->offsety = offsety;
+    if (xClick >= x+offsetx && xClick < x+offsetx+width && yClick >= y+offsety && yClick < y+offsety+height) return true;
+    else return false;
+}
+
+void Sprite::setRect()
+{
+    switch (id) {
+    case 135: //Goomba
+        width = 24;
+        height = 24;
+        offsetx = -2;
+        offsety = -4;
+        break;
+    default:
+        width = 20;
+        height = 20;
+        offsetx = 0;
+        offsety = 0;
+    }
 }
 
 int Sprite::getid() const { return id; }
-
+void Sprite::setNybble(int id, qint8 nbr) { spriteData[id] = nbr; }
+qint8 Sprite::getNybble(int id) { return spriteData[id]; }
 
 // Entrance
 Entrance::Entrance()
