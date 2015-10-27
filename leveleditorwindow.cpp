@@ -50,12 +50,21 @@ LevelEditorWindow::LevelEditorWindow(QWidget *parent, Level* level) :
     levelView->setMaximumSize(4096*20, 4096*20);
 
 
-    // TEST
+    // TEST ZONE
+
     propGrid = new PropertyGrid(this);
     QHBoxLayout* crappyshit = new QHBoxLayout(ui->widget_2);
     ui->widget_2->setLayout(crappyshit);
     crappyshit->addWidget(propGrid);
     //ui->widget_2->layout()->addWidget(propGrid);
+
+    propGrid->verticalHeader()->hide();
+    propGrid->horizontalHeader()->hide();
+
+    PropertyGridModel* model = new PropertyGridModel(propGrid);
+    propGrid->setModel(model);
+
+    // TEST ZONE END
 
 
 

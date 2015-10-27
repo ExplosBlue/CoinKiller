@@ -23,3 +23,66 @@ PropertyGrid::PropertyGrid(QWidget* parent)
 
 }
 
+
+
+
+
+PropertyGridModel::PropertyGridModel(PropertyGrid* parent)
+{
+    this->parent = parent;
+
+    // do shit here
+}
+
+PropertyGridModel::~PropertyGridModel()
+{
+    // undo shit here
+}
+
+int PropertyGridModel::rowCount(const QModelIndex & parent) const
+{
+    return 3;
+}
+
+int PropertyGridModel::columnCount(const QModelIndex & parent) const
+{
+    return 2;
+}
+
+QVariant PropertyGridModel::data(const QModelIndex & index, int role) const
+{
+    //qDebug("data %d %d", index.row(), index.column());
+
+    switch (role)
+    {
+    case Qt::DecorationRole:
+    case Qt::CheckStateRole:
+    case Qt::StatusTipRole:
+        return QVariant::Invalid;
+
+    case Qt::TextAlignmentRole:
+        return QVariant(Qt::AlignLeft | Qt::AlignVCenter);
+
+    case Qt::ToolTipRole:
+        // TODO!!
+        return QVariant::Invalid;
+
+    case Qt::DisplayRole:
+        switch (index.row())
+        {
+        case 0: return QVariant(index.column() ? "zerp" : "derp");
+        case 1: return QVariant(index.column() ? "zouble" : "double");
+        case 2: return QVariant(index.column() ? "zirc" : "dirc");
+        }
+        break;
+    }
+
+    return QVariant::Invalid;
+}
+
+QVariant PropertyGridModel::headerData(int section, Qt::Orientation orientation, int role)
+{
+    qDebug("header %d %d", section, orientation);
+    return QVariant("head0r");
+}
+

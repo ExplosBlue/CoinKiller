@@ -30,4 +30,21 @@ public:
     PropertyGrid(QWidget* parent = 0);
 };
 
+
+class PropertyGridModel : public QAbstractTableModel
+{
+public:
+    PropertyGridModel(PropertyGrid* parent);
+    ~PropertyGridModel();
+
+
+    int rowCount(const QModelIndex & parent = QModelIndex()) const;
+    int columnCount(const QModelIndex & parent = QModelIndex()) const;
+    QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const;
+    QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole);
+
+private:
+    PropertyGrid* parent;
+};
+
 #endif // PROPERTYGRID_H
