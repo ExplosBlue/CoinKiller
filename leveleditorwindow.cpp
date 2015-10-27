@@ -49,6 +49,16 @@ LevelEditorWindow::LevelEditorWindow(QWidget *parent, Level* level) :
     levelView->setMinimumSize(4096*20, 4096*20);
     levelView->setMaximumSize(4096*20, 4096*20);
 
+
+    // TEST
+    propGrid = new PropertyGrid(this);
+    QHBoxLayout* crappyshit = new QHBoxLayout(ui->widget_2);
+    ui->widget_2->setLayout(crappyshit);
+    crappyshit->addWidget(propGrid);
+    //ui->widget_2->layout()->addWidget(propGrid);
+
+
+
     QList<int> derpshit;
     derpshit.append(200);
     derpshit.append(999999999);

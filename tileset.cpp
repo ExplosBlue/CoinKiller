@@ -59,6 +59,8 @@ Tileset::Tileset(Game *game, QString name)
         //obj->xRepeatStart = 0xFF;
         obj->yRepeatStart = 0xFF;
 
+        obj->slopeY = obj->height; // failsafe default
+
         // data format:
         // [optional slope marker, bit7 set]
         // [repeat] [Tile#] 02
@@ -313,7 +315,7 @@ void Tileset::drawObject(QPainter& painter, TileGrid& grid, int num, int x, int 
             cury = h - def.height;
             yinc = -def.slopeY;
         }
-
+qDebug("SLOPE Y %d %02X %d/%d", def.slopeY, slopeflag, def.width, def.height);
         int curx = 0;
         while (curx < w)
         {

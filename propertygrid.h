@@ -15,47 +15,19 @@
     with CoinKiller. If not, see http://www.gnu.org/licenses/.
 */
 
-#ifndef LEVELEDITORWINDOW_H
-#define LEVELEDITORWINDOW_H
+#ifndef PROPERTYGRID_H
+#define PROPERTYGRID_H
 
-#include <QMainWindow>
 
-#include "filesystem.h"
-#include "levelview.h"
-#include "ctpk.h"
-#include "level.h"
+#include <QWidget>
+#include <QTableView>
+#include <QAbstractTableModel>
 
-#include "propertygrid.h"
 
-namespace Ui {
-class LevelEditorWindow;
-}
-
-class LevelEditorWindow : public QMainWindow
+class PropertyGrid : public QTableView
 {
-    Q_OBJECT
-
 public:
-    explicit LevelEditorWindow(QWidget *parent, Level* voltmeter);
-    ~LevelEditorWindow();
-
-private slots:
-    void on_actionToggleLayer1_toggled(bool arg1);
-
-    void on_actionToggleLayer2_toggled(bool arg1);
-
-private:
-    Ui::LevelEditorWindow *ui;
-
-    //SarcFilesystem* levelArchive;
-    Level* level;
-    Tileset* tileset;
-    LevelView* levelView;
-
-    PropertyGrid* propGrid;
-
-
-    quint8 layerMask;
+    PropertyGrid(QWidget* parent = 0);
 };
 
-#endif // LEVELEDITORWINDOW_H
+#endif // PROPERTYGRID_H
