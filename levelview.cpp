@@ -104,8 +104,23 @@ void LevelView::paintEvent(QPaintEvent* evt)
         QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/");
 
         switch (spr.getid()) {
-        case 135:
+        case 55: // Coin
+            painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(),QPixmap(basePath + "coin.png"));
+            break;
+        case 66: // Pipe Cannon
+            painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(),QPixmap(basePath + "pipe_cannon.png"));
+            break;
+        case 110: // Dry Bones
+            painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(),QPixmap(basePath + "dry_bones.png"));
+            break;
+        case 135: // Goomba
             painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(),QPixmap(basePath + "goomba.png"));
+            break;
+        case 219: // Star Coin
+            painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(),QPixmap(basePath + "star_coin.png"));
+            break;
+        case 267: // Long Question Block
+            painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(),QPixmap(basePath + "long_question_block.png"));
             break;
         default:
             QRect sprrect(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight());

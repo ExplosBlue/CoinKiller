@@ -109,12 +109,6 @@ Level::Level(Game *game, int world, int level, int area)
         sprites.append(*spr);
 
         //qDebug("Found Sprite with ID %d, x: %d, y: %d", spr->getid(), spr->getx(), spr->gety());
-        if (spr->getid() == 165)
-        {
-            for (int i=0; i<12; i++) qDebug("Nybble %d: %d", i, spr->getNybble(i));
-            //if (spr->getNybble(6) == 1) qDebug("This Koopa Troopa is red!");
-            //else qDebug("This Koopa Troopa is green!");
-        }
 
         header->skip(4); // Nothing
     }

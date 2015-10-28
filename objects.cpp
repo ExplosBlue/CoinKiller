@@ -95,11 +95,29 @@ bool Sprite::clickDetection(int xClick, int yClick)
 void Sprite::setRect()
 {
     switch (id) {
-    case 135: //Goomba
+    case 66: // Pipe Cannon
+        width = 40;
+        height = 80;
+        break;
+    case 110: // Dry Bones
+        width = 26;
+        height = 38;
+        offsetx = -6;
+        offsety = -18;
+        break;
+    case 135: // Goomba
         width = 24;
         height = 24;
         offsetx = -2;
         offsety = -4;
+        break;
+    case 219: // Star Coin
+        width = 40;
+        height = 40;
+        break;
+    case 267: // Long Question Block
+        width = 60;
+        height = 20;
         break;
     default:
         width = 20;
