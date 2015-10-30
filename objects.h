@@ -63,13 +63,15 @@ public:
     Sprite(int x, int y, int id);
     bool clickDetection(int x, int y);
     int getid() const;
+    void setByte(int id, qint8 nbr);
     void setNybble(int id, qint8 nbr);
-    qint8 getNybble(int id);
+    qint8 getByte(int id) const;
+    qint8 getNybble(int id) const;
     void setRect();
 
 protected:
     int id;
-    qint8 spriteData[12];
+    qint8 spriteData[8];
 };
 
 

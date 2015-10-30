@@ -101,16 +101,14 @@ Level::Level(Game *game, int world, int level, int area)
 
         Sprite* spr = new Sprite(to20(header->read16()), to20(header->read16()), id);
 
-        for (int i=0; i<10; i++) spr->setNybble(i, header->read8());
-        header->skip(2); // Zone
-        spr->setNybble(10, header->read8());
-        spr->setNybble(11, header->read8());
+        for (int i=0; i<8; i++) spr->setByte(i, header->read8());
 
+        spr->setRect();
         sprites.append(*spr);
 
-        //qDebug("Found Sprite with ID %d, x: %d, y: %d", spr->getid(), spr->getx(), spr->gety());
+        header->skip(10); // Unused Sprite Data and Zone
 
-        header->skip(4); // Nothing
+        qDebug("Found Sprite with ID %d, x: %d, y: %d", spr->getid(), spr->getx(), spr->gety());
     }
 
     // Block 10: Zones

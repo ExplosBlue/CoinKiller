@@ -83,7 +83,6 @@ Sprite::Sprite(int x, int y, int id)
     this->x = x;
     this->y = y;
     this->id = id;
-    setRect();
 }
 
 bool Sprite::clickDetection(int xClick, int yClick)
@@ -95,9 +94,18 @@ bool Sprite::clickDetection(int xClick, int yClick)
 void Sprite::setRect()
 {
     switch (id) {
+    case 52: // Checkpoint Flag
+        width = 38;
+        height = 65;
+        offsety = -40;
     case 66: // Pipe Cannon
         width = 40;
         height = 80;
+        break;
+    case 97: //End of Level Flag
+        width = 62;
+        height = 200;
+        offsetx = -22;
         break;
     case 110: // Dry Bones
         width = 26;
@@ -111,6 +119,17 @@ void Sprite::setRect()
         offsetx = -2;
         offsety = -4;
         break;
+    case 139: // Goomba Tower
+        width = 21;
+        height = getNybble(5) * 21 + 4;
+        offsety = - height + 21 + 1;
+        break;
+    case 165: // Koopa Troopa
+        width = 28;
+        height = 37;
+        offsetx = -8;
+        offsety = -16;
+        break;
     case 219: // Star Coin
         width = 40;
         height = 40;
@@ -118,6 +137,12 @@ void Sprite::setRect()
     case 267: // Long Question Block
         width = 60;
         height = 20;
+        break;
+    case 273: // Coin Roulette Block
+        width = 31;
+        height = 30;
+        offsetx = -5;
+        offsety = -5;
         break;
     default:
         width = 20;
@@ -128,8 +153,16 @@ void Sprite::setRect()
 }
 
 int Sprite::getid() const { return id; }
-void Sprite::setNybble(int id, qint8 nbr) { spriteData[id] = nbr; }
-qint8 Sprite::getNybble(int id) { return spriteData[id]; }
+
+qint8 Sprite::getByte(int id) const { return spriteData[id]; }
+void Sprite::setByte(int id, qint8 nbr) { spriteData[id] = nbr; }
+
+qint8 Sprite::getNybble(int id) const
+{
+    if (id%2 == 0) return spriteData[id/2] & 0xF0;
+    else return spriteData[id/2] & 0x0F;
+}
+
 
 // Entrance
 Entrance::Entrance()

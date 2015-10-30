@@ -104,23 +104,42 @@ void LevelView::paintEvent(QPaintEvent* evt)
         QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/");
 
         switch (spr.getid()) {
+        case 52: // Checkpoint Flag
+            painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "checkpoint_flag.png"));
+            break;
         case 55: // Coin
-            painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(),QPixmap(basePath + "coin.png"));
+            painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "coin.png"));
             break;
         case 66: // Pipe Cannon
-            painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(),QPixmap(basePath + "pipe_cannon.png"));
+            painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "pipe_cannon.png"));
+            break;
+        case 97: // End of Level Flag
+            painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "flagpole.png"));
+            painter.drawPixmap(spr.getx()+200, spr.gety()+80, 120, 120,QPixmap(basePath + "castle.png"));
             break;
         case 110: // Dry Bones
-            painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(),QPixmap(basePath + "dry_bones.png"));
+            painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "dry_bones.png"));
             break;
         case 135: // Goomba
-            painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(),QPixmap(basePath + "goomba.png"));
+            painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "goomba.png"));
+            break;
+        case 139: // Goomba Tower
+            painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+1, spr.getwidth(), 21, QPixmap(basePath + "goomba_tower_bottom.png"));
+            for (int i = 0; i < (spr.getNybble(5)-2); i++) painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()-21*(i+1)+1, spr.getwidth(), 21, QPixmap(basePath + "goomba_tower_middle.png"));
+            painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), 25, QPixmap(basePath + "goomba_tower_top.png"));
+            break;
+        case 165:
+            if (spr.getNybble(5) == 0) painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "koopa_green.png"));
+            else painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "koopa_red.png"));
             break;
         case 219: // Star Coin
-            painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(),QPixmap(basePath + "star_coin.png"));
+            painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "star_coin.png"));
             break;
         case 267: // Long Question Block
-            painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(),QPixmap(basePath + "long_question_block.png"));
+            painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "long_question_block.png"));
+            break;
+        case 273: // Coin Roulette Block
+            painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "coin_roulette_block.png"));
             break;
         default:
             QRect sprrect(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight());
