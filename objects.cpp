@@ -94,10 +94,15 @@ bool Sprite::clickDetection(int xClick, int yClick)
 void Sprite::setRect()
 {
     switch (id) {
+    case 22: // Special Exit Controller
+        width = getNybble(7) * 20;
+        height = 20;
+        break;
     case 52: // Checkpoint Flag
         width = 38;
         height = 65;
-        offsety = -40;
+        offsety = -25;
+        break;
     case 66: // Pipe Cannon
         width = 40;
         height = 80;
@@ -106,6 +111,10 @@ void Sprite::setRect()
         width = 62;
         height = 200;
         offsetx = -22;
+        break;
+    case 109: // Signboard
+        width = 40;
+        height = 40;
         break;
     case 110: // Dry Bones
         width = 26;

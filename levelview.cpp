@@ -103,7 +103,16 @@ void LevelView::paintEvent(QPaintEvent* evt)
 
         QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/");
 
-        switch (spr.getid()) {
+        QRect sprRect(spr.getx(), spr.gety(), spr.getwidth(), spr.getheight());
+
+        switch (spr.getid()) {/*
+        case 22: // Special Exit Controller
+            painter.fillRect(sprRect, QBrush(QColor(50,255,0,100)));
+            painter.setPen(QColor(0,0,0));
+            painter.drawRect(sprRect);
+            painter.setFont(QFont("Arial", 8, QFont::Bold));
+            painter.drawText(sprRect.adjusted(3,3,0,0), "Warp");
+            break;
         case 52: // Checkpoint Flag
             painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "checkpoint_flag.png"));
             break;
@@ -116,6 +125,40 @@ void LevelView::paintEvent(QPaintEvent* evt)
         case 97: // End of Level Flag
             painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "flagpole.png"));
             painter.drawPixmap(spr.getx()+200, spr.gety()+80, 120, 120,QPixmap(basePath + "castle.png"));
+            break;
+        case 109: // Signboard
+            switch (spr.getNybble(5)) {
+            case 0:
+                painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "sign_0.png"));
+                break;
+            case 1:
+                painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "sign_1.png"));
+                break;
+            case 2:
+                painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "sign_2.png"));
+                break;
+            case 3:
+                painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "sign_3.png"));
+                break;
+            case 4:
+                painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "sign_4.png"));
+                break;
+            case 5:
+                painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "sign_5.png"));
+                break;
+            case 6:
+                painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "sign_6.png"));
+                break;
+            case 8:
+                painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "sign_8.png"));
+                break;
+            case 9:
+                painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "sign_9.png"));
+                break;
+            default:
+                painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "sign_7.png"));
+                break;
+            }
             break;
         case 110: // Dry Bones
             painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "dry_bones.png"));
@@ -140,7 +183,7 @@ void LevelView::paintEvent(QPaintEvent* evt)
             break;
         case 273: // Coin Roulette Block
             painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "coin_roulette_block.png"));
-            break;
+            break;*/
         default:
             QRect sprrect(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight());
 
