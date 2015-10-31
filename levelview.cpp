@@ -105,13 +105,16 @@ void LevelView::paintEvent(QPaintEvent* evt)
 
         QRect sprRect(spr.getx(), spr.gety(), spr.getwidth(), spr.getheight());
 
-        switch (spr.getid()) {/*
+        switch (spr.getid()) {
         case 22: // Special Exit Controller
             painter.fillRect(sprRect, QBrush(QColor(50,255,0,100)));
             painter.setPen(QColor(0,0,0));
             painter.drawRect(sprRect);
             painter.setFont(QFont("Arial", 8, QFont::Bold));
             painter.drawText(sprRect.adjusted(3,3,0,0), "Warp");
+            break;
+        case 27: // POW Block
+            painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "pow_block.png"));
             break;
         case 52: // Checkpoint Flag
             painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "checkpoint_flag.png"));
@@ -122,9 +125,32 @@ void LevelView::paintEvent(QPaintEvent* evt)
         case 66: // Pipe Cannon
             painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "pipe_cannon.png"));
             break;
+        case 69: // Door
+            painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "door.png"));
+            break;
+        case 70: // Castle Boss Door
+            painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "door_castle.png"));
+            break;
+        case 71: // Closed Door
+            painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "door_closed.png"));
+            break;
+        case 73: // Ghost House Door
+            painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "door_ghosthouse.png"));
+            break;
+        case 75: // Tower Boss Door
+            painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "door_tower.png"));
+            break;
         case 97: // End of Level Flag
-            painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "flagpole.png"));
-            painter.drawPixmap(spr.getx()+200, spr.gety()+80, 120, 120,QPixmap(basePath + "castle.png"));
+            if (spr.getNybble(10) == 0)
+            {
+                painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "flagpole.png"));
+                painter.drawPixmap(spr.getx()+200, spr.gety()+80, 120, 120,QPixmap(basePath + "castle.png"));
+            }
+            else
+            {
+                painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "flagpole_secret.png"));
+                painter.drawPixmap(spr.getx()+200, spr.gety()+80, 120, 120,QPixmap(basePath + "castle_secret.png"));
+            }
             break;
         case 109: // Signboard
             switch (spr.getNybble(5)) {
@@ -178,12 +204,27 @@ void LevelView::paintEvent(QPaintEvent* evt)
         case 219: // Star Coin
             painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "star_coin.png"));
             break;
+        case 225: // P Switch
+            painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "p_switch.png"));
+            break;
         case 267: // Long Question Block
             painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "long_question_block.png"));
             break;
         case 273: // Coin Roulette Block
             painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "coin_roulette_block.png"));
-            break;*/
+            break;
+        case 274: // Flying Gold Block Spawn Point
+            painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "flying_gold_block.png"));
+            break;
+        case 278: // Assist Block
+            painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "assist_block.png"));
+            break;
+        case 287: // Toad House Door
+            painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "door_toadhouse.png"));
+            break;
+        case 294: // Warp Cannon
+            painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "warp_cannon.png"));
+            break;
         default:
             QRect sprrect(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight());
 

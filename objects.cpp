@@ -107,7 +107,32 @@ void Sprite::setRect()
         width = 40;
         height = 80;
         break;
-    case 97: //End of Level Flag
+    case 69: // Door
+        width = 43;
+        height = 60;
+        break;
+    case 70: // Castle Boss Door
+        width = 66;
+        height = 75;
+        offsetx = -3;
+        offsety = 5;
+        break;
+    case 71: // Closed Door
+        width = 40;
+        height = 60;
+        break;
+    case 73: // Ghost House Door
+        width = 41;
+        height = 60;
+        offsety = -1;
+        break;
+    case 75: // Tower Boss Door
+        width = 65;
+        height = 75;
+        offsetx = -2;
+        offsety = 5;
+        break;
+    case 97: // End of Level Flag
         width = 62;
         height = 200;
         offsetx = -22;
@@ -143,6 +168,12 @@ void Sprite::setRect()
         width = 40;
         height = 40;
         break;
+    case 225: // P Switch
+        width = 22;
+        height = 24;
+        offsetx = -1;
+        offsety = -4;
+        break;
     case 267: // Long Question Block
         width = 60;
         height = 20;
@@ -152,6 +183,28 @@ void Sprite::setRect()
         height = 30;
         offsetx = -5;
         offsety = -5;
+        break;
+    case 274: // Flying Gold Block Spawn Point
+        width = 28;
+        height = 23;
+        offsetx = -4;
+        offsety = -1;
+        break;
+    case 278: // Assist Block
+        width = 26;
+        height = 26;
+        offsetx = -3;
+        offsety = -3;
+        break;
+    case 287: // Toad House Door
+        width = 40;
+        height = 60;
+        break;
+    case 294: // Warp Cannon
+        width = 100;
+        height = 67;
+        offsetx = -40;
+        offsety = -27;
         break;
     default:
         width = 20;
@@ -179,11 +232,16 @@ Entrance::Entrance()
 
 }
 
-Entrance::Entrance(int x, int y, int id)
+Entrance::Entrance(int x, int y, int cameraX, int cameraY, int id, int destArea, int destEntr, int type)
 {
     this->x = x;
     this->y = y;
+    this->cameraX = cameraX;
+    this->cameraY = cameraY;
     this->id = id;
+    this->destArea = destArea;
+    this->destEntr = destEntr;
+    this->type = type;
 }
 
 int Entrance::getid() const { return id; }

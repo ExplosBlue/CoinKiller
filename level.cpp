@@ -85,11 +85,11 @@ Level::Level(Game *game, int world, int level, int area)
     header->seek(blockOffsets[6]);
     for (int e = 0; e < (int)(blockSizes[6]/24); e++)
     {
-        Entrance* entr = new Entrance(to20(header->read16()), to20(header->read16()), e);
+        Entrance* entr = new Entrance(to20(header->read16()), to20(header->read16()), header->read16(), header->read16(), header->read8(), header->read8(), header->read8(), header->read8());
         qDebug("Found Entrance with x: %d, y: %d", entr->getx(), entr->gety());
         entrances.append(*entr);
 
-        header->skip(20); // data we don't care about right now (id is in here, too. For now simply e)
+        header->skip(12); // data we don't care about right now (id is in here, too. For now simply e)
     }
 
     // Block 8: Sprites
@@ -109,6 +109,7 @@ Level::Level(Game *game, int world, int level, int area)
         header->skip(10); // Unused Sprite Data and Zone
 
         qDebug("Found Sprite with ID %d, x: %d, y: %d", spr->getid(), spr->getx(), spr->gety());
+        if (spr->getid() == 124) for(int i = 0; i < 16; i++) qDebug("Nybble %d: %d", i, spr->getNybble(i));
     }
 
     // Block 10: Zones

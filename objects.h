@@ -80,10 +80,15 @@ class Entrance: public Object
 {
 public:
     Entrance();
-    Entrance(int x, int y, int id);
+    Entrance(int x, int y, int cameraX, int cameraY, int id, int destArea, int destEntr, int type);
     int getid() const;
 protected:
+    int cameraX;
+    int cameraY;
     int id;
+    int destArea;
+    int destEntr;
+    int type;
 };
 
 

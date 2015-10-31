@@ -315,7 +315,8 @@ void Tileset::drawObject(QPainter& painter, TileGrid& grid, int num, int x, int 
             cury = h - def.height;
             yinc = -def.slopeY;
         }
-qDebug("SLOPE Y %d %02X %d/%d", def.slopeY, slopeflag, def.width, def.height);
+// This causes heavy lagging in huge levels
+//qDebug("SLOPE Y %d %02X %d/%d", def.slopeY, slopeflag, def.width, def.height);
         int curx = 0;
         while (curx < w)
         {
