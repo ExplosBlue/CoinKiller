@@ -44,6 +44,16 @@ private slots:
 
     void on_actionToggleLayer2_toggled(bool arg1);
 
+    void on_actionZoom_In_triggered();
+
+    void on_actionZoom_Out_triggered();
+
+    void on_actionZoom_100_triggered();
+
+    void on_actionZoom_Maximum_triggered();
+
+    void on_actionZoom_Minimum_triggered();
+
 private:
     Ui::LevelEditorWindow *ui;
 
@@ -56,6 +66,7 @@ private:
 
 
     quint8 layerMask;
+    float zoom;
 };
 
 #endif // LEVELEDITORWINDOW_H

@@ -38,6 +38,14 @@ LevelEditorWindow::LevelEditorWindow(QWidget *parent, Level* level) :
     level->getName(title);
     setWindowTitle(title + " - CoinKiller");
 
+    // Load UI Icons
+    QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/");
+    ui->actionZoom_In->setIcon(QIcon(basePath + "icon_zoomin.png"));
+    ui->actionZoom_Out->setIcon(QIcon(basePath + "icon_zoomout.png"));
+    ui->actionZoom_100->setIcon(QIcon(basePath + "icon_zoom100.png"));
+    ui->actionZoom_Maximum->setIcon(QIcon(basePath + "icon_zoommax.png"));
+    ui->actionZoom_Minimum->setIcon(QIcon(basePath + "icon_zoommin.png"));
+
     levelView = new LevelView(this, level);
     /*levelView->setMinimumHeight(600);
     levelView->setMaximumWidth(800);*/
@@ -85,6 +93,8 @@ LevelEditorWindow::LevelEditorWindow(QWidget *parent, Level* level) :
     ui->actionToggleLayer1->setChecked(true);
     ui->actionToggleLayer2->setChecked(true);
     levelView->setLayerMask(layerMask);
+
+    zoom = 1.0;
 }
 
 LevelEditorWindow::~LevelEditorWindow()
@@ -106,5 +116,46 @@ void LevelEditorWindow::on_actionToggleLayer2_toggled(bool toggle)
     if (toggle) layerMask |=  0x2;
     else        layerMask &= ~0x2;
     levelView->setLayerMask(layerMask);
+    update();
+}
+
+void LevelEditorWindow::on_actionZoom_In_triggered()
+{
+    if (zoom < 3)
+    {
+        zoom += 0.25;
+        levelView->setZoom(zoom);
+        update();
+    }
+}
+
+void LevelEditorWindow::on_actionZoom_Out_triggered()
+{
+    if (zoom > 0.25)
+    {
+        zoom -= 0.25;
+        levelView->setZoom(zoom);
+        update();
+    }
+}
+
+void LevelEditorWindow::on_actionZoom_100_triggered()
+{
+    zoom = 1;
+    levelView->setZoom(zoom);
+    update();
+}
+
+void LevelEditorWindow::on_actionZoom_Maximum_triggered()
+{
+    zoom = 3;
+    levelView->setZoom(zoom);
+    update();
+}
+
+void LevelEditorWindow::on_actionZoom_Minimum_triggered()
+{
+    zoom = 0.25;
+    levelView->setZoom(zoom);
     update();
 }

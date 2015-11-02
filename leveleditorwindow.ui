@@ -111,7 +111,21 @@
     </property>
     <addaction name="actionDo_shit_I_guess"/>
    </widget>
+   <widget class="QMenu" name="menuView">
+    <property name="title">
+     <string>View</string>
+    </property>
+    <addaction name="actionToggleLayer1"/>
+    <addaction name="actionToggleLayer2"/>
+    <addaction name="separator"/>
+    <addaction name="actionZoom_Maximum"/>
+    <addaction name="actionZoom_In"/>
+    <addaction name="actionZoom_100"/>
+    <addaction name="actionZoom_Out"/>
+    <addaction name="actionZoom_Minimum"/>
+   </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuView"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <widget class="QToolBar" name="toolBar">
@@ -124,6 +138,12 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
+   <addaction name="actionZoom_Maximum"/>
+   <addaction name="actionZoom_In"/>
+   <addaction name="actionZoom_100"/>
+   <addaction name="actionZoom_Out"/>
+   <addaction name="actionZoom_Minimum"/>
+   <addaction name="separator"/>
    <addaction name="actionToggleLayer1"/>
    <addaction name="actionToggleLayer2"/>
   </widget>
@@ -152,6 +172,61 @@
    </property>
    <property name="toolTip">
     <string>maybe someday you will... who knows</string>
+   </property>
+  </action>
+  <action name="actionZoom_In">
+   <property name="text">
+    <string>Zoom In</string>
+   </property>
+   <property name="toolTip">
+    <string>Zoom In</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl++</string>
+   </property>
+  </action>
+  <action name="actionZoom_Out">
+   <property name="text">
+    <string>Zoom Out</string>
+   </property>
+   <property name="toolTip">
+    <string>Zoom Out</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+-</string>
+   </property>
+  </action>
+  <action name="actionZoom_100">
+   <property name="text">
+    <string>Zoom 100%</string>
+   </property>
+   <property name="toolTip">
+    <string>Zoom 100%</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+0</string>
+   </property>
+  </action>
+  <action name="actionZoom_Maximum">
+   <property name="text">
+    <string>Maximum Zoom</string>
+   </property>
+   <property name="toolTip">
+    <string>Maximum Zoom</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+PgDown</string>
+   </property>
+  </action>
+  <action name="actionZoom_Minimum">
+   <property name="text">
+    <string>Minimum Zoom</string>
+   </property>
+   <property name="toolTip">
+    <string>Minimum Zoom</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+PgUp</string>
    </property>
   </action>
  </widget>

@@ -33,6 +33,7 @@ public:
     explicit LevelView(QWidget *parent, Level* level);
 
     void setLayerMask(quint8 mask) { layerMask = mask; update(); }
+    void setZoom(float zoom) { this->zoom = zoom; update(); }
 
 signals:
 
@@ -42,9 +43,12 @@ protected:
     void paintEvent(QPaintEvent *) Q_DECL_OVERRIDE;
     void mousePressEvent(QMouseEvent *) Q_DECL_OVERRIDE;
     void mouseMoveEvent(QMouseEvent *) Q_DECL_OVERRIDE;
+    void moveEvent(QMoveEvent *) Q_DECL_OVERRIDE;
 
 private:
     Level* level;
+
+    float zoom;
 
     int selType;
     // 0: Nothing selected

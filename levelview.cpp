@@ -33,6 +33,8 @@ LevelView::LevelView(QWidget *parent, Level* level) : QWidget(parent)
 
     layerMask = 0x7; // failsafe
     selType = 0;
+
+    zoom = 1;
 }
 
 
@@ -40,8 +42,10 @@ void LevelView::paintEvent(QPaintEvent* evt)
 {
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
+    painter.scale(zoom,zoom);
 
-    QRect drawrect = evt->rect();
+    QRect drawrect(evt->rect().x()/zoom, evt->rect().y()/zoom, evt->rect().width()/zoom, evt->rect().height()/zoom);
+
 
     //qDebug("draw %d,%d %d,%d", drawrect.x(), drawrect.y(), drawrect.width(), drawrect.height());
 
@@ -101,9 +105,12 @@ void LevelView::paintEvent(QPaintEvent* evt)
     {
         const Sprite& spr = level->sprites.at(i);
 
-        QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/");
+        QRect sprRect(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight());
 
-        QRect sprRect(spr.getx(), spr.gety(), spr.getwidth(), spr.getheight());
+        if (!drawrect.intersects(sprRect))
+            continue;
+
+        QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/");
 
         switch (spr.getid()) {
         case 22: // Special Exit Controller
@@ -363,6 +370,9 @@ void LevelView::paintEvent(QPaintEvent* evt)
 
 void LevelView::mousePressEvent(QMouseEvent* evt)
 {
+    int x = evt->x()/zoom;
+    int y = evt->y()/zoom;
+
     if (evt->button() != Qt::LeftButton)
         return;
 
@@ -377,13 +387,13 @@ void LevelView::mousePressEvent(QMouseEvent* evt)
             {
                 ProgressPathNode& node = level->progressPaths[p].getNodeReference(i);
 
-                if (node.clickDetection(evt->x(), evt->y()))
+                if (node.clickDetection(x, y))
                 {
                     selType = 7;
                     selObject = &node;
 
-                    dragX = evt->x() - node.getx();
-                    dragY = evt->y() - node.gety();
+                    dragX = x - node.getx();
+                    dragY = y - node.gety();
 
                     break;
                 }
@@ -402,13 +412,13 @@ void LevelView::mousePressEvent(QMouseEvent* evt)
             {
                 PathNode& node = level->paths[p].getNodeReference(i);
 
-                if (node.clickDetection(evt->x(), evt->y()))
+                if (node.clickDetection(x, y))
                 {
                     selType = 6;
                     selObject = &node;
 
-                    dragX = evt->x() - node.getx();
-                    dragY = evt->y() - node.gety();
+                    dragX = x - node.getx();
+                    dragY = y - node.gety();
 
                     break;
                 }
@@ -424,13 +434,13 @@ void LevelView::mousePressEvent(QMouseEvent* evt)
         for (int i = level->entrances.size()-1; i >= 0; i--)
         {
             Entrance& entr = level->entrances[i];
-            if (entr.clickDetection(evt->x(), evt->y()))
+            if (entr.clickDetection(x, y))
             {
                 selType = 3;
                 selObject = &entr;
 
-                dragX = evt->x() - entr.getx();
-                dragY = evt->y() - entr.gety();
+                dragX = x - entr.getx();
+                dragY = y - entr.gety();
 
                 break;
             }
@@ -443,13 +453,13 @@ void LevelView::mousePressEvent(QMouseEvent* evt)
         for (int i = level->sprites.size()-1; i >= 0; i--)
         {
             Sprite& spr = level->sprites[i];
-            if (spr.clickDetection(evt->x(), evt->y()))
+            if (spr.clickDetection(x, y))
             {
                 selType = 2;
                 selObject = &spr;
 
-                dragX = evt->x() - spr.getx();
-                dragY = evt->y() - spr.gety();
+                dragX = x - spr.getx();
+                dragY = y - spr.gety();
 
                 break;
             }
@@ -467,14 +477,14 @@ void LevelView::mousePressEvent(QMouseEvent* evt)
             for (int i = level->objects[l].size()-1; i >= 0; i--)
             {
                 BgdatObject& obj = level->objects[l][i];
-                if (obj.clickDetection(evt->x(), evt->y()))
+                if (obj.clickDetection(x, y))
                 {
                     // hit!
                     selType = 1;
                     selObject = &obj;
 
-                    dragX = evt->x() - obj.getx();
-                    dragY = evt->y() - obj.gety();
+                    dragX = x - obj.getx();
+                    dragY = y - obj.gety();
 
                     qDebug("OBJ %04X", obj.getid());
 
@@ -492,6 +502,9 @@ void LevelView::mousePressEvent(QMouseEvent* evt)
 
 void LevelView::mouseMoveEvent(QMouseEvent* evt)
 {    
+    int x = evt->x()/zoom;
+    int y = evt->y()/zoom;
+
     if (evt->buttons() != Qt::LeftButton) // checkme?
         return;
 
@@ -502,8 +515,8 @@ void LevelView::mouseMoveEvent(QMouseEvent* evt)
         // Rounded to next Tile
         if (selType == 1)
         {
-            finalX = toNext20(evt->x() - dragX);
-            finalY = toNext20(evt->y() - dragY);
+            finalX = toNext20(x - dragX);
+            finalY = toNext20(y - dragY);
         }
 
         // For Based on 16
@@ -512,14 +525,14 @@ void LevelView::mouseMoveEvent(QMouseEvent* evt)
             // Drag stuff freely
             if (evt->modifiers() & Qt::AltModifier)
             {
-                finalX = toNext16Compatible(evt->x() - dragX);
-                finalY = toNext16Compatible(evt->y() - dragY);
+                finalX = toNext16Compatible(x - dragX);
+                finalY = toNext16Compatible(y - dragY);
             }
             // Rounded to next half Tile
             else
             {
-                finalX = toNext10(evt->x() - dragX);
-                finalY = toNext10(evt->y() - dragY);
+                finalX = toNext10(x - dragX);
+                finalY = toNext10(y - dragY);
             }
         }
 
@@ -535,3 +548,7 @@ void LevelView::mouseMoveEvent(QMouseEvent* evt)
     update();
 }
 
+void LevelView::moveEvent(QMoveEvent *)
+{
+    update();
+}
