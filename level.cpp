@@ -214,3 +214,8 @@ Level::~Level()
     delete archive;
 }
 
+void Level::save()
+{
+    // save
+}
+

@@ -29,7 +29,7 @@ class Level
 public:
     Level(Game* game, int world, int level, int area);
     ~Level();
-
+    void save();
 
     Game* game;
 

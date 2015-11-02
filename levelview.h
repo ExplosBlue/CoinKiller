@@ -35,6 +35,8 @@ public:
     void setLayerMask(quint8 mask) { layerMask = mask; update(); }
     void setZoom(float zoom) { this->zoom = zoom; update(); }
 
+    void saveLevel();
+
 signals:
 
 public slots:

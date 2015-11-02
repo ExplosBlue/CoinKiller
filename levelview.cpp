@@ -552,3 +552,8 @@ void LevelView::moveEvent(QMoveEvent *)
 {
     update();
 }
+
+void LevelView::saveLevel()
+{
+    level->save();
+}

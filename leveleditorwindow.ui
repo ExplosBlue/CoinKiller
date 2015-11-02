@@ -109,6 +109,7 @@
     <property name="title">
      <string>File</string>
     </property>
+    <addaction name="actionSave"/>
     <addaction name="actionDo_shit_I_guess"/>
    </widget>
    <widget class="QMenu" name="menuView">
@@ -138,6 +139,8 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
+   <addaction name="actionSave"/>
+   <addaction name="separator"/>
    <addaction name="actionZoom_Maximum"/>
    <addaction name="actionZoom_In"/>
    <addaction name="actionZoom_100"/>
@@ -227,6 +230,17 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+PgUp</string>
+   </property>
+  </action>
+  <action name="actionSave">
+   <property name="text">
+    <string>Save</string>
+   </property>
+   <property name="toolTip">
+    <string>Save</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
    </property>
   </action>
  </widget>

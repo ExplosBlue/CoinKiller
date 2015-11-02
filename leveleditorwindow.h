@@ -54,6 +54,8 @@ private slots:
 
     void on_actionZoom_Minimum_triggered();
 
+    void on_actionSave_triggered();
+
 private:
     Ui::LevelEditorWindow *ui;
 
