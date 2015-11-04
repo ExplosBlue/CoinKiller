@@ -41,7 +41,6 @@ LevelView::LevelView(QWidget *parent, Level* level) : QWidget(parent)
 void LevelView::paintEvent(QPaintEvent* evt)
 {
     QPainter painter(this);
-    painter.setRenderHint(QPainter::Antialiasing);
     painter.scale(zoom,zoom);
 
     QRect drawrect(evt->rect().x()/zoom, evt->rect().y()/zoom, evt->rect().width()/zoom, evt->rect().height()/zoom);
@@ -82,12 +81,17 @@ void LevelView::paintEvent(QPaintEvent* evt)
         }
     }
 
+    painter.setRenderHint(QPainter::Antialiasing);
+
     // Render Locations
     for (int i = 0; i < level->locations.size(); i++)
     {
         const Location& loc = level->locations.at(i);
 
         QRect locrect(loc.getx(), loc.gety(), loc.getwidth(), loc.getheight());
+
+        if (!drawrect.intersects(locrect))
+            continue;
 
         painter.fillRect(locrect, QBrush(QColor(255,255,0,100)));
 
@@ -257,6 +261,9 @@ void LevelView::paintEvent(QPaintEvent* evt)
 
         QRect entrrect(entr.getx(), entr.gety(), 20, 20);
 
+        if (!drawrect.intersects(entrrect))
+            continue;
+
         painter.setPen(QColor(0,0,0));
 
         QPainterPath path;
@@ -278,15 +285,23 @@ void LevelView::paintEvent(QPaintEvent* evt)
 
         for (int j = 0; j < nodes.size() - 1; j++)
         {
+            QLine pathLine(QPoint(nodes[j].getx()+10, nodes[j].gety()+10), QPoint(nodes[j+1].getx()+10, nodes[j+1].gety()+10));
+
+            if (!drawrect.intersects(QRect(pathLine.x1(), pathLine.y1(), pathLine.x2()-pathLine.x1(), pathLine.y2()-pathLine.y1())))
+                continue;
+
             QPen pen(QColor(0,255,20));
             pen.setWidth(2);
             painter.setPen(pen);
-            painter.drawLine(QPoint(nodes[j].getx()+10, nodes[j].gety()+10), QPoint(nodes[j+1].getx()+10, nodes[j+1].gety()+10));
+            painter.drawLine(pathLine);
         }
 
         for (int j = 0; j < nodes.size(); j++)
         {
             QRect pathrect(nodes[j].getx(), nodes[j].gety(), 20, 20);
+
+            if (!drawrect.intersects(pathrect))
+                continue;
 
             painter.setPen(QColor(0,0,0));
 
@@ -310,15 +325,23 @@ void LevelView::paintEvent(QPaintEvent* evt)
 
         for (int j = 0; j < nodes.size() - 1; j++)
         {
+            QLine ppathLine(QPoint(nodes[j].getx()+10, nodes[j].gety()+10), QPoint(nodes[j+1].getx()+10, nodes[j+1].gety()+10));
+
+            if (!drawrect.intersects(QRect(ppathLine.x1(), ppathLine.y1(), ppathLine.x2()-ppathLine.x1(), ppathLine.y2()-ppathLine.y1())))
+                continue;
+
             QPen pen(QColor(220,255,0));
             pen.setWidth(2);
             painter.setPen(pen);
-            painter.drawLine(QPoint(nodes[j].getx()+10, nodes[j].gety()+10), QPoint(nodes[j+1].getx()+10, nodes[j+1].gety()+10));
+            painter.drawLine(ppathLine);
         }
 
         for (int j = 0; j < nodes.size(); j++)
         {
             QRect ppathrect(nodes[j].getx(), nodes[j].gety(), 20, 20);
+
+            if (!drawrect.intersects(ppathrect))
+                continue;
 
             painter.setPen(QColor(0,0,0));
 
@@ -341,6 +364,9 @@ void LevelView::paintEvent(QPaintEvent* evt)
 
         QRect zonerect(zone.getx(), zone.gety(), zone.getwidth(), zone.getheight());
 
+        if (!drawrect.intersects(zonerect))
+            continue;
+
         painter.setPen(QColor(255,255,255));
 
         painter.drawRect(zonerect);
@@ -353,17 +379,11 @@ void LevelView::paintEvent(QPaintEvent* evt)
     // Render Selection
     if (selType != 0)
     {
-        painter.setRenderHint(QPainter::Antialiasing, false);
-
         QRect objrect(selObject->getx()+selObject->getOffsetX(), selObject->gety()+selObject->getOffsetY(), selObject->getwidth(), selObject->getheight());
 
-        objrect.adjust(-1, -1, 0, 0);
-        painter.setPen(QColor(0,0,0));
+        painter.setPen(QPen(QColor(255,255,255,200), 1, Qt::DotLine));
         painter.drawRect(objrect);
-
-        objrect.adjust(1, 1, -1, -1);
-        painter.setPen(QColor(255,255,255));
-        painter.drawRect(objrect);
+        painter.fillRect(objrect, QColor(255,255,255,75));
     }
 }
 

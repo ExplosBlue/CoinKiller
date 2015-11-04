@@ -110,7 +110,7 @@ void MainWindow::on_actionLoadROM_triggered()
             levelname.replace(".sarc", "");
 
             QStandardItem* level = new QStandardItem(levelname);
-            //level->setData(coursefiles[l]);
+            level->setData(levelname);
             world->appendRow(level);
 
             //
@@ -124,10 +124,6 @@ void MainWindow::on_actionLoadROM_triggered()
     }
 
     ui->levelList->setModel(levels);
-
-
-    LevelEditorWindow* crap = new LevelEditorWindow(this, game->getLevel(1, 1, 1));
-    crap->show(); // derp
 }
 
 void MainWindow::on_actionDebug_test_triggered()
@@ -142,5 +138,10 @@ void MainWindow::on_levelList_doubleClicked(const QModelIndex &index)
         return;
 
     QString data = index.data(Qt::UserRole+1).toString();
-    qDebug("!! %s", data.toStdString().c_str());
+
+    int world = data.left(1).toInt();
+    int level = data.mid(2, data.size()-2).toInt();
+
+    LevelEditorWindow* lvlEditor = new LevelEditorWindow(this, game->getLevel(world, level, 1));
+    lvlEditor->show();
 }
