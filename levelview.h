@@ -48,10 +48,13 @@ protected:
     void moveEvent(QMoveEvent *) Q_DECL_OVERRIDE;
 
 private:
+    QList<Object*> selObjectsCheck(int x, int y, int w, int h, bool multiSelect);
+
     Level* level;
 
     float zoom;
 
+    // remove me!
     int selType;
     // 0: Nothing selected
     // 1: BgdatObject
@@ -62,7 +65,7 @@ private:
     // 6: Path Node
     // 7: Progress Path Node
 
-    Object* selObject;
+    QList<Object*> selObjects;
 
     int dragX, dragY;
 

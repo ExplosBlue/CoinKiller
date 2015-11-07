@@ -29,6 +29,8 @@ Object::Object()
     offsety = 0;
 }
 
+Object::~Object() { }
+
 void Object::setPosition(int x, int y)
 {
     this->x = x;
@@ -41,12 +43,24 @@ void Object::resize(int width, int height)
     this->height = height;
 }
 
-bool Object::clickDetection(int xClick, int yClick)
+bool Object::clickDetection(int xcheck, int ycheck, int wcheck, int hcheck)
 {
-    if (xClick >= x && xClick < x+width && yClick >= y && yClick < y+height) return true;
-    else return false;
+    // Click detection
+    if (wcheck == 0 && hcheck == 0)
+    {
+        if (xcheck >= x+offsetx && xcheck < x+offsetx+width && ycheck >= y+offsety && ycheck < y+offsety+height) return true;
+        else return false;
+    }
+
+    // Area selection
+    else
+    {
+        if (xcheck < x+offsetx && xcheck+wcheck >= x+offsetx+width && ycheck < y+offsety && ycheck+hcheck >= y+offsetx+height) return true;
+        else return false;
+    }
 }
 
+int Object::getType() const { return -1; }
 int Object::getx() const { return x; }
 int Object::gety() const { return y; }
 int Object::getwidth() const { return width; }
@@ -69,6 +83,7 @@ BgdatObject::BgdatObject(int x, int y, int width, int height, int id)
     this->id = id;
 }
 
+int BgdatObject::getType() const { return 1; }
 int BgdatObject::getid() const { return id; }
 
 
@@ -85,18 +100,28 @@ Sprite::Sprite(int x, int y, int id)
     this->id = id;
 }
 
-bool Sprite::clickDetection(int xClick, int yClick)
-{
-    if (xClick >= x+offsetx && xClick < x+offsetx+width && yClick >= y+offsety && yClick < y+offsety+height) return true;
-    else return false;
-}
-
 void Sprite::setRect()
 {
     switch (id) {
+    case 8: // Swoop
+        width = 13;
+        height = 22;
+        offsetx = 3;
+        break;
     case 22: // Special Exit Controller
         width = getNybble(7) * 20;
         height = 20;
+        break;
+    case 29: // Bob-omb
+        width = 29;
+        height = 29;
+        offsetx = -5;
+        offsety = -8;
+        break;
+    case 35: // Lava Bubble
+        width = 20;
+        height = 21;
+        offsety = 10;
         break;
     case 52: // Checkpoint Flag
         width = 38;
@@ -132,20 +157,43 @@ void Sprite::setRect()
         offsetx = -2;
         offsety = 5;
         break;
+    case 77: // Thwomp
+        width = 54;
+        height = 59;
+        offsetx = -7;
+        offsety = -2;
+        break;
+    case 95: // Blooper
+        width = 28;
+        height = 36;
+        offsetx = -4;
+        offsety = -9;
+        break;
     case 97: // End of Level Flag
         width = 62;
         height = 200;
         offsetx = -22;
+        break;
+    case 99: // Wiggler
+        width = 89;
+        height = 41;
+        offsety = -20;
         break;
     case 109: // Signboard
         width = 40;
         height = 40;
         break;
     case 110: // Dry Bones
-        width = 26;
-        height = 38;
+        width = 28;
+        height = 36;
         offsetx = -6;
-        offsety = -18;
+        offsety = -15;
+        break;
+    case 111: // Giant Dry Bones
+        width = 41;
+        height = 55;
+        offsetx = -8;
+        offsety = 7;
         break;
     case 135: // Goomba
         width = 24;
@@ -153,20 +201,67 @@ void Sprite::setRect()
         offsetx = -2;
         offsety = -4;
         break;
+    case 136: // Bone Goomba
+        width = 22;
+        height = 24;
+        offsetx = -2;
+        offsety = -4;
+        break;
+    case 137: // Micro Goomba
+        width = 11;
+        height = 13;
+        offsetx = 4;
+        offsety = 8;
+        break;
+    case 138: // Paragoomba
+        width = 25;
+        height = 33;
+        offsetx = -1;
+        offsety = -12;
+        break;
     case 139: // Goomba Tower
         width = 21;
         height = getNybble(5) * 21 + 4;
         offsety = - height + 21 + 1;
         break;
     case 165: // Koopa Troopa
-        width = 28;
-        height = 37;
+        width = 27;
+        height = 35;
+        offsetx = -5;
+        offsety = -15;
+        break;
+    case 175: // Grounded Piranha Plant
+        width = 54;
+        height = 33;
         offsetx = -8;
-        offsety = -16;
+        break;
+    case 184: // Parabomb
+        width = 29;
+        height = 38;
+        offsetx = -5;
+        offsety = -18;
+        break;
+    case 185: // Koopa Paratroopa
+        width = 32;
+        height = 36;
+        offsetx = -7;
+        offsety = -15;
         break;
     case 219: // Star Coin
         width = 40;
         height = 40;
+        break;
+    case 221: // ! Switch
+        width = 22;
+        height = 24;
+        offsetx = -1;
+        offsety = -4;
+        break;
+    case 223: // ? Switch
+        width = 22;
+        height = 24;
+        offsetx = -1;
+        offsety = -4;
         break;
     case 225: // P Switch
         width = 22;
@@ -214,6 +309,7 @@ void Sprite::setRect()
     }
 }
 
+int Sprite::getType() const { return 2; }
 int Sprite::getid() const { return id; }
 
 qint8 Sprite::getByte(int id) const { return spriteData[id]; }
@@ -244,6 +340,7 @@ Entrance::Entrance(int x, int y, int cameraX, int cameraY, int id, int destArea,
     this->type = type;
 }
 
+int Entrance::getType() const { return 3; }
 int Entrance::getid() const { return id; }
 
 
@@ -262,6 +359,7 @@ Zone::Zone(int x, int y, int width, int height, int id)
     this->id = id;
 }
 
+int Zone::getType() const { return 4; }
 int Zone::getid() const { return id; }
 
 
@@ -280,6 +378,7 @@ Location::Location(int x, int y, int width, int height, int id)
     this->id = id;
 }
 
+int Location::getType() const { return 5; }
 int Location::getid() const { return id; }
 
 
@@ -312,6 +411,8 @@ PathNode::PathNode(int x, int y, float speed, float accel)
     this->accel = accel;
 }
 
+int PathNode::getType() const { return 6; }
+
 
 // Progress Path
 ProgressPath::ProgressPath(int id, int nodesOffset, int numberOfNodes)
@@ -338,3 +439,5 @@ ProgressPathNode::ProgressPathNode(int x, int y)
     this->x = x;
     this->y = y;
 }
+
+int ProgressPathNode::getType() const { return 7; }

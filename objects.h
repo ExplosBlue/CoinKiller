@@ -26,15 +26,17 @@ class Object
 {
 public:
     Object();
+    virtual ~Object();
     void setPosition(int x, int y);
     void resize(int width, int height);
+    virtual int getType() const;
     int getx() const;
     int gety() const;
     int getwidth() const;
     int getheight() const;
     int getOffsetX() const;
     int getOffsetY() const;
-    bool clickDetection(int x, int y);
+    bool clickDetection(int xcheck, int ycheck, int wcheck, int hcheck);
 
 protected:
     int x, y;
@@ -49,6 +51,7 @@ class BgdatObject: public Object
 public:
     BgdatObject();
     BgdatObject(int x, int y, int width, int height, int id);
+    int getType() const;
     int getid() const;
 protected:
     int id;
@@ -61,7 +64,7 @@ class Sprite: public Object
 public:
     Sprite();
     Sprite(int x, int y, int id);
-    bool clickDetection(int x, int y);
+    int getType() const;
     int getid() const;
     void setByte(int id, qint8 nbr);
     void setNybble(int id, qint8 nbr);
@@ -81,6 +84,7 @@ class Entrance: public Object
 public:
     Entrance();
     Entrance(int x, int y, int cameraX, int cameraY, int id, int destArea, int destEntr, int type);
+    int getType() const;
     int getid() const;
 protected:
     int cameraX;
@@ -98,6 +102,7 @@ class Zone: public Object
 public:
     Zone();
     Zone(int x, int y, int width, int height, int id);
+    int getType() const;
     int getid() const;
 protected:
     int id;
@@ -110,6 +115,7 @@ class Location: public Object
 public:
     Location();
     Location(int x, int y, int width, int height, int id);
+    int getType() const;
     int getid() const;
 protected:
     int id;
@@ -122,6 +128,7 @@ class PathNode: public Object
 public:
     PathNode();
     PathNode(int x, int y, float speed, float accel);
+    int getType() const;
 protected:
     float speed;
     float accel;
@@ -155,6 +162,7 @@ class ProgressPathNode: public Object
 public:
     ProgressPathNode();
     ProgressPathNode(int x, int y);
+    int getType() const;
 };
 
 

@@ -125,7 +125,16 @@
     <addaction name="actionZoom_Out"/>
     <addaction name="actionZoom_Minimum"/>
    </widget>
+   <widget class="QMenu" name="menuEdit">
+    <property name="title">
+     <string>Edit</string>
+    </property>
+    <addaction name="actionPaste"/>
+    <addaction name="actionCut"/>
+    <addaction name="actionCopy"/>
+   </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuEdit"/>
    <addaction name="menuView"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
@@ -141,11 +150,13 @@
    </attribute>
    <addaction name="actionSave"/>
    <addaction name="separator"/>
-   <addaction name="actionZoom_Maximum"/>
+   <addaction name="actionPaste"/>
+   <addaction name="actionCut"/>
+   <addaction name="actionCopy"/>
+   <addaction name="separator"/>
    <addaction name="actionZoom_In"/>
    <addaction name="actionZoom_100"/>
    <addaction name="actionZoom_Out"/>
-   <addaction name="actionZoom_Minimum"/>
    <addaction name="separator"/>
    <addaction name="actionToggleLayer1"/>
    <addaction name="actionToggleLayer2"/>
@@ -241,6 +252,39 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+S</string>
+   </property>
+  </action>
+  <action name="actionPaste">
+   <property name="text">
+    <string>Paste</string>
+   </property>
+   <property name="toolTip">
+    <string>Paste</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+V</string>
+   </property>
+  </action>
+  <action name="actionCut">
+   <property name="text">
+    <string>Cut</string>
+   </property>
+   <property name="toolTip">
+    <string>Cut</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+X</string>
+   </property>
+  </action>
+  <action name="actionCopy">
+   <property name="text">
+    <string>Copy</string>
+   </property>
+   <property name="toolTip">
+    <string>Copy</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+C</string>
    </property>
   </action>
  </widget>

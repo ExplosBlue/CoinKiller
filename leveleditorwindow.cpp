@@ -46,6 +46,9 @@ LevelEditorWindow::LevelEditorWindow(QWidget *parent, Level* level) :
     ui->actionZoom_Maximum->setIcon(QIcon(basePath + "icon_zoommax.png"));
     ui->actionZoom_Minimum->setIcon(QIcon(basePath + "icon_zoommin.png"));
     ui->actionSave->setIcon((QIcon(basePath + "icon_save.png")));
+    ui->actionPaste->setIcon((QIcon(basePath + "icon_paste.png")));
+    ui->actionCut->setIcon((QIcon(basePath + "icon_cut.png")));
+    ui->actionCopy->setIcon((QIcon(basePath + "icon_copy.png")));
 
     levelView = new LevelView(this, level);
     /*levelView->setMinimumHeight(600);
@@ -122,9 +125,9 @@ void LevelEditorWindow::on_actionToggleLayer2_toggled(bool toggle)
 
 void LevelEditorWindow::on_actionZoom_In_triggered()
 {
-    if (zoom < 3)
+    if (zoom < 4)
     {
-        if (zoom < 1) zoom += 0.1;
+        if (zoom < 1.5) zoom += 0.1;
         else zoom += 0.25;
         levelView->setZoom(zoom);
         update();
@@ -135,7 +138,7 @@ void LevelEditorWindow::on_actionZoom_Out_triggered()
 {
     if (zoom > 0.3)
     {
-        if (zoom <= 1) zoom -= 0.1;
+        if (zoom <= 1.5) zoom -= 0.1;
         else zoom -= 0.25;
         levelView->setZoom(zoom);
         update();
@@ -151,7 +154,7 @@ void LevelEditorWindow::on_actionZoom_100_triggered()
 
 void LevelEditorWindow::on_actionZoom_Maximum_triggered()
 {
-    zoom = 3;
+    zoom = 4;
     levelView->setZoom(zoom);
     update();
 }
