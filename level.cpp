@@ -107,9 +107,6 @@ Level::Level(Game *game, int world, int level, int area)
         sprites.append(*spr);
 
         header->skip(10); // Unused Sprite Data and Zone
-
-        qDebug("Found Sprite with ID %d, x: %d, y: %d", spr->getid(), spr->getx(), spr->gety());
-        if (spr->getid() == 124) for(int i = 0; i < 16; i++) qDebug("Nybble %d: %d", i, spr->getNybble(i));
     }
 
     // Block 10: Zones

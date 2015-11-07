@@ -68,6 +68,15 @@ int Object::getheight() const { return height; }
 int Object::getOffsetX() const { return offsetx; }
 int Object::getOffsetY() const { return offsety; }
 
+void Object::setDrag(int dragX, int dragY)
+{
+    this->dragX = dragX;
+    this->dragY = dragY;
+}
+
+int Object::getDragX() const { return dragX; }
+int Object::getDragY() const { return dragY; }
+
 // BgdatObject
 BgdatObject::BgdatObject()
 {
@@ -110,7 +119,8 @@ void Sprite::setRect()
         break;
     case 22: // Special Exit Controller
         width = getNybble(7) * 20;
-        height = 20;
+        height = getNybble(4) * 20;
+        qDebug("%i", getNybble(4));
         break;
     case 29: // Bob-omb
         width = 29;
@@ -269,6 +279,12 @@ void Sprite::setRect()
         offsetx = -1;
         offsety = -4;
         break;
+    case 234: // Spiked Ball
+        width = 38;
+        height = 38;
+        offsetx = 1;
+        offsety = 1;
+        break;
     case 267: // Long Question Block
         width = 60;
         height = 20;
@@ -291,6 +307,12 @@ void Sprite::setRect()
         offsetx = -3;
         offsety = -3;
         break;
+    case 279: // Lemmy Ball
+        width = 30;
+        height = 30;
+        offsetx = -3;
+        offsety = -15;
+        break;
     case 287: // Toad House Door
         width = 40;
         height = 60;
@@ -300,6 +322,12 @@ void Sprite::setRect()
         height = 67;
         offsetx = -40;
         offsety = -27;
+        break;
+    case 296: // Toad
+        width = 25;
+        height = 39;
+        offsetx = -1;
+        offsety = -16;
         break;
     default:
         width = 20;
@@ -317,7 +345,7 @@ void Sprite::setByte(int id, qint8 nbr) { spriteData[id] = nbr; }
 
 qint8 Sprite::getNybble(int id) const
 {
-    if (id%2 == 0) return spriteData[id/2] & 0xF0;
+    if (id%2 == 0) return spriteData[id/2] >> 4;
     else return spriteData[id/2] & 0x0F;
 }
 

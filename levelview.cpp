@@ -271,6 +271,9 @@ void LevelView::paintEvent(QPaintEvent* evt)
         case 225: // P Switch
             painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "p_switch.png"));
             break;
+        case 234: // Spiked Ball
+            painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "spiked_ball.png"));
+            break;
         case 267: // Long Question Block
             painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "long_question_block.png"));
             break;
@@ -283,11 +286,17 @@ void LevelView::paintEvent(QPaintEvent* evt)
         case 278: // Assist Block
             painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "assist_block.png"));
             break;
+        case 279: // Lemmy Ball
+            painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "lemmy_ball.png"));
+            break;
         case 287: // Toad House Door
             painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "door_toadhouse.png"));
             break;
         case 294: // Warp Cannon
             painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "warp_cannon.png"));
+            break;
+        case 296: // Toad
+            painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "toad.png"));
             break;
         default:
             QRect sprrect(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight());
@@ -449,14 +458,31 @@ void LevelView::mousePressEvent(QMouseEvent* evt)
     if (evt->button() != Qt::LeftButton)
         return;
 
-    selObjects.clear();
-    selObjects = selObjectsCheck(x, y, 0, 0, false);
-
-    if (selObjects.size() != 0)
+    bool hitSelction = false;
+    for (int i = 0; i < selObjects.size(); i++)
     {
-        qDebug("Selected Type: %i", selObjects[0]->getType());
-        dragX = x - selObjects[0]->getx();
-        dragY = y - selObjects[0]->gety();
+        if (selObjects[i]->clickDetection(x,y,0,0))
+        {
+            hitSelction = true;
+            break;
+        }
+    }
+
+    if (evt->modifiers() != Qt::ShiftModifier && !hitSelction) selObjects.clear();
+
+    selObjects.append(selObjectsCheck(x, y, 0, 0, false));
+
+    // Remove doubled entrys
+    for (int i = 0; i < selObjects.size(); i++)
+    {
+        for (int j = 0; j < selObjects.size(); j++) if (i != j && selObjects[i] == selObjects[j]) selObjects.removeAt(j);
+    }
+
+    dragX = x;
+    dragY = y;
+    for (int i = 0; i < selObjects.size(); i++)
+    {
+        selObjects[i]->setDrag(selObjects[i]->getx(), selObjects[i]->gety());
     }
 
     update();
@@ -488,24 +514,24 @@ void LevelView::mouseMoveEvent(QMouseEvent* evt)
         // Rounded to next Tile
         if (roundToFullTile)
         {
-            finalX = toNext20(x - dragX);
-            finalY = toNext20(y - dragY);
+            finalX = selObjects[i]->getDragX() + toNext20(x - dragX);
+            finalY = selObjects[i]->getDragY() + toNext20(y - dragY);
         }
 
         // For Based on 16
         else
         {
             // Drag stuff freely
-            if (evt->modifiers() & Qt::AltModifier)
+            if (evt->modifiers() == Qt::AltModifier)
             {
-                finalX = toNext16Compatible(x - dragX);
-                finalY = toNext16Compatible(y - dragY);
+                finalX = toNext16Compatible(x - selObjects[i]->getDragX());
+                finalY = toNext16Compatible(y - selObjects[i]->getDragY());
             }
             // Rounded to next half Tile
             else
             {
-                finalX = toNext10(x - dragX);
-                finalY = toNext10(y - dragY);
+                finalX = toNext10(x - selObjects[i]->getDragX());
+                finalY = toNext10(y - selObjects[i]->getDragY());
             }
         }
 

@@ -38,10 +38,15 @@ public:
     int getOffsetY() const;
     bool clickDetection(int xcheck, int ycheck, int wcheck, int hcheck);
 
+    void setDrag(int dragX, int dragY);
+    int getDragX() const;
+    int getDragY() const;
+
 protected:
     int x, y;
     int width, height;
     int offsetx, offsety;
+    int dragX, dragY;
 };
 
 
