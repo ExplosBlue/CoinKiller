@@ -469,9 +469,11 @@ void LevelView::mousePressEvent(QMouseEvent* evt)
     forbidDrag = false;
 
     bool hitSelction = false;
+    QList<Object*> selectedTile = selObjectsCheck(x,y,0,0,false);
+
     for (int i = 0; i < selObjects.size(); i++)
     {
-        if (selObjects[i] == selObjectsCheck(x,y,0,0,false)[0])
+        if (selectedTile.size() != 0 && selObjects[i] == selectedTile[0])
         {
             if (evt->modifiers() != Qt::ShiftModifier)
             {
