@@ -271,7 +271,7 @@ void Sprite::setRect()
     case 206: // Gold Ring
         width = 42;
         height = 57;
-        offsetx = 6;
+        offsety = 2;
         break;
     case 219: // Star Coin
         width = 40;
