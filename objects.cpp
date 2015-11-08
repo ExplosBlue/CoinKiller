@@ -152,6 +152,11 @@ void Sprite::setRect()
         width = 40;
         height = 60;
         break;
+    case 72: // Final Boss Door
+        width = 144;
+        height = 144;
+        offsety = -45;
+        break;
     case 73: // Ghost House Door
         width = 41;
         height = 60;
@@ -169,6 +174,12 @@ void Sprite::setRect()
         offsetx = -7;
         offsety = -2;
         break;
+    case 92: // Grinder
+        width = 49;
+        height = 49;
+        offsetx = -6;
+        offsety = -6;
+        break;
     case 95: // Blooper
         width = 28;
         height = 36;
@@ -184,6 +195,10 @@ void Sprite::setRect()
         width = 89;
         height = 41;
         offsety = -20;
+        break;
+    case 108: // Spider Web
+        width = 80;
+        height = 80;
         break;
     case 109: // Signboard
         width = 40;
@@ -253,6 +268,11 @@ void Sprite::setRect()
         offsetx = -7;
         offsety = -15;
         break;
+    case 206: // Gold Ring
+        width = 42;
+        height = 57;
+        offsetx = 6;
+        break;
     case 219: // Star Coin
         width = 40;
         height = 40;
@@ -281,9 +301,17 @@ void Sprite::setRect()
         offsetx = 1;
         offsety = 1;
         break;
+    case 255: // Bowser Head Statue
+        width = 43;
+        height = 44;
+        break;
     case 267: // Long Question Block
         width = 60;
         height = 20;
+        break;
+    case 269: // Gold Ship
+        width = 285;
+        height = 96;
         break;
     case 273: // Coin Roulette Block
         width = 31;
@@ -312,6 +340,10 @@ void Sprite::setRect()
     case 287: // Toad House Door
         width = 40;
         height = 60;
+        break;
+    case 293: // Punching Glove
+        width = 32;
+        height = 35;
         break;
     case 294: // Warp Cannon
         width = 100;
