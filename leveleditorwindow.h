@@ -56,6 +56,18 @@ private slots:
 
     void on_actionSave_triggered();
 
+    void on_actionCopy_triggered();
+
+    void on_actionFullscreen_toggled(bool arg1);
+
+    void on_actionGrid_toggled(bool arg1);
+
+    void on_actionPaste_triggered();
+
+    void on_actionCut_triggered();
+
+    void on_actionDelete_triggered();
+
 private:
     Ui::LevelEditorWindow *ui;
 
@@ -69,6 +81,7 @@ private:
 
     quint8 layerMask;
     float zoom;
+    QFlags<Qt::WindowState> lastState;
 };
 
 #endif // LEVELEDITORWINDOW_H

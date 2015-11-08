@@ -53,11 +53,7 @@ bool Object::clickDetection(int xcheck, int ycheck, int wcheck, int hcheck)
     }
 
     // Area selection
-    else
-    {
-        if (xcheck < x+offsetx && xcheck+wcheck >= x+offsetx+width && ycheck < y+offsety && ycheck+hcheck >= y+offsetx+height) return true;
-        else return false;
-    }
+    else return QRect(xcheck,ycheck,wcheck,hcheck).intersects(QRect(x+offsetx,y+offsety,width,height));
 }
 
 int Object::getType() const { return -1; }

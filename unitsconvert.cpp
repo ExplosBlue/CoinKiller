@@ -17,9 +17,15 @@
 
 #include "unitsconvert.h"
 
-int to20(int nbr) { return (int)((float)nbr/(float)16*20+0.5); }
-int to16(int nbr) { return (int)((float)nbr/(float)20*16+0.5); }
-int toNext10(int nbr) { return ((nbr + 5) / 10 * 10); }
-int toNext20(int nbr) { return ((nbr + 10) / 20 * 20); }
+int sign(int nbr)
+{
+    if (nbr >= 0) return 1;
+    else return -1;
+}
+
+int to20(int nbr) { return (int)((float)nbr/(float)16*20+sign(nbr)*0.5); }
+int to16(int nbr) { return (int)((float)nbr/(float)20*16+sign(nbr)*0.5); }
+int toNext10(int nbr) { return ((nbr + sign(nbr)*5) / 10 * 10); }
+int toNext20(int nbr) { return ((nbr + sign(nbr)*10) / 20 * 20); }
 int toNext16Compatible(int nbr) { return to20(to16(nbr)); }
 

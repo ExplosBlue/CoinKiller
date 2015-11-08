@@ -19,12 +19,14 @@
 #include "levelview.h"
 #include "unitsconvert.h"
 
+#include <QApplication>
 #include <QPainter>
 #include <QBrush>
 #include <QColor>
 #include <QRect>
 #include <QRectF>
 #include <QPaintEvent>
+#include <QClipboard>
 
 
 LevelView::LevelView(QWidget *parent, Level* level) : QWidget(parent)
@@ -299,19 +301,17 @@ void LevelView::paintEvent(QPaintEvent* evt)
             painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "toad.png"));
             break;
         default:
-            QRect sprrect(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight());
-
             painter.setPen(QColor(0,0,0));
 
             QPainterPath path;
-            path.addRoundedRect(sprrect, 2.0, 2.0);
+            path.addRoundedRect(sprRect, 2.0, 2.0);
             QColor color(0,90,150,200);
             painter.fillPath(path, color);
             painter.drawPath(path);
 
             QString spriteText = QString("%1").arg(spr.getid());
             painter.setFont(QFont("Arial", 7, QFont::Normal));
-            painter.drawText(sprrect, spriteText, Qt::AlignHCenter | Qt::AlignVCenter);
+            painter.drawText(sprRect, spriteText, Qt::AlignHCenter | Qt::AlignVCenter);
             break;
         }
     }
@@ -447,30 +447,53 @@ void LevelView::paintEvent(QPaintEvent* evt)
         painter.drawRect(objrect);
         painter.fillRect(objrect, QColor(255,255,255,75));
     }
+
+    // Render Selection Area
+    if (areaSelction)
+    {
+        painter.setPen(QPen(QColor(100,100,255,200), 1));
+        painter.fillRect(selArea, QColor(100,100,255,25));
+        painter.drawRect(selArea);
+    }
 }
 
 
 void LevelView::mousePressEvent(QMouseEvent* evt)
-{
+{    
     int x = evt->x()/zoom;
     int y = evt->y()/zoom;
 
     if (evt->button() != Qt::LeftButton)
         return;
 
+    forbidDrag = false;
+
     bool hitSelction = false;
     for (int i = 0; i < selObjects.size(); i++)
     {
-        if (selObjects[i]->clickDetection(x,y,0,0))
+        if (selObjects[i] == selObjectsCheck(x,y,0,0,false)[0])
         {
-            hitSelction = true;
-            break;
+            if (evt->modifiers() != Qt::ShiftModifier)
+            {
+                hitSelction = true;
+                break;
+            }
+            else
+            {
+                selObjects.removeAt(i);
+                forbidDrag = true;
+                update();
+                return;
+            }
         }
     }
 
     if (evt->modifiers() != Qt::ShiftModifier && !hitSelction) selObjects.clear();
 
     selObjects.append(selObjectsCheck(x, y, 0, 0, false));
+
+    if (!hitSelction && evt->modifiers() == Qt::ShiftModifier)
+        forbidDrag = true;
 
     // Remove doubled entrys
     for (int i = 0; i < selObjects.size(); i++)
@@ -485,6 +508,12 @@ void LevelView::mousePressEvent(QMouseEvent* evt)
         selObjects[i]->setDrag(selObjects[i]->getx(), selObjects[i]->gety());
     }
 
+    if (selObjects.size() == 0)
+    {
+        areaSelction = true;
+        selArea = QRect(x,y,0,0);
+    }
+
     update();
 }
 
@@ -495,6 +524,23 @@ void LevelView::mouseMoveEvent(QMouseEvent* evt)
     int y = evt->y()/zoom;
 
     if (evt->buttons() != Qt::LeftButton) // checkme?
+        return;
+
+    if (areaSelction)
+    {
+        int sx = qMin(dragX,x);
+        int sy = qMin(dragY,y);
+        int width = qAbs(dragX-x);
+        int height = qAbs(dragY-y);
+        selArea = QRect(sx,sy,width,height);
+
+        selObjects.clear();
+        selObjects.append(selObjectsCheck(selArea.x(),selArea.y(),selArea.width(),selArea.height(),true));
+        update();
+        return;
+    }
+
+    if (forbidDrag)
         return;
 
     bool roundToFullTile = false;
@@ -514,8 +560,8 @@ void LevelView::mouseMoveEvent(QMouseEvent* evt)
         // Rounded to next Tile
         if (roundToFullTile)
         {
-            finalX = selObjects[i]->getDragX() + toNext20(x - dragX);
-            finalY = selObjects[i]->getDragY() + toNext20(y - dragY);
+            finalX = selObjects[i]->getDragX() + toNext20(x-dragX);
+            finalY = selObjects[i]->getDragY() + toNext20(y-dragY);
         }
 
         // For Based on 16
@@ -524,14 +570,14 @@ void LevelView::mouseMoveEvent(QMouseEvent* evt)
             // Drag stuff freely
             if (evt->modifiers() == Qt::AltModifier)
             {
-                finalX = toNext16Compatible(x - selObjects[i]->getDragX());
-                finalY = toNext16Compatible(y - selObjects[i]->getDragY());
+                finalX = selObjects[i]->getDragX() + toNext16Compatible(x-dragX);
+                finalY = selObjects[i]->getDragY() + toNext16Compatible(y-dragY);
             }
             // Rounded to next half Tile
             else
             {
-                finalX = toNext10(x - selObjects[i]->getDragX());
-                finalY = toNext10(y - selObjects[i]->getDragY());
+                finalX = selObjects[i]->getDragX() + toNext10(x-dragX);
+                finalY = selObjects[i]->getDragY() + toNext10(y-dragY);
             }
         }
 
@@ -547,14 +593,19 @@ void LevelView::mouseMoveEvent(QMouseEvent* evt)
     update();
 }
 
-void LevelView::moveEvent(QMoveEvent *)
+void LevelView::mouseReleaseEvent(QMouseEvent *evt)
 {
+    if (evt->buttons() == Qt::LeftButton) // checkme?
+        return;
+
+    areaSelction = false;
+
     update();
 }
 
-void LevelView::saveLevel()
+void LevelView::moveEvent(QMoveEvent *)
 {
-    level->save();
+    update();
 }
 
 QList<Object*> LevelView::selObjectsCheck(int x, int y, int w, int h, bool multiSelect)
@@ -564,7 +615,7 @@ QList<Object*> LevelView::selObjectsCheck(int x, int y, int w, int h, bool multi
     bool stopChecking = false;
 
     // Check for Progress Path Nodes
-    if (!stopChecking && !multiSelect)
+    if (!stopChecking)
     {
         for (int p = level->progressPaths.size()-1; p >= 0; p--)
         {
@@ -573,20 +624,23 @@ QList<Object*> LevelView::selObjectsCheck(int x, int y, int w, int h, bool multi
                 ProgressPathNode& node = level->progressPaths[p].getNodeReference(i);
 
                 if (node.clickDetection(x,y,w,h))
-                {
+                {    
                     objects.append(&node);
 
-                    stopChecking = true;
-                    break;
+                    if (!multiSelect)
+                    {
+                        stopChecking = true;
+                        break;
+                    }
                 }
             }
 
-            if (stopChecking && !multiSelect) break;
+            if (stopChecking) break;
         }
     }
 
     // Check for Path Nodes
-    if (!stopChecking && !multiSelect)
+    if (!stopChecking)
     {
         for (int p = level->paths.size()-1; p >= 0; p--)
         {
@@ -598,17 +652,20 @@ QList<Object*> LevelView::selObjectsCheck(int x, int y, int w, int h, bool multi
                 {
                     objects.append(&node);
 
-                    stopChecking = true;
-                    break;
+                    if (!multiSelect)
+                    {
+                        stopChecking = true;
+                        break;
+                    }
                 }
             }
 
-            if (stopChecking && !multiSelect) break;
+            if (stopChecking) break;
         }
     }
 
     // Check for Entrances
-    if (!stopChecking && !multiSelect)
+    if (!stopChecking)
     {
         for (int i = level->entrances.size()-1; i >= 0; i--)
         {
@@ -617,14 +674,17 @@ QList<Object*> LevelView::selObjectsCheck(int x, int y, int w, int h, bool multi
             {
                 objects.append(&entr);
 
-                stopChecking = true;
-                break;
+                if (!multiSelect)
+                {
+                    stopChecking = true;
+                    break;
+                }
             }
         }
     }
 
     // Check for Sprites
-    if (!stopChecking && !multiSelect)
+    if (!stopChecking)
     {
         for (int i = level->sprites.size()-1; i >= 0; i--)
         {
@@ -633,14 +693,17 @@ QList<Object*> LevelView::selObjectsCheck(int x, int y, int w, int h, bool multi
             {
                 objects.append(&spr);
 
-                stopChecking = true;
-                break;
+                if (!multiSelect)
+                {
+                    stopChecking = true;
+                    break;
+                }
             }
         }
     }
 
     // Check for Tiles
-    if (!stopChecking && !multiSelect)
+    if (!stopChecking)
     {
         for (int l = 0; l < 2; l++)
         {
@@ -654,14 +717,65 @@ QList<Object*> LevelView::selObjectsCheck(int x, int y, int w, int h, bool multi
                 {
                     objects.append(&obj);
 
-                    stopChecking = true;
-                    break;
+                    if (!multiSelect)
+                    {
+                        stopChecking = true;
+                        break;
+                    }
                 }
             }
 
-            if (stopChecking && !multiSelect) break;
+            if (stopChecking) break;
         }
     }
 
     return objects;
+
+}
+
+void LevelView::saveLevel()
+{
+    level->save();
+}
+
+void LevelView::copy()
+{
+    if (selObjects.size() == 0) return;
+
+    QString clipboardText("CoinKillerClip|");
+    /*for (int i = 0; i < selObjects.size(); i++)
+    {
+        if (i != 0) clipboardText += ":";
+        clipboardText += selObjects[i]->toText();
+    }*/
+    clipboardText += "|";
+
+    QApplication::clipboard()->setText(clipboardText);
+}
+
+void LevelView::paste()
+{
+    QString clipboardText(QApplication::clipboard()->text());
+    if (clipboardText.left(14) == "CoinKillerClip") qDebug("Let's go!");
+    else return;
+
+    clipboardText.remove(0, 15);
+    clipboardText.chop(1);
+
+    QStringList segments = clipboardText.split(":");
+
+    selObjects.clear();
+
+    update();
+}
+
+void LevelView::cut()
+{
+    copy();
+    deleteSel();
+}
+
+void LevelView::deleteSel()
+{
+    update();
 }

@@ -18,6 +18,7 @@
 #ifndef UNITSCONVERT_H
 #define UNITSCONVERT_H
 
+int sign(int nbr);
 int to20(int nbr);
 int to16(int nbr);
 int toNext10(int nbr);

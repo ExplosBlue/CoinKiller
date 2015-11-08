@@ -49,6 +49,9 @@ LevelEditorWindow::LevelEditorWindow(QWidget *parent, Level* level) :
     ui->actionPaste->setIcon((QIcon(basePath + "icon_paste.png")));
     ui->actionCut->setIcon((QIcon(basePath + "icon_cut.png")));
     ui->actionCopy->setIcon((QIcon(basePath + "icon_copy.png")));
+    ui->actionDelete->setIcon(QIcon(basePath + "icon_delete.png"));
+    ui->actionFullscreen->setIcon(QIcon(basePath + "icon_expand.png"));
+    ui->actionGrid->setIcon(QIcon(basePath + "icon_grid.png"));
 
     levelView = new LevelView(this, level);
     /*levelView->setMinimumHeight(600);
@@ -169,4 +172,44 @@ void LevelEditorWindow::on_actionZoom_Minimum_triggered()
 void LevelEditorWindow::on_actionSave_triggered()
 {
     levelView->saveLevel();
+}
+
+void LevelEditorWindow::on_actionCopy_triggered()
+{
+    levelView->copy();
+}
+
+void LevelEditorWindow::on_actionPaste_triggered()
+{
+    levelView->paste();
+}
+
+void LevelEditorWindow::on_actionCut_triggered()
+{
+    levelView->cut();
+}
+
+void LevelEditorWindow::on_actionDelete_triggered()
+{
+    levelView->deleteSel();
+}
+
+void LevelEditorWindow::on_actionFullscreen_toggled(bool toggle)
+{
+    if (toggle)
+    {
+        lastState = windowState();
+        setWindowState(Qt::WindowFullScreen);
+        ui->actionFullscreen->setIcon(QIcon(QCoreApplication::applicationDirPath() + "/coinkiller_data/icon_collapse.png"));
+    }
+    else
+    {
+        setWindowState(lastState);
+        ui->actionFullscreen->setIcon(QIcon(QCoreApplication::applicationDirPath() + "/coinkiller_data/icon_expand.png"));
+    }
+}
+
+void LevelEditorWindow::on_actionGrid_toggled(bool toggle)
+{
+    //levelView->setGrid(toggle);
 }

@@ -36,6 +36,10 @@ public:
     void setZoom(float zoom) { this->zoom = zoom; update(); }
 
     void saveLevel();
+    void copy();
+    void paste();
+    void cut();
+    void deleteSel();
 
 signals:
 
@@ -44,6 +48,7 @@ public slots:
 protected:
     void paintEvent(QPaintEvent *) Q_DECL_OVERRIDE;
     void mousePressEvent(QMouseEvent *) Q_DECL_OVERRIDE;
+    void mouseReleaseEvent(QMouseEvent *) Q_DECL_OVERRIDE;
     void mouseMoveEvent(QMouseEvent *) Q_DECL_OVERRIDE;
     void moveEvent(QMoveEvent *) Q_DECL_OVERRIDE;
 
@@ -67,7 +72,11 @@ private:
 
     QList<Object*> selObjects;
 
+    bool forbidDrag;
     int dragX, dragY;
+
+    bool areaSelction;
+    QRect selArea;
 
     quint8 layerMask;
 
