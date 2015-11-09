@@ -17,8 +17,6 @@ void ObjectRenderer::render(QPainter *painter) { }
 
 SpriteRenderer::SpriteRenderer() { }
 
-SpriteRenderer::~SpriteRenderer() { qDebug("er"); delete ret; }
-
 SpriteRenderer::SpriteRenderer(const Sprite *spr)
 {
     this->spr = spr;
@@ -54,7 +52,6 @@ void NormalImageRenderer::render(QPainter *painter)
     painter->drawPixmap(obj->getx()+obj->getOffsetX(), obj->gety()+obj->getOffsetY(), obj->getwidth(), obj->getheight(), QPixmap(filename));
 }
 
-NormalImageRenderer::~NormalImageRenderer() { qDebug("Destroyed Image Renderer!"); }
 
 RoundedRectRenderer::RoundedRectRenderer() { }
 

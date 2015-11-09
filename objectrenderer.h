@@ -19,7 +19,6 @@ class SpriteRenderer
 public:
     SpriteRenderer();
     SpriteRenderer(const Sprite *spr);
-    inline ~SpriteRenderer();
     void render(QPainter *painter);
 protected:
     const Sprite *spr;
@@ -31,7 +30,6 @@ class NormalImageRenderer: public ObjectRenderer
 public:
     NormalImageRenderer();
     NormalImageRenderer(const Object *obj, QString filename);
-    ~NormalImageRenderer();
     void render(QPainter *painter);
 protected:
     const Object *obj;
