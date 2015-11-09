@@ -19,7 +19,7 @@
 #define OBJECTS_H
 
 #include <QtCore>
-# include <QPainter>
+#include <QPainter>
 
 // Obj Baseclass
 class Object

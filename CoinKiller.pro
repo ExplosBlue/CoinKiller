@@ -28,7 +28,8 @@ SOURCES += main.cpp\
     game.cpp \
     objects.cpp \
     unitsconvert.cpp \
-    propertygrid.cpp
+    propertygrid.cpp \
+    objectrenderer.cpp
 
 HEADERS  += mainwindow.h \
     filesystembase.h \
@@ -48,7 +49,8 @@ HEADERS  += mainwindow.h \
     game.h \
     objects.h \
     unitsconvert.h \
-    propertygrid.h
+    propertygrid.h \
+    objectrenderer.h
 
 FORMS    += mainwindow.ui \
     leveleditorwindow.ui

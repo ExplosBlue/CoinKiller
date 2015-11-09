@@ -18,6 +18,7 @@
 #include "leveleditorwindow.h"
 #include "levelview.h"
 #include "unitsconvert.h"
+#include "objectrenderer.h"
 
 #include <QApplication>
 #include <QPainter>
@@ -119,11 +120,14 @@ void LevelView::paintEvent(QPaintEvent* evt)
         if (!drawrect.intersects(sprRect))
             continue;
 
-        QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/");
+        /*QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/");
 
         switch (spr.getid()) {
         case 8: // Swoop
             painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "swoop.png"));
+            break;
+        case 19: // Desert Crater
+            painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "desert_crater.png"));
             break;
         case 22: // Special Exit Controller
             painter.fillRect(sprRect, QBrush(QColor(50,255,0,100)));
@@ -337,7 +341,9 @@ void LevelView::paintEvent(QPaintEvent* evt)
             painter.setFont(QFont("Arial", 7, QFont::Normal));
             painter.drawText(sprRect, spriteText, Qt::AlignHCenter | Qt::AlignVCenter);
             break;
-        }
+        }*/
+        SpriteRenderer sprRend(&spr);
+        sprRend.render(&painter);
     }
 
     // Render Entrences
@@ -572,7 +578,7 @@ void LevelView::mouseMoveEvent(QMouseEvent* evt)
     bool roundToFullTile = false;
     for (int i = 0; i < selObjects.size(); i++)
     {
-        if (selObjects[i]->getType() == 1)
+        if (selObjects[i]->getType() == 0)
         {
             roundToFullTile = true;
             break;
@@ -782,8 +788,7 @@ void LevelView::copy()
 void LevelView::paste()
 {
     QString clipboardText(QApplication::clipboard()->text());
-    if (clipboardText.left(14) == "CoinKillerClip") qDebug("Let's go!");
-    else return;
+    if (clipboardText.left(14) != "CoinKillerClip") return;
 
     clipboardText.remove(0, 15);
     clipboardText.chop(1);

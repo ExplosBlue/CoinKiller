@@ -88,7 +88,7 @@ BgdatObject::BgdatObject(int x, int y, int width, int height, int id)
     this->id = id;
 }
 
-int BgdatObject::getType() const { return 1; }
+int BgdatObject::getType() const { return 0; }
 int BgdatObject::getid() const { return id; }
 
 
@@ -112,6 +112,12 @@ void Sprite::setRect()
         width = 13;
         height = 22;
         offsetx = 3;
+        break;
+    case 19: // Desert Crater
+        width = 65;
+        height = 18;
+        offsetx = -22;
+        offsety = 19;
         break;
     case 22: // Special Exit Controller
         width = getNybble(7) * 20;
@@ -365,7 +371,7 @@ void Sprite::setRect()
     }
 }
 
-int Sprite::getType() const { return 2; }
+int Sprite::getType() const { return 1; }
 int Sprite::getid() const { return id; }
 
 qint8 Sprite::getByte(int id) const { return spriteData[id]; }
@@ -396,7 +402,7 @@ Entrance::Entrance(int x, int y, int cameraX, int cameraY, int id, int destArea,
     this->type = type;
 }
 
-int Entrance::getType() const { return 3; }
+int Entrance::getType() const { return 2; }
 int Entrance::getid() const { return id; }
 
 
@@ -415,7 +421,7 @@ Zone::Zone(int x, int y, int width, int height, int id)
     this->id = id;
 }
 
-int Zone::getType() const { return 4; }
+int Zone::getType() const { return 3; }
 int Zone::getid() const { return id; }
 
 
@@ -434,7 +440,7 @@ Location::Location(int x, int y, int width, int height, int id)
     this->id = id;
 }
 
-int Location::getType() const { return 5; }
+int Location::getType() const { return 4; }
 int Location::getid() const { return id; }
 
 
@@ -467,7 +473,7 @@ PathNode::PathNode(int x, int y, float speed, float accel)
     this->accel = accel;
 }
 
-int PathNode::getType() const { return 6; }
+int PathNode::getType() const { return 5; }
 
 
 // Progress Path
@@ -496,4 +502,4 @@ ProgressPathNode::ProgressPathNode(int x, int y)
     this->y = y;
 }
 
-int ProgressPathNode::getType() const { return 7; }
+int ProgressPathNode::getType() const { return 6; }
