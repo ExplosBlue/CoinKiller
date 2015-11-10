@@ -37,6 +37,12 @@ public:
 
     quint16 timeLimit;
 
+    quint16 bgblockid;
+    quint8 xscrollrate;
+    quint8 yscrollrate;
+    quint8 xpos;
+    quint8 ypos;
+
     quint16 boundingid;
     quint16 unk1;
     quint32 upperbound;

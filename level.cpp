@@ -50,7 +50,7 @@ Level::Level(Game *game, int world, int level, int area)
         blockSizes[b] = header->read32();
     }
 
-    // Block 1: Tilesets
+    // Block 0: Tilesets
     for (int t = 0; t < 4; t++)
     {
         header->seek(blockOffsets[0] + (t*32));
@@ -75,13 +75,13 @@ Level::Level(Game *game, int world, int level, int area)
         }
     }
 
-    // Block 2: Area Settings
+    // Block 1: Area Settings
     header->seek(blockOffsets[1]);
     header->skip(10); // 8 Zeros + Unk1
     timeLimit = header->read16();
     qDebug("Time Limit: %d", timeLimit);
 
-    // Block 3: Zone Boundings
+    // Block 2: Zone Boundings
     header->seek(blockOffsets[2]);
     upperbound = header->read32();
     lowerbound = header->read32();
@@ -90,9 +90,23 @@ Level::Level(Game *game, int world, int level, int area)
     boundingid = header->read16();
     unk1 = header->read16();
     header->skip(8);
-    qDebug("Bounding block found! Uppper Bound: %d, Lower Bound: %d, Unknown Upper Bound: %d, Unknown Lower Bound: %d, Bounding ID: %d, Unknown 0x012: %d", upperbound, lowerbound, unkbound1, unkbound2, boundingid, unk1);
+    qDebug("Bounding block found! Uppper Bound: %d, Lower Bound: %d, Unknown Upper Bound: %d, Unknown Lower Bound: %d, Bounding ID: %d, Unknown 0x12: %d", upperbound, lowerbound, unkbound1, unkbound2, boundingid, unk1);
 
-    // Block 7: Entrances
+    // Block 4: Background Information
+    header->seek(blockOffsets[4]);
+    QString bgname;
+    bgblockid = header->read16();
+    xscrollrate = header->read8();
+    yscrollrate = header->read8();
+    xpos = header->read8();
+    ypos = header->read8();
+    header->skip(2);
+    header->readStringASCII(bgname, 16);
+    unk1 = header->read16();
+    header->skip(2);
+    qDebug("Background Found! BG ID: %d, X Scroll Rate: %d, Y Scroll Rate: %d, X Position: %d, Y Position: %d, Name: %s, Unknown 0x18: %d", bgblockid, xscrollrate, yscrollrate, xpos, ypos, bgname.toStdString().c_str(), unk1);
+
+    // Block 6: Entrances
     header->seek(blockOffsets[6]);
     for (int e = 0; e < (int)(blockSizes[6]/24); e++)
     {
@@ -103,7 +117,7 @@ Level::Level(Game *game, int world, int level, int area)
         header->skip(12); // data we don't care about right now (id is in here, too. For now simply e)
     }
 
-    // Block 8: Sprites
+    // Block 7: Sprites
     header->seek(blockOffsets[7]);
     for (;;)
     {
@@ -120,7 +134,7 @@ Level::Level(Game *game, int world, int level, int area)
         header->skip(10); // Unused Sprite Data and Zone
     }
 
-    // Block 10: Zones
+    // Block 9: Zones
     header->seek(blockOffsets[9]);
     for (int z = 0; z < (int)(blockSizes[9]/24); z++)
     {
@@ -131,7 +145,7 @@ Level::Level(Game *game, int world, int level, int area)
         header->skip(20); // data we don't care about right now (id is in here, too. For now simply z)
     }
 
-    // Block 11: Locations
+    // Block 10: Locations
     header->seek(blockOffsets[10]);
     for (int l = 0; l < (int)(blockSizes[10]/12); l++)
     {
@@ -142,7 +156,7 @@ Level::Level(Game *game, int world, int level, int area)
         header->skip(3);
     }
 
-    // Block 14/15: Paths
+    // Block 13/14: Paths
     for (int p = 0; p < (int)(blockSizes[13]/12); p++)
     {
         header->seek(blockOffsets[13]+p*12);
@@ -159,7 +173,7 @@ Level::Level(Game *game, int world, int level, int area)
         paths.append(*path);
     }
 
-    // Block: 16/17 Progress Paths
+    // Block: 15/16 Progress Paths
     for (int p = 0; p < (int)(blockSizes[15]/12); p++)
     {
         header->seek(blockOffsets[15]+p*12);
