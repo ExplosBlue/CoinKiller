@@ -24,26 +24,148 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr)
     QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/");
 
     switch (spr->getid()) {
-    case 66:
+    case 8: // Swoop
+        ret = new NormalImageRenderer(spr, basePath + "swoop.png");
+        break;
+    case 19: // Desert Crater
+        ret = new NormalImageRenderer(spr, basePath + "desert_crater.png");
+        break;
+    case 27: // POW Block
+        ret = new NormalImageRenderer(spr, basePath + "pow_block.png");
+        break;
+    case 29: // Bob-omb
+        ret = new NormalImageRenderer(spr, basePath + "bob-omb.png");
+        break;
+    case 35: // Lava Bubble
+        ret = new NormalImageRenderer(spr, basePath + "lava_bubble.png");
+        break;
+    case 52: // Checkpoint Flag
+        ret = new NormalImageRenderer(spr, basePath + "checkpoint_flag.png");
+        break;
+    case 55: // Coin
+        ret = new NormalImageRenderer(spr, basePath + "coin.png");
+        break;
+    case 66: // Pipe Cannon
         ret = new NormalImageRenderer(spr, basePath + "pipe_cannon.png");
         break;
-    case 135:
+    case 69: // Door
+        ret = new NormalImageRenderer(spr, basePath + "door.png");
+        break;
+    case 70: // Castle Boss Door
+        ret = new NormalImageRenderer(spr, basePath + "door_castle_boss.png");
+        break;
+    case 71: // Closed Door
+        ret = new NormalImageRenderer(spr, basePath + "door_closed.png");
+        break;
+    case 72: // Final Boss Door
+        ret = new NormalImageRenderer(spr, basePath + "door_final_boss.png");
+        break;
+    case 73: // Ghost House Door
+        ret = new NormalImageRenderer(spr, basePath + "door_ghosthouse.png");
+        break;
+    case 75: // Tower Boss Door
+        ret = new NormalImageRenderer(spr, basePath + "door_tower.png");
+        break;
+    case 77: // Thwomp
+        ret = new NormalImageRenderer(spr, basePath + "thwomp.png");
+        break;
+    case 92: // Grinder
+        ret = new NormalImageRenderer(spr, basePath + "grinder.png");
+        break;
+    case 95: // Blooper
+        ret = new NormalImageRenderer(spr, basePath + "blooper.png");
+        break;
+    // Needs special Renderer case 97: // End of Level Flag
+    case 99: // Wiggler
+        ret = new NormalImageRenderer(spr, basePath + "wiggler.png");
+        break;
+    case 106: // Trampoline
+        ret = new NormalImageRenderer(spr, basePath + "trampoline.png");
+        break;
+    case 108: // Spider Web
+        ret = new NormalImageRenderer(spr, basePath + "spider_web.png");
+        break;
+    // Needs special Renderer case 109: // Signboard
+    case 110: // Dry Bones
+        ret = new NormalImageRenderer(spr, basePath + "dry_bones.png");
+        break;
+    case 111: // Giant Dry Bones
+        ret = new NormalImageRenderer(spr, basePath + "sgiant_dry_bones.png");
+        break;
+    case 135: // Goomba
         ret = new NormalImageRenderer(spr, basePath + "goomba.png");
         break;
-    case 219:
+    case 136: // Bone Goomba
+        ret = new NormalImageRenderer(spr, basePath + "bone_goomba.png");
+        break;
+    case 137: // Micro Goomba
+        ret = new NormalImageRenderer(spr, basePath + "micro_goomba.png");
+        break;
+    case 138: // Paragoomba
+        ret = new NormalImageRenderer(spr, basePath + "paragoomba.png");
+        break;
+    // Needs special Renderer case 139: // Goomba Tower
+    case 158: // Buzzy Beetle
+        ret = new NormalImageRenderer(spr, basePath + "buzzy_beetle.png");
+        break;
+    // Needs special Renderer case 165: // Koopa Troopa
+    // Needs special Renderer case 185: // Koopa Paratroopa
+    case 175: // Grounded Piranha Plant
+        ret = new NormalImageRenderer(spr, basePath + "piranha_plant.png");
+        break;
+    case 184: // Parabomb
+        ret = new NormalImageRenderer(spr, basePath + "parabomb.png");
+        break;
+    case 206: // Gold Ring
+        ret = new NormalImageRenderer(spr, basePath + "gold_ring.png");
+        break;
+    case 219: // Star Coin
         ret = new NormalImageRenderer(spr, basePath + "star_coin.png");
         break;
-    case 267:
+    case 221: // ! Switch
+        ret = new NormalImageRenderer(spr, basePath + "exclamation_switch.png");
+        break;
+    case 223: // ? Switch
+        ret = new NormalImageRenderer(spr, basePath + "question_switch.png");
+        break;
+    case 225: // P Switch
+        ret = new NormalImageRenderer(spr, basePath + "p_switch.png");
+        break;
+    case 234: // Spiked Ball
+        ret = new NormalImageRenderer(spr, basePath + "spiked_ball.png");
+        break;
+    case 255: // Bowser Head Statue
+        ret = new NormalImageRenderer(spr, basePath + "bowser_head_statue.png");
+        break;
+    case 267: // Long Question Block
         ret = new NormalImageRenderer(spr, basePath + "long_question_block.png");
         break;
-    case 269:
+    case 269: // Gold Ship
         ret = new NormalImageRenderer(spr, basePath + "gold_ship.png");
         break;
-    case 274:
+    case 273: // Coin Roulette Block
+        ret = new NormalImageRenderer(spr, basePath + "coin_roulette_block.png");
+        break;
+    case 274: // Flying Gold Block Spawn Point
         ret = new NormalImageRenderer(spr, basePath + "flying_gold_block.png");
         break;
-    case 278:
+    case 278: // Assist Block
         ret = new NormalImageRenderer(spr, basePath + "assist_block.png");
+        break;
+    case 279: // Lemmy Ball
+        ret = new NormalImageRenderer(spr, basePath + "lemmy_ball.png");
+        break;
+    case 287: // Toad House Door
+        ret = new NormalImageRenderer(spr, basePath + "door_toadhouse.png");
+        break;
+    case 293: // Punching Glove
+        ret = new NormalImageRenderer(spr, basePath + "punching_glove.png");
+        break;
+    case 294: // Warp Cannon
+        ret = new NormalImageRenderer(spr, basePath + "warp_cannon.png");
+        break;
+    case 296: // Toad
+        ret = new NormalImageRenderer(spr, basePath + "toad.png");
         break;
     default:
         ret = new RoundedRectRenderer(spr, QString("%1").arg(spr->getid()), QColor(0,90,150,200));

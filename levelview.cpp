@@ -35,7 +35,6 @@ LevelView::LevelView(QWidget *parent, Level* level) : QWidget(parent)
     this->level = level;
 
     layerMask = 0x7; // failsafe
-    selType = 0;
 
     zoom = 1;
 
@@ -120,228 +119,6 @@ void LevelView::paintEvent(QPaintEvent* evt)
         if (!drawrect.intersects(sprRect))
             continue;
 
-        /*QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/");
-
-        switch (spr.getid()) {
-        case 8: // Swoop
-            painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "swoop.png"));
-            break;
-        case 19: // Desert Crater
-            painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "desert_crater.png"));
-            break;
-        case 22: // Special Exit Controller
-            painter.fillRect(sprRect, QBrush(QColor(50,255,0,100)));
-            painter.setPen(QColor(0,0,0));
-            painter.drawRect(sprRect);
-            painter.setFont(QFont("Arial", 8, QFont::Bold));
-            painter.drawText(sprRect.adjusted(3,3,0,0), "Warp");
-            break;
-        case 27: // POW Block
-            painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "pow_block.png"));
-            break;
-        case 29: // Bob-omb
-            painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "bob-omb.png"));
-            break;
-        case 35: // Lava Bubble
-            painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "lava_bubble.png"));
-            break;
-        case 52: // Checkpoint Flag
-            painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "checkpoint_flag.png"));
-            break;
-        case 55: // Coin
-            painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "coin.png"));
-            break;
-        case 66: // Pipe Cannon
-            painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "pipe_cannon.png"));
-            break;
-        case 69: // Door
-            painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "door.png"));
-            break;
-        case 70: // Castle Boss Door
-            painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "door_castle.png"));
-            break;
-        case 71: // Closed Door
-            painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "door_closed.png"));
-            break;
-        case 72: // Final Boss Door
-            painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "door_final_boss.png"));
-            break;
-        case 73: // Ghost House Door
-            painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "door_ghosthouse.png"));
-            break;
-        case 75: // Tower Boss Door
-            painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "door_tower.png"));
-            break;
-        case 77: // Thwomp
-            painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "thwomp.png"));
-            break;
-        case 92: // Grinder
-            painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "grinder.png"));
-            break;
-        case 97: // End of Level Flag
-            if (spr.getNybble(10) == 0)
-            {
-                painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "flagpole.png"));
-                painter.drawPixmap(spr.getx()+200, spr.gety()+80, 120, 120,QPixmap(basePath + "castle.png"));
-            }
-            else
-            {
-                painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "flagpole_secret.png"));
-                painter.drawPixmap(spr.getx()+200, spr.gety()+80, 120, 120,QPixmap(basePath + "castle_secret.png"));
-            }
-            break;
-        case 95: // Blooper
-            painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "blooper.png"));
-            break;
-        case 99: // Wiggler
-            painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "wiggler.png"));
-            break;
-        case 106: // Trampoline
-            painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "trampoline.png"));
-            break;
-        case 108: // Spider Web
-            painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "spider_web.png"));
-            break;
-        case 109: // Signboard
-            switch (spr.getNybble(5)) {
-            case 0:
-                painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "sign_0.png"));
-                break;
-            case 1:
-                painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "sign_1.png"));
-                break;
-            case 2:
-                painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "sign_2.png"));
-                break;
-            case 3:
-                painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "sign_3.png"));
-                break;
-            case 4:
-                painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "sign_4.png"));
-                break;
-            case 5:
-                painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "sign_5.png"));
-                break;
-            case 6:
-                painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "sign_6.png"));
-                break;
-            case 8:
-                painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "sign_8.png"));
-                break;
-            case 9:
-                painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "sign_9.png"));
-                break;
-            default:
-                painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "sign_7.png"));
-                break;
-            }
-            break;
-
-        case 110: // Dry Bones
-            painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "dry_bones.png"));
-            break;
-        case 111: // Giant Dry Bones
-            painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "giant_dry_bones.png"));
-            break;
-        case 135: // Goomba
-            painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "goomba.png"));
-            break;
-        case 136: // Bone Goomba
-            painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "bone_goomba.png"));
-            break;
-        case 137: // Micro Goomba
-            painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "micro_goomba.png"));
-            break;
-        case 138: // Paragoomba
-            painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "paragoomba.png"));
-            break;
-        case 139: // Goomba Tower
-            painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+1, spr.getwidth(), 21, QPixmap(basePath + "goomba_tower_bottom.png"));
-            for (int i = 0; i < (spr.getNybble(5)-2); i++) painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()-21*(i+1)+1, spr.getwidth(), 21, QPixmap(basePath + "goomba_tower_middle.png"));
-            painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), 25, QPixmap(basePath + "goomba_tower_top.png"));
-            break;
-        case 158: // Buzzy Beetle
-            painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "buzzy_beetle.png"));
-            break;
-        case 165: // Koopa Troopa
-            if (spr.getNybble(5) == 0) painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "koopa_troopa_green.png"));
-            else painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "koopa_troopa_red.png")); // Needs new image
-            break;
-        case 185: // Koopa Troopa
-            if (spr.getNybble(5) == 0) painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "koopa_paratroopa_green.png"));
-            else painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "koopa_paratroopa_red.png"));
-            break;
-        case 175: // Grounded Piranha Plant
-            painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "piranha_plant.png"));
-            break;
-        case 184: // Parabomb
-            painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "parabomb.png"));
-            break;
-        case 206: // Gold Ring
-            painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "gold_ring.png"));
-            break;
-        case 219: // Star Coin
-            painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "star_coin.png"));
-            break;
-        case 221: // ! Switch
-            painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "exclamation_switch.png"));
-            break;
-        case 223: // ? Switch
-            painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "question_switch.png"));
-            break;
-        case 225: // P Switch
-            painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "p_switch.png"));
-            break;
-        case 234: // Spiked Ball
-            painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "spiked_ball.png"));
-            break;
-        case 255: // Bowser Head Statue
-            painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "bowser_head_statue.png"));
-            break;
-        case 267: // Long Question Block
-            painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "long_question_block.png"));
-            break;
-        case 269: // Gold Ship
-            painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "gold_ship.png"));
-            break;
-        case 273: // Coin Roulette Block
-            painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "coin_roulette_block.png"));
-            break;
-        case 274: // Flying Gold Block Spawn Point
-            painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "flying_gold_block.png"));
-            break;
-        case 278: // Assist Block
-            painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "assist_block.png"));
-            break;
-        case 279: // Lemmy Ball
-            painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "lemmy_ball.png"));
-            break;
-        case 287: // Toad House Door
-            painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "door_toadhouse.png"));
-            break;
-        case 293: // Punching Glove
-            painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "punching_glove.png"));
-            break;
-        case 294: // Warp Cannon
-            painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "warp_cannon.png"));
-            break;
-        case 296: // Toad
-            painter.drawPixmap(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight(), QPixmap(basePath + "toad.png"));
-            break;
-        default:
-            painter.setPen(QColor(0,0,0));
-
-            QPainterPath path;
-            path.addRoundedRect(sprRect, 2.0, 2.0);
-            QColor color(0,90,150,200);
-            painter.fillPath(path, color);
-            painter.drawPath(path);
-
-            QString spriteText = QString("%1").arg(spr.getid());
-            painter.setFont(QFont("Arial", 7, QFont::Normal));
-            painter.drawText(sprRect, spriteText, Qt::AlignHCenter | Qt::AlignVCenter);
-            break;
-        }*/
         SpriteRenderer sprRend(&spr);
         sprRend.render(&painter);
     }
@@ -505,11 +282,13 @@ void LevelView::mousePressEvent(QMouseEvent* evt)
     {
         if (selectedTile.size() != 0 && selObjects[i] == selectedTile[0])
         {
+
             if (evt->modifiers() != Qt::ShiftModifier)
             {
                 hitSelction = true;
                 break;
             }
+            // Remove from selection if clicked on object already in selection
             else
             {
                 selObjects.removeAt(i);
