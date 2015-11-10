@@ -24,8 +24,14 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr)
     QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/");
 
     switch (spr->getid()) {
+    case 3: // Cheep Chomp
+        ret = new NormalImageRenderer(spr, basePath + "cheep_chomp.png");
+        break;
     case 8: // Swoop
         ret = new NormalImageRenderer(spr, basePath + "swoop.png");
+        break;
+    case 9: // Whomp
+        ret = new NormalImageRenderer(spr, basePath + "whomp.png");
         break;
     case 19: // Desert Crater
         ret = new NormalImageRenderer(spr, basePath + "desert_crater.png");
@@ -69,6 +75,9 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr)
     case 77: // Thwomp
         ret = new NormalImageRenderer(spr, basePath + "thwomp.png");
         break;
+    case 83: // Fish Bone
+        ret = new NormalImageRenderer(spr, basePath + "fish_bone.png");
+        break;
     case 92: // Grinder
         ret = new NormalImageRenderer(spr, basePath + "grinder.png");
         break;
@@ -105,6 +114,9 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr)
         ret = new NormalImageRenderer(spr, basePath + "paragoomba.png");
         break;
     // Needs special Renderer case 139: // Goomba Tower
+    case 140: // Crowber
+        ret = new NormalImageRenderer(spr, basePath + "crowber.png");
+        break;
     case 158: // Buzzy Beetle
         ret = new NormalImageRenderer(spr, basePath + "buzzy_beetle.png");
         break;
@@ -143,6 +155,9 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr)
     case 269: // Gold Ship
         ret = new NormalImageRenderer(spr, basePath + "gold_ship.png");
         break;
+    case 270: // Icy Spiked Ball
+        ret = new NormalImageRenderer(spr, basePath + "icy_spiked_ball.png");
+        break;
     case 273: // Coin Roulette Block
         ret = new NormalImageRenderer(spr, basePath + "coin_roulette_block.png");
         break;
@@ -166,6 +181,9 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr)
         break;
     case 296: // Toad
         ret = new NormalImageRenderer(spr, basePath + "toad.png");
+        break;
+    case 322: // Big Grinder
+        ret = new NormalImageRenderer(spr, basePath + "big_grinder.png");
         break;
     default:
         ret = new RoundedRectRenderer(spr, QString("%1").arg(spr->getid()), QColor(0,90,150,200));

@@ -108,10 +108,22 @@ Sprite::Sprite(int x, int y, int id)
 void Sprite::setRect()
 {
     switch (id) {
+    case 3: // Cheep Chomp
+        width = 79;
+        height = 67;
+        offsetx = -31;
+        offsety = -26;
+        break;
     case 8: // Swoop
         width = 13;
         height = 22;
         offsetx = 3;
+        break;
+    case 9: // Whomp
+        width = 75;
+        height = 57;
+        offsetx = -18;
+        offsety = 3;
         break;
     case 19: // Desert Crater
         width = 65;
@@ -179,6 +191,11 @@ void Sprite::setRect()
         height = 59;
         offsetx = -7;
         offsety = -2;
+        break;
+    case 83: // Fish Bone
+        width = 33;
+        height = 21;
+        offsetx = -4;
         break;
     case 92: // Grinder
         width = 49;
@@ -251,6 +268,12 @@ void Sprite::setRect()
         height = getNybble(5) * 21 + 4;
         offsety = - height + 21 + 1;
         break;
+    case 140: // Crowber
+        width = 31;
+        height = 21;
+        offsetx= -5;
+        offsety = -6;
+        break;
     case 165: // Koopa Troopa
         width = 27;
         height = 35;
@@ -319,6 +342,12 @@ void Sprite::setRect()
         width = 285;
         height = 96;
         break;
+    case 270: // Icy Spiked Ball
+        width = 38;
+        height = 38;
+        offsetx = 1;
+        offsety = 1;
+        break;
     case 273: // Coin Roulette Block
         width = 31;
         height = 30;
@@ -366,8 +395,8 @@ void Sprite::setRect()
     case 322: // Big Grinder
         width = 86;
         height = 86;
-        offsetx = -1;
-        offsety = -16;
+        offsetx = -23;
+        offsety = -23;
         break;
     default:
         width = 20;
