@@ -24,8 +24,26 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr)
     QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/");
 
     switch (spr->getid()) {
+    case 66:
+        ret = new NormalImageRenderer(spr, basePath + "pipe_cannon.png");
+        break;
+    case 135:
+        ret = new NormalImageRenderer(spr, basePath + "goomba.png");
+        break;
     case 219:
         ret = new NormalImageRenderer(spr, basePath + "star_coin.png");
+        break;
+    case 267:
+        ret = new NormalImageRenderer(spr, basePath + "long_question_block.png");
+        break;
+    case 269:
+        ret = new NormalImageRenderer(spr, basePath + "gold_ship.png");
+        break;
+    case 274:
+        ret = new NormalImageRenderer(spr, basePath + "flying_gold_block.png");
+        break;
+    case 278:
+        ret = new NormalImageRenderer(spr, basePath + "assist_block.png");
         break;
     default:
         ret = new RoundedRectRenderer(spr, QString("%1").arg(spr->getid()), QColor(0,90,150,200));

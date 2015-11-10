@@ -363,6 +363,12 @@ void Sprite::setRect()
         offsetx = -1;
         offsety = -16;
         break;
+    case 322: // Big Grinder
+        width = 86;
+        height = 86;
+        offsetx = -1;
+        offsety = -16;
+        break;
     default:
         width = 20;
         height = 20;
