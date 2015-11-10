@@ -81,6 +81,17 @@ Level::Level(Game *game, int world, int level, int area)
     timeLimit = header->read16();
     qDebug("Time Limit: %d", timeLimit);
 
+    // Block 3: Zone Boundings
+    header->seek(blockOffsets[2]);
+    upperbound = header->read32();
+    lowerbound = header->read32();
+    unkbound1 = header->read32();
+    unkbound2 = header->read32();
+    boundingid = header->read16();
+    unk1 = header->read16();
+    header->skip(8);
+    qDebug("Bounding block found! Uppper Bound: %d, Lower Bound: %d, Unknown Upper Bound: %d, Unknown Lower Bound: %d, Bounding ID: %d, Unknown 0x012: %d", upperbound, lowerbound, unkbound1, unkbound2, boundingid, unk1);
+
     // Block 7: Entrances
     header->seek(blockOffsets[6]);
     for (int e = 0; e < (int)(blockSizes[6]/24); e++)

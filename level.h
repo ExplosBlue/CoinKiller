@@ -37,6 +37,13 @@ public:
 
     quint16 timeLimit;
 
+    quint16 boundingid;
+    quint16 unk1;
+    quint32 upperbound;
+    quint32 lowerbound;
+    quint32 unkbound1;
+    quint32 unkbound2;
+
     QList<BgdatObject> objects[2];
     QList<Sprite> sprites;
     QList<Entrance> entrances;
