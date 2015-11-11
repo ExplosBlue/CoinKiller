@@ -84,7 +84,9 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr)
     case 95: // Blooper
         ret = new NormalImageRenderer(spr, basePath + "blooper.png");
         break;
-    // Needs special Renderer case 97: // End of Level Flag
+    case 97: // End of Level Flag
+        ret = new GoalRenderer(spr);
+        break;
     case 99: // Wiggler
         ret = new NormalImageRenderer(spr, basePath + "wiggler.png");
         break;
@@ -94,12 +96,17 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr)
     case 108: // Spider Web
         ret = new NormalImageRenderer(spr, basePath + "spider_web.png");
         break;
-    // Needs special Renderer case 109: // Signboard
+    case 109: // Signboard
+        ret = new SignboardRenderer(spr);
+        break;
     case 110: // Dry Bones
         ret = new NormalImageRenderer(spr, basePath + "dry_bones.png");
         break;
     case 111: // Giant Dry Bones
         ret = new NormalImageRenderer(spr, basePath + "sgiant_dry_bones.png");
+        break;
+    case 114: // Floating Box
+        ret = new FloatingBoxRenderer(spr);
         break;
     case 135: // Goomba
         ret = new NormalImageRenderer(spr, basePath + "goomba.png");
@@ -113,20 +120,29 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr)
     case 138: // Paragoomba
         ret = new NormalImageRenderer(spr, basePath + "paragoomba.png");
         break;
-    // Needs special Renderer case 139: // Goomba Tower
+    case 139: // Goomba Tower
+        ret = new GoombaTowerRenderer(spr);
+        break;
     case 140: // Crowber
         ret = new NormalImageRenderer(spr, basePath + "crowber.png");
+        break;
+    case 150: // Seesaw Lift
+        ret = new NormalImageRenderer(spr, basePath + "seesaw_lift.png");
         break;
     case 158: // Buzzy Beetle
         ret = new NormalImageRenderer(spr, basePath + "buzzy_beetle.png");
         break;
-    // Needs special Renderer case 165: // Koopa Troopa
-    // Needs special Renderer case 185: // Koopa Paratroopa
+    case 165: // Koopa Troopa
+        ret = new KoopaTroopaRenderer(spr);
+        break;
     case 175: // Grounded Piranha Plant
         ret = new NormalImageRenderer(spr, basePath + "piranha_plant.png");
         break;
     case 184: // Parabomb
         ret = new NormalImageRenderer(spr, basePath + "parabomb.png");
+        break;
+    case 205: // Red Ring
+        ret = new NormalImageRenderer(spr, basePath + "red_ring.png");
         break;
     case 206: // Gold Ring
         ret = new NormalImageRenderer(spr, basePath + "gold_ring.png");
@@ -197,21 +213,23 @@ void SpriteRenderer::render(QPainter *painter)
 }
 
 
-NormalImageRenderer::NormalImageRenderer() { }
-
 NormalImageRenderer::NormalImageRenderer(const Object *obj, QString filename)
 {
-    this->obj = obj;
+    rect = QRect(obj->getx()+obj->getOffsetX(), obj->gety()+obj->getOffsetY(), obj->getwidth(), obj->getheight());
+    this->filename = filename;
+}
+
+NormalImageRenderer::NormalImageRenderer(QRect rect, QString filename)
+{
+    this->rect = rect;
     this->filename = filename;
 }
 
 void NormalImageRenderer::render(QPainter *painter)
 {
-    painter->drawPixmap(obj->getx()+obj->getOffsetX(), obj->gety()+obj->getOffsetY(), obj->getwidth(), obj->getheight(), QPixmap(filename));
+    painter->drawPixmap(rect, QPixmap(filename));
 }
 
-
-RoundedRectRenderer::RoundedRectRenderer() { }
 
 RoundedRectRenderer::RoundedRectRenderer(const Object *obj, QString text, QColor color)
 {
@@ -234,3 +252,94 @@ void RoundedRectRenderer::render(QPainter *painter)
     painter->setFont(QFont("Arial", 7, QFont::Normal));
     painter->drawText(rect, text, Qt::AlignHCenter | Qt::AlignVCenter);
 }
+
+
+// Sprite 97: End of Level Flag
+GoalRenderer::GoalRenderer(const Sprite *spr)
+{
+    QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/");
+
+    if (spr->getNybble(5) == 1)
+    {
+        pole = new NormalImageRenderer(spr, basePath + "flagpole_secret.png");
+        fort = new NormalImageRenderer(QRect(spr->getx()+200, spr->gety()+80, 120, 120), basePath + "secret_castle.png");
+    }
+    else
+    {
+        pole = new NormalImageRenderer(spr, basePath + "flagpole.png");
+        fort = new NormalImageRenderer(QRect(spr->getx()+200, spr->gety()+80, 120, 120), basePath + "castle.png");
+    }
+}
+
+void GoalRenderer::render(QPainter *painter)
+{
+    pole->render(painter);
+    fort->render(painter);
+}
+
+
+// Sprite 109: Signboard
+SignboardRenderer::SignboardRenderer(const Sprite *spr)
+{
+    QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/");
+    QString signboardPath("sign_%1");
+
+    if (spr->getNybble(5) < 10) img = new NormalImageRenderer(spr, basePath + signboardPath.arg(spr->getNybble(5)));
+    else img = new NormalImageRenderer(spr, basePath + signboardPath.arg(7));
+}
+
+void SignboardRenderer::render(QPainter *painter)
+{
+    img->render(painter);
+}
+
+
+// Sprite 114: Floating Box
+FloatingBoxRenderer::FloatingBoxRenderer(const Sprite *spr)
+{
+    QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/");
+
+    if (spr->getNybble(5) == 1) img = new NormalImageRenderer(spr, basePath + "floating_box_big.png");
+    else img = new NormalImageRenderer(spr, basePath + "floating_box_small.png");
+}
+
+void FloatingBoxRenderer::render(QPainter *painter)
+{
+    img->render(painter);
+}
+
+
+// Sprite 139: Goomba Tower
+GoombaTowerRenderer::GoombaTowerRenderer(const Sprite *spr)
+{
+    QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/");
+
+    top = new NormalImageRenderer(QRect(spr->getx(), spr->gety()+spr->getOffsetY(), spr->getwidth(), 25), basePath + "goomba_tower_top.png");
+    bottom = new NormalImageRenderer(QRect(spr->getx(), spr->gety(), spr->getwidth(), 21), basePath + "goomba_tower_bottom.png");
+
+    if (spr->getNybble(5) < 3) return;
+    for (int i = 0; i < spr->getNybble(5)-2; i++) middle.append(new NormalImageRenderer(QRect(spr->getx(), spr->gety()+spr->getOffsetY()+25+i*21, spr->getwidth(), 21), basePath + "goomba_tower_middle.png"));
+}
+
+void GoombaTowerRenderer::render(QPainter *painter)
+{
+    top->render(painter);
+    for(int i = 0; i < middle.size(); i++) middle[i]->render(painter);
+    bottom->render(painter);
+}
+
+
+// Sprite 165: Koopa Troopa
+KoopaTroopaRenderer::KoopaTroopaRenderer(const Sprite *spr)
+{
+    QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/");
+
+    if (spr->getNybble(5) == 1) img = new NormalImageRenderer(spr, basePath + "koopa_troopa_red.png");
+    else img = new NormalImageRenderer(spr, basePath + "koopa_troopa_green.png");
+}
+
+void KoopaTroopaRenderer::render(QPainter *painter)
+{
+    img->render(painter);
+}
+

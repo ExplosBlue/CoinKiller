@@ -134,7 +134,6 @@ void Sprite::setRect()
     case 22: // Special Exit Controller
         width = getNybble(7) * 20;
         height = getNybble(4) * 20;
-        qDebug("%i", getNybble(4));
         break;
     case 29: // Bob-omb
         width = 29;
@@ -239,6 +238,22 @@ void Sprite::setRect()
         offsetx = -8;
         offsety = 7;
         break;
+    case 114: // Floating Box
+        if (getNybble(5) == 1) // Big
+        {
+            width = 122;
+            height = 121;
+            offsetx = -31;
+            offsety = 2;
+        }
+        else
+        {
+            width = 62;
+            height = 61;
+            offsetx = -1;
+            offsety = 3;
+        }
+        break;
     case 135: // Goomba
         width = 24;
         height = 24;
@@ -274,6 +289,11 @@ void Sprite::setRect()
         offsetx= -5;
         offsety = -6;
         break;
+    case 150: // Seesaw Lift
+        width = 280;
+        height = 20;
+        offsetx= 20;
+        break;
     case 165: // Koopa Troopa
         width = 27;
         height = 35;
@@ -297,9 +317,15 @@ void Sprite::setRect()
         offsetx = -7;
         offsety = -15;
         break;
+    case 205: // Red Ring
+        width = 39;
+        height = 56;
+        offsety = 2;
+        break;
     case 206: // Gold Ring
         width = 42;
         height = 57;
+        offsetx = 3;
         offsety = 2;
         break;
     case 219: // Star Coin
@@ -333,6 +359,7 @@ void Sprite::setRect()
     case 255: // Bowser Head Statue
         width = 43;
         height = 44;
+        offsetx = -20;
         break;
     case 267: // Long Question Block
         width = 60;

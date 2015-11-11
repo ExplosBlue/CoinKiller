@@ -28,11 +28,11 @@ protected:
 class NormalImageRenderer: public ObjectRenderer
 {
 public:
-    NormalImageRenderer();
     NormalImageRenderer(const Object *obj, QString filename);
+    NormalImageRenderer(QRect rect, QString filename);
     void render(QPainter *painter);
 protected:
-    const Object *obj;
+    QRect rect;
     QString filename;
 };
 
@@ -46,6 +46,67 @@ protected:
     const Object *obj;
     QString text;
     QColor color;
+};
+
+
+// Special Sprite Renderers
+
+// Sprite 97: End of Level Flag
+class GoalRenderer: public ObjectRenderer
+{
+public:
+    GoalRenderer(const Sprite *spr);
+    void render(QPainter *painter);
+protected:
+    const Object *obj;
+    NormalImageRenderer *pole;
+    NormalImageRenderer *fort;
+};
+
+// Sprite 109: Signboard
+class SignboardRenderer: public ObjectRenderer
+{
+public:
+    SignboardRenderer(const Sprite *spr);
+    void render(QPainter *painter);
+protected:
+    const Object *obj;
+    NormalImageRenderer *img;
+};
+
+// Sprite 114: Floating Box
+class FloatingBoxRenderer: public ObjectRenderer
+{
+public:
+    FloatingBoxRenderer(const Sprite *spr);
+    void render(QPainter *painter);
+protected:
+    const Object *obj;
+    NormalImageRenderer *img;
+};
+
+// Sprite 139: Goomba Tower
+class GoombaTowerRenderer: public ObjectRenderer
+{
+public:
+    GoombaTowerRenderer(const Sprite *spr);
+    void render(QPainter *painter);
+protected:
+    const Object *obj;
+    NormalImageRenderer *top;
+    QList<NormalImageRenderer*> middle;
+    NormalImageRenderer *bottom;
+};
+
+// Sprite 165: Koopa Troopa
+class KoopaTroopaRenderer: public ObjectRenderer
+{
+public:
+    KoopaTroopaRenderer(const Sprite *spr);
+    void render(QPainter *painter);
+protected:
+    const Object *obj;
+    NormalImageRenderer *img;
 };
 
 #endif // OBJECTRENDERER_H
