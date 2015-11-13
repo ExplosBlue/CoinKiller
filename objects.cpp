@@ -141,14 +141,21 @@ void Sprite::setRect()
         offsetx = -5;
         offsety = -8;
         break;
+    case 31: case 32: case 33: // Boomerang/Fire/Hammer Bro.
+        width = 27;
+        height = 47;
+        offsetx = -5;
+        offsety = -13;
+        break;
     case 35: // Lava Bubble
         width = 20;
         height = 21;
         offsety = 10;
         break;
     case 52: // Checkpoint Flag
-        width = 38;
+        width = 37;
         height = 65;
+        offsetx = 1;
         offsety = -25;
         break;
     case 66: // Pipe Cannon
@@ -336,19 +343,19 @@ void Sprite::setRect()
         width = 22;
         height = 24;
         offsetx = -1;
-        offsety = -4;
+        if (getNybble(5) != 1) offsety = -4;
         break;
     case 223: // ? Switch
         width = 22;
         height = 24;
         offsetx = -1;
-        offsety = -4;
+        if (getNybble(5) != 1) offsety = -4;
         break;
     case 225: // P Switch
         width = 22;
         height = 24;
         offsetx = -1;
-        offsety = -4;
+        if (getNybble(5) != 1) offsety = -4;
         break;
     case 234: // Spiked Ball
         width = 38;
@@ -357,9 +364,10 @@ void Sprite::setRect()
         offsety = 1;
         break;
     case 255: // Bowser Head Statue
-        width = 43;
-        height = 44;
-        offsetx = -20;
+        width = 40;
+        height = 42;
+        offsetx = -18;
+        offsety = -1;
         break;
     case 267: // Long Question Block
         width = 60;

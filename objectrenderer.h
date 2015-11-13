@@ -109,4 +109,16 @@ protected:
     NormalImageRenderer *img;
 };
 
+// Sprite 221/223/225: Switches
+class SwitchRenderer: public ObjectRenderer
+{
+public:
+    SwitchRenderer(const Sprite *spr, QString filename);
+    void render(QPainter *painter);
+protected:
+    const Object *obj;
+    QString filename;
+    NormalImageRenderer *img;
+};
+
 #endif // OBJECTRENDERER_H

@@ -36,10 +36,8 @@ LevelView::LevelView(QWidget *parent, Level* level) : QWidget(parent)
 
     layerMask = 0x7; // failsafe
 
+    editMode = 0;
     zoom = 1;
-
-    areaSelction = false;
-    forbidDrag = false;
 }
 
 
@@ -256,10 +254,10 @@ void LevelView::paintEvent(QPaintEvent* evt)
     }
 
     // Render Selection Area
-    if (areaSelction)
+    if (editMode == 2)
     {
-        painter.setPen(QPen(QColor(100,100,255,200), 1));
-        painter.fillRect(selArea, QColor(100,100,255,25));
+        painter.setPen(QPen(QColor(0,80,180), 0.5));
+        painter.fillRect(selArea, QColor(160,222,255,50));
         painter.drawRect(selArea);
     }
 }
@@ -267,62 +265,94 @@ void LevelView::paintEvent(QPaintEvent* evt)
 
 void LevelView::mousePressEvent(QMouseEvent* evt)
 {    
+    if (editMode != 0)
+        return;
+
     int x = evt->x()/zoom;
     int y = evt->y()/zoom;
 
-    if (evt->button() != Qt::LeftButton)
-        return;
-
-    forbidDrag = false;
-
-    bool hitSelction = false;
-    QList<Object*> selectedTile = selObjectsCheck(x,y,0,0,false);
-
-    for (int i = 0; i < selObjects.size(); i++)
+    if (evt->button() == Qt::LeftButton)
     {
-        if (selectedTile.size() != 0 && selObjects[i] == selectedTile[0])
+        switch (editMode)
         {
-
-            if (evt->modifiers() != Qt::ShiftModifier)
+            case 0: // Nothing
             {
-                hitSelction = true;
+                bool hitSelection = false;
+
+                QList<Object*> hitObject = selObjectsCheck(x,y,0,0,false);
+
+                // Check if hit a object already in Selection
+                for (int i = 0; i < selObjects.size(); i++)
+                {
+                    if (hitObject.size() != 0 && selObjects[i] == hitObject[0])
+                    {
+                        hitSelection = true;
+
+                        // Drag if hit selection
+                        if (evt->modifiers() != Qt::ShiftModifier)
+                        {
+                            dragX = x;
+                            dragY = y;
+
+                            for (int i = 0; i < selObjects.size(); i++)
+                            {
+                                selObjects[i]->setDrag(selObjects[i]->getx(), selObjects[i]->gety());
+                            }
+
+                            editMode = 1;
+                            break;
+                        }
+                        // Remove from selection if shift-clicked on object already in selection
+                        else
+                        {
+                            selObjects.removeAt(i);
+                            break;
+                        }
+                    }
+                }
+
+                // Return if hit object in selection
+                if (hitSelection) break;
+
+                // Clear selection if not shift-clicked
+                if (evt->modifiers() != Qt::ShiftModifier) selObjects.clear();
+
+                // Add object under Mouse
+                selObjects.append(hitObject);
+
+                // Remove doubled entrys
+                for (int i = 0; i < selObjects.size(); i++)
+                {
+                    for (int j = 0; j < selObjects.size(); j++) if (i != j && selObjects[i] == selObjects[j]) selObjects.removeAt(j);
+                }
+
+                // Area Selection if hit nothing
+                if (selObjects.size() == 0)
+                {
+                    dragX = x;
+                    dragY = y;
+
+                    editMode = 2;
+                    selArea = QRect(x,y,0,0);
+                }
+                // Dragging Mode if hit a object
+                else
+                {
+                    dragX = x;
+                    dragY = y;
+
+                    for (int i = 0; i < selObjects.size(); i++)
+                    {
+                        selObjects[i]->setDrag(selObjects[i]->getx(), selObjects[i]->gety());
+                    }
+
+                    editMode = 1;
+                }
                 break;
             }
-            // Remove from selection if clicked on object already in selection
-            else
-            {
-                selObjects.removeAt(i);
-                forbidDrag = true;
-                update();
-                return;
-            }
+
+            default: {}
         }
-    }
-
-    if (evt->modifiers() != Qt::ShiftModifier && !hitSelction) selObjects.clear();
-
-    selObjects.append(selObjectsCheck(x, y, 0, 0, false));
-
-    if (!hitSelction && evt->modifiers() == Qt::ShiftModifier)
-        forbidDrag = true;
-
-    // Remove doubled entrys
-    for (int i = 0; i < selObjects.size(); i++)
-    {
-        for (int j = 0; j < selObjects.size(); j++) if (i != j && selObjects[i] == selObjects[j]) selObjects.removeAt(j);
-    }
-
-    dragX = x;
-    dragY = y;
-    for (int i = 0; i < selObjects.size(); i++)
-    {
-        selObjects[i]->setDrag(selObjects[i]->getx(), selObjects[i]->gety());
-    }
-
-    if (selObjects.size() == 0)
-    {
-        areaSelction = true;
-        selArea = QRect(x,y,0,0);
     }
 
     update();
@@ -334,82 +364,86 @@ void LevelView::mouseMoveEvent(QMouseEvent* evt)
     int x = evt->x()/zoom;
     int y = evt->y()/zoom;
 
-    if (evt->buttons() != Qt::LeftButton) // checkme?
-        return;
+    //if (evt->button() != Qt::LeftButton || evt->button() != Qt::MiddleButton) // checkme?
+    //    return;
 
-    if (areaSelction)
+    switch (editMode)
     {
-        int sx = qMin(dragX,x);
-        int sy = qMin(dragY,y);
-        int width = qAbs(dragX-x);
-        int height = qAbs(dragY-y);
-        selArea = QRect(sx,sy,width,height);
-
-        selObjects.clear();
-        selObjects.append(selObjectsCheck(selArea.x(),selArea.y(),selArea.width(),selArea.height(),true));
-        update();
-        return;
-    }
-
-    if (forbidDrag)
-        return;
-
-    bool roundToFullTile = false;
-    for (int i = 0; i < selObjects.size(); i++)
-    {
-        if (selObjects[i]->getType() == 0)
+        case 1: // Dragging
         {
-            roundToFullTile = true;
+            // Check if a Bgdat object is in selection
+            bool roundToFullTile = false;
+            for (int i = 0; i < selObjects.size(); i++)
+            {
+                if (selObjects[i]->getType() == 0)
+                {
+                    roundToFullTile = true;
+                    break;
+                }
+            }
+
+            for (int i = 0; i < selObjects.size(); i++)
+            {
+                int finalX, finalY;
+
+                // Rounded to next Tile
+                if (roundToFullTile)
+                {
+                    finalX = selObjects[i]->getDragX() + toNext20(x-dragX);
+                    finalY = selObjects[i]->getDragY() + toNext20(y-dragY);
+                }
+
+                // For Based on 16
+                else
+                {
+                    // Drag stuff freely
+                    if (evt->modifiers() == Qt::AltModifier)
+                    {
+                        finalX = selObjects[i]->getDragX() + toNext16Compatible(x-dragX);
+                        finalY = selObjects[i]->getDragY() + toNext16Compatible(y-dragY);
+                    }
+                    // Rounded to next half Tile
+                    else
+                    {
+                        finalX = selObjects[i]->getDragX() + toNext10(x-dragX);
+                        finalY = selObjects[i]->getDragY() + toNext10(y-dragY);
+                    }
+                }
+
+                // clamp coords
+                if (finalX < 0) finalX = 0;
+                else if (finalX > 0xFFFF*20) finalX = 0xFFFF*20;
+                if (finalY < 0) finalY = 0;
+                else if (finalY > 0xFFFF*20) finalY = 0xFFFF*20;
+
+                selObjects[i]->setPosition(finalX, finalY);
+            }
+
             break;
         }
-    }
 
-    for (int i = 0; i < selObjects.size(); i++)
-    {
-        int finalX, finalY;
-
-        // Rounded to next Tile
-        if (roundToFullTile)
+        case 2: // Area Selection
         {
-            finalX = selObjects[i]->getDragX() + toNext20(x-dragX);
-            finalY = selObjects[i]->getDragY() + toNext20(y-dragY);
+            int sx = qMin(dragX,x);
+            int sy = qMin(dragY,y);
+            int width = qAbs(dragX-x);
+            int height = qAbs(dragY-y);
+            selArea = QRect(sx,sy,width,height);
+
+            selObjects.clear();
+            selObjects.append(selObjectsCheck(selArea.x(),selArea.y(),selArea.width(),selArea.height(),true));
+            break;
         }
 
-        // For Based on 16
-        else
-        {
-            // Drag stuff freely
-            if (evt->modifiers() == Qt::AltModifier)
-            {
-                finalX = selObjects[i]->getDragX() + toNext16Compatible(x-dragX);
-                finalY = selObjects[i]->getDragY() + toNext16Compatible(y-dragY);
-            }
-            // Rounded to next half Tile
-            else
-            {
-                finalX = selObjects[i]->getDragX() + toNext10(x-dragX);
-                finalY = selObjects[i]->getDragY() + toNext10(y-dragY);
-            }
-        }
+        default: {}
 
-        // clamp coords
-        if (finalX < 0) finalX = 0;
-        else if (finalX > 0xFFFF*20) finalX = 0xFFFF*20;
-        if (finalY < 0) finalY = 0;
-        else if (finalY > 0xFFFF*20) finalY = 0xFFFF*20;
-
-        selObjects[i]->setPosition(finalX, finalY);
     }
-
     update();
 }
 
 void LevelView::mouseReleaseEvent(QMouseEvent *evt)
 {
-    if (evt->buttons() == Qt::LeftButton) // checkme?
-        return;
-
-    areaSelction = false;
+    editMode = 0;
 
     update();
 }

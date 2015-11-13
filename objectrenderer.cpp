@@ -42,6 +42,15 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr)
     case 29: // Bob-omb
         ret = new NormalImageRenderer(spr, basePath + "bob-omb.png");
         break;
+    case 31: // Boomerang Bro.
+        ret = new NormalImageRenderer(spr, basePath + "boomerang_bro.png");
+        break;
+    case 32: // Fire Bro.
+        ret = new NormalImageRenderer(spr, basePath + "fire_bro.png");
+        break;
+    case 33: // Hammer Bro.
+        ret = new NormalImageRenderer(spr, basePath + "hammer_bro.png");
+        break;
     case 35: // Lava Bubble
         ret = new NormalImageRenderer(spr, basePath + "lava_bubble.png");
         break;
@@ -151,13 +160,13 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr)
         ret = new NormalImageRenderer(spr, basePath + "star_coin.png");
         break;
     case 221: // ! Switch
-        ret = new NormalImageRenderer(spr, basePath + "exclamation_switch.png");
+        ret = new SwitchRenderer(spr, basePath + "exclamation_switch.png");
         break;
     case 223: // ? Switch
-        ret = new NormalImageRenderer(spr, basePath + "question_switch.png");
+        ret = new SwitchRenderer(spr, basePath + "question_switch.png");
         break;
     case 225: // P Switch
-        ret = new NormalImageRenderer(spr, basePath + "p_switch.png");
+        ret = new SwitchRenderer(spr, basePath + "p_switch.png");
         break;
     case 234: // Spiked Ball
         ret = new NormalImageRenderer(spr, basePath + "spiked_ball.png");
@@ -343,3 +352,17 @@ void KoopaTroopaRenderer::render(QPainter *painter)
     img->render(painter);
 }
 
+
+// Sprite 221/223/225: Switches
+SwitchRenderer::SwitchRenderer(const Sprite *spr, QString filename)
+{
+    this->filename = filename;
+    if (spr->getNybble(5) == 1) filename.insert(filename.size()-4, "_flipped");
+
+    img = new NormalImageRenderer(spr, filename);
+}
+
+void SwitchRenderer::render(QPainter *painter)
+{
+    img->render(painter);
+}

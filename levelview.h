@@ -61,10 +61,13 @@ private:
 
     QList<Object*> selObjects;
 
-    bool forbidDrag;
+    int editMode;
+    // 0: Nothing
+    // 1: Dragging
+    // 2: Area Selection
+
     int dragX, dragY;
 
-    bool areaSelction;
     QRect selArea;
 
     quint8 layerMask;
