@@ -207,6 +207,9 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr)
     case 296: // Toad
         ret = new NormalImageRenderer(spr, basePath + "toad.png");
         break;
+    case 302: // Moon Coin
+        ret = new NormalImageRenderer(spr, basePath + "moon_coin.png");
+        break;
     case 322: // Big Grinder
         ret = new NormalImageRenderer(spr, basePath + "big_grinder.png");
         break;

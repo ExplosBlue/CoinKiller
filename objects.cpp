@@ -427,6 +427,10 @@ void Sprite::setRect()
         offsetx = -1;
         offsety = -16;
         break;
+    case 302: // Moon Coin
+        width = 40;
+        height = 40;
+        break;
     case 322: // Big Grinder
         width = 86;
         height = 86;
