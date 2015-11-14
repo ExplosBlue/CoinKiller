@@ -130,7 +130,7 @@ void LevelEditorWindow::on_actionZoom_In_triggered()
 {
     if (zoom < 4)
     {
-        if (zoom < 1.5) zoom += 0.1;
+        if (zoom < 1) zoom += 0.1;
         else zoom += 0.25;
         levelView->setZoom(zoom);
         update();
@@ -198,18 +198,17 @@ void LevelEditorWindow::on_actionFullscreen_toggled(bool toggle)
 {
     if (toggle)
     {
-        lastState = windowState();
-        setWindowState(Qt::WindowFullScreen);
+        showFullScreen();
         ui->actionFullscreen->setIcon(QIcon(QCoreApplication::applicationDirPath() + "/coinkiller_data/icon_collapse.png"));
     }
     else
     {
-        setWindowState(lastState);
+        showNormal();
         ui->actionFullscreen->setIcon(QIcon(QCoreApplication::applicationDirPath() + "/coinkiller_data/icon_expand.png"));
     }
 }
 
 void LevelEditorWindow::on_actionGrid_toggled(bool toggle)
 {
-    //levelView->setGrid(toggle);
+    levelView->toggleGrid(toggle);
 }

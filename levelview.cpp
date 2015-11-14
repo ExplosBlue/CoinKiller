@@ -38,6 +38,7 @@ LevelView::LevelView(QWidget *parent, Level* level) : QWidget(parent)
 
     editMode = 0;
     zoom = 1;
+    grid = false;
 }
 
 
@@ -46,8 +47,7 @@ void LevelView::paintEvent(QPaintEvent* evt)
     QPainter painter(this);
     painter.scale(zoom,zoom);
 
-    QRect drawrect(evt->rect().x()/zoom, evt->rect().y()/zoom, evt->rect().width()/zoom, evt->rect().height()/zoom);
-
+    QRect drawrect(evt->rect().x()/zoom, evt->rect().y()/zoom, evt->rect().width()/zoom+20, evt->rect().height()/zoom+20);
 
     //qDebug("draw %d,%d %d,%d", drawrect.x(), drawrect.y(), drawrect.width(), drawrect.height());
 
@@ -251,6 +251,66 @@ void LevelView::paintEvent(QPaintEvent* evt)
         painter.setPen(QPen(QColor(255,255,255,200), 1, Qt::DotLine));
         painter.drawRect(objrect);
         painter.fillRect(objrect, QColor(255,255,255,75));
+    }
+
+    // Render Grid
+    if (grid)
+    {
+        painter.setRenderHint(QPainter::Antialiasing, false);
+
+        int startx = drawrect.x() - drawrect.x() % 20;
+        int endx = startx + drawrect.width() + 20;
+
+        int starty = drawrect.y() - drawrect.y() % 20;
+        int endy = starty + drawrect.height() + 20;
+
+        int x = startx + 20;
+        while (x <= endx)
+        {
+            x += 20;
+            if (x % 160 == 0)
+            {
+                painter.setPen(QPen(QColor(255,255,255,75), 2, Qt::DashLine));
+                painter.drawLine(x, starty, x, endy);
+            }
+            else if (x % 80 == 0)
+            {
+                if (zoom  < 0.3) continue;
+                painter.setPen(QPen(QColor(255,255,255,75), 1, Qt::DashLine));
+                painter.drawLine(x, starty, x, endy);
+            }
+            else
+            {
+                if (zoom  < 0.5) continue;
+                painter.setPen(QPen(QColor(255,255,255,75), 1, Qt::DotLine));
+                painter.drawLine(x, starty, x, endy);
+            }
+        }
+
+        int y = starty + 20;
+        while (y <= endy)
+        {
+            y += 20;
+            if (y % 160 == 0)
+            {
+                painter.setPen(QPen(QColor(255,255,255,75), 2, Qt::DashLine));
+                painter.drawLine(startx, y, endx, y);
+            }
+            else if (y % 80 == 0)
+            {
+                if (zoom  < 0.3) continue;
+                painter.setPen(QPen(QColor(255,255,255,75), 1, Qt::DashLine));
+                painter.drawLine(startx, y, endx, y);
+            }
+            else
+            {
+                if (zoom  < 0.5) continue;
+                painter.setPen(QPen(QColor(255,255,255,75), 1, Qt::DotLine));
+                painter.drawLine(startx, y, endx, y);
+            }
+        }
+
+        painter.setRenderHint(QPainter::Antialiasing);
     }
 
     // Render Selection Area
@@ -623,3 +683,4 @@ void LevelView::deleteSel()
 {
     update();
 }
+

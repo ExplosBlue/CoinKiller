@@ -81,7 +81,6 @@ private:
 
     quint8 layerMask;
     float zoom;
-    QFlags<Qt::WindowState> lastState;
 };
 
 #endif // LEVELEDITORWINDOW_H
