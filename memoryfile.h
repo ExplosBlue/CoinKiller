@@ -26,6 +26,7 @@ public:
     ~MemoryFile();
 
     void open();
+    void save();
     void close();
     quint64 readData(quint8* data, quint64 len);
     quint64 writeData(quint8* data, quint64 len);

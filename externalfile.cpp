@@ -47,13 +47,19 @@ void ExternalFile::open()
     openCount++;
 }
 
+void ExternalFile::save()
+{
+    file->flush();
+    if (parent) parent->save(this); // we never know
+}
+
 void ExternalFile::close()
 {
     openCount--;
     if (openCount == 0)
     {
         file->close();
-        if (parent) parent->save(this); // we never know
+        //if (parent) parent->save(this); // we never know
     }
 
     if (openCount < 0)

@@ -39,12 +39,17 @@ void MemoryFile::open()
     openCount++;
 }
 
+void MemoryFile::save()
+{
+    if (parent) parent->save(this);
+}
+
 void MemoryFile::close()
 {
     openCount--;
     if (openCount == 0)
     {
-        if (parent) parent->save(this);
+        //if (parent) parent->save(this);
     }
 
     if (openCount < 0)

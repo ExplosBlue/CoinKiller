@@ -43,6 +43,8 @@ private:
 
         quint32 nameOffset;
         quint32 nameHash;
+
+        quint32 entryOffset;
     };
 
     quint32 numFiles;

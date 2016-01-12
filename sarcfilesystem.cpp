@@ -49,6 +49,7 @@ SarcFilesystem::SarcFilesystem(FileBase* file)
     {
         file->seek(sfatOffset + 0xC + (i * 0x10));
         InternalSarcFile* entry = new InternalSarcFile();
+        entry->entryOffset = (quint32)file->pos();
 
         entry->nameHash = file->read32();
         entry->nameOffset = (file->read32() & 0x00FFFFFF) << 2;
@@ -152,7 +153,105 @@ FileBase* SarcFilesystem::openFile(QString path)
 
 bool SarcFilesystem::save(FileBase *file)
 {
-    // todo: do shit here
+    QString path = file->getIdPath();
+    quint32 writeoffset = 0;
+
+    file->open();
+    quint32 writesize = file->size();
+
+    sarc->open();
+
+    if (files.contains(path))
+    {
+        // reinsert existing file
+
+        quint32 hash = filenameHash(path);
+        InternalSarcFile* thisfile = NULL;
+
+        for (int i = 0; i < files.size(); i++)
+        {
+            thisfile = files.values()[i];
+
+            if (thisfile->nameHash != hash)
+                continue;
+            if (thisfile->name != path)
+                continue;
+
+            qDebug("Found file entry %s at %08X", path.toStdString().c_str(), thisfile->entryOffset);
+
+            break;
+        }
+
+        if (thisfile == NULL)
+            throw std::logic_error("thisfile is NULL, shouldn't happen");
+
+        writeoffset = dataOffset + thisfile->offset;
+        quint32 sizediff = writesize - thisfile->size;
+
+        // move shit
+        quint32 sizetomove = sarc->size() - (writeoffset + thisfile->size);
+        quint8* tempbuf = new quint8[sizetomove]; // TODO might fail if it's too big
+        sarc->seek(writeoffset + thisfile->size);
+        sarc->readData(tempbuf, sizetomove);
+        sarc->seek(writeoffset + writesize);
+        sarc->writeData(tempbuf, sizetomove);
+        delete[] tempbuf;
+
+        // fix size
+        sarc->seek(thisfile->entryOffset + 0xC);
+        sarc->write32(thisfile->offset + writesize);
+
+        // fix offsets of files that come later
+        for (int i = 0; i < files.size(); i++)
+        {
+            InternalSarcFile* tofix = files.values()[i];
+            if (tofix == thisfile)
+                continue;
+            if (tofix->offset < thisfile->offset)
+                continue;
+
+            tofix->offset += sizediff;
+
+            sarc->seek(tofix->entryOffset + 0x8);
+            sarc->write32(tofix->offset);
+            sarc->write32(tofix->offset + tofix->size);
+        }
+
+        // fix the internal shit
+        thisfile->size = writesize;
+    }
+    else
+    {
+        // insert new file
+
+        // TODO
+        return true;
+    }
+
+    /*quint8* tempbuf = new quint8[4096];
+        quint64 pos = 0;
+        while (pos < size)
+        {
+            quint64 toread = 4096;
+            if ((pos+toread) > size) toread = size-pos;
+
+            readData(tempbuf, toread);
+            ret->writeData(tempbuf, toread);
+            pos += toread;
+        }
+
+        ret->close();
+        delete[] tempbuf;*/
+    // same lazy shit
+    file->seek(0);
+    quint8* tempbuf = new quint8[writesize];
+    file->readData(tempbuf, writesize);
+    sarc->seek(writeoffset);
+    sarc->writeData(tempbuf, writesize);
+
+    file->close();
+    sarc->save();
+    sarc->close();
 
     return true;
 }

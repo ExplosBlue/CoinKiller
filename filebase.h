@@ -26,6 +26,7 @@ public:
 
     // base shit
     virtual void open()=0;
+    virtual void save()=0;
     virtual void close()=0;
     virtual quint64 readData(quint8* data, quint64 len)=0;
     virtual quint64 writeData(quint8* data, quint64 len)=0;
