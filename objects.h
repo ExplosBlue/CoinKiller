@@ -191,4 +191,39 @@ protected:
     QList<ProgressPathNode> nodes;
 };
 
+
+// Zone Boundings
+class ZoneBounding
+{
+public:
+    ZoneBounding();
+    ZoneBounding(quint32 upperBound, quint32 lowerBound, quint32 unkUpperBound, quint32 unkLowerBound, quint16 id, quint16 upScrolling);
+    // TODO: Getters and Setters
+protected:
+    quint32 upperBound;
+    quint32 lowerBound;
+    quint32 unkUpperBound;
+    quint32 unkLowerBound;
+    quint16 id;
+    quint16 upScrolling;
+};
+
+
+// Zone Background
+class ZoneBackground
+{
+public:
+    ZoneBackground();
+    ZoneBackground(quint16 id, quint8 xScrollRate, quint8 yScrollRate, quint8 xPos, quint8 yPos, QString name);
+    // TODO: Getters and Setters
+protected:
+    quint16 id;
+    quint8 xScrollRate;
+    quint8 yScrollRate;
+    quint8 xPos;
+    quint8 yPos;
+    QString name;
+    // quint8 unk1;
+};
+
 #endif // OBJECTS_H

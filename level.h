@@ -35,25 +35,22 @@ public:
 
     Tileset* tilesets[4];
 
+    // Area Settings
     quint16 timeLimit;
-
-    quint16 bgblockid;
-    quint8 xscrollrate;
-    quint8 yscrollrate;
-    quint8 xpos;
-    quint8 ypos;
-
-    quint16 boundingid;
+    bool toadHouseFlag;
+    quint16 specialLevelFlag;
+    quint16 specialLevelFlag2;
     quint16 unk1;
-    quint32 upperbound;
-    quint32 lowerbound;
-    quint32 unkbound1;
-    quint32 unkbound2;
+    quint8 unk2;
+    quint8 unk3;
 
     QList<BgdatObject> objects[2];
     QList<Sprite> sprites;
+    QList<quint16> spritesUsed;
     QList<Entrance> entrances;
     QList<Zone> zones;
+    QList<ZoneBounding> zoneBoundings;
+    QList<ZoneBackground> zoneBackgrounds;
     QList<Location> locations;
     QList<Path> paths;
     QList<ProgressPath> progressPaths;

@@ -77,44 +77,55 @@ Level::Level(Game *game, int world, int level, int area)
 
     // Block 1: Area Settings
     header->seek(blockOffsets[1]);
-    header->skip(10); // 8 Zeros + Unk1
+    header->skip(8); // 8 Zeros
+    unk1 = header->read16();
     timeLimit = header->read16();
-    qDebug("Time Limit: %d", timeLimit);
+    header->skip(4);
+    if (header->read8() == 2) toadHouseFlag == true;
+    unk2 = header->read8();
+    specialLevelFlag = header->read8();
+    specialLevelFlag2 = header->read8();
+    unk3 = header->read8();
 
     // Block 2: Zone Boundings
     header->seek(blockOffsets[2]);
-    upperbound = header->read32();
-    lowerbound = header->read32();
-    unkbound1 = header->read32();
-    unkbound2 = header->read32();
-    boundingid = header->read16();
-    unk1 = header->read16();
-    header->skip(8);
-    qDebug("Bounding block found! Uppper Bound: %d, Lower Bound: %d, Unknown Upper Bound: %d, Unknown Lower Bound: %d, Bounding ID: %d, Unknown 0x12: %d", upperbound, lowerbound, unkbound1, unkbound2, boundingid, unk1);
+    for (int i = 0; i < (int)(blockSizes[2]/28); i++)
+    {
+        ZoneBounding* zoneBound = new ZoneBounding(header->read32(), header->read32(), header->read32(), header->read32(), header->read16(), header->read16());
+        zoneBoundings.append(*zoneBound);
+        header->skip(8);
+    }
+
+    // Block 3: Unknown
 
     // Block 4: Background Information
     header->seek(blockOffsets[4]);
-    QString bgname;
-    bgblockid = header->read16();
-    xscrollrate = header->read8();
-    yscrollrate = header->read8();
-    xpos = header->read8();
-    ypos = header->read8();
-    header->skip(2);
-    header->readStringASCII(bgname, 16);
-    unk1 = header->read16();
-    header->skip(2);
-    qDebug("Background Found! BG ID: %d, X Scroll Rate: %d, Y Scroll Rate: %d, X Position: %d, Y Position: %d, Name: %s, Unknown 0x18: %d", bgblockid, xscrollrate, yscrollrate, xpos, ypos, bgname.toStdString().c_str(), unk1);
+    for (int i = 0; i < (int)(blockSizes[4]/28); i++)
+    {
+        quint16 id = header->read16();
+        quint8 xScrollRate = header->read8();
+        quint8 yScrollRate = header->read8();
+        quint8 xPos = header->read8();
+        quint8 yPos = header->read8();
+        header->skip(2);
+        QString name;
+        header->readStringASCII(name, 16);
+        ZoneBackground* zoneBg = new ZoneBackground(id, xScrollRate, yScrollRate, xPos, yPos, name);
+        zoneBackgrounds.append(*zoneBg);
+        header->skip(4);
+    }
+
+    // Block 5: Static / Dummy?
 
     // Block 6: Entrances
     header->seek(blockOffsets[6]);
     for (int e = 0; e < (int)(blockSizes[6]/24); e++)
     {
         Entrance* entr = new Entrance(to20(header->read16()), to20(header->read16()), header->read16(), header->read16(), header->read8(), header->read8(), header->read8(), header->read8());
-        qDebug("Found Entrance with x: %d, y: %d", entr->getx(), entr->gety());
+        qDebug("Found Entrance with x: %d, y: %d and ID %d", entr->getx(), entr->gety(), entr->getid());
         entrances.append(*entr);
 
-        header->skip(12); // data we don't care about right now (id is in here, too. For now simply e)
+        header->skip(12);
     }
 
     // Block 7: Sprites
@@ -132,6 +143,15 @@ Level::Level(Game *game, int world, int level, int area)
         sprites.append(*spr);
 
         header->skip(10); // Unused Sprite Data and Zone
+    }
+
+    // Block 8: Sprites Used List
+    header->seek(blockOffsets[8]);
+    for (int i = 0; i < (int)(blockSizes[8]/4); i++)
+    {
+        spritesUsed.append(header->read16());
+        qDebug("Sprites Used [%d]: ID %d", i, spritesUsed[i]);
+        header->skip(2);
     }
 
     // Block 9: Zones
@@ -155,6 +175,8 @@ Level::Level(Game *game, int world, int level, int area)
 
         header->skip(3);
     }
+
+    // Block 11/12: Empty
 
     // Block 13/14: Paths
     for (int p = 0; p < (int)(blockSizes[13]/12); p++)

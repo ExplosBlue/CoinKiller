@@ -577,3 +577,35 @@ ProgressPathNode::ProgressPathNode(int x, int y)
 }
 
 int ProgressPathNode::getType() const { return 6; }
+
+// Zone Background
+ZoneBackground::ZoneBackground()
+{
+
+}
+
+ZoneBackground::ZoneBackground(quint16 id, quint8 xScrollRate, quint8 yScrollRate, quint8 xPos, quint8 yPos, QString name)
+{
+    this->id = id;
+    this->xScrollRate = xScrollRate;
+    this->yScrollRate = yScrollRate;
+    this->xPos = xPos;
+    this->yPos = yPos;
+    this->name = name;
+}
+
+// Zone Bounding
+ZoneBounding::ZoneBounding()
+{
+
+}
+
+ZoneBounding::ZoneBounding(quint32 upperBound, quint32 lowerBound, quint32 unkUpperBound, quint32 unkLowerBound, quint16 id, quint16 upScrolling)
+{
+    this->upperBound = upperBound;
+    this->lowerBound = lowerBound;
+    this->unkUpperBound = unkUpperBound;
+    this->unkLowerBound = unkLowerBound;
+    this->id = id;
+    this->upScrolling = upScrolling;
+}
