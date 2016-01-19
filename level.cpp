@@ -81,7 +81,7 @@ Level::Level(Game *game, int world, int level, int area)
     unk1 = header->read16();
     timeLimit = header->read16();
     header->skip(4);
-    if (header->read8() == 2) toadHouseFlag == true;
+    if (header->read8() == 2) toadHouseFlag = true;
     unk2 = header->read8();
     specialLevelFlag = header->read8();
     specialLevelFlag2 = header->read8();
@@ -231,7 +231,7 @@ Level::Level(Game *game, int world, int level, int area)
             quint16 id = bgdat->read16();
             if (id == 0xFFFF) break;
 
-            BgdatObject* obj = new BgdatObject(bgdat->read16()*20, bgdat->read16()*20, bgdat->read16()*20, bgdat->read16()*20, id);
+            BgdatObject* obj = new BgdatObject(bgdat->read16()*20, bgdat->read16()*20, bgdat->read16()*20, bgdat->read16()*20, id, l);
             objects[l].append(*obj);
 
             bgdat->skip(6);

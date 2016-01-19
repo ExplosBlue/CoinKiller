@@ -42,6 +42,17 @@ public:
     int getDragX() const;
     int getDragY() const;
 
+    virtual QString toString() const;
+    // First Number:
+    // -1: Invalid
+    // 0: BgdatObject
+    // 1: Sprite
+    // 2: Entrance
+    // 3: Zone
+    // 4: Location
+    // 5: Path
+    // 6: Progress Path
+
 protected:
     int x, y;
     int width, height;
@@ -55,11 +66,14 @@ class BgdatObject: public Object
 {
 public:
     BgdatObject();
-    BgdatObject(int x, int y, int width, int height, int id);
+    BgdatObject(int x, int y, int width, int height, int id, int layer);
     int getType() const;
     int getid() const;
+    int getLayer() const;
+    QString toString() const;
 protected:
     int id;
+    int layer;
 };
 
 
@@ -76,7 +90,7 @@ public:
     qint8 getByte(int id) const;
     qint8 getNybble(int id) const;
     void setRect();
-
+    QString toString() const;
 protected:
     int id;
     qint8 spriteData[8];
@@ -91,6 +105,7 @@ public:
     Entrance(int x, int y, int cameraX, int cameraY, int id, int destArea, int destEntr, int type);
     int getType() const;
     int getid() const;
+    QString toString() const;
 protected:
     int cameraX;
     int cameraY;
@@ -122,6 +137,7 @@ public:
     Location(int x, int y, int width, int height, int id);
     int getType() const;
     int getid() const;
+    QString toString() const;
 protected:
     int id;
 };

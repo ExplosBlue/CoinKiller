@@ -73,23 +73,30 @@ void Object::setDrag(int dragX, int dragY)
 int Object::getDragX() const { return dragX; }
 int Object::getDragY() const { return dragY; }
 
+QString Object::toString() const { return QString("-1"); }
+
 // BgdatObject
 BgdatObject::BgdatObject()
 {
 
 }
 
-BgdatObject::BgdatObject(int x, int y, int width, int height, int id)
+BgdatObject::BgdatObject(int x, int y, int width, int height, int id, int layer)
 {
     this->x = x;
     this->y = y;
     this->width = width;
     this->height = height;
     this->id = id;
+    this->layer = layer;
 }
 
 int BgdatObject::getType() const { return 0; }
 int BgdatObject::getid() const { return id; }
+int BgdatObject::getLayer() const { return layer; }
+
+// Format: 0:Tileset:Layer:ID:X:Y:Width:Height
+QString BgdatObject::toString() const { return QString("0:%1:%2:%3:%4:%5:%6:%7").arg((id >> 12) & 0x3).arg(layer).arg(id & 0x0FFF).arg(x).arg(y).arg(width).arg(height); }
 
 
 // Sprite
@@ -457,6 +464,9 @@ qint8 Sprite::getNybble(int id) const
     else return spriteData[id/2] & 0x0F;
 }
 
+// Format: 1:ID:X:Y:SD0:SD1:SD2:SD3:SD4:SD5:SD6:SD7
+QString Sprite::toString() const { return QString("1:%1:%2:%3:%4:%5:%6:%7:%8:%9:%10:%11").arg(id).arg(x).arg(y).arg(spriteData[0]).arg(spriteData[1]).arg(spriteData[2]).arg(spriteData[3]).arg(spriteData[4]).arg(spriteData[5]).arg(spriteData[6]).arg(spriteData[7]); }
+
 
 // Entrance
 Entrance::Entrance()
@@ -479,6 +489,8 @@ Entrance::Entrance(int x, int y, int cameraX, int cameraY, int id, int destArea,
 int Entrance::getType() const { return 2; }
 int Entrance::getid() const { return id; }
 
+// Format: 2:ID:Type:X:Y:DestArea:DestEntr:CamX:CamY
+QString Entrance::toString() const { return QString("2:%1:%2:%3:%4:%5:%6:%7:%8").arg(id).arg(type).arg(x).arg(y).arg(destArea).arg(destEntr).arg(cameraX).arg(cameraY); }
 
 // Zone
 Zone::Zone()
@@ -516,6 +528,9 @@ Location::Location(int x, int y, int width, int height, int id)
 
 int Location::getType() const { return 4; }
 int Location::getid() const { return id; }
+
+// Format: 4:ID:X:Y:Width:Height
+QString Location::toString() const { return QString("4:%1:%2:%3:%4:%5").arg(id).arg(x).arg(y).arg(width).arg(height); }
 
 
 // Path

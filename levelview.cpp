@@ -569,6 +569,25 @@ QList<Object*> LevelView::selObjectsCheck(int x, int y, int w, int h, bool multi
         }
     }
 
+    // Check for Locations
+    if (!stopChecking)
+    {
+        for (int i = level->locations.size()-1; i >= 0; i--)
+        {
+            Location& loc = level->locations[i];
+            if (loc.clickDetection(x,y,w,h))
+            {
+                objects.append(&loc);
+
+                if (!multiSelect)
+                {
+                    stopChecking = true;
+                    break;
+                }
+            }
+        }
+    }
+
     // Check for Entrances
     if (!stopChecking)
     {
@@ -648,11 +667,11 @@ void LevelView::copy()
     if (selObjects.size() == 0) return;
 
     QString clipboardText("CoinKillerClip|");
-    /*for (int i = 0; i < selObjects.size(); i++)
+    for (int i = 0; i < selObjects.size(); i++)
     {
-        if (i != 0) clipboardText += ":";
-        clipboardText += selObjects[i]->toText();
-    }*/
+        if (i != 0) clipboardText += "|";
+        clipboardText += selObjects[i]->toString();
+    }
     clipboardText += "|";
 
     QApplication::clipboard()->setText(clipboardText);
