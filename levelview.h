@@ -57,6 +57,7 @@ private:
 
     Level* level;
 
+    QRect drawrect;
     float zoom;
 
     int editMode;

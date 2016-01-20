@@ -28,6 +28,7 @@
 #include <QRectF>
 #include <QPaintEvent>
 #include <QClipboard>
+#include <QMessageBox>
 
 
 LevelView::LevelView(QWidget *parent, Level* level) : QWidget(parent)
@@ -47,7 +48,7 @@ void LevelView::paintEvent(QPaintEvent* evt)
     QPainter painter(this);
     painter.scale(zoom,zoom);
 
-    QRect drawrect(evt->rect().x()/zoom, evt->rect().y()/zoom, evt->rect().width()/zoom+20, evt->rect().height()/zoom+20);
+    drawrect = QRect(evt->rect().x()/zoom, evt->rect().y()/zoom, evt->rect().width()/zoom+20, evt->rect().height()/zoom+20);
 
     //qDebug("draw %d,%d %d,%d", drawrect.x(), drawrect.y(), drawrect.width(), drawrect.height());
 
@@ -666,10 +667,10 @@ void LevelView::copy()
 {
     if (selObjects.size() == 0) return;
 
-    QString clipboardText("CoinKillerClip|");
+    QString clipboardText("CoinKillerClip");
     for (int i = 0; i < selObjects.size(); i++)
     {
-        if (i != 0) clipboardText += "|";
+        clipboardText += "|";
         clipboardText += selObjects[i]->toString();
     }
     clipboardText += "|";
@@ -682,12 +683,56 @@ void LevelView::paste()
     QString clipboardText(QApplication::clipboard()->text());
     if (clipboardText.left(14) != "CoinKillerClip") return;
 
-    clipboardText.remove(0, 15);
-    clipboardText.chop(1);
-
-    QStringList segments = clipboardText.split(":");
-
     selObjects.clear();
+
+    QStringList segments = clipboardText.split("|", QString::SkipEmptyParts);
+
+    for (int i = 1; i < segments.size(); i++)
+    {
+        QStringList partsTemp = segments[i].split(":", QString::SkipEmptyParts);
+        QList<int> parts;
+
+        foreach (QString str, partsTemp)
+            parts.append(str.toInt());
+
+        // BgdatObjects
+        if (parts[0] == 0)
+        {
+            BgdatObject* obj = new BgdatObject(parts[3], parts[4], parts[5], parts[6], parts[1], parts[2]);
+            level->objects[obj->getLayer()].append(*obj);
+            selObjects.append(obj);
+        }
+
+        // Locations
+        else if (parts[0] == 1)
+        {
+            Sprite* spr = new Sprite(parts[2], parts[3], parts[1]);
+
+            for (int j = 0; j < 8; j++)
+               spr->setByte(j, parts[j + 4]);
+            spr->setRect();
+
+            level->sprites.append(*spr);
+        }
+
+        // Entrances
+        else if (parts[0] == 2)
+        {
+            Entrance* entr = new Entrance(parts[3], parts[4], parts[7], parts[8], parts[1], parts[5], parts[6], parts[9]);
+            level->entrances.append(*entr);
+            selObjects.append(entr);
+        }
+
+        // Locations
+        else if (parts[0] == 4)
+        {
+            Location* loc = new Location(parts[2], parts[3], parts[4], parts[5], parts[1]);
+            level->locations.append(*loc);
+            selObjects.append(loc);
+        }
+
+        // Still needing Zones/Paths/ProgPaths
+    }
 
     update();
 }
@@ -702,4 +747,3 @@ void LevelView::deleteSel()
 {
     update();
 }
-

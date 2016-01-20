@@ -95,8 +95,8 @@ int BgdatObject::getType() const { return 0; }
 int BgdatObject::getid() const { return id; }
 int BgdatObject::getLayer() const { return layer; }
 
-// Format: 0:Tileset:Layer:ID:X:Y:Width:Height
-QString BgdatObject::toString() const { return QString("0:%1:%2:%3:%4:%5:%6:%7").arg((id >> 12) & 0x3).arg(layer).arg(id & 0x0FFF).arg(x).arg(y).arg(width).arg(height); }
+// Format: 0:ID:Layer:X:Y:Width:Height
+QString BgdatObject::toString() const { return QString("0:%1:%2:%3:%4:%5:%6").arg(id).arg(layer).arg(x).arg(y).arg(width).arg(height); }
 
 
 // Sprite
@@ -489,8 +489,8 @@ Entrance::Entrance(int x, int y, int cameraX, int cameraY, int id, int destArea,
 int Entrance::getType() const { return 2; }
 int Entrance::getid() const { return id; }
 
-// Format: 2:ID:Type:X:Y:DestArea:DestEntr:CamX:CamY
-QString Entrance::toString() const { return QString("2:%1:%2:%3:%4:%5:%6:%7:%8").arg(id).arg(type).arg(x).arg(y).arg(destArea).arg(destEntr).arg(cameraX).arg(cameraY); }
+// Format: 2:ID:Type:X:Y:DestArea:DestEntr:CamX:CamY:Type
+QString Entrance::toString() const { return QString("2:%1:%2:%3:%4:%5:%6:%7:%8:%9").arg(id).arg(type).arg(x).arg(y).arg(destArea).arg(destEntr).arg(cameraX).arg(cameraY).arg(type); }
 
 // Zone
 Zone::Zone()
