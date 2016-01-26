@@ -170,7 +170,7 @@ bool SarcFilesystem::save(FileBase *file)
 
         for (int i = 0; i < files.size(); i++)
         {
-            thisfile = files.values()[i];
+            thisfile = &files.values()[i];
 
             if (thisfile->nameHash != hash)
                 continue;
