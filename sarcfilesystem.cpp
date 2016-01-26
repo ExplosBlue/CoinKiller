@@ -204,7 +204,7 @@ bool SarcFilesystem::save(FileBase *file)
         // fix offsets of files that come later
         for (int i = 0; i < files.size(); i++)
         {
-            InternalSarcFile* tofix = files.values()[i];
+            InternalSarcFile* tofix = &(files.values()[i]);
             if (tofix == thisfile)
                 continue;
             if (tofix->offset < thisfile->offset)
