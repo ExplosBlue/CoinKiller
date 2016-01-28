@@ -185,6 +185,18 @@ Tileset::Tileset(Game *game, QString name)
 
     objindex->close();
     delete objindex;
+
+    // parse behaviors
+    FileBase* behaviorsFile = archive->openFile("BG_chk/d_bgchk_" + name + ".bin");
+    behaviorsFile->open();
+    behaviorsFile->seek(0);
+    for (int i = 0; i < 441; i++)
+    {
+        for (int j = 0; j < 8; j++)
+            behaviors[i][j] = behaviorsFile->read8();
+    }
+    behaviorsFile->close();
+    delete behaviorsFile;
 }
 
 Tileset::~Tileset()
@@ -407,3 +419,13 @@ void Tileset::drawObject(QPainter& painter, TileGrid& grid, int num, int x, int 
     }
 }
 
+
+quint8 Tileset::getBehaviorByte(int tile, int byte)
+{
+    return behaviors[tile][byte];
+}
+
+void Tileset::setBehaviorByte(int tile, int byte, quint8 value)
+{
+    behaviors[tile][byte] = value;
+}

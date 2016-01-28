@@ -28,6 +28,7 @@
 #include "filesystem.h"
 
 #include "leveleditorwindow.h"
+#include "tileseteditorwindow.h"
 #include "sillytest.h" // REMOVE ME!!
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -125,6 +126,54 @@ void MainWindow::on_actionLoadROM_triggered()
     }
 
     ui->levelList->setModel(levels);
+
+
+    QStandardItemModel* tilesets = new QStandardItemModel();
+
+    QStandardItem* standardSuite = new QStandardItem(QString("Standard Suite"));
+    QStandardItem* stageSuite = new QStandardItem(QString("Stage Suite"));
+    QStandardItem* backgroundSuite = new QStandardItem(QString("Background Suite"));
+    QStandardItem* interactiveSuite = new QStandardItem(QString("Interactive Suite"));
+    tilesets->appendRow(standardSuite);
+    tilesets->appendRow(stageSuite);
+    tilesets->appendRow(backgroundSuite);
+    tilesets->appendRow(interactiveSuite);
+
+    QList<QString> tilesetfiles;
+    fs->directoryContents("/Unit", QDir::Files, tilesetfiles);
+
+    for (int i = 0; i < tilesetfiles.length(); i++)
+    {
+        QString tilesetname = tilesetfiles[i];
+        tilesetname.chop(5);
+
+        QStandardItem* tileset;
+        tileset = new QStandardItem();
+        tileset->setData(tilesetname);
+
+        if (tilesetname.startsWith("J_"))
+        {
+            tileset->setText(tilesetname.right(tilesetname.size() - 2));
+            standardSuite->appendRow(tileset);
+        }
+        else if (tilesetname.startsWith("M_"))
+        {
+            tileset->setText(tilesetname.right(tilesetname.size() - 2));
+            stageSuite->appendRow(tileset);
+        }
+        else if (tilesetname.startsWith("S1_"))
+        {
+            tileset->setText(tilesetname.right(tilesetname.size() - 3));
+            backgroundSuite->appendRow(tileset);
+        }
+        else if (tilesetname.startsWith("S2_"))
+        {
+            tileset->setText(tilesetname.right(tilesetname.size() - 3));
+            interactiveSuite->appendRow(tileset);
+        }
+    }
+
+    ui->tilesetView->setModel(tilesets);
 }
 
 void MainWindow::on_actionDebug_test_triggered()
@@ -145,4 +194,14 @@ void MainWindow::on_levelList_doubleClicked(const QModelIndex &index)
 
     LevelEditorWindow* lvlEditor = new LevelEditorWindow(this, game->getLevel(world, level, 1));
     lvlEditor->show();
+}
+
+void MainWindow::on_tilesetView_doubleClicked(const QModelIndex &index)
+{
+    if (index.data(Qt::UserRole+1).isNull())
+        return;
+
+    QString data = index.data(Qt::UserRole+1).toString();
+    TilesetEditorWindow* tsEditor = new TilesetEditorWindow(this, new Tileset(game, data));
+    tsEditor->show();
 }

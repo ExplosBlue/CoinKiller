@@ -29,7 +29,8 @@ SOURCES += main.cpp\
     objects.cpp \
     unitsconvert.cpp \
     propertygrid.cpp \
-    objectrenderer.cpp
+    objectrenderer.cpp \
+    tileseteditorwindow.cpp
 
 HEADERS  += mainwindow.h \
     filesystembase.h \
@@ -50,7 +51,9 @@ HEADERS  += mainwindow.h \
     objects.h \
     unitsconvert.h \
     propertygrid.h \
-    objectrenderer.h
+    objectrenderer.h \
+    tileseteditorwindow.h
 
 FORMS    += mainwindow.ui \
-    leveleditorwindow.ui
+    leveleditorwindow.ui \
+    tileseteditorwindow.ui

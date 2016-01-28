@@ -44,6 +44,8 @@ private slots:
 
     void on_levelList_doubleClicked(const QModelIndex &index);
 
+    void on_tilesetView_doubleClicked(const QModelIndex &index);
+
 private:
     Ui::MainWindow *ui;
 
