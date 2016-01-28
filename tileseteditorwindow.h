@@ -50,6 +50,8 @@ public slots:
 private slots:
     void on_hexLineEdit_textEdited(const QString &text);
 
+    void on_actionExportImage_triggered();
+
 private:
     Ui::TilesetEditorWindow *ui;
     TilesetPicker* tilesetPicker;

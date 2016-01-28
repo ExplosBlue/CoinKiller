@@ -5,6 +5,7 @@
 #include <QPaintEvent>
 #include <QMouseEvent>
 #include <QBrush>
+#include <QFileDialog>
 
 TilesetEditorWindow::TilesetEditorWindow(QWidget *parent, Tileset *tileset) :
     QMainWindow(parent),
@@ -61,6 +62,25 @@ void TilesetEditorWindow::on_hexLineEdit_textEdited(const QString &text)
         tileset->setBehaviorByte(selectedX + 21*selectedY, i, (quint8)bytes[i].toUInt(0, 16));
 }
 
+void TilesetEditorWindow::on_actionExportImage_triggered()
+{
+    QString filename = QFileDialog::getSaveFileName(this, "Export Tileset Image", QDir::currentPath(), "PNG File (*.png)");
+
+    QImage img = QImage(420, 420, QImage::Format_RGB32);
+    QPainter painter;
+    painter.begin(&img);
+
+    for (int x = 0; x < 21; x++)
+    {
+        for (int y = 0; y < 21; y++)
+        {
+            painter.drawImage(x*20, y*20, *tileset->getImage(), x*20 + x*4 + 2, y*20 + y*4 + 2, 20, 20, Qt::AutoColor);
+        }
+    }
+
+    painter.end();
+    img.save(filename);
+}
 
 TilesetPicker::TilesetPicker(QWidget *parent) : QWidget(parent)
 {
