@@ -211,6 +211,12 @@ Level::Level(Game *game, int world, int level, int area)
     }
 
 
+    // TEST!!
+    qDebug("SAVING TEST!!!!!!");
+    //header->save();
+    qDebug("SAVING TEST END!!!!!!");
+
+
     header->close();
     delete header;
 

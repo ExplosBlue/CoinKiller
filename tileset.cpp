@@ -172,7 +172,7 @@ Tileset::Tileset(Game *game, QString name)
             // 00: blank tile???
             // 02: typical
             // other values also seen here: dunno
-            b = objdata->read8();if (b==0) qDebug("ZERO!!! %d", o);
+            b = objdata->read8();//if (b==0) qDebug("ZERO!!! %d", o);
             //if (b != 0x00 && b != 0x02) qDebug("!!! UNUSUAL EXTRA %02X @ %d,%d OBJ %d %02X", b, curx, cury, o, offset);
             row->data.append(b); // extra shit? always 02
 

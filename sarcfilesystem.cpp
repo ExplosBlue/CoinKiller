@@ -166,30 +166,21 @@ bool SarcFilesystem::save(FileBase *file)
         // reinsert existing file
 
         quint32 hash = filenameHash(path);
-        InternalSarcFile* thisfile = NULL;
+        InternalSarcFile* thisfile = &files[path];
 
-        for (int i = 0; i < files.size(); i++)
-        {
-            thisfile = &files.values()[i];
-
-            if (thisfile->nameHash != hash)
-                continue;
-            if (thisfile->name != path)
-                continue;
-
-            qDebug("Found file entry %s at %08X", path.toStdString().c_str(), thisfile->entryOffset);
-
-            break;
-        }
+        qDebug("new file size %08X", writesize);
 
         if (thisfile == NULL)
             throw std::logic_error("thisfile is NULL, shouldn't happen");
 
         writeoffset = dataOffset + thisfile->offset;
         quint32 sizediff = writesize - thisfile->size;
+        qDebug("moving data %08X", sizediff);
+        qDebug("writeoffset = %08X + %08X", dataOffset, thisfile->offset);
 
         // move shit
         quint32 sizetomove = sarc->size() - (writeoffset + thisfile->size);
+        qDebug("allocating %08X (%08X - (%08X + %08X))", sizetomove, (quint32)sarc->size(), writeoffset, thisfile->size);
         quint8* tempbuf = new quint8[sizetomove]; // TODO might fail if it's too big
         sarc->seek(writeoffset + thisfile->size);
         sarc->readData(tempbuf, sizetomove);
@@ -197,9 +188,13 @@ bool SarcFilesystem::save(FileBase *file)
         sarc->writeData(tempbuf, sizetomove);
         delete[] tempbuf;
 
+        qDebug("done moving crap");
+
         // fix size
         sarc->seek(thisfile->entryOffset + 0xC);
         sarc->write32(thisfile->offset + writesize);
+
+        qDebug("file size fixed");
 
         // fix offsets of files that come later
         for (int i = 0; i < files.size(); i++)
@@ -207,8 +202,11 @@ bool SarcFilesystem::save(FileBase *file)
             InternalSarcFile* tofix = &(files.values()[i]);
             if (tofix == thisfile)
                 continue;
-            if (tofix->offset < thisfile->offset)
+            if (tofix->offset <= thisfile->offset)
                 continue;
+
+            qDebug("file %s (%08X %08X %08X) gets fixed -> %08X", "lalala", tofix->entryOffset, tofix->offset, tofix->size,
+                   tofix->offset+sizediff);
 
             tofix->offset += sizediff;
 
