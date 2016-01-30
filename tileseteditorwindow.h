@@ -65,6 +65,10 @@ private slots:
 
     void on_terrainTypeComboBox_currentIndexChanged(int index);
 
+    void on_depthComboBox_currentIndexChanged(int index);
+
+    void on_pipeColorComboBox_currentIndexChanged(int index);
+
 private:
     Ui::TilesetEditorWindow *ui;
     TilesetPicker* tilesetPicker;
@@ -93,10 +97,14 @@ private:
     int selectedParameter;
     int selectedHitbox;
     int selectedTerrainType;
+    int selectedDepthBehavior;
+    int selectedPipeColor;
 
     QList<specialBehavior> specialBehaviors;
     QList<parameter> hitboxes;
     QList<parameter> terrainTypes;
+    QList<parameter> depthBehaviors;
+    QList<parameter> pipeColors;
 
     void loadBehaviors();
     void updateHex();

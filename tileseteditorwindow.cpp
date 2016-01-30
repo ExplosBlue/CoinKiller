@@ -21,6 +21,7 @@ TilesetEditorWindow::TilesetEditorWindow(QWidget *parent, Tileset *tileset) :
     this->selectedParameter = -1;
 
     ui->setupUi(this);
+    ui->behaviorsTab->setEnabled(false);
     this->setWindowTitle("Tileset Editor - CoinKiller");
 
     tilesetPicker = new TilesetPicker(this);
@@ -46,6 +47,9 @@ TilesetEditorWindow::~TilesetEditorWindow()
 
 void TilesetEditorWindow::updateSelectedTile(int x, int y)
 {
+    if (x != -1 && y != -1)
+        ui->behaviorsTab->setEnabled(true);
+
     selectedX = x;
     selectedY = y;
 
@@ -59,6 +63,9 @@ void TilesetEditorWindow::updateSelectedTile(int x, int y)
 
 void::TilesetEditorWindow::updateHex()
 {
+    if (selectedX == -1 || selectedY == -1)
+        return;
+
     QString hexValue;
     for (int i = 0; i < 8; i++)
         hexValue.append(QString("%1 ").arg(tileset->getBehaviorByte(selectedX + selectedY*21, i), 2, 16, QChar('0')));
@@ -156,6 +163,46 @@ void TilesetEditorWindow::updateComboBoxes()
         ui->terrainTypeComboBox->setCurrentIndex(-1);
         selectedTerrainType = -1;
     }
+
+    int byte7 = tileset->getBehaviorByte(selectedX + selectedY*21, 7);
+    bool checkC = false;
+
+    for (int i = 0; i < depthBehaviors.size(); i++)
+    {
+        if (byte7 == depthBehaviors[i].byte)
+        {
+            selectedTerrainType = i;
+            ui->depthComboBox->setCurrentIndex(i);
+            checkC = true;
+            break;
+        }
+    }
+    if (!checkC)
+    {
+        ui->depthComboBox->setCurrentIndex(-1);
+        selectedDepthBehavior = -1;
+    }
+
+    int byte3 = tileset->getBehaviorByte(selectedX + selectedY*21, 3);
+    bool checkD = false;
+
+    for (int i = 0; i < pipeColors.size(); i++)
+    {
+        if (byte3 == pipeColors[i].byte)
+        {
+            selectedPipeColor = i;
+            ui->pipeColorComboBox->setCurrentIndex(i);
+            checkD = true;
+            break;
+        }
+    }
+    if (!checkD)
+    {
+        ui->pipeColorComboBox->setCurrentIndex(-1);
+        selectedPipeColor = -1;
+    }
+    ui->pipeColorComboBox->setEnabled((specialBehaviors[selectedSpecialBehavior].description == "Pipe"));
+
 }
 
 void TilesetEditorWindow::loadBehaviors()
@@ -209,6 +256,24 @@ void TilesetEditorWindow::loadBehaviors()
 
         terrainTypeElement = terrainTypeElement.nextSibling().toElement();
     }
+
+    QDomElement depthBehaviorElement = root.elementsByTagName("depthBehaviors").at(0).firstChild().toElement();
+    while (!depthBehaviorElement.isNull())
+    {
+        parameter p(depthBehaviorElement.attribute("id", "-1").toInt(), depthBehaviorElement.attribute("description", "Error in tilebehaviors.xml"));
+        depthBehaviors.append(p);
+
+        depthBehaviorElement = depthBehaviorElement.nextSibling().toElement();
+    }
+
+    QDomElement pipeColorElement = root.elementsByTagName("pipeColors").at(0).firstChild().toElement();
+    while (!pipeColorElement.isNull())
+    {
+        parameter p(pipeColorElement.attribute("id", "-1").toInt(), pipeColorElement.attribute("description", "Error in tilebehaviors.xml"));
+        pipeColors.append(p);
+
+        pipeColorElement = pipeColorElement.nextSibling().toElement();
+    }
 }
 
 void TilesetEditorWindow::setStaticModels()
@@ -233,6 +298,20 @@ void TilesetEditorWindow::setStaticModels()
         terrainTypesList.append(terrainTypes[i].description);
     terrainTypesModel->setStringList(terrainTypesList);
     ui->terrainTypeComboBox->setModel(terrainTypesModel);
+
+    QStringListModel* depthBehaviorsModel = new QStringListModel;
+    QStringList depthBehaviorsList;
+    for (int i = 0; i < depthBehaviors.size(); i++)
+        depthBehaviorsList.append(depthBehaviors[i].description);
+    depthBehaviorsModel->setStringList(depthBehaviorsList);
+    ui->depthComboBox->setModel(depthBehaviorsModel);
+
+    QStringListModel* pipeColorsModel = new QStringListModel;
+    QStringList pipeColorsList;
+    for (int i = 0; i < pipeColors.size(); i++)
+        pipeColorsList.append(pipeColors[i].description);
+    pipeColorsModel->setStringList(pipeColorsList);
+    ui->pipeColorComboBox->setModel(pipeColorsModel);
 }
 
 void TilesetEditorWindow::setParametersModel()
@@ -292,7 +371,19 @@ void TilesetEditorWindow::on_hitBoxComboBox_currentIndexChanged(int index)
 
 void TilesetEditorWindow::on_terrainTypeComboBox_currentIndexChanged(int index)
 {
-    tileset->setBehaviorByte(selectedX + 21*selectedY, 5, hitboxes[index].byte);
+    tileset->setBehaviorByte(selectedX + 21*selectedY, 5, terrainTypes[index].byte);
+    updateHex();
+}
+
+void TilesetEditorWindow::on_depthComboBox_currentIndexChanged(int index)
+{
+    tileset->setBehaviorByte(selectedX + 21*selectedY, 7, depthBehaviors[index].byte);
+    updateHex();
+}
+
+void TilesetEditorWindow::on_pipeColorComboBox_currentIndexChanged(int index)
+{
+    tileset->setBehaviorByte(selectedX + 21*selectedY, 3, pipeColors[index].byte);
     updateHex();
 }
 
