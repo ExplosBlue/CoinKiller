@@ -67,7 +67,7 @@ QImage* Ctpk::getTexture(quint32 num)
 
     //quint8* data = new quint8[width*height*4];
     //QImage* tex = new QImage(width, height, QImage::Format_ARGB32); // 0xAARRGGBB
-    QImage* tex = new QImage(width, height, QImage::Format_RGBA8888); // R,G,B,A
+    QImage* tex = new QImage(width, height, QImage::Format_RGBA8888_Premultiplied); // R,G,B,A
     quint8* data = tex->scanLine(0);
 
     //for (quint32 t = 0; t < (size>>4); t++)
@@ -154,9 +154,13 @@ QImage* Ctpk::getTexture(quint32 num)
                             g = clampColor(g + mod);
                             b = clampColor(b + mod);
 
-                            // TODO: premultiplied alpha
                             quint8 a = alpha & 0xF;
                             a |= (a << 4);
+
+                            // premultiply shit
+                            r = (r * a) / 255;
+                            g = (g * a) / 255;
+                            b = (b * a) / 255;
 
                             quint32 dstpos = ((sy + ty + y) * width + sx + tx + x) * 4;
                             data[dstpos + 0] = r;
@@ -173,7 +177,6 @@ QImage* Ctpk::getTexture(quint32 num)
             }
         }
     }
-
 
     file->close();
     return tex;

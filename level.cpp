@@ -50,6 +50,7 @@ Level::Level(Game *game, int world, int level, int area)
         blockSizes[b] = header->read32();
     }
 
+
     // Block 0: Tilesets
     for (int t = 0; t < 4; t++)
     {
@@ -74,6 +75,11 @@ Level::Level(Game *game, int world, int level, int area)
             tilesets[t] = NULL;
         }
     }
+
+    // TEST!!
+    qDebug("SAVING TEST!!!!!!");
+    header->save();
+    qDebug("SAVING TEST END!!!!!!");
 
     // Block 1: Area Settings
     header->seek(blockOffsets[1]);
@@ -211,10 +217,7 @@ Level::Level(Game *game, int world, int level, int area)
     }
 
 
-    // TEST!!
-    qDebug("SAVING TEST!!!!!!");
-    //header->save();
-    qDebug("SAVING TEST END!!!!!!");
+
 
 
     header->close();

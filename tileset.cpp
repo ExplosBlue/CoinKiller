@@ -29,7 +29,6 @@ Tileset::Tileset(Game *game, QString name)
 
     texImage = texture->getTexture(0);
 
-
     // parse the object def
     FileBase* objindex = archive->openFile("/BG_unt/"+name+"_hd.bin");
     objindex->open();
@@ -190,7 +189,7 @@ Tileset::Tileset(Game *game, QString name)
     FileBase* behaviorsFile = archive->openFile("BG_chk/d_bgchk_" + name + ".bin");
     behaviorsFile->open();
     behaviorsFile->seek(0);
-    for (int i = 0; i < 441; i++)
+    for (int i = 0; i < 441; i++) // TODO ensure the file has the right size!
     {
         for (int j = 0; j < 8; j++)
             behaviors[i][j] = behaviorsFile->read8();
@@ -313,6 +312,7 @@ void Tileset::drawObject(QPainter& painter, TileGrid& grid, int num, int x, int 
         // slope 01: start from top-left
         // slope 02: same as 00, reverse Y
         // slope 03: same as 01, reverse Y
+        // FIXME: not proper! it swaps top and bottom blocks, instead of reversing Y
 
         quint8 slopeflag = def.rows[0].slopeFlags;
 
