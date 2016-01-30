@@ -16,6 +16,7 @@ class TilesetPicker : public QWidget
 public:
     explicit TilesetPicker(QWidget *parent);
     void setTilesetImage(QImage *image);
+    void setBGColor(QColor bgColor) { this->bgColor = bgColor; update(); }
 
 signals:
     void selectedTileChanged(int x, int y);
@@ -28,6 +29,7 @@ protected:
 
 private:
     QImage *tilesetImage;
+    QColor bgColor;
     int selectedX;
     int selectedY;
 };
@@ -57,6 +59,12 @@ private slots:
 
     void on_parameterListView_clicked(const QModelIndex &index);
 
+    void on_actionSetBackgroundColor_triggered();
+
+    void on_hitBoxComboBox_currentIndexChanged(int index);
+
+    void on_terrainTypeComboBox_currentIndexChanged(int index);
+
 private:
     Ui::TilesetEditorWindow *ui;
     TilesetPicker* tilesetPicker;
@@ -83,13 +91,19 @@ private:
 
     int selectedSpecialBehavior;
     int selectedParameter;
+    int selectedHitbox;
+    int selectedTerrainType;
 
     QList<specialBehavior> specialBehaviors;
+    QList<parameter> hitboxes;
+    QList<parameter> terrainTypes;
 
     void loadBehaviors();
     void updateHex();
     void updateBehavior();
-    void setSBehaviorsModel();
+    void updateParameters();
+    void updateComboBoxes();
+    void setStaticModels();
     void setParametersModel();
 };
 

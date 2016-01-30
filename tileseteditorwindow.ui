@@ -155,7 +155,7 @@
              </widget>
             </item>
             <item>
-             <widget class="QComboBox" name="comboBox_2"/>
+             <widget class="QComboBox" name="hitBoxComboBox"/>
             </item>
            </layout>
           </item>
@@ -181,7 +181,7 @@
              </widget>
             </item>
             <item>
-             <widget class="QComboBox" name="comboBox"/>
+             <widget class="QComboBox" name="terrainTypeComboBox"/>
             </item>
            </layout>
           </item>
@@ -213,7 +213,14 @@
     </property>
     <addaction name="actionExportImage"/>
    </widget>
+   <widget class="QMenu" name="menuSettings">
+    <property name="title">
+     <string>Settings</string>
+    </property>
+    <addaction name="actionSetBackgroundColor"/>
+   </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuSettings"/>
   </widget>
   <action name="actionExportImage">
    <property name="text">
@@ -221,6 +228,11 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+E</string>
+   </property>
+  </action>
+  <action name="actionSetBackgroundColor">
+   <property name="text">
+    <string>Set Background Color</string>
    </property>
   </action>
  </widget>

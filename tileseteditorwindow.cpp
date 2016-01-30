@@ -8,6 +8,7 @@
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QtXml>
+#include <QColorDialog>
 
 TilesetEditorWindow::TilesetEditorWindow(QWidget *parent, Tileset *tileset) :
     QMainWindow(parent),
@@ -16,6 +17,8 @@ TilesetEditorWindow::TilesetEditorWindow(QWidget *parent, Tileset *tileset) :
     this->tileset = tileset;
     this->selectedX = -1;
     this->selectedY = -1;
+    this->selectedSpecialBehavior = -1;
+    this->selectedParameter = -1;
 
     ui->setupUi(this);
     this->setWindowTitle("Tileset Editor - CoinKiller");
@@ -33,7 +36,7 @@ TilesetEditorWindow::TilesetEditorWindow(QWidget *parent, Tileset *tileset) :
     ui->hexLineEdit->setInputMask("HH HH HH HH HH HH HH HH");
 
     loadBehaviors();
-    setSBehaviorsModel();
+    setStaticModels();
 }
 
 TilesetEditorWindow::~TilesetEditorWindow()
@@ -51,6 +54,7 @@ void TilesetEditorWindow::updateSelectedTile(int x, int y)
 
     updateHex();
     updateBehavior();
+    updateComboBoxes();
 }
 
 void::TilesetEditorWindow::updateHex()
@@ -87,26 +91,70 @@ void TilesetEditorWindow::updateBehavior()
         selectedSpecialBehavior = -1;
     }
     else
-    {
-        int byte2 = tileset->getBehaviorByte(selectedX + selectedY*21, 2);
-        bool checkB = false;
+        updateParameters();
+}
 
-        for (int i = 0; i < specialBehaviors[selectedSpecialBehavior].parameters.size(); i++)
+void TilesetEditorWindow::updateParameters()
+{
+    int byte2 = tileset->getBehaviorByte(selectedX + selectedY*21, 2);
+    bool check = false;
+
+    for (int i = 0; i < specialBehaviors[selectedSpecialBehavior].parameters.size(); i++)
+    {
+        if (byte2 == specialBehaviors[selectedSpecialBehavior].parameters[i].byte)
         {
-            if (byte2 == specialBehaviors[selectedSpecialBehavior].parameters[i].byte)
-            {
-                selectedParameter = i;
-                QModelIndex modelIndex = ui->parameterListView->model()->index(i, 0, QModelIndex());
-                ui->parameterListView->setCurrentIndex(modelIndex);
-                checkB = true;
-                break;
-            }
+            selectedParameter = i;
+            QModelIndex modelIndex = ui->parameterListView->model()->index(i, 0, QModelIndex());
+            ui->parameterListView->setCurrentIndex(modelIndex);
+            check = true;
+            break;
         }
-        if (!checkB)
+    }
+    if (!check)
+    {
+        ui->parameterListView->clearSelection();
+        selectedParameter = -1;
+    }
+}
+
+void TilesetEditorWindow::updateComboBoxes()
+{
+    int byte4 = tileset->getBehaviorByte(selectedX + selectedY*21, 4);
+    bool checkA = false;
+
+    for (int i = 0; i < hitboxes.size(); i++)
+    {
+        if (byte4 == hitboxes[i].byte)
         {
-            ui->parameterListView->clearSelection();
-            selectedParameter = -1;
+            selectedHitbox = i;
+            ui->hitBoxComboBox->setCurrentIndex(i);
+            checkA = true;
+            break;
         }
+    }
+    if (!checkA)
+    {
+        ui->hitBoxComboBox->setCurrentIndex(-1);
+        selectedHitbox = -1;
+    }
+
+    int byte5 = tileset->getBehaviorByte(selectedX + selectedY*21, 5);
+    bool checkB = false;
+
+    for (int i = 0; i < terrainTypes.size(); i++)
+    {
+        if (byte5 == terrainTypes[i].byte)
+        {
+            selectedTerrainType = i;
+            ui->terrainTypeComboBox->setCurrentIndex(i);
+            checkB = true;
+            break;
+        }
+    }
+    if (!checkB)
+    {
+        ui->terrainTypeComboBox->setCurrentIndex(-1);
+        selectedTerrainType = -1;
     }
 }
 
@@ -126,8 +174,7 @@ void TilesetEditorWindow::loadBehaviors()
     QString time = root.attribute("timestamp", "Invalid Time");
     qDebug("behaviors.xml from: " + time.toLatin1());
 
-    QDomElement behaviorElement = root.firstChild().toElement();
-
+    QDomElement behaviorElement = root.elementsByTagName("special_behaviors").at(0).firstChild().toElement();
     while (!behaviorElement.isNull())
     {
         QList<parameter> parameterL;
@@ -135,26 +182,57 @@ void TilesetEditorWindow::loadBehaviors()
         QDomElement valueElement = behaviorElement.firstChild().toElement();
         while (!valueElement.isNull())
         {
-            parameterL.append(parameter(valueElement.attribute("id", "-1").toInt(), valueElement.attribute("description", "Error in behaviors.xml")));
+            parameterL.append(parameter(valueElement.attribute("id", "-1").toInt(), valueElement.attribute("description", "Error in tilebehaviors.xml")));
             valueElement = valueElement.nextSibling().toElement();
         }
 
-        specialBehavior sBehavior = { behaviorElement.attribute("value", "-1").toInt(), behaviorElement.attribute("description", "Error in behaviors.xml"), parameterL };
+        specialBehavior sBehavior = { behaviorElement.attribute("value", "-1").toInt(), behaviorElement.attribute("description", "Error in tilebehaviors.xml"), parameterL };
         specialBehaviors.append(sBehavior);
 
         behaviorElement = behaviorElement.nextSibling().toElement();
     }
+
+    QDomElement hitboxElement = root.elementsByTagName("hitboxes").at(0).firstChild().toElement();
+    while (!hitboxElement.isNull())
+    {
+        parameter p(hitboxElement.attribute("id", "-1").toInt(), hitboxElement.attribute("description", "Error in tilebehaviors.xml"));
+        hitboxes.append(p);
+
+        hitboxElement = hitboxElement.nextSibling().toElement();
+    }
+
+    QDomElement terrainTypeElement = root.elementsByTagName("terrainTypes").at(0).firstChild().toElement();
+    while (!terrainTypeElement.isNull())
+    {
+        parameter p(terrainTypeElement.attribute("id", "-1").toInt(), terrainTypeElement.attribute("description", "Error in tilebehaviors.xml"));
+        terrainTypes.append(p);
+
+        terrainTypeElement = terrainTypeElement.nextSibling().toElement();
+    }
 }
 
-void TilesetEditorWindow::setSBehaviorsModel()
+void TilesetEditorWindow::setStaticModels()
 {
     QStringListModel* sBehaviorsModel = new QStringListModel;
     QStringList sBehaviorsList;
     for (int i = 0; i < specialBehaviors.size(); i++)
         sBehaviorsList.append(specialBehaviors[i].description);
     sBehaviorsModel->setStringList(sBehaviorsList);
-
     ui->sBehaviorListView->setModel(sBehaviorsModel);
+
+    QStringListModel* hitboxesModel = new QStringListModel;
+    QStringList hitboxesList;
+    for (int i = 0; i < hitboxes.size(); i++)
+        hitboxesList.append(hitboxes[i].description);
+    hitboxesModel->setStringList(hitboxesList);
+    ui->hitBoxComboBox->setModel(hitboxesModel);
+
+    QStringListModel* terrainTypesModel = new QStringListModel;
+    QStringList terrainTypesList;
+    for (int i = 0; i < terrainTypes.size(); i++)
+        terrainTypesList.append(terrainTypes[i].description);
+    terrainTypesModel->setStringList(terrainTypesList);
+    ui->terrainTypeComboBox->setModel(terrainTypesModel);
 }
 
 void TilesetEditorWindow::setParametersModel()
@@ -194,6 +272,7 @@ void TilesetEditorWindow::on_sBehaviorListView_clicked(const QModelIndex &index)
         tileset->setBehaviorByte(selectedX + 21*selectedY, 2, 0);
 
     setParametersModel();
+    updateParameters();
     updateHex();
 }
 
@@ -202,6 +281,18 @@ void TilesetEditorWindow::on_parameterListView_clicked(const QModelIndex &index)
     selectedParameter = index.row();
     tileset->setBehaviorByte(selectedX + 21*selectedY, 2, specialBehaviors[selectedSpecialBehavior].parameters[selectedParameter].byte);
 
+    updateHex();
+}
+
+void TilesetEditorWindow::on_hitBoxComboBox_currentIndexChanged(int index)
+{
+    tileset->setBehaviorByte(selectedX + 21*selectedY, 4, hitboxes[index].byte);
+    updateHex();
+}
+
+void TilesetEditorWindow::on_terrainTypeComboBox_currentIndexChanged(int index)
+{
+    tileset->setBehaviorByte(selectedX + 21*selectedY, 5, hitboxes[index].byte);
     updateHex();
 }
 
@@ -225,11 +316,19 @@ void TilesetEditorWindow::on_actionExportImage_triggered()
     img.save(filename);
 }
 
+void TilesetEditorWindow::on_actionSetBackgroundColor_triggered()
+{
+    QColor bgColor = QColorDialog::getColor(Qt::white, this, "Select Background Color",  QColorDialog::DontUseNativeDialog);
+    if(bgColor.isValid())
+        tilesetPicker->setBGColor(bgColor);
+}
+
 TilesetPicker::TilesetPicker(QWidget *parent) : QWidget(parent)
 {
     this->selectedX = -1;
     this->selectedY = -1;
     tilesetImage = new QImage(420, 420, QImage::Format_RGBA8888);
+    bgColor = Qt::white;
 }
 
 void TilesetPicker::setTilesetImage(QImage *tilesetImage)
@@ -240,7 +339,7 @@ void TilesetPicker::setTilesetImage(QImage *tilesetImage)
 void TilesetPicker::paintEvent(QPaintEvent* evt)
 {
     QPainter painter(this);
-    painter.fillRect(evt->rect(), QBrush(QColor(255, 255, 255), Qt::SolidPattern));
+    painter.fillRect(evt->rect(), QBrush(bgColor, Qt::SolidPattern));
 
     for (int x = 0; x < 21; x++)
     {
