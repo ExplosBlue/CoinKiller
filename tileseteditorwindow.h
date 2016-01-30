@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QWidget>
 #include <QImage>
+#include <QStringListModel>
 
 #include "tileset.h"
 
@@ -52,14 +53,44 @@ private slots:
 
     void on_actionExportImage_triggered();
 
+    void on_sBehaviorListView_clicked(const QModelIndex &index);
+
+    void on_parameterListView_clicked(const QModelIndex &index);
+
 private:
     Ui::TilesetEditorWindow *ui;
     TilesetPicker* tilesetPicker;
+
+    struct parameter
+    {
+        parameter(int byte, QString description) : byte(byte), description(description) {}
+        int byte;
+        QString description;
+    };
+
+
+    struct specialBehavior
+    {
+        int value;                      // Value of Byte 0
+        QString description;            // Description of the SpecialBehavior
+        QList<parameter> parameters;    // List of all used Parameters
+    };
 
     Tileset* tileset;
 
     int selectedX;
     int selectedY;
+
+    int selectedSpecialBehavior;
+    int selectedParameter;
+
+    QList<specialBehavior> specialBehaviors;
+
+    void loadBehaviors();
+    void updateHex();
+    void updateBehavior();
+    void setSBehaviorsModel();
+    void setParametersModel();
 };
 
 #endif // TILESETEDITORWINDOW_H
