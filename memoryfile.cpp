@@ -80,9 +80,11 @@ quint64 MemoryFile::readData(quint8* data, quint64 len)
 
 quint64 MemoryFile::writeData(quint8* data, quint64 len)
 {
-    // prevent out-of-range read
+    // resize the file if needed
+    // (it is still more efficient to resize the file prior to writing)
     if ((_pos+len) > _size)
-        len = _size-_pos;
+        resize(_pos+len);
+        //len = _size-_pos;
 
     if (len < 1 || len > 0xFFFFFFFF)
         return 0;
