@@ -284,6 +284,7 @@
     <property name="title">
      <string>File</string>
     </property>
+    <addaction name="actionSave"/>
     <addaction name="actionExportImage"/>
    </widget>
    <widget class="QMenu" name="menuSettings">
@@ -306,6 +307,14 @@
   <action name="actionSetBackgroundColor">
    <property name="text">
     <string>Set Background Color</string>
+   </property>
+  </action>
+  <action name="actionSave">
+   <property name="text">
+    <string>Save</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
    </property>
   </action>
  </widget>

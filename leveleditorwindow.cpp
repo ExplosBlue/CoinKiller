@@ -39,19 +39,19 @@ LevelEditorWindow::LevelEditorWindow(QWidget *parent, Level* level) :
     setWindowTitle(title + " - CoinKiller");
 
     // Load UI Icons
-    QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/");
-    ui->actionZoom_In->setIcon(QIcon(basePath + "icon_zoomin.png"));
-    ui->actionZoom_Out->setIcon(QIcon(basePath + "icon_zoomout.png"));
-    ui->actionZoom_100->setIcon(QIcon(basePath + "icon_zoom100.png"));
-    ui->actionZoom_Maximum->setIcon(QIcon(basePath + "icon_zoommax.png"));
-    ui->actionZoom_Minimum->setIcon(QIcon(basePath + "icon_zoommin.png"));
-    ui->actionSave->setIcon((QIcon(basePath + "icon_save.png")));
-    ui->actionPaste->setIcon((QIcon(basePath + "icon_paste.png")));
-    ui->actionCut->setIcon((QIcon(basePath + "icon_cut.png")));
-    ui->actionCopy->setIcon((QIcon(basePath + "icon_copy.png")));
-    ui->actionDelete->setIcon(QIcon(basePath + "icon_delete.png"));
-    ui->actionFullscreen->setIcon(QIcon(basePath + "icon_expand.png"));
-    ui->actionGrid->setIcon(QIcon(basePath + "icon_grid.png"));
+    QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/icons/");
+    ui->actionZoom_In->setIcon(QIcon(basePath + "zoomin.png"));
+    ui->actionZoom_Out->setIcon(QIcon(basePath + "zoomout.png"));
+    ui->actionZoom_100->setIcon(QIcon(basePath + "zoom100.png"));
+    ui->actionZoom_Maximum->setIcon(QIcon(basePath + "zoommax.png"));
+    ui->actionZoom_Minimum->setIcon(QIcon(basePath + "zoommin.png"));
+    ui->actionSave->setIcon((QIcon(basePath + "save.png")));
+    ui->actionPaste->setIcon((QIcon(basePath + "paste.png")));
+    ui->actionCut->setIcon((QIcon(basePath + "cut.png")));
+    ui->actionCopy->setIcon((QIcon(basePath + "copy.png")));
+    ui->actionDelete->setIcon(QIcon(basePath + "delete.png"));
+    ui->actionFullscreen->setIcon(QIcon(basePath + "expand.png"));
+    ui->actionGrid->setIcon(QIcon(basePath + "grid.png"));
 
     levelView = new LevelView(this, level);
     /*levelView->setMinimumHeight(600);
@@ -199,12 +199,12 @@ void LevelEditorWindow::on_actionFullscreen_toggled(bool toggle)
     if (toggle)
     {
         showFullScreen();
-        ui->actionFullscreen->setIcon(QIcon(QCoreApplication::applicationDirPath() + "/coinkiller_data/icon_collapse.png"));
+        ui->actionFullscreen->setIcon(QIcon(QCoreApplication::applicationDirPath() + "/coinkiller_data/collapse.png"));
     }
     else
     {
         showNormal();
-        ui->actionFullscreen->setIcon(QIcon(QCoreApplication::applicationDirPath() + "/coinkiller_data/icon_expand.png"));
+        ui->actionFullscreen->setIcon(QIcon(QCoreApplication::applicationDirPath() + "/coinkiller_data/expand.png"));
     }
 }
 
