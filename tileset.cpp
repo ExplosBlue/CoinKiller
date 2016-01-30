@@ -21,6 +21,7 @@
 Tileset::Tileset(Game *game, QString name)
 {
     this->game = game;
+    this->name = name;
 
     //qDebug("LOAD TILESET %s", name.toStdString().c_str());
 
@@ -428,4 +429,20 @@ quint8 Tileset::getBehaviorByte(int tile, int byte)
 void Tileset::setBehaviorByte(int tile, int byte, quint8 value)
 {
     behaviors[tile][byte] = value;
+}
+
+void Tileset::save()
+{
+    // save behaviors
+    FileBase* behaviorsFile = archive->openFile("BG_chk/d_bgchk_" + name + ".bin");
+    behaviorsFile->open();
+    behaviorsFile->seek(0);
+    for (int i = 0; i < 441; i++)
+    {
+        for (int j = 0; j < 8; j++)
+            behaviorsFile->write8(behaviors[i][j]);
+    }
+    behaviorsFile->save();
+    behaviorsFile->close();
+    delete behaviorsFile;
 }

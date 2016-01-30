@@ -24,6 +24,12 @@ TilesetEditorWindow::TilesetEditorWindow(QWidget *parent, Tileset *tileset) :
     ui->behaviorsTab->setEnabled(false);
     this->setWindowTitle("Tileset Editor - CoinKiller");
 
+    // Load UI Icons
+    QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/icons/");
+    ui->actionSave->setIcon(QIcon(basePath + "save.png"));
+    ui->actionSetBackgroundColor->setIcon(QIcon(basePath + "colors.png"));
+    ui->actionExportImage->setIcon(QIcon(basePath + "export.png"));
+
     tilesetPicker = new TilesetPicker(this);
 
     ui->tilesetPicker->setWidget(tilesetPicker);
@@ -412,6 +418,11 @@ void TilesetEditorWindow::on_actionSetBackgroundColor_triggered()
     QColor bgColor = QColorDialog::getColor(Qt::white, this, "Select Background Color",  QColorDialog::DontUseNativeDialog);
     if(bgColor.isValid())
         tilesetPicker->setBGColor(bgColor);
+}
+
+void TilesetEditorWindow::on_actionSave_triggered()
+{
+    tileset->save();
 }
 
 TilesetPicker::TilesetPicker(QWidget *parent) : QWidget(parent)

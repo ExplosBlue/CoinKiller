@@ -69,6 +69,8 @@ private slots:
 
     void on_pipeColorComboBox_currentIndexChanged(int index);
 
+    void on_actionSave_triggered();
+
 private:
     Ui::TilesetEditorWindow *ui;
     TilesetPicker* tilesetPicker;

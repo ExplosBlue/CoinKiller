@@ -165,17 +165,4 @@
 		<value id = "10" description = "Platform in Ice tileset" />
 	</terrainTypes>
 	
-	<depthBehaviors>
-		<value id = "0" description = "Normal" />
-		<value id = "1" description = "Further in the Foreground?" />
-		<value id = "2" description = "Further in the Background / Blurred" />
-	</depthBehaviors>
-	
-	<pipeColors>
-		<value id = "0" description = "Green" />
-		<value id = "1" description = "Red" />
-		<value id = "2" description = "Yellow" />
-		<value id = "3" description = "Blue" />
-	</pipeColors>
-	
 </behaviors>

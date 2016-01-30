@@ -49,7 +49,10 @@ public:
         return texImage;
     }
 
+    void save();
+
 private:
+    QString name;
     SarcFilesystem* archive;
     Ctpk* texture;
 
