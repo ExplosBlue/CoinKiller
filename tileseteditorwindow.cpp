@@ -14,6 +14,7 @@ TilesetEditorWindow::TilesetEditorWindow(QWidget *parent, Tileset *tileset) :
     QMainWindow(parent),
     ui(new Ui::TilesetEditorWindow)
 {
+    qDebug() << "Tileset Editor: Started";
     this->tileset = tileset;
     this->selectedX = -1;
     this->selectedY = -1;
@@ -55,6 +56,8 @@ void TilesetEditorWindow::updateSelectedTile(int x, int y)
 {
     if (x != -1 && y != -1)
         ui->behaviorsTab->setEnabled(true);
+    else
+        return;
 
     selectedX = x;
     selectedY = y;
@@ -348,6 +351,9 @@ void TilesetEditorWindow::on_hexLineEdit_textEdited(const QString &text)
 
 void TilesetEditorWindow::on_sBehaviorListView_clicked(const QModelIndex &index)
 {
+    if (selectedX == -1 || selectedY == -1)
+        return;
+
     int oldSelectedSpecialBehavior = selectedSpecialBehavior;
 
     selectedSpecialBehavior = index.row();
@@ -363,6 +369,9 @@ void TilesetEditorWindow::on_sBehaviorListView_clicked(const QModelIndex &index)
 
 void TilesetEditorWindow::on_parameterListView_clicked(const QModelIndex &index)
 {
+    if (selectedX == -1 || selectedY == -1)
+        return;
+
     selectedParameter = index.row();
     tileset->setBehaviorByte(selectedX + 21*selectedY, 2, specialBehaviors[selectedSpecialBehavior].parameters[selectedParameter].byte);
 
@@ -371,24 +380,36 @@ void TilesetEditorWindow::on_parameterListView_clicked(const QModelIndex &index)
 
 void TilesetEditorWindow::on_hitBoxComboBox_currentIndexChanged(int index)
 {
+    if (selectedX == -1 || selectedY == -1)
+        return;
+
     tileset->setBehaviorByte(selectedX + 21*selectedY, 4, hitboxes[index].byte);
     updateHex();
 }
 
 void TilesetEditorWindow::on_terrainTypeComboBox_currentIndexChanged(int index)
 {
+    if (selectedX == -1 || selectedY == -1)
+        return;
+
     tileset->setBehaviorByte(selectedX + 21*selectedY, 5, terrainTypes[index].byte);
     updateHex();
 }
 
 void TilesetEditorWindow::on_depthComboBox_currentIndexChanged(int index)
 {
+    if (selectedX == -1 || selectedY == -1)
+        return;
+
     tileset->setBehaviorByte(selectedX + 21*selectedY, 7, depthBehaviors[index].byte);
     updateHex();
 }
 
 void TilesetEditorWindow::on_pipeColorComboBox_currentIndexChanged(int index)
 {
+    if (selectedX == -1 || selectedY == -1)
+        return;
+
     tileset->setBehaviorByte(selectedX + 21*selectedY, 3, pipeColors[index].byte);
     updateHex();
 }
