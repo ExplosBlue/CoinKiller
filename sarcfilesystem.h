@@ -54,7 +54,7 @@ private:
     quint32 sfntOffset;
     quint32 dataOffset;
 
-    QHash<QString,InternalSarcFile> files;
+    QHash<QString,InternalSarcFile*> files;
 
 
     quint32 filenameHash(QString &name);

@@ -59,7 +59,7 @@ SarcFilesystem::SarcFilesystem(FileBase* file)
         file->seek(sfntOffset + 0x8 + entry->nameOffset);
         file->readStringASCII(entry->name, 0);
 
-        files.insert(entry->name, *entry);
+        files.insert(entry->name, entry);
     }
 
     file->close();
@@ -144,9 +144,9 @@ FileBase* SarcFilesystem::openFile(QString path)
         throw std::runtime_error("SARC: file "+path.toStdString()+" doesn't exist");
     }
 
-    InternalSarcFile& entry = files[path];
+    InternalSarcFile* entry = files[path];
 
-    FileBase* ret = sarc->getSubfile(this, dataOffset+entry.offset, entry.size);
+    FileBase* ret = sarc->getSubfile(this, dataOffset+entry->offset, entry->size);
     ret->setIdPath(path);
     return ret;
 }
@@ -166,7 +166,7 @@ bool SarcFilesystem::save(FileBase *file)
         // reinsert existing file
 
         quint32 hash = filenameHash(path);
-        InternalSarcFile* thisfile = &files[path];
+        InternalSarcFile* thisfile = files[path];
 
         qDebug("new file size %08X", writesize);
 
@@ -199,7 +199,7 @@ bool SarcFilesystem::save(FileBase *file)
         // fix offsets of files that come later
         for (int i = 0; i < files.size(); i++)
         {
-            InternalSarcFile* tofix = &(files.values()[i]);
+            InternalSarcFile* tofix = files.values()[i];
             if (tofix == thisfile)
                 continue;
             if (tofix->offset <= thisfile->offset)
