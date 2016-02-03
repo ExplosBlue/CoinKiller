@@ -5,6 +5,7 @@
 #include <QWidget>
 #include <QImage>
 #include <QStringListModel>
+#include <QComboBox>
 
 #include "tileset.h"
 
@@ -19,7 +20,7 @@ public:
     void setBGColor(QColor bgColor) { this->bgColor = bgColor; update(); }
 
 signals:
-    void selectedTileChanged(int x, int y);
+    void selectedTileChanged(int tile);
 
 public slots:
 
@@ -30,8 +31,7 @@ protected:
 private:
     QImage *tilesetImage;
     QColor bgColor;
-    int selectedX;
-    int selectedY;
+    int selectedTile;
 };
 
 
@@ -48,7 +48,7 @@ public:
     ~TilesetEditorWindow();
 
 public slots:
-    void updateSelectedTile(int x, int y);
+    void updateSelectedTile(int tile);
 
 private slots:
     void on_hexLineEdit_textEdited(const QString &text);
@@ -92,15 +92,10 @@ private:
 
     Tileset* tileset;
 
-    int selectedX;
-    int selectedY;
+    int selectedTile;
 
     int selectedSpecialBehavior;
     int selectedParameter;
-    int selectedHitbox;
-    int selectedTerrainType;
-    int selectedDepthBehavior;
-    int selectedPipeColor;
 
     QList<specialBehavior> specialBehaviors;
     QList<parameter> hitboxes;
@@ -115,6 +110,7 @@ private:
     void updateComboBoxes();
     void setStaticModels();
     void setParametersModel();
+    void updateComboBox(int byteNbr, QList<parameter> &list, QComboBox *comboBox);
 };
 
 #endif // TILESETEDITORWINDOW_H

@@ -14,10 +14,8 @@ TilesetEditorWindow::TilesetEditorWindow(QWidget *parent, Tileset *tileset) :
     QMainWindow(parent),
     ui(new Ui::TilesetEditorWindow)
 {
-    qDebug() << "Tileset Editor: Started";
     this->tileset = tileset;
-    this->selectedX = -1;
-    this->selectedY = -1;
+    this->selectedTile = -1;
     this->selectedSpecialBehavior = -1;
     this->selectedParameter = -1;
 
@@ -37,7 +35,7 @@ TilesetEditorWindow::TilesetEditorWindow(QWidget *parent, Tileset *tileset) :
     tilesetPicker->setMinimumSize(440, 440);
     tilesetPicker->setMaximumSize(440, 440);
 
-    connect(tilesetPicker, SIGNAL(selectedTileChanged(int,int)), this, SLOT(updateSelectedTile(int,int)));
+    connect(tilesetPicker, SIGNAL(selectedTileChanged(int)), this, SLOT(updateSelectedTile(int)));
 
     tilesetPicker->setTilesetImage(tileset->getImage());
 
@@ -52,18 +50,21 @@ TilesetEditorWindow::~TilesetEditorWindow()
     delete ui;
 }
 
-void TilesetEditorWindow::updateSelectedTile(int x, int y)
+void TilesetEditorWindow::updateSelectedTile(int tile)
 {
-    if (x != -1 && y != -1)
+    if (tile != -1)
         ui->behaviorsTab->setEnabled(true);
     else
+    {
+        ui->selectedTileLabel->setText("Selected Tile: None");
+        ui->behaviorsTab->setEnabled(false);
         return;
+    }
 
-    selectedX = x;
-    selectedY = y;
+    selectedTile = tile;
 
     QString selTileText("Selected Tile: (%1, %2)");
-    ui->selectedTileLabel->setText(selTileText.arg(x).arg(y));
+    ui->selectedTileLabel->setText(selTileText.arg(tile%21).arg(tile/21));
 
     updateHex();
     updateBehavior();
@@ -72,19 +73,19 @@ void TilesetEditorWindow::updateSelectedTile(int x, int y)
 
 void::TilesetEditorWindow::updateHex()
 {
-    if (selectedX == -1 || selectedY == -1)
+    if (selectedTile == -1)
         return;
 
     QString hexValue;
     for (int i = 0; i < 8; i++)
-        hexValue.append(QString("%1 ").arg(tileset->getBehaviorByte(selectedX + selectedY*21, i), 2, 16, QChar('0')));
+        hexValue.append(QString("%1").arg(tileset->getBehaviorByte(selectedTile, i), 2, 16, QChar('0')));
 
     ui->hexLineEdit->setText(hexValue);
 }
 
 void TilesetEditorWindow::updateBehavior()
 {
-    int byte0 = tileset->getBehaviorByte(selectedX + selectedY*21, 0);
+    int byte0 = tileset->getBehaviorByte(selectedTile, 0);
     bool check = false;
 
     for (int i = 0; i < specialBehaviors.size(); i++)
@@ -112,7 +113,7 @@ void TilesetEditorWindow::updateBehavior()
 
 void TilesetEditorWindow::updateParameters()
 {
-    int byte2 = tileset->getBehaviorByte(selectedX + selectedY*21, 2);
+    int byte2 = tileset->getBehaviorByte(selectedTile, 2);
     bool check = false;
 
     for (int i = 0; i < specialBehaviors[selectedSpecialBehavior].parameters.size(); i++)
@@ -135,83 +136,32 @@ void TilesetEditorWindow::updateParameters()
 
 void TilesetEditorWindow::updateComboBoxes()
 {
-    int byte4 = tileset->getBehaviorByte(selectedX + selectedY*21, 4);
-    bool checkA = false;
-
-    for (int i = 0; i < hitboxes.size(); i++)
-    {
-        if (byte4 == hitboxes[i].byte)
-        {
-            selectedHitbox = i;
-            ui->hitBoxComboBox->setCurrentIndex(i);
-            checkA = true;
-            break;
-        }
-    }
-    if (!checkA)
-    {
-        ui->hitBoxComboBox->setCurrentIndex(-1);
-        selectedHitbox = -1;
-    }
-
-    int byte5 = tileset->getBehaviorByte(selectedX + selectedY*21, 5);
-    bool checkB = false;
-
-    for (int i = 0; i < terrainTypes.size(); i++)
-    {
-        if (byte5 == terrainTypes[i].byte)
-        {
-            selectedTerrainType = i;
-            ui->terrainTypeComboBox->setCurrentIndex(i);
-            checkB = true;
-            break;
-        }
-    }
-    if (!checkB)
-    {
-        ui->terrainTypeComboBox->setCurrentIndex(-1);
-        selectedTerrainType = -1;
-    }
-
-    int byte7 = tileset->getBehaviorByte(selectedX + selectedY*21, 7);
-    bool checkC = false;
-
-    for (int i = 0; i < depthBehaviors.size(); i++)
-    {
-        if (byte7 == depthBehaviors[i].byte)
-        {
-            selectedTerrainType = i;
-            ui->depthComboBox->setCurrentIndex(i);
-            checkC = true;
-            break;
-        }
-    }
-    if (!checkC)
-    {
-        ui->depthComboBox->setCurrentIndex(-1);
-        selectedDepthBehavior = -1;
-    }
-
-    int byte3 = tileset->getBehaviorByte(selectedX + selectedY*21, 3);
-    bool checkD = false;
-
-    for (int i = 0; i < pipeColors.size(); i++)
-    {
-        if (byte3 == pipeColors[i].byte)
-        {
-            selectedPipeColor = i;
-            ui->pipeColorComboBox->setCurrentIndex(i);
-            checkD = true;
-            break;
-        }
-    }
-    if (!checkD)
-    {
-        ui->pipeColorComboBox->setCurrentIndex(-1);
-        selectedPipeColor = -1;
-    }
+    updateComboBox(4, hitboxes, ui->hitBoxComboBox);
+    updateComboBox(5, terrainTypes, ui->terrainTypeComboBox);
+    updateComboBox(7, depthBehaviors, ui->depthComboBox);
+    updateComboBox(3, pipeColors, ui->pipeColorComboBox);
     ui->pipeColorComboBox->setEnabled((specialBehaviors[selectedSpecialBehavior].description == "Pipe"));
 
+}
+
+void TilesetEditorWindow::updateComboBox(int byteNbr, QList<parameter> &list, QComboBox *comboBox)
+{
+    int byte = tileset->getBehaviorByte(selectedTile, byteNbr);
+    bool check = false;
+
+    for (int i = 0; i < list.size(); i++)
+    {
+        if (byte == list[i].byte)
+        {
+            comboBox->setCurrentIndex(i);
+            check = true;
+            break;
+        }
+    }
+    if (!check)
+    {
+        comboBox->setCurrentIndex(-1);
+    }
 }
 
 void TilesetEditorWindow::loadBehaviors()
@@ -294,33 +244,17 @@ void TilesetEditorWindow::setStaticModels()
     sBehaviorsModel->setStringList(sBehaviorsList);
     ui->sBehaviorListView->setModel(sBehaviorsModel);
 
-    QStringListModel* hitboxesModel = new QStringListModel;
-    QStringList hitboxesList;
     for (int i = 0; i < hitboxes.size(); i++)
-        hitboxesList.append(hitboxes[i].description);
-    hitboxesModel->setStringList(hitboxesList);
-    ui->hitBoxComboBox->setModel(hitboxesModel);
+       ui->hitBoxComboBox->addItem(hitboxes[i].description);
 
-    QStringListModel* terrainTypesModel = new QStringListModel;
-    QStringList terrainTypesList;
     for (int i = 0; i < terrainTypes.size(); i++)
-        terrainTypesList.append(terrainTypes[i].description);
-    terrainTypesModel->setStringList(terrainTypesList);
-    ui->terrainTypeComboBox->setModel(terrainTypesModel);
+       ui->terrainTypeComboBox->addItem(terrainTypes[i].description);
 
-    QStringListModel* depthBehaviorsModel = new QStringListModel;
-    QStringList depthBehaviorsList;
     for (int i = 0; i < depthBehaviors.size(); i++)
-        depthBehaviorsList.append(depthBehaviors[i].description);
-    depthBehaviorsModel->setStringList(depthBehaviorsList);
-    ui->depthComboBox->setModel(depthBehaviorsModel);
+       ui->depthComboBox->addItem(depthBehaviors[i].description);
 
-    QStringListModel* pipeColorsModel = new QStringListModel;
-    QStringList pipeColorsList;
     for (int i = 0; i < pipeColors.size(); i++)
-        pipeColorsList.append(pipeColors[i].description);
-    pipeColorsModel->setStringList(pipeColorsList);
-    ui->pipeColorComboBox->setModel(pipeColorsModel);
+       ui->pipeColorComboBox->addItem(pipeColors[i].description);
 }
 
 void TilesetEditorWindow::setParametersModel()
@@ -340,27 +274,30 @@ void TilesetEditorWindow::setParametersModel()
 
 void TilesetEditorWindow::on_hexLineEdit_textEdited(const QString &text)
 {
-    if (selectedX == -1 || selectedY == -1)
+    if (selectedTile == -1)
         return;
 
     QStringList bytes = text.split(" ");
 
     for (int i = 0; i < 8; i++)
-        tileset->setBehaviorByte(selectedX + 21*selectedY, i, (quint8)bytes[i].toUInt(0, 16));
+        tileset->setBehaviorByte(selectedTile, i, (quint8)bytes[i].toUInt(0, 16));
+
+    updateBehavior();
+    updateComboBoxes();
 }
 
 void TilesetEditorWindow::on_sBehaviorListView_clicked(const QModelIndex &index)
 {
-    if (selectedX == -1 || selectedY == -1)
+    if (selectedTile == -1)
         return;
 
     int oldSelectedSpecialBehavior = selectedSpecialBehavior;
 
     selectedSpecialBehavior = index.row();
 
-    tileset->setBehaviorByte(selectedX + 21*selectedY, 0, specialBehaviors[selectedSpecialBehavior].value);
+    tileset->setBehaviorByte(selectedTile, 0, specialBehaviors[selectedSpecialBehavior].value);
     if (selectedSpecialBehavior != oldSelectedSpecialBehavior)
-        tileset->setBehaviorByte(selectedX + 21*selectedY, 2, 0);
+        tileset->setBehaviorByte(selectedTile, 2, 0);
 
     setParametersModel();
     updateParameters();
@@ -369,48 +306,48 @@ void TilesetEditorWindow::on_sBehaviorListView_clicked(const QModelIndex &index)
 
 void TilesetEditorWindow::on_parameterListView_clicked(const QModelIndex &index)
 {
-    if (selectedX == -1 || selectedY == -1)
+    if (selectedTile == -1)
         return;
 
     selectedParameter = index.row();
-    tileset->setBehaviorByte(selectedX + 21*selectedY, 2, specialBehaviors[selectedSpecialBehavior].parameters[selectedParameter].byte);
+    tileset->setBehaviorByte(selectedTile, 2, specialBehaviors[selectedSpecialBehavior].parameters[selectedParameter].byte);
 
     updateHex();
 }
 
 void TilesetEditorWindow::on_hitBoxComboBox_currentIndexChanged(int index)
 {
-    if (selectedX == -1 || selectedY == -1)
+    if (selectedTile == -1 || index == -1)
         return;
 
-    tileset->setBehaviorByte(selectedX + 21*selectedY, 4, hitboxes[index].byte);
+    tileset->setBehaviorByte(selectedTile, 4, hitboxes[index].byte);
     updateHex();
 }
 
 void TilesetEditorWindow::on_terrainTypeComboBox_currentIndexChanged(int index)
 {
-    if (selectedX == -1 || selectedY == -1)
+    if (selectedTile == -1 || index == -1)
         return;
 
-    tileset->setBehaviorByte(selectedX + 21*selectedY, 5, terrainTypes[index].byte);
+    tileset->setBehaviorByte(selectedTile, 5, terrainTypes[index].byte);
     updateHex();
 }
 
 void TilesetEditorWindow::on_depthComboBox_currentIndexChanged(int index)
 {
-    if (selectedX == -1 || selectedY == -1)
+    if (selectedTile == -1 || index == -1)
         return;
 
-    tileset->setBehaviorByte(selectedX + 21*selectedY, 7, depthBehaviors[index].byte);
+    tileset->setBehaviorByte(selectedTile, 7, depthBehaviors[index].byte);
     updateHex();
 }
 
 void TilesetEditorWindow::on_pipeColorComboBox_currentIndexChanged(int index)
 {
-    if (selectedX == -1 || selectedY == -1)
+    if (selectedTile == -1 || index == -1)
         return;
 
-    tileset->setBehaviorByte(selectedX + 21*selectedY, 3, pipeColors[index].byte);
+    tileset->setBehaviorByte(selectedTile, 3, pipeColors[index].byte);
     updateHex();
 }
 
@@ -448,8 +385,7 @@ void TilesetEditorWindow::on_actionSave_triggered()
 
 TilesetPicker::TilesetPicker(QWidget *parent) : QWidget(parent)
 {
-    this->selectedX = -1;
-    this->selectedY = -1;
+    this->selectedTile = -1;
     tilesetImage = new QImage(420, 420, QImage::Format_RGBA8888);
     bgColor = Qt::white;
 }
@@ -472,8 +408,8 @@ void TilesetPicker::paintEvent(QPaintEvent* evt)
         }
     }
 
-    if (selectedX != -1 || selectedY != -1)
-        painter.fillRect(QRect(selectedX*21, selectedY*21, 20, 20), QBrush(QColor(160,222,255,150), Qt::SolidPattern));
+    if (selectedTile != -1)
+        painter.fillRect(QRect(selectedTile%21*21, selectedTile/21*21, 20, 20), QBrush(QColor(160,222,255,150), Qt::SolidPattern));
 }
 
 void TilesetPicker::mousePressEvent(QMouseEvent* evt)
@@ -483,10 +419,9 @@ void TilesetPicker::mousePressEvent(QMouseEvent* evt)
 
     if (evt->x() % 21 != 20 && evt->x() % 21 != 20)
     {
-        selectedX = evt->x() / 21;
-        selectedY = evt->y() / 21;
+        selectedTile = evt->x() / 21 + evt->y() / 21 * 21;
 
-        emit selectedTileChanged(selectedX, selectedY);
+        emit selectedTileChanged(selectedTile);
 
         update();
     }
