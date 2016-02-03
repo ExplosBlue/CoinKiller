@@ -100,15 +100,14 @@ void TilesetEditorWindow::updateBehavior()
         }
     }
 
-    setParametersModel();
-
     if (!check)
     {
         ui->sBehaviorListView->clearSelection();
         selectedSpecialBehavior = -1;
     }
-    else
-        updateParameters();
+
+    setParametersModel();
+    updateParameters();
 }
 
 void TilesetEditorWindow::updateParameters()
@@ -116,21 +115,23 @@ void TilesetEditorWindow::updateParameters()
     int byte2 = tileset->getBehaviorByte(selectedTile, 2);
     bool check = false;
 
-    for (int i = 0; i < specialBehaviors[selectedSpecialBehavior].parameters.size(); i++)
+    if (selectedSpecialBehavior != -1)
     {
-        if (byte2 == specialBehaviors[selectedSpecialBehavior].parameters[i].byte)
+        for (int i = 0; i < specialBehaviors[selectedSpecialBehavior].parameters.size(); i++)
         {
-            selectedParameter = i;
-            QModelIndex modelIndex = ui->parameterListView->model()->index(i, 0, QModelIndex());
-            ui->parameterListView->setCurrentIndex(modelIndex);
-            check = true;
-            break;
+            if (byte2 == specialBehaviors[selectedSpecialBehavior].parameters[i].byte)
+            {
+                selectedParameter = i;
+                QModelIndex modelIndex = ui->parameterListView->model()->index(i, 0, QModelIndex());
+                ui->parameterListView->setCurrentIndex(modelIndex);
+                check = true;
+                break;
+            }
         }
     }
     if (!check)
     {
         ui->parameterListView->clearSelection();
-        selectedParameter = -1;
     }
 }
 
@@ -140,8 +141,11 @@ void TilesetEditorWindow::updateComboBoxes()
     updateComboBox(5, terrainTypes, ui->terrainTypeComboBox);
     updateComboBox(7, depthBehaviors, ui->depthComboBox);
     updateComboBox(3, pipeColors, ui->pipeColorComboBox);
-    ui->pipeColorComboBox->setEnabled((specialBehaviors[selectedSpecialBehavior].description == "Pipe"));
 
+    if (selectedSpecialBehavior != -1)
+        ui->pipeColorComboBox->setEnabled((specialBehaviors[selectedSpecialBehavior].description == "Pipe"));
+    else
+        ui->pipeColorComboBox->setEnabled(false);
 }
 
 void TilesetEditorWindow::updateComboBox(int byteNbr, QList<parameter> &list, QComboBox *comboBox)
@@ -310,6 +314,7 @@ void TilesetEditorWindow::on_parameterListView_clicked(const QModelIndex &index)
         return;
 
     selectedParameter = index.row();
+
     tileset->setBehaviorByte(selectedTile, 2, specialBehaviors[selectedSpecialBehavior].parameters[selectedParameter].byte);
 
     updateHex();
