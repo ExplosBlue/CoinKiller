@@ -29,6 +29,8 @@ TilesetEditorWindow::TilesetEditorWindow(QWidget *parent, Tileset *tileset) :
     ui->actionSetBackgroundColor->setIcon(QIcon(basePath + "colors.png"));
     ui->actionExportImage->setIcon(QIcon(basePath + "export.png"));
 
+
+    // Setup Behaviors Editor
     tilesetPicker = new TilesetPicker(this);
 
     ui->tilesetPicker->setWidget(tilesetPicker);
@@ -43,6 +45,19 @@ TilesetEditorWindow::TilesetEditorWindow(QWidget *parent, Tileset *tileset) :
 
     loadBehaviors();
     setStaticModels();
+
+
+    // Setup Objects Editor    
+    objectEditor = new ObjectEditor(tileset, this);
+    connect(this, SIGNAL(selectedObjectChanged(int)), objectEditor, SLOT(selectedObjectChanged(int)));
+    connect(objectEditor, SIGNAL(updateSelTileLabel(QString)), this, SLOT(setSelTileData(QString)));
+    connect(tilesetPicker, SIGNAL(selectedTileChanged(int)), objectEditor, SLOT(selectedTileChanged(int)));
+    connect(objectEditor, SIGNAL(tilesetChanged()), this, SLOT(updateObjectEditor()));
+    ui->objectEditor->addWidget(objectEditor);
+
+    ui->objectsListView->setIconSize(QSize(140,140));
+    ui->objectsListView->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
+    setupObjectsModel();
 }
 
 TilesetEditorWindow::~TilesetEditorWindow()
@@ -71,7 +86,10 @@ void TilesetEditorWindow::updateSelectedTile(int tile)
     updateComboBoxes();
 }
 
-void::TilesetEditorWindow::updateHex()
+
+// Behaviors Editor Funtions
+
+void TilesetEditorWindow::updateHex()
 {
     if (selectedTile == -1)
         return;
@@ -276,6 +294,47 @@ void TilesetEditorWindow::setParametersModel()
     ui->parameterListView->setModel(parametersModel);
 }
 
+
+// Objects Editor Funtions
+
+void TilesetEditorWindow::setupObjectsModel()
+{
+    QStandardItemModel* objectsModel = new QStandardItemModel();
+
+    QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/icons/");
+
+    for (int i = 0; i < tileset->getNumObjects(); i++)
+    {
+        ObjectDef* obj = tileset->getObjectDef(i);
+        QPixmap objPixmap(obj->width*20, obj->height*20);
+        objPixmap.fill(Qt::transparent);
+
+        QPainter p(&objPixmap);
+        TileGrid tileGrid;
+        tileGrid.clear();
+        tileGrid[0xFFFFFFFF] = 1;
+        tileset->drawObject(p, tileGrid, i, 0, 0, obj->width, obj->height, 1);
+        p.end();
+
+        QStandardItem *objItem = new QStandardItem(QIcon(objPixmap), QString("Object %1").arg(i));
+        objectsModel->appendRow(objItem);
+    }
+
+    ui->objectsListView->setModel(objectsModel);
+}
+
+void TilesetEditorWindow::setSelTileData(QString text)
+{
+    ui->selTileDataLabel->setText(text);
+}
+
+void TilesetEditorWindow::updateObjectEditor()
+{
+    setupObjectsModel();
+}
+
+// Behaviors Actions
+
 void TilesetEditorWindow::on_hexLineEdit_textEdited(const QString &text)
 {
     if (selectedTile == -1)
@@ -356,6 +415,17 @@ void TilesetEditorWindow::on_pipeColorComboBox_currentIndexChanged(int index)
     updateHex();
 }
 
+
+// Object Editor Actions
+
+void TilesetEditorWindow::on_objectsListView_clicked(const QModelIndex &index)
+{
+    emit selectedObjectChanged(index.row());
+}
+
+
+// General Actions
+
 void TilesetEditorWindow::on_actionExportImage_triggered()
 {
     QString filename = QFileDialog::getSaveFileName(this, "Export Tileset Image", QDir::currentPath(), "PNG File (*.png)");
@@ -380,7 +450,10 @@ void TilesetEditorWindow::on_actionSetBackgroundColor_triggered()
 {
     QColor bgColor = QColorDialog::getColor(Qt::white, this, "Select Background Color",  QColorDialog::DontUseNativeDialog);
     if(bgColor.isValid())
+    {
         tilesetPicker->setBGColor(bgColor);
+        objectEditor->setBGColor(bgColor);
+    }
 }
 
 void TilesetEditorWindow::on_actionSave_triggered()
@@ -388,46 +461,3 @@ void TilesetEditorWindow::on_actionSave_triggered()
     tileset->save();
 }
 
-TilesetPicker::TilesetPicker(QWidget *parent) : QWidget(parent)
-{
-    this->selectedTile = -1;
-    tilesetImage = new QImage(420, 420, QImage::Format_RGBA8888);
-    bgColor = Qt::white;
-}
-
-void TilesetPicker::setTilesetImage(QImage *tilesetImage)
-{
-    this->tilesetImage = tilesetImage;
-}
-
-void TilesetPicker::paintEvent(QPaintEvent* evt)
-{
-    QPainter painter(this);
-    painter.fillRect(evt->rect(), QBrush(bgColor, Qt::SolidPattern));
-
-    for (int x = 0; x < 21; x++)
-    {
-        for (int y = 0; y < 21; y++)
-        {
-            painter.drawImage(x*21, y*21, *tilesetImage, x*20 + x*4 + 2, y*20 + y*4 + 2, 20, 20, Qt::AutoColor);
-        }
-    }
-
-    if (selectedTile != -1)
-        painter.fillRect(QRect(selectedTile%21*21, selectedTile/21*21, 20, 20), QBrush(QColor(160,222,255,150), Qt::SolidPattern));
-}
-
-void TilesetPicker::mousePressEvent(QMouseEvent* evt)
-{
-    if (evt->button() != Qt::LeftButton)
-        return;
-
-    if (evt->x() % 21 != 20 && evt->x() % 21 != 20)
-    {
-        selectedTile = evt->x() / 21 + evt->y() / 21 * 21;
-
-        emit selectedTileChanged(selectedTile);
-
-        update();
-    }
-}

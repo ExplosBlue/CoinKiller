@@ -2,37 +2,13 @@
 #define TILESETEDITORWINDOW_H
 
 #include <QMainWindow>
-#include <QWidget>
 #include <QImage>
 #include <QStringListModel>
+#include <QStandardItemModel>
 #include <QComboBox>
 
 #include "tileset.h"
-
-
-// Tileset Picker
-class TilesetPicker : public QWidget
-{
-    Q_OBJECT
-public:
-    explicit TilesetPicker(QWidget *parent);
-    void setTilesetImage(QImage *image);
-    void setBGColor(QColor bgColor) { this->bgColor = bgColor; update(); }
-
-signals:
-    void selectedTileChanged(int tile);
-
-public slots:
-
-protected:
-    void paintEvent(QPaintEvent *) Q_DECL_OVERRIDE;
-    void mousePressEvent(QMouseEvent *) Q_DECL_OVERRIDE;
-
-private:
-    QImage *tilesetImage;
-    QColor bgColor;
-    int selectedTile;
-};
+#include "tileseteditorwidgets.h"
 
 
 namespace Ui {
@@ -47,8 +23,13 @@ public:
     explicit TilesetEditorWindow(QWidget *parent, Tileset *tileset);
     ~TilesetEditorWindow();
 
+signals:
+    void selectedObjectChanged(int objNbr);
+
 public slots:
     void updateSelectedTile(int tile);
+    void setSelTileData(QString text);
+    void updateObjectEditor();
 
 private slots:
     void on_hexLineEdit_textEdited(const QString &text);
@@ -71,9 +52,12 @@ private slots:
 
     void on_actionSave_triggered();
 
+    void on_objectsListView_clicked(const QModelIndex &index);
+
 private:
     Ui::TilesetEditorWindow *ui;
     TilesetPicker* tilesetPicker;
+    ObjectEditor* objectEditor;
 
     struct parameter
     {
@@ -111,6 +95,9 @@ private:
     void setStaticModels();
     void setParametersModel();
     void updateComboBox(int byteNbr, QList<parameter> &list, QComboBox *comboBox);
+
+
+    void setupObjectsModel();
 };
 
 #endif // TILESETEDITORWINDOW_H

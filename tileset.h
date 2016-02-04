@@ -28,6 +28,25 @@ typedef QHash<quint32,quint8> TileGrid;
 
 class Game;
 
+struct ObjectRow
+{
+    quint8 slopeFlags;
+    quint8 xRepeatStart, xRepeatEnd;
+
+    QList<quint8> data;
+};
+
+struct ObjectDef
+{
+    quint8 width, height;
+    quint8 flags1, flags2; // whatever those are
+
+    quint8 slopeY; // where the second slope block starts
+    quint8 yRepeatStart, yRepeatEnd;
+
+    QList<ObjectRow> rows;
+};
+
 
 class Tileset
 {
@@ -39,8 +58,12 @@ public:
     void drawTile(QPainter& painter, TileGrid& grid, int num, int x, int y, float zoom);
     void drawObject(QPainter& painter, TileGrid& grid, int num, int x, int y, int w, int h, float zoom);
     quint8 getBehaviorByte(int tile, int byte);
-
     void setBehaviorByte(int tile, int byte, quint8 value);
+
+    int getNumObjects() { return numObjects; }
+    ObjectDef* getObjectDef(int i) { return &objectDef[i]; }
+    quint8 getData(int objNbr, int x, int y, int byte);
+    void setData(int objNbr, int x, int y, int byte, int value);
 
     Game* game;
 
@@ -58,25 +81,6 @@ private:
 
     QImage* texImage;
 
-
-    struct ObjectRow
-    {
-        quint8 slopeFlags;
-        quint8 xRepeatStart, xRepeatEnd;
-
-        QList<quint8> data;
-    };
-
-    struct ObjectDef
-    {
-        quint8 width, height;
-        quint8 flags1, flags2; // whatever those are
-
-        quint8 slopeY; // where the second slope block starts
-        quint8 yRepeatStart, yRepeatEnd;
-
-        QList<ObjectRow> rows;
-    };
 
     int numObjects;
     ObjectDef* objectDef;

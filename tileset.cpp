@@ -431,6 +431,17 @@ void Tileset::setBehaviorByte(int tile, int byte, quint8 value)
     behaviors[tile][byte] = value;
 }
 
+quint8 Tileset::getData(int objNbr, int x, int y, int byte)
+{
+    ObjectDef& def = objectDef[objNbr];
+    return def.rows[y].data[x*3 + byte];
+}
+
+void Tileset::setData(int objNbr, int x, int y, int byte, int value)
+{
+    objectDef[objNbr].rows[y].data[x*3 + byte] = value;
+}
+
 void Tileset::save()
 {
     // save behaviors
