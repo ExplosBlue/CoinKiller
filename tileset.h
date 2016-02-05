@@ -60,10 +60,16 @@ public:
     quint8 getBehaviorByte(int tile, int byte);
     void setBehaviorByte(int tile, int byte, quint8 value);
 
-    int getNumObjects() { return numObjects; }
-    ObjectDef* getObjectDef(int i) { return &objectDef[i]; }
+    int getNumObjects() { return objectDefs.size(); }
+    ObjectDef* getObjectDef(int i) { return objectDefs[i]; }
     quint8 getData(int objNbr, int x, int y, int byte);
     void setData(int objNbr, int x, int y, int byte, int value);
+
+    void addObject(int objNbr);
+    void addObject(int objNbr);
+    void removeObject(int objNbr);
+    void moveObjectUp(int objNbr);
+    void moveObjectDown(int objNbr);
 
     Game* game;
 
@@ -82,8 +88,7 @@ private:
     QImage* texImage;
 
 
-    int numObjects;
-    ObjectDef* objectDef;
+    QList<ObjectDef*> objectDefs;
 
 
     void drawRow(QPainter& painter, TileGrid& grid, ObjectDef& def, ObjectRow& row, int x, int y, int w, float zoom);

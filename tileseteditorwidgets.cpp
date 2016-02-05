@@ -93,9 +93,6 @@ void ObjectEditor::paintEvent(QPaintEvent* evt)
 
 void ObjectEditor::mousePressEvent(QMouseEvent* evt)
 {
-    if (evt->button() != Qt::LeftButton)
-        return;
-
     if (objNbr == -1)
         return;
 
@@ -104,8 +101,11 @@ void ObjectEditor::mousePressEvent(QMouseEvent* evt)
         selX = (evt->x()-currX) / 20;
         selY = (evt->y()-currY) / 20;
 
-        tileset->setData(objNbr, selX, selY, 1, paintTileNbr);
-        emit tilesetChanged();
+        if (paintTileNbr != -1 && evt->button() == Qt::RightButton)
+        {
+            tileset->setData(objNbr, selX, selY, 1, paintTileNbr);
+            emit tilesetChanged();
+        }
         emit updateSelTileLabel(QString("Tile Data: (Repeat: 0x%1), (Tile: 0x%2), (Extra: 0x%3)").arg(tileset->getData(objNbr, selX, selY, 0), 1, 16).arg(tileset->getData(objNbr, selX, selY, 1), 1, 16).arg(tileset->getData(objNbr, selX, selY, 2), 1, 16));
     }
     else

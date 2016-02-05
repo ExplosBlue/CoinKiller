@@ -5,7 +5,40 @@
 	
 		<behavior value = "0" description = "Nothing" />
 		
-		<behavior value = "1" description = "Rail" />
+		<behavior value = "1" description = "Rail">
+			<value id = "4" description = "Horizontal Rail" />
+			<value id = "5" description = "Vertical Rail" />
+			<value id = "2" description = "Rail Corner for Top Left" />
+			<value id = "3" description = "Rail Corner for Bottom Right" />
+			<value id = "0" description = "1x1 Rail Upslope" />
+			<value id = "1" description = "1x1 Rail Downslope" />
+			<value id = "8" description = "2x1 Rail Upslope: Part 1" />
+			<value id = "7" description = "2x1 Rail Upslope: Part 2" />	
+			<value id = "10" description = "2x1 Rail Downslope: Part 1" />			
+			<value id = "9" description = "2x1 Rail Downslope: Part 2" />
+			<value id = "12" description = "1x2 Rail Upslope: Part 1" />
+			<value id = "11" description = "1x2 Rail Upslope: Part 2" />
+			<value id = "14" description = "1x2 Rail Downslope: Part 1" />
+			<value id = "13" description = "1x2 Rail Downslope: Part 2" />
+			<value id = "15" description = "Rail 1x1 Circle" />
+			<value id = "16" description = "Rail 2x2 Circle (top-right)" />
+			<value id = "17" description = "Rail 2x2 Circle (top-left)" />
+			<value id = "18" description = "Rail 2x2 Circle (bottom-right)" />
+			<value id = "19" description = "Rail 2x2 Circle (bottom-left)" />
+			<value id = "20" description = "Rail 4x4 Circle (top-left)" />
+			<value id = "21" description = "Rail 4x4 Circle (top-middle-left)" />
+			<value id = "22" description = "Rail 4x4 Circle (top-middle-right)" />
+			<value id = "23" description = "Rail 4x4 Circle (top-right)" />
+			<value id = "24" description = "Rail 4x4 Circle (left-middle-top)" />
+			<value id = "25" description = "Rail 4x4 Circle (right-middle-top)" />
+			<value id = "26" description = "Rail 4x4 Circle (left-middle-bottom)" />
+			<value id = "27" description = "Rail 4x4 Circle (right-middle-bottom)" />
+			<value id = "28" description = "Rail 4x4 Circle (bottom-left)" />
+			<value id = "29" description = "Rail 4x4 Circle (bottom-middle-left)" />
+			<value id = "30" description = "Rail 4x4 Circle (bottom-middle-right)" />
+			<value id = "31" description = "Rail 4x4 Circle (bottom-right)" />
+			<value id = "32" description = "Rail Stopper (Reverse Direction)" />
+		</behavior>
 		
 		<behavior value = "2" description = "Coin Outline" />
 		<behavior value = "3" description = "Coin" />
@@ -33,7 +66,9 @@
 			<value id = "7" description = "Partly Solid (left)" />
 		</behavior>
 		
-		<behavior value = "10" description = "unknown (standard suite [3-10, 0])" />
+		<behavior value = "8" description = "Red Block Outline" />
+		
+		<behavior value = "10" description = "Invisible Block" />
 		
 		<behavior value = "11" description = "Slope">
 			<value id = "0" description = "1x1 Up" />
@@ -42,6 +77,10 @@
 			<value id = "3" description = "2x1 Up: Part 2" />
 			<value id = "4" description = "2x1 Down: Part 1" />
 			<value id = "5" description = "2x1 Down: Part 2" />
+			<value id = "6" description = "1x2 Up: Part 1" />
+			<value id = "7" description = "1x2 Up: Part 2" />
+			<value id = "9" description = "1x2 Down: Part 1" />
+			<value id = "8" description = "1x2 Down: Part 2" />
 			<value id = "11" description = "4x1 Up: Part 1" />
 			<value id = "12" description = "4x1 Up: Part 2" />
 			<value id = "13" description = "4x1 Up: Part 3" />
@@ -50,6 +89,22 @@
 			<value id = "16" description = "4x1 Down: Part 2" />
 			<value id = "17" description = "4x1 Down: Part 3" />
 			<value id = "18" description = "4x1 Down: Part 4" />
+			<value id = "19" description = "8x1 Up: Part 1" />
+			<value id = "20" description = "8x1 Up: Part 2" />
+			<value id = "21" description = "8x1 Up: Part 3" />
+			<value id = "22" description = "8x1 Up: Part 4" />
+			<value id = "23" description = "8x1 Up: Part 5" />
+			<value id = "24" description = "8x1 Up: Part 6" />
+			<value id = "25" description = "8x1 Up: Part 7" />
+			<value id = "26" description = "8x1 Up: Part 8" />
+			<value id = "27" description = "8x1 Down: Part 1" />
+			<value id = "28" description = "8x1 Down: Part 2" />
+			<value id = "29" description = "8x1 Down: Part 3" />
+			<value id = "30" description = "8x1 Down: Part 4" />
+			<value id = "31" description = "8x1 Down: Part 5" />
+			<value id = "32" description = "8x1 Down: Part 6" />
+			<value id = "33" description = "8x1 Down: Part 7" />
+			<value id = "34" description = "8x1 Down: Part 8" />
 		</behavior>
 		
 		<behavior value = "12" description = "Upside-Down Slope">
@@ -57,8 +112,12 @@
 			<value id = "1" description = "1x1 Up" />
 			<value id = "2" description = "2x1 Down: Part 1" />
 			<value id = "3" description = "2x1 Down: Part 2" />
-			<value id = "4" description = "2x1 Down: Part 1" />
+			<value id = "4" description = "2x1 Up: Part 1" />
 			<value id = "5" description = "2x1 Up: Part 2" />
+			<value id = "6" description = "1x2 Down: Part 1" />
+			<value id = "7" description = "1x2 Down: Part 2" />
+			<value id = "9" description = "1x2 Up: Part 1" />
+			<value id = "8" description = "1x2 Up: Part 2" />
 			<value id = "11" description = "4x1 Down: Part 1" />
 			<value id = "12" description = "4x1 Down: Part 2" />
 			<value id = "13" description = "4x1 Down: Part 3" />
@@ -67,6 +126,22 @@
 			<value id = "16" description = "4x1 Up: Part 2" />
 			<value id = "17" description = "4x1 Up: Part 3" />
 			<value id = "18" description = "4x1 Up: Part 4" />
+			<value id = "19" description = "8x1 Down: Part 1" />
+			<value id = "20" description = "8x1 Down: Part 2" />
+			<value id = "21" description = "8x1 Down: Part 3" />
+			<value id = "22" description = "8x1 Down: Part 4" />
+			<value id = "23" description = "8x1 Down: Part 5" />
+			<value id = "24" description = "8x1 Down: Part 6" />
+			<value id = "25" description = "8x1 Down: Part 7" />
+			<value id = "26" description = "8x1 Down: Part 8" />
+			<value id = "27" description = "8x1 Up: Part 1" />
+			<value id = "28" description = "8x1 Up: Part 2" />
+			<value id = "29" description = "8x1 Up: Part 3" />
+			<value id = "30" description = "8x1 Up: Part 4" />
+			<value id = "31" description = "8x1 Up: Part 5" />
+			<value id = "32" description = "8x1 Up: Part 6" />
+			<value id = "33" description = "8x1 Up: Part 7" />
+			<value id = "34" description = "8x1 Up: Part 8" />
 		</behavior>
 		
 		<behavior value = "14" description = "Vine/Climbable Fence">
@@ -94,31 +169,31 @@
 		</behavior>
 		
 		<behavior value = "16" description = "Pipe">
+			<value id = "12" description = "Vert. Center Left" />
+			<value id = "13" description = "Vert. Center Right" />
 			<value id = "0" description = "Vert. Top Entrance Left" />
 			<value id = "1" description = "Vert. Top Entrance Right" />
 			<value id = "2" description = "Vert. Bottom Entrance Left" />
 			<value id = "3" description = "Vert. Bottom Entrance Right" />
+			<value id = "16" description = "Horiz. Center Top" />
+			<value id = "17" description = "Horiz. Center Bottom" />
 			<value id = "4" description = "Horiz. Left Entrance Top" />
 			<value id = "5" description = "Horiz. Left Entrance Bottom" />
 			<value id = "6" description = "Horiz. Right Entrance Top" />
 			<value id = "7" description = "Horiz. Right Entrance Bottom" />
+			<value id = "14" description = "Vert. Pipe Intersection Top/Bottom Left" />
+			<value id = "15" description = "Vert. Pipe Intersection Top/Bottom Right" />
+			<value id = "18" description = "Horiz. Pipe Intersection Top Left/Right" />
+			<value id = "19" description = "Horiz. Pipe Intersection Bottom Left/Right" />
+			<value id = "23" description = "Vert. Mini Pipe Center" />
+			<value id = "24" description = "Horiz. Mini Pipe Center" />
 			<value id = "8" description = "Vert. Mini Pipe Top" />
 			<value id = "9" description = "Vert. Mini Pipe Bottom" />
 			<value id = "10" description = "Horiz. Mini Pipe Left" />
 			<value id = "11" description = "Horiz. Mini Pipe Right" />
-			<value id = "12" description = "Vert. Center Left" />
-			<value id = "13" description = "Vert. Center Right" />
-			<value id = "14" description = "Vert. Pipe Intersection Top/Bottom Left" />
-			<value id = "15" description = "Vert. Pipe Intersection Top/Bottom Right" />
-			<value id = "16" description = "Horiz. Center Top" />
-			<value id = "17" description = "Horiz. Center Bottom" />
-			<value id = "18" description = "Vert. Pipe Intersection Top Left/Right" />
-			<value id = "19" description = "Vert. Pipe Intersection Bottom Left/Right" />
-			<value id = "23" description = "Vert. Mini Pipe Center" />
-			<value id = "24" description = "Horiz. Mini Pipe Center" />
-			<value id = "35" description = "Pipe Corner Block" />
 			<value id = "36" description = "Vert. Mini Pipe Intersection" />
 			<value id = "37" description = "Horiz. Mini Pipe Intersection" />
+			<value id = "35" description = "Pipe Corner Block" />
 		</behavior>
 		
 		<behavior value = "17" description = "Conveyor Belt">
@@ -142,7 +217,15 @@
 		<behavior value = "33" description = "unknown (standard suite [14, 0])" />
 		<behavior value = "34" description = "unknown (standard suite [11, 0])" />
 		<behavior value = "35" description = "Note-Block" />
-		<behavior value = "36" description = "Ghosthouse spring" />	
+		
+		<behavior value = "36" description = "Ghosthouse spring">
+			<value id = "1" description = "unknown (0x01)" />
+			<value id = "2" description = "unknown (0x02)" />
+			<value id = "3" description = "unknown (0x03)" />
+			<value id = "4" description = "unknown (0x04)" />
+			<value id = "5" description = "unknown (0x05)" />
+		</behavior>
+		
 		<behavior value = "37" description = "POW-Block" />	
 	
 	</special_behaviors>
@@ -152,6 +235,9 @@
 		<value id = "0" description = "Air" />
 		<value id = "1" description = "Full Solid" />
 		<value id = "2" description = "Solid-on-Top" />
+		<value id = "3" description = "Solid-on-Bottom?" />
+		<value id = "33" description = "Ghosthouse gentle Stair" />
+		<value id = "34" description = "Solid-on-Top Slope" />
 	</hitboxes>
 	
 	<terrainTypes>

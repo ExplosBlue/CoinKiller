@@ -54,6 +54,16 @@ private slots:
 
     void on_objectsListView_clicked(const QModelIndex &index);
 
+    void on_removeObjectButton_clicked();
+
+    void on_moveObjectUpButton_clicked();
+
+    void on_moveObjectDownButton_clicked();
+
+    void on_addObjectPushButton_clicked();
+
+    void on_actionDeleteAllObjects_triggered();
+
 private:
     Ui::TilesetEditorWindow *ui;
     TilesetPicker* tilesetPicker;
@@ -97,7 +107,7 @@ private:
     void updateComboBox(int byteNbr, QList<parameter> &list, QComboBox *comboBox);
 
 
-    void setupObjectsModel();
+    void setupObjectsModel(bool keepIndex);
 };
 
 #endif // TILESETEDITORWINDOW_H

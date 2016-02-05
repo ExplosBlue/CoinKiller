@@ -38,8 +38,8 @@ Tileset::Tileset(Game *game, QString name)
     FileBase* objdata = archive->openFile("/BG_unt/"+name+".bin");
     objdata->open();
 
-    numObjects = objindex->size() / 6;
-    objectDef = new ObjectDef[numObjects];
+    int numObjects = objindex->size() / 6;
+
     for (int o = 0; o < numObjects; o++)
     {
         quint16 offset = objindex->read16();
@@ -50,7 +50,7 @@ Tileset::Tileset(Game *game, QString name)
 
         //qDebug("OBJECT %d -- %04X %dx%d %02X %02X", o, offset, width, height, crap1, crap2);
 
-        ObjectDef* obj = &objectDef[o];//new ObjectDef();
+        ObjectDef* obj = new ObjectDef();
         obj->width = width;
         obj->height = height;
         obj->flags1 = crap1;
@@ -178,6 +178,8 @@ Tileset::Tileset(Game *game, QString name)
 
             curx++;
         }
+
+        objectDefs.append(obj);
     }
 
     objdata->close();
@@ -201,8 +203,6 @@ Tileset::Tileset(Game *game, QString name)
 
 Tileset::~Tileset()
 {
-    delete[] objectDef;
-
     delete texImage;
 
     delete texture;
@@ -295,13 +295,13 @@ void Tileset::drawRow(QPainter& painter, TileGrid& grid, ObjectDef& def, ObjectR
 
 void Tileset::drawObject(QPainter& painter, TileGrid& grid, int num, int x, int y, int w, int h, float zoom)
 {
-    if (num >= numObjects) // TODO handle properly
+    if (num >= objectDefs.size()) // TODO handle properly
     {
         qDebug("!! BAD OBJ NUMBER %d\n", num);
         return;
     }
 
-    ObjectDef& def = objectDef[num];
+    ObjectDef& def = *objectDefs[num];
 
     //qDebug("RENDER OBJ %d | %d %d | %d,%d %d,%d\n", num, def.rows.length(), 4646445, x, y, w, h);
 
@@ -433,18 +433,18 @@ void Tileset::setBehaviorByte(int tile, int byte, quint8 value)
 
 quint8 Tileset::getData(int objNbr, int x, int y, int byte)
 {
-    ObjectDef& def = objectDef[objNbr];
+    ObjectDef& def = *objectDefs[objNbr];
     return def.rows[y].data[x*3 + byte];
 }
 
 void Tileset::setData(int objNbr, int x, int y, int byte, int value)
 {
-    objectDef[objNbr].rows[y].data[x*3 + byte] = value;
+    objectDefs[objNbr]->rows[y].data[x*3 + byte] = value;
 }
 
 void Tileset::save()
 {
-    // save behaviors
+    // Save Behaviors
     FileBase* behaviorsFile = archive->openFile("BG_chk/d_bgchk_" + name + ".bin");
     behaviorsFile->open();
     behaviorsFile->seek(0);
@@ -456,4 +456,85 @@ void Tileset::save()
     behaviorsFile->save();
     behaviorsFile->close();
     delete behaviorsFile;
+
+
+    // Save Object Def
+    FileBase* objindex = archive->openFile("/BG_unt/"+name+"_hd.bin");
+    objindex->open();
+    objindex->seek(0);
+
+    FileBase* objdata = archive->openFile("/BG_unt/"+name+".bin");
+    objdata->open();
+    objdata->seek(0);
+
+    // Calc new File Sizes
+    objindex->resize(6 * objectDefs.size());
+
+    quint64 dataSize = 0;
+    for (int o = 0; o < objectDefs.size(); o++)
+    {
+        for (int r = 0; r < objectDefs[o]->rows.size(); r++)
+        {
+            if (objectDefs[o]->rows[r].slopeFlags != 0)
+                dataSize++;
+            dataSize += objectDefs[o]->rows[r].data.size();
+            dataSize++; // 0xEF
+        }
+        dataSize++; // 0xFF
+    }
+
+    objdata->resize(dataSize);
+
+    for (int o = 0; o < objectDefs.size(); o++)
+    {
+        ObjectDef& obj = *objectDefs[o];
+
+        objindex->write16((quint16)objdata->pos());
+        objindex->write8(obj.width);
+        objindex->write8(obj.height);
+        objindex->write8(obj.flags1);
+        objindex->write8(obj.flags2);
+
+        for (int r = 0; r < obj.rows.size(); r++)
+        {
+            if (obj.rows[r].slopeFlags != 0)
+                objdata->write8(obj.rows[r].slopeFlags);
+            for (int d = 0; d < obj.rows[r].data.size(); d++)
+                objdata->write8(obj.rows[r].data[d]);
+            objdata->write8(0xFE);
+        }
+        objdata->write8(0xFF);
+    }
+
+    objindex->save();
+    objdata->save();
+
+    objindex->close();
+    objdata->close();
+
+    delete objindex;
+    delete objdata;
+}
+
+void Tileset::addObject(int objNbr)
+{
+    // TODO
+}
+
+void Tileset::removeObject(int objNbr)
+{
+    objectDefs.removeAt(objNbr);
+}
+
+void Tileset::moveObjectDown(int objNbr)
+{
+    if (objNbr < objectDefs.size())
+        objectDefs.move(objNbr, objNbr+1);
+}
+
+
+void Tileset::moveObjectUp(int objNbr)
+{
+    if (objNbr > 0)
+        objectDefs.move(objNbr, objNbr-1);
 }

@@ -28,6 +28,7 @@ TilesetEditorWindow::TilesetEditorWindow(QWidget *parent, Tileset *tileset) :
     ui->actionSave->setIcon(QIcon(basePath + "save.png"));
     ui->actionSetBackgroundColor->setIcon(QIcon(basePath + "colors.png"));
     ui->actionExportImage->setIcon(QIcon(basePath + "export.png"));
+    ui->actionDeleteAllObjects->setIcon(QIcon(basePath + "delete_objects.png"));
 
 
     // Setup Behaviors Editor
@@ -57,7 +58,7 @@ TilesetEditorWindow::TilesetEditorWindow(QWidget *parent, Tileset *tileset) :
 
     ui->objectsListView->setIconSize(QSize(140,140));
     ui->objectsListView->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
-    setupObjectsModel();
+    setupObjectsModel(false);
 }
 
 TilesetEditorWindow::~TilesetEditorWindow()
@@ -297,8 +298,10 @@ void TilesetEditorWindow::setParametersModel()
 
 // Objects Editor Funtions
 
-void TilesetEditorWindow::setupObjectsModel()
+void TilesetEditorWindow::setupObjectsModel(bool keepIndex)
 {
+    int selObj = ui->objectsListView->currentIndex().row();
+
     QStandardItemModel* objectsModel = new QStandardItemModel();
 
     QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/icons/");
@@ -321,6 +324,13 @@ void TilesetEditorWindow::setupObjectsModel()
     }
 
     ui->objectsListView->setModel(objectsModel);
+
+    if (keepIndex)
+    {
+        QModelIndex oldIndex = ui->objectsListView->model()->index(selObj, 0, QModelIndex());
+        ui->objectsListView->setCurrentIndex(oldIndex);
+        ui->objectsListView->selectionModel()->select(oldIndex, QItemSelectionModel::SelectCurrent);
+    }
 }
 
 void TilesetEditorWindow::setSelTileData(QString text)
@@ -330,7 +340,7 @@ void TilesetEditorWindow::setSelTileData(QString text)
 
 void TilesetEditorWindow::updateObjectEditor()
 {
-    setupObjectsModel();
+    setupObjectsModel(true);
 }
 
 // Behaviors Actions
@@ -423,6 +433,75 @@ void TilesetEditorWindow::on_objectsListView_clicked(const QModelIndex &index)
     emit selectedObjectChanged(index.row());
 }
 
+void TilesetEditorWindow::on_addObjectPushButton_clicked()
+{
+    int selObj = ui->objectsListView->currentIndex().row();
+
+    if (selObj == -1)
+        return;
+
+    tileset->addObject(selObj);
+}
+
+void TilesetEditorWindow::on_removeObjectButton_clicked()
+{
+    int selObj = ui->objectsListView->currentIndex().row();
+
+    if (selObj == -1)
+        return;
+
+    tileset->removeObject(selObj);
+    setupObjectsModel(false);
+    ui->objectsListView->clearSelection();
+    emit selectedObjectChanged(-1);
+}
+
+void TilesetEditorWindow::on_moveObjectUpButton_clicked()
+{
+    int selObj = ui->objectsListView->currentIndex().row();
+
+    if (selObj == -1 || selObj == 0)
+        return;
+
+    tileset->moveObjectUp(selObj);
+
+    setupObjectsModel(false);
+    QModelIndex newIndex = ui->objectsListView->model()->index(selObj-1, 0, QModelIndex());
+    ui->objectsListView->setCurrentIndex(newIndex);
+    ui->objectsListView->selectionModel()->select(newIndex, QItemSelectionModel::SelectCurrent);
+    emit selectedObjectChanged(newIndex.row());
+}
+
+void TilesetEditorWindow::on_moveObjectDownButton_clicked()
+{
+    int selObj = ui->objectsListView->currentIndex().row();
+
+    if (selObj == -1 || selObj+1 >= tileset->getNumObjects())
+        return;
+
+    tileset->moveObjectDown(selObj);
+
+    setupObjectsModel(false);
+    QModelIndex newIndex = ui->objectsListView->model()->index(selObj+1, 0, QModelIndex());
+    ui->objectsListView->setCurrentIndex(newIndex);
+    ui->objectsListView->selectionModel()->select(newIndex, QItemSelectionModel::SelectCurrent);
+    emit selectedObjectChanged(newIndex.row());
+}
+
+void TilesetEditorWindow::on_actionDeleteAllObjects_triggered()
+{
+    QMessageBox::StandardButton warning = QMessageBox::warning(this, "CoinKiller", "Do you realy want to delete all objects?", QMessageBox::Yes|QMessageBox::No);
+
+    if (warning != QMessageBox::Yes)
+        return;
+
+    for (int i = tileset->getNumObjects()-1; i >= 0; i--)
+        tileset->removeObject(i);
+
+    setupObjectsModel(false);
+    emit selectedObjectChanged(-1);
+}
+
 
 // General Actions
 
@@ -460,4 +539,3 @@ void TilesetEditorWindow::on_actionSave_triggered()
 {
     tileset->save();
 }
-
