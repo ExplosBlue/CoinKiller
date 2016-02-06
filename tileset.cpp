@@ -518,7 +518,24 @@ void Tileset::save()
 
 void Tileset::addObject(int objNbr)
 {
-    // TODO
+    // Create an empty object
+    ObjectDef* obj = new ObjectDef();
+    obj->width = 1;
+    obj->height = 1;
+    obj->flags1 = 0;
+    obj->flags2 = 0;
+    obj->yRepeatStart = 0xFF;
+    obj->slopeY = obj->height;
+
+    ObjectRow* row = new ObjectRow();
+    row->slopeFlags = 0;
+    row->xRepeatStart = 0xFF;
+    row->data.append(0x00); // no repeating
+    row->data.append(0x00); // make it use no tile
+    row->data.append(0x00); // make it blank
+    obj->rows.append(*row);
+
+    objectDefs.insert(objNbr+1, obj);
 }
 
 void Tileset::removeObject(int objNbr)
@@ -537,4 +554,64 @@ void Tileset::moveObjectUp(int objNbr)
 {
     if (objNbr > 0)
         objectDefs.move(objNbr, objNbr-1);
+}
+
+void Tileset::resizeObject(int objNbr, int width, int height)
+{
+    ObjectDef& obj = *objectDefs[objNbr];
+
+    if (width != -1)
+    {
+        int wDelta = width - obj.width;
+        if (wDelta >= 0)
+        {
+            for (int i = 0; i < wDelta; i++)
+            {
+                for (int j = 0; j < obj.rows.size(); j++)
+                {
+                    obj.rows[j].data.append(0x00);
+                    obj.rows[j].data.append(0x00);
+                    obj.rows[j].data.append(0x00);
+                }
+            }
+        }
+        else
+        {
+            wDelta *= -1;
+            for (int i = 0; i < wDelta; i++)
+            {
+                for (int j = 0; j < obj.rows.size(); j++)
+                {
+                    obj.rows[j].data.removeLast();
+                    obj.rows[j].data.removeLast();
+                    obj.rows[j].data.removeLast();
+                }
+            }
+        }
+        obj.width = width;
+    }
+
+    if (height != -1)
+    {
+        int hDelta = height - obj.height;
+
+        if (hDelta >= 0)
+        {
+            for (int i = 0; i < hDelta; i++)
+            {
+                ObjectRow* row = new ObjectRow();
+                row->slopeFlags = 0;    // TODO: Handle properly
+                for (int j = 0; j < obj.rows[0].data.size(); j++)
+                    row->data.append(0x00);
+                obj.rows.append(*row);
+            }
+        }
+        else
+        {
+            hDelta *= -1;
+            for (int i = 0; i < hDelta; i++)
+                obj.rows.removeLast();
+        }
+        obj.height = height;
+    }
 }

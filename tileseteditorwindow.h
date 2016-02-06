@@ -64,6 +64,10 @@ private slots:
 
     void on_actionDeleteAllObjects_triggered();
 
+    void on_oWidthSpinBox_valueChanged(int width);
+
+    void on_oHeightSpinBox_valueChanged(int height);
+
 private:
     Ui::TilesetEditorWindow *ui;
     TilesetPicker* tilesetPicker;
@@ -108,6 +112,7 @@ private:
 
 
     void setupObjectsModel(bool keepIndex);
+    void updateObjectInfo();
 };
 
 #endif // TILESETEDITORWINDOW_H

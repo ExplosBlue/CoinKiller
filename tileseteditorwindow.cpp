@@ -52,13 +52,14 @@ TilesetEditorWindow::TilesetEditorWindow(QWidget *parent, Tileset *tileset) :
     objectEditor = new ObjectEditor(tileset, this);
     connect(this, SIGNAL(selectedObjectChanged(int)), objectEditor, SLOT(selectedObjectChanged(int)));
     connect(objectEditor, SIGNAL(updateSelTileLabel(QString)), this, SLOT(setSelTileData(QString)));
-    connect(tilesetPicker, SIGNAL(selectedTileChanged(int)), objectEditor, SLOT(selectedTileChanged(int)));
+    connect(tilesetPicker, SIGNAL(selectedTileChanged(int)), objectEditor, SLOT(selectedPaintTileChanged(int)));
     connect(objectEditor, SIGNAL(tilesetChanged()), this, SLOT(updateObjectEditor()));
     ui->objectEditor->addWidget(objectEditor);
 
     ui->objectsListView->setIconSize(QSize(140,140));
     ui->objectsListView->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
     setupObjectsModel(false);
+    updateObjectInfo();
 }
 
 TilesetEditorWindow::~TilesetEditorWindow()
@@ -343,7 +344,28 @@ void TilesetEditorWindow::updateObjectEditor()
     setupObjectsModel(true);
 }
 
-// Behaviors Actions
+void TilesetEditorWindow::updateObjectInfo()
+{
+    int selObj = ui->objectsListView->currentIndex().row();
+
+    if (selObj == -1)
+    {
+        ui->oWidthSpinBox->setEnabled(false);
+        ui->oHeightSpinBox->setEnabled(false);
+        return;
+    }
+
+    ui->oWidthSpinBox->setEnabled(true);
+    ui->oHeightSpinBox->setEnabled(true);
+
+    ObjectDef& obj = *tileset->getObjectDef(selObj);
+
+    ui->oWidthSpinBox->setValue(obj.width);
+    ui->oHeightSpinBox->setValue(obj.height);
+}
+
+
+// Behaviors Editor Actions
 
 void TilesetEditorWindow::on_hexLineEdit_textEdited(const QString &text)
 {
@@ -426,11 +448,12 @@ void TilesetEditorWindow::on_pipeColorComboBox_currentIndexChanged(int index)
 }
 
 
-// Object Editor Actions
+// Objects Editor Actions
 
 void TilesetEditorWindow::on_objectsListView_clicked(const QModelIndex &index)
 {
     emit selectedObjectChanged(index.row());
+    updateObjectInfo();
 }
 
 void TilesetEditorWindow::on_addObjectPushButton_clicked()
@@ -441,6 +464,12 @@ void TilesetEditorWindow::on_addObjectPushButton_clicked()
         return;
 
     tileset->addObject(selObj);
+    setupObjectsModel(false);
+
+    QModelIndex newIndex = ui->objectsListView->model()->index(selObj+1, 0, QModelIndex());
+    ui->objectsListView->setCurrentIndex(newIndex);
+    ui->objectsListView->selectionModel()->select(newIndex, QItemSelectionModel::Select);
+    emit selectedObjectChanged(newIndex.row());
 }
 
 void TilesetEditorWindow::on_removeObjectButton_clicked()
@@ -468,7 +497,7 @@ void TilesetEditorWindow::on_moveObjectUpButton_clicked()
     setupObjectsModel(false);
     QModelIndex newIndex = ui->objectsListView->model()->index(selObj-1, 0, QModelIndex());
     ui->objectsListView->setCurrentIndex(newIndex);
-    ui->objectsListView->selectionModel()->select(newIndex, QItemSelectionModel::SelectCurrent);
+    ui->objectsListView->selectionModel()->select(newIndex, QItemSelectionModel::Select);
     emit selectedObjectChanged(newIndex.row());
 }
 
@@ -484,7 +513,7 @@ void TilesetEditorWindow::on_moveObjectDownButton_clicked()
     setupObjectsModel(false);
     QModelIndex newIndex = ui->objectsListView->model()->index(selObj+1, 0, QModelIndex());
     ui->objectsListView->setCurrentIndex(newIndex);
-    ui->objectsListView->selectionModel()->select(newIndex, QItemSelectionModel::SelectCurrent);
+    ui->objectsListView->selectionModel()->select(newIndex, QItemSelectionModel::Select);
     emit selectedObjectChanged(newIndex.row());
 }
 
@@ -500,6 +529,20 @@ void TilesetEditorWindow::on_actionDeleteAllObjects_triggered()
 
     setupObjectsModel(false);
     emit selectedObjectChanged(-1);
+}
+
+void TilesetEditorWindow::on_oWidthSpinBox_valueChanged(int width)
+{
+    tileset->resizeObject(ui->objectsListView->currentIndex().row(), width, -1);
+    objectEditor->update();
+    setupObjectsModel(true);
+}
+
+void TilesetEditorWindow::on_oHeightSpinBox_valueChanged(int height)
+{
+    tileset->resizeObject(ui->objectsListView->currentIndex().row(), -1, height);
+    objectEditor->update();
+    setupObjectsModel(true);
 }
 
 

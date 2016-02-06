@@ -45,7 +45,7 @@ signals:
 
 public slots:
     void selectedObjectChanged(int objNbr);
-    void selectedTileChanged(int tileNbr);
+    void selectedPaintTileChanged(int tileNbr);
 
 protected:
     void paintEvent(QPaintEvent *) Q_DECL_OVERRIDE;

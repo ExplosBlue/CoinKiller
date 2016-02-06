@@ -127,7 +127,7 @@ void ObjectEditor::selectedObjectChanged(int objNbr)
     update();
 }
 
-void ObjectEditor::selectedTileChanged(int tileNbr)
+void ObjectEditor::selectedPaintTileChanged(int paintTileNbr)
 {
-    this->paintTileNbr = tileNbr;
+    this->paintTileNbr = paintTileNbr;
 }

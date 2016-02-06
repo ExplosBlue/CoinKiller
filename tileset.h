@@ -66,10 +66,10 @@ public:
     void setData(int objNbr, int x, int y, int byte, int value);
 
     void addObject(int objNbr);
-    void addObject(int objNbr);
     void removeObject(int objNbr);
     void moveObjectUp(int objNbr);
     void moveObjectDown(int objNbr);
+    void resizeObject(int objNubr, int width, int height);
 
     Game* game;
 
