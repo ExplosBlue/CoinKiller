@@ -168,12 +168,7 @@ Tileset::Tileset(Game *game, QString name)
             b = objdata->read8();
             row->data.append(b); // tile #
 
-            // Tileset Slot
-            // 0x00: Standard Suite
-            // 0x02: Stage Suite
-            // 0x04: Background Suite
-            // 0x06: Interactive Suite
-            b = objdata->read8();
+            b = objdata->read8(); // item (0XXX X000) / slot (0000 0XX0)
             row->data.append(b);
 
             curx++;
@@ -187,6 +182,9 @@ Tileset::Tileset(Game *game, QString name)
 
     objindex->close();
     delete objindex;
+
+    if (objectDefs.size() > 0)
+        slot = (objectDefs[0]->rows[0].data[2] & 6) >> 1;
 
     // parse behaviors
     FileBase* behaviorsFile = archive->openFile("BG_chk/d_bgchk_" + name + ".bin");
@@ -211,7 +209,7 @@ Tileset::~Tileset()
 
 
 // x and y in tile coords
-void Tileset::drawTile(QPainter& painter, TileGrid& grid, int num, int x, int y, float zoom)
+void Tileset::drawTile(QPainter& painter, TileGrid& grid, int num, int x, int y, float zoom, int item)
 {
     quint32 gridid = x | (y<<16);
     if (grid[gridid] == grid[0xFFFFFFFF])
@@ -226,6 +224,68 @@ void Tileset::drawTile(QPainter& painter, TileGrid& grid, int num, int x, int y,
 
     painter.drawImage(rdst, *texImage, rsrc);
     grid[gridid] = grid[0xFFFFFFFF];
+
+    // Draw Overlays
+    QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/tileoverlays/");
+
+    if (behaviors[num][0] == 0 && behaviors[num][2] == 1) // Beanstalk Stopper
+        painter.drawPixmap(rdst, QPixmap(basePath + "beanstalk_stopper.png"));
+
+    if (behaviors[num][0] == 6) // Brick Block
+    {
+        switch (item)
+        {
+            case 1: painter.drawPixmap(rdst, QPixmap(basePath + "coin.png")); break;
+            case 2: painter.drawPixmap(rdst, QPixmap(basePath + "10_coins.png")); break;
+            case 3: painter.drawPixmap(rdst, QPixmap(basePath + "fire_flower.png")); break;
+            case 4: painter.drawPixmap(rdst, QPixmap(basePath + "mega_mushroom.png")); break;
+            case 5: painter.drawPixmap(rdst, QPixmap(basePath + "1up_mushroom.png")); break;
+            case 6: painter.drawPixmap(rdst, QPixmap(basePath + "beanstalk.png")); break;
+            case 7: painter.drawPixmap(rdst, QPixmap(basePath + "mini_mushroom.png")); break;
+            case 8: painter.drawPixmap(rdst, QPixmap(basePath + "super_mushroom.png")); break;
+            case 9: painter.drawPixmap(rdst, QPixmap(basePath + "super_star.png")); break;
+            case 10: painter.drawPixmap(rdst, QPixmap(basePath + "super_leaf.png")); break;
+            case 11: painter.drawPixmap(rdst, QPixmap(basePath + "trampoline.png")); break;
+            case 12: painter.drawPixmap(rdst, QPixmap(basePath + "gold_flower.png")); break;
+            case 13: painter.drawPixmap(rdst, QPixmap(basePath + "pow_coin.png")); break;
+            default: break;
+        }
+    }
+    if (behaviors[num][0] == 7) // ? Block
+    {
+        switch (item)
+        {
+            case 0: painter.drawPixmap(rdst, QPixmap(basePath + "coin.png")); break;
+            case 1: painter.drawPixmap(rdst, QPixmap(basePath + "fire_flower.png")); break;
+            case 2: painter.drawPixmap(rdst, QPixmap(basePath + "super_star.png")); break;
+            case 3: painter.drawPixmap(rdst, QPixmap(basePath + "1up_mushroom.png")); break;
+            case 4: painter.drawPixmap(rdst, QPixmap(basePath + "beanstalk.png")); break;
+            case 5: painter.drawPixmap(rdst, QPixmap(basePath + "trampoline.png")); break;
+            case 6: painter.drawPixmap(rdst, QPixmap(basePath + "mini_mushroom.png")); break;
+            case 7: painter.drawPixmap(rdst, QPixmap(basePath + "super_mushroom.png")); break;
+            case 8: painter.drawPixmap(rdst, QPixmap(basePath + "mega_mushroom.png")); break;
+            case 9: painter.drawPixmap(rdst, QPixmap(basePath + "super_leaf.png")); break;
+            case 10: painter.drawPixmap(rdst, QPixmap(basePath + "gold_flower.png")); break;
+            default: break;
+        }
+    }
+    if (behaviors[num][0] == 10) // Invisible Block
+    {
+        switch (behaviors[num][2])
+        {
+            case 0: painter.drawPixmap(rdst, QPixmap(basePath + "fire_flower_invisible.png")); break;
+            case 1: painter.drawPixmap(rdst, QPixmap(basePath + "super_star_invisible.png")); break;
+            case 2: painter.drawPixmap(rdst, QPixmap(basePath + "coin_invisible.png")); break;
+            case 3: painter.drawPixmap(rdst, QPixmap(basePath + "beanstalk_invisible.png")); break;
+            case 4: painter.drawPixmap(rdst, QPixmap(basePath + "1up_mushroom_invisible.png")); break;
+            case 5: painter.drawPixmap(rdst, QPixmap(basePath + "mini_mushroom_invisible.png")); break;
+            case 6: painter.drawPixmap(rdst, QPixmap(basePath + "super_leaf_invisible.png")); break;
+            case 7: painter.drawPixmap(rdst, QPixmap(basePath + "gold_flower_invisible.png")); break;
+            default: break;
+        }
+    }
+    if (behaviors[num][0] == 33) // Clown Car Flash Safe Area
+        painter.drawPixmap(rdst, QPixmap(basePath + "flash_safe_area.png"));
 }
 
 void Tileset::drawRow(QPainter& painter, TileGrid& grid, ObjectDef& def, ObjectRow& row, int x, int y, int w, float zoom)
@@ -242,8 +302,8 @@ void Tileset::drawRow(QPainter& painter, TileGrid& grid, ObjectDef& def, ObjectR
         sx = 0;
         while (dx < rstart)
         {
-            if (row.data[sx*3 + 1] || row.data[sx*3 + 2]) // Lame work arround
-                drawTile(painter, grid, row.data[sx*3 + 1], x+dx, y, zoom);
+            if (row.data[sx*3 + 1] || (row.data[sx*3 + 2] & 6) >> 1) // Lame work arround
+                drawTile(painter, grid, row.data[sx*3 + 1], x+dx, y, zoom, (row.data[sx*3 + 2] & 120) >> 3);
 
             dx++;
             sx++;
@@ -254,8 +314,8 @@ void Tileset::drawRow(QPainter& painter, TileGrid& grid, ObjectDef& def, ObjectR
         sx = row.xRepeatStart;
         while (dx < rend)
         {
-            if (row.data[sx*3 + 1] || row.data[sx*3 + 2]) // Lame work arround
-                drawTile(painter, grid, row.data[sx*3 + 1], x+dx, y, zoom);
+            if (row.data[sx*3 + 1] || (row.data[sx*3 + 2] & 6) >> 1) // Lame work arround
+                drawTile(painter, grid, row.data[sx*3 + 1], x+dx, y, zoom, (row.data[sx*3 + 2] & 120) >> 3);
 
             dx++;
             sx++;
@@ -266,8 +326,8 @@ void Tileset::drawRow(QPainter& painter, TileGrid& grid, ObjectDef& def, ObjectR
         sx = row.xRepeatEnd;
         while (dx < w)
         {
-            if (row.data[sx*3 + 1] || row.data[sx*3 + 2]) // Lame work arround
-                drawTile(painter, grid, row.data[sx*3 + 1], x+dx, y, zoom);
+            if (row.data[sx*3 + 1] || (row.data[sx*3 + 2] & 6) >> 1) // Lame work arround
+                drawTile(painter, grid, row.data[sx*3 + 1], x+dx, y, zoom, (row.data[sx*3 + 2] & 120) >> 3);
 
             dx++;
             sx++;
@@ -282,8 +342,8 @@ void Tileset::drawRow(QPainter& painter, TileGrid& grid, ObjectDef& def, ObjectR
         sx = 0;
         while (dx < w)
         {
-            if (row.data[sx*3 + 1] || row.data[sx*3 + 2]) // Lame work arround
-                drawTile(painter, grid, row.data[sx*3 + 1], x+dx, y, zoom);
+            if (row.data[sx*3 + 1] || (row.data[sx*3 + 2] & 6) >> 1) // Lame work arround
+                drawTile(painter, grid, row.data[sx*3 + 1], x+dx, y, zoom, (row.data[sx*3 + 2] & 120) >> 3);
 
             dx++;
             sx++;
@@ -618,7 +678,7 @@ void Tileset::resizeObject(int objNbr, int width, int height)
 
 void Tileset::setSlot(int slot)
 {
-    slot *= 2;
+    this->slot = slot;
 
     for (int o = 0; o < objectDefs.size(); o++)
     {
@@ -626,8 +686,8 @@ void Tileset::setSlot(int slot)
         for (int r = 0; r < obj.rows.size(); r++)
         {
             for (int t = 0; t < obj.rows[r].data.size(); t += 3)
-                if (!(obj.rows[r].data[t+1] == 0 && obj.rows[r].data[t+2] == 0)) // Don't change empty tiles
-                    obj.rows[r].data[t+2] = slot;
+                if (!(obj.rows[r].data[t+1] == 0 && (obj.rows[r].data[t+2] & 6) >> 1 == 0)) // Don't change empty tiles
+                    obj.rows[r].data[t+2] = (obj.rows[r].data[t+2] & 249) | slot << 1;
         }
     }
 }

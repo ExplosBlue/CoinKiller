@@ -55,7 +55,7 @@ public:
     ~Tileset();
 
 
-    void drawTile(QPainter& painter, TileGrid& grid, int num, int x, int y, float zoom);
+    void drawTile(QPainter& painter, TileGrid& grid, int num, int x, int y, float zoom, int item);
     void drawObject(QPainter& painter, TileGrid& grid, int num, int x, int y, int w, int h, float zoom);
     quint8 getBehaviorByte(int tile, int byte);
     void setBehaviorByte(int tile, int byte, quint8 value);
@@ -83,6 +83,7 @@ public:
 
 private:
     QString name;
+    int slot;
     SarcFilesystem* archive;
     Ctpk* texture;
 

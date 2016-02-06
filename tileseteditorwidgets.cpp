@@ -114,7 +114,7 @@ void ObjectEditor::mousePressEvent(QMouseEvent* evt)
 
             emit tilesetChanged();
         }
-        emit updateSelTileLabel(QString("Tile Data: (Repeat: 0x%1), (Tile: 0x%2), (Slot: 0x%3)").arg(tileset->getData(objNbr, selX, selY, 0), 1, 16).arg(tileset->getData(objNbr, selX, selY, 1), 1, 16).arg(tileset->getData(objNbr, selX, selY, 2), 1, 16));
+        emit updateSelTileLabel(QString("Tile Data: (Repeat: 0x%1), (Tile: 0x%2), (Slot: 0x%3), (Item: 0x%4)").arg(tileset->getData(objNbr, selX, selY, 0), 1, 16).arg(tileset->getData(objNbr, selX, selY, 1), 1, 16).arg((tileset->getData(objNbr, selX, selY, 2) & 6) >> 1, 1, 16).arg((tileset->getData(objNbr, selX, selY, 2) & 120) >> 3, 1, 16));
     }
     else
     {

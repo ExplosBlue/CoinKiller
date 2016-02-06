@@ -3,7 +3,11 @@
 	
 	<special_behaviors>
 	
-		<behavior value = "0" description = "Nothing" />
+		<behavior value = "0" description = "Nothing">
+			<value id = "0" description = "Nothing" />
+			<value id = "1" description = "Beanstalk Stopper" />
+		</behavior>
+		
 		
 		<behavior value = "1" description = "Rail">
 			<value id = "4" description = "Horizontal Rail" />
@@ -68,7 +72,16 @@
 		
 		<behavior value = "8" description = "Red Block Outline" />
 		
-		<behavior value = "10" description = "Invisible Block" />
+		<behavior value = "10" description = "Invisible Block">
+			<value id = "0" description = "Fire Flower" />
+			<value id = "1" description = "Super Star" />
+			<value id = "2" description = "Coin" />
+			<value id = "3" description = "Beanstalk" />
+			<value id = "4" description = "1-Up Mushroom" />
+			<value id = "5" description = "Mini Mushroom" />
+			<value id = "6" description = "Super Leaf" />
+			<value id = "7" description = "Gold Flower" />
+		</behavior>
 		
 		<behavior value = "11" description = "Slope">
 			<value id = "0" description = "1x1 Up" />
@@ -214,7 +227,7 @@
 		
 		<behavior value = "21" description = "Horizontal Climbing Rope" />
 		<behavior value = "22" description = "Vertical Climbing Pole" />
-		<behavior value = "33" description = "unknown (standard suite [14, 0])" />
+		<behavior value = "33" description = "Clown Car Flash Safe Area" />
 		<behavior value = "34" description = "unknown (standard suite [11, 0])" />
 		<behavior value = "35" description = "Note-Block" />
 		
