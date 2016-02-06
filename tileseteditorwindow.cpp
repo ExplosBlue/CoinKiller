@@ -9,6 +9,7 @@
 #include <QMessageBox>
 #include <QtXml>
 #include <QColorDialog>
+#include <QInputDialog>
 
 TilesetEditorWindow::TilesetEditorWindow(QWidget *parent, Tileset *tileset) :
     QMainWindow(parent),
@@ -29,6 +30,7 @@ TilesetEditorWindow::TilesetEditorWindow(QWidget *parent, Tileset *tileset) :
     ui->actionSetBackgroundColor->setIcon(QIcon(basePath + "colors.png"));
     ui->actionExportImage->setIcon(QIcon(basePath + "export.png"));
     ui->actionDeleteAllObjects->setIcon(QIcon(basePath + "delete_objects.png"));
+    ui->actionSetTilesetSlot->setIcon(QIcon(basePath + "edit_slot.png"));
 
 
     // Setup Behaviors Editor
@@ -48,7 +50,8 @@ TilesetEditorWindow::TilesetEditorWindow(QWidget *parent, Tileset *tileset) :
     setStaticModels();
 
 
-    // Setup Objects Editor    
+    // Setup Objects Editor
+    ui->objectEditor->removeItem(ui->objectEditorSpacer);
     objectEditor = new ObjectEditor(tileset, this);
     connect(this, SIGNAL(selectedObjectChanged(int)), objectEditor, SLOT(selectedObjectChanged(int)));
     connect(objectEditor, SIGNAL(updateSelTileLabel(QString)), this, SLOT(setSelTileData(QString)));
@@ -543,6 +546,21 @@ void TilesetEditorWindow::on_oHeightSpinBox_valueChanged(int height)
     tileset->resizeObject(ui->objectsListView->currentIndex().row(), -1, height);
     objectEditor->update();
     setupObjectsModel(true);
+}
+
+void TilesetEditorWindow::on_actionSetTilesetSlot_triggered()
+{
+    QStringList slotNames;
+    slotNames << "Standard Suite" << "Stage Suite" << "Background Suite" << "Interactive Suite";
+    int slot = -1;
+    slot = slotNames.indexOf(QInputDialog::getItem(this, "CoinKiller", "Set Tileset Slot:", slotNames, 0, false, 0, Qt::WindowTitleHint));
+
+    if (slot == -1)
+        return;
+
+    tileset->setSlot(slot);
+
+    objectEditor->update();
 }
 
 

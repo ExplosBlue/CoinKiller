@@ -168,13 +168,13 @@ Tileset::Tileset(Game *game, QString name)
             b = objdata->read8();
             row->data.append(b); // tile #
 
-            // extra
-            // 00: blank tile???
-            // 02: typical
-            // other values also seen here: dunno
-            b = objdata->read8();//if (b==0) qDebug("ZERO!!! %d", o);
-            //if (b != 0x00 && b != 0x02) qDebug("!!! UNUSUAL EXTRA %02X @ %d,%d OBJ %d %02X", b, curx, cury, o, offset);
-            row->data.append(b); // extra shit? always 02
+            // Tileset Slot
+            // 0x00: Standard Suite
+            // 0x02: Stage Suite
+            // 0x04: Background Suite
+            // 0x06: Interactive Suite
+            b = objdata->read8();
+            row->data.append(b);
 
             curx++;
         }
@@ -242,7 +242,7 @@ void Tileset::drawRow(QPainter& painter, TileGrid& grid, ObjectDef& def, ObjectR
         sx = 0;
         while (dx < rstart)
         {
-            //if (row.data[sx*3 + 2])
+            if (row.data[sx*3 + 1] || row.data[sx*3 + 2]) // Lame work arround
                 drawTile(painter, grid, row.data[sx*3 + 1], x+dx, y, zoom);
 
             dx++;
@@ -254,7 +254,7 @@ void Tileset::drawRow(QPainter& painter, TileGrid& grid, ObjectDef& def, ObjectR
         sx = row.xRepeatStart;
         while (dx < rend)
         {
-            //if (row.data[sx*3 + 2])
+            if (row.data[sx*3 + 1] || row.data[sx*3 + 2]) // Lame work arround
                 drawTile(painter, grid, row.data[sx*3 + 1], x+dx, y, zoom);
 
             dx++;
@@ -266,7 +266,7 @@ void Tileset::drawRow(QPainter& painter, TileGrid& grid, ObjectDef& def, ObjectR
         sx = row.xRepeatEnd;
         while (dx < w)
         {
-            //if (row.data[sx*3 + 2])
+            if (row.data[sx*3 + 1] || row.data[sx*3 + 2]) // Lame work arround
                 drawTile(painter, grid, row.data[sx*3 + 1], x+dx, y, zoom);
 
             dx++;
@@ -282,7 +282,7 @@ void Tileset::drawRow(QPainter& painter, TileGrid& grid, ObjectDef& def, ObjectR
         sx = 0;
         while (dx < w)
         {
-            //if (row.data[sx*3 + 2])
+            if (row.data[sx*3 + 1] || row.data[sx*3 + 2]) // Lame work arround
                 drawTile(painter, grid, row.data[sx*3 + 1], x+dx, y, zoom);
 
             dx++;
@@ -613,5 +613,21 @@ void Tileset::resizeObject(int objNbr, int width, int height)
                 obj.rows.removeLast();
         }
         obj.height = height;
+    }
+}
+
+void Tileset::setSlot(int slot)
+{
+    slot *= 2;
+
+    for (int o = 0; o < objectDefs.size(); o++)
+    {
+        ObjectDef& obj = *objectDefs[o];
+        for (int r = 0; r < obj.rows.size(); r++)
+        {
+            for (int t = 0; t < obj.rows[r].data.size(); t += 3)
+                if (!(obj.rows[r].data[t+1] == 0 && obj.rows[r].data[t+2] == 0)) // Don't change empty tiles
+                    obj.rows[r].data[t+2] = slot;
+        }
     }
 }

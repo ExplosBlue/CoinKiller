@@ -70,6 +70,7 @@ public:
     void moveObjectUp(int objNbr);
     void moveObjectDown(int objNbr);
     void resizeObject(int objNubr, int width, int height);
+    void setSlot(int slot);
 
     Game* game;
 

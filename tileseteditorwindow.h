@@ -68,6 +68,8 @@ private slots:
 
     void on_oHeightSpinBox_valueChanged(int height);
 
+    void on_actionSetTilesetSlot_triggered();
+
 private:
     Ui::TilesetEditorWindow *ui;
     TilesetPicker* tilesetPicker;

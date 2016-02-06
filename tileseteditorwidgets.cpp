@@ -2,6 +2,7 @@
 
 #include <QPainter>
 #include <QDebug>
+#include <QApplication>
 
 TilesetPicker::TilesetPicker(QWidget *parent) : QWidget(parent)
 {
@@ -101,12 +102,19 @@ void ObjectEditor::mousePressEvent(QMouseEvent* evt)
         selX = (evt->x()-currX) / 20;
         selY = (evt->y()-currY) / 20;
 
-        if (paintTileNbr != -1 && evt->button() == Qt::RightButton)
+        if (evt->button() == Qt::RightButton)
         {
-            tileset->setData(objNbr, selX, selY, 1, paintTileNbr);
+            if (evt->modifiers() == Qt::ControlModifier)
+            {
+                tileset->setData(objNbr, selX, selY, 1, 0x00);
+                tileset->setData(objNbr, selX, selY, 2, 0x00);
+            }
+            else if (paintTileNbr != -1)
+                tileset->setData(objNbr, selX, selY, 1, paintTileNbr);
+
             emit tilesetChanged();
         }
-        emit updateSelTileLabel(QString("Tile Data: (Repeat: 0x%1), (Tile: 0x%2), (Extra: 0x%3)").arg(tileset->getData(objNbr, selX, selY, 0), 1, 16).arg(tileset->getData(objNbr, selX, selY, 1), 1, 16).arg(tileset->getData(objNbr, selX, selY, 2), 1, 16));
+        emit updateSelTileLabel(QString("Tile Data: (Repeat: 0x%1), (Tile: 0x%2), (Slot: 0x%3)").arg(tileset->getData(objNbr, selX, selY, 0), 1, 16).arg(tileset->getData(objNbr, selX, selY, 1), 1, 16).arg(tileset->getData(objNbr, selX, selY, 2), 1, 16));
     }
     else
     {
