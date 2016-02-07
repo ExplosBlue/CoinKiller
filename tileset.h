@@ -39,7 +39,8 @@ struct ObjectRow
 struct ObjectDef
 {
     quint8 width, height;
-    quint8 flags1, flags2; // whatever those are
+    quint8 randomisation;
+    quint8 unkFlag; // whatever this is
 
     quint8 slopeY; // where the second slope block starts
     quint8 yRepeatStart, yRepeatEnd;
@@ -72,6 +73,9 @@ public:
     void resizeObject(int objNubr, int width, int height);
     void setSlot(int slot);
 
+    quint16 getOverlayTile(int selTile);
+    void setOverlayTile(int selTile, int ovTile);
+
     Game* game;
 
     QImage* getImage()
@@ -97,6 +101,7 @@ private:
 
 
     quint8 behaviors[441][8];
+    quint16 overlays3D[441];
 };
 
 #endif // TILESET_H

@@ -45,16 +45,16 @@ Tileset::Tileset(Game *game, QString name)
         quint16 offset = objindex->read16();
         quint8 width = objindex->read8();
         quint8 height = objindex->read8();
-        quint8 crap1 = objindex->read8();
-        quint8 crap2 = objindex->read8();
+        quint8 randomisation = objindex->read8();
+        quint8 crap = objindex->read8();
 
         //qDebug("OBJECT %d -- %04X %dx%d %02X %02X", o, offset, width, height, crap1, crap2);
 
         ObjectDef* obj = new ObjectDef();
         obj->width = width;
         obj->height = height;
-        obj->flags1 = crap1;
-        obj->flags2 = crap2;
+        obj->randomisation = randomisation;
+        obj->unkFlag = crap;
 
         //obj->xRepeatStart = 0xFF;
         obj->yRepeatStart = 0xFF;
@@ -197,6 +197,17 @@ Tileset::Tileset(Game *game, QString name)
     }
     behaviorsFile->close();
     delete behaviorsFile;
+
+    // parse 3D overlays
+    FileBase* overlaysFile = archive->openFile("BG_unt/" + name + "_add.bin");
+    overlaysFile->open();
+    overlaysFile->seek(0);
+    for (int i = 0; i < 441; i++) // TODO ensure the file has the right size!
+    {
+        overlays3D[i] = overlaysFile->read16();
+    }
+    overlaysFile->close();
+    delete overlaysFile;
 }
 
 Tileset::~Tileset()
@@ -518,6 +529,19 @@ void Tileset::save()
     delete behaviorsFile;
 
 
+    // Save 3D Overlays
+    FileBase* overlaysFile = archive->openFile("BG_unt/" + name + "_add.bin");
+    overlaysFile->open();
+    overlaysFile->seek(0);
+    for (int i = 0; i < 441; i++)
+    {
+        overlaysFile->write16(overlays3D[i]);
+    }
+    overlaysFile->save();
+    overlaysFile->close();
+    delete overlaysFile;
+
+
     // Save Object Def
     FileBase* objindex = archive->openFile("/BG_unt/"+name+"_hd.bin");
     objindex->open();
@@ -552,8 +576,8 @@ void Tileset::save()
         objindex->write16((quint16)objdata->pos());
         objindex->write8(obj.width);
         objindex->write8(obj.height);
-        objindex->write8(obj.flags1);
-        objindex->write8(obj.flags2);
+        objindex->write8(obj.randomisation);
+        objindex->write8(obj.unkFlag);
 
         for (int r = 0; r < obj.rows.size(); r++)
         {
@@ -582,8 +606,8 @@ void Tileset::addObject(int objNbr)
     ObjectDef* obj = new ObjectDef();
     obj->width = 1;
     obj->height = 1;
-    obj->flags1 = 0;
-    obj->flags2 = 0;
+    obj->randomisation = 0;
+    obj->unkFlag = 0;
     obj->yRepeatStart = 0xFF;
     obj->slopeY = obj->height;
 
@@ -690,4 +714,14 @@ void Tileset::setSlot(int slot)
                     obj.rows[r].data[t+2] = (obj.rows[r].data[t+2] & 249) | slot << 1;
         }
     }
+}
+
+quint16 Tileset::getOverlayTile(int selTile)
+{
+    return overlays3D[selTile] & 511;
+}
+
+void Tileset::setOverlayTile(int selTile, int ovTile)
+{
+    overlays3D[selTile] = (overlays3D[selTile] & 65024) | ovTile;
 }

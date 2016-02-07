@@ -3,10 +3,12 @@
 #include <QPainter>
 #include <QDebug>
 #include <QApplication>
+#include <QToolTip>
 
 TilesetPicker::TilesetPicker(QWidget *parent) : QWidget(parent)
 {
     this->selectedTile = -1;
+    this->selectedOvTile = -1;
     tilesetImage = new QImage(420, 420, QImage::Format_RGBA8888);
     bgColor = Qt::white;
 }
@@ -31,20 +33,43 @@ void TilesetPicker::paintEvent(QPaintEvent* evt)
 
     if (selectedTile != -1)
         painter.fillRect(QRect(selectedTile%21*21, selectedTile/21*21, 20, 20), QBrush(QColor(160,222,255,150), Qt::SolidPattern));
+
+    if (selectedOvTile > 0)
+        painter.fillRect(QRect(selectedOvTile%21*21, selectedOvTile/21*21, 20, 20), QBrush(QColor(255,40,0,150), Qt::SolidPattern));
 }
 
 void TilesetPicker::mousePressEvent(QMouseEvent* evt)
 {
-    if (evt->button() != Qt::LeftButton)
-        return;
-
-    if (evt->x() % 21 != 20 && evt->x() % 21 != 20)
+    if (evt->button() == Qt::LeftButton)
     {
-        selectedTile = evt->x() / 21 + evt->y() / 21 * 21;
+        if (evt->x() % 21 != 20 && evt->x() % 21 != 20)
+        {
+            int tempSelTile = evt->x() / 21 + evt->y() / 21 * 21;
 
-        emit selectedTileChanged(selectedTile);
+            if (tempSelTile > 0xFF)
+            {
+                QToolTip::showText(evt->globalPos(), "You can only select the first 256 tiles due to limitations", this, rect(), 5000);
+                // TODO: Somehow this disappears after releasing the mouse button
+                return;
+            }
 
-        update();
+            selectedTile = tempSelTile;
+
+            emit selectedTileChanged(selectedTile);
+
+            update();
+        }
+    }
+    else if(evt->button() == Qt::RightButton && selectedTile != -1)
+    {
+        if (evt->x() % 21 != 20 && evt->x() % 21 != 20)
+        {
+            selectedOvTile = evt->x() / 21 + evt->y() / 21 * 21;
+
+            emit selectedOvTileChanged(selectedOvTile);
+
+            update();
+        }
     }
 }
 

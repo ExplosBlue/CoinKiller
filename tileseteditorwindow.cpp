@@ -41,6 +41,7 @@ TilesetEditorWindow::TilesetEditorWindow(QWidget *parent, Tileset *tileset) :
     tilesetPicker->setMaximumSize(440, 440);
 
     connect(tilesetPicker, SIGNAL(selectedTileChanged(int)), this, SLOT(updateSelectedTile(int)));
+    connect(tilesetPicker, SIGNAL(selectedOvTileChanged(int)), this, SLOT(updateSelectedOvTile(int)));
 
     tilesetPicker->setTilesetImage(tileset->getImage());
 
@@ -82,6 +83,7 @@ void TilesetEditorWindow::updateSelectedTile(int tile)
     }
 
     selectedTile = tile;
+    tilesetPicker->setOvTile(tileset->getOverlayTile(selectedTile));
 
     QString selTileText("Selected Tile: (%1, %2)");
     ui->selectedTileLabel->setText(selTileText.arg(tile%21).arg(tile/21));
@@ -89,6 +91,12 @@ void TilesetEditorWindow::updateSelectedTile(int tile)
     updateHex();
     updateBehavior();
     updateComboBoxes();
+}
+
+void TilesetEditorWindow::updateSelectedOvTile(int ovTile)
+{
+    if (selectedTile != -1)
+        tileset->setOverlayTile(selectedTile, ovTile);
 }
 
 

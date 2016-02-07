@@ -86,7 +86,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="behaviorsTab">
        <attribute name="title">
@@ -383,7 +383,7 @@
              </widget>
             </item>
             <item>
-             <widget class="QComboBox" name="comboBox">
+             <widget class="QComboBox" name="oBehaviorComboBox">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -543,7 +543,7 @@
        </layout>
        <zorder></zorder>
        <zorder></zorder>
-       <zorder>comboBox</zorder>
+       <zorder>oBehaviorComboBox</zorder>
        <zorder>label_8</zorder>
       </widget>
      </widget>

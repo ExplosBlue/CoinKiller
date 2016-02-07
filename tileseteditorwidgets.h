@@ -14,9 +14,11 @@ public:
     explicit TilesetPicker(QWidget *parent);
     void setTilesetImage(QImage *image);
     void setBGColor(QColor bgColor) { this->bgColor = bgColor; update(); }
+    void setOvTile(int ovTile) { this->selectedOvTile = ovTile; update();}
 
 signals:
     void selectedTileChanged(int tile);
+    void selectedOvTileChanged(int ovTile);
 
 public slots:
 
@@ -28,6 +30,7 @@ private:
     QImage *tilesetImage;
     QColor bgColor;
     int selectedTile;
+    int selectedOvTile;
 };
 
 

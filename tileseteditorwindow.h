@@ -28,6 +28,7 @@ signals:
 
 public slots:
     void updateSelectedTile(int tile);
+    void updateSelectedOvTile(int ovTile);
     void setSelTileData(QString text);
     void updateObjectEditor();
 
