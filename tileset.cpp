@@ -725,3 +725,33 @@ void Tileset::setOverlayTile(int selTile, int ovTile)
 {
     overlays3D[selTile] = (overlays3D[selTile] & 65024) | ovTile;
 }
+
+bool Tileset::getRandomizeH(int tile)
+{
+    return (objectDefs[tile]->randomisation & 16) >> 4;
+}
+
+void Tileset::setRandomizeH(int tile, bool value)
+{
+    objectDefs[tile]->randomisation = (objectDefs[tile]->randomisation & 239) | value << 4;
+}
+
+bool Tileset::getRandomizeV(int tile)
+{
+    return (objectDefs[tile]->randomisation & 32) >> 5;
+}
+
+void Tileset::setRandomizeV(int tile, bool value)
+{
+    objectDefs[tile]->randomisation = (objectDefs[tile]->randomisation & 223) | value << 5;
+}
+
+quint8 Tileset::getRandomizeTiles(int tile)
+{
+    return (objectDefs[tile]->randomisation & 15);
+}
+
+void Tileset::setRandomizeTiles(int tile, quint8 value)
+{
+    objectDefs[tile]->randomisation = (objectDefs[tile]->randomisation & 240) | value;
+}

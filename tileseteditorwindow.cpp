@@ -30,6 +30,7 @@ TilesetEditorWindow::TilesetEditorWindow(QWidget *parent, Tileset *tileset) :
     ui->actionSetBackgroundColor->setIcon(QIcon(basePath + "colors.png"));
     ui->actionExportImage->setIcon(QIcon(basePath + "export.png"));
     ui->actionDeleteAllObjects->setIcon(QIcon(basePath + "delete_objects.png"));
+    ui->actionDeleteAll3DOverlays->setIcon(QIcon(basePath + "delete_overlays.png"));
     ui->actionSetTilesetSlot->setIcon(QIcon(basePath + "edit_slot.png"));
 
 
@@ -58,7 +59,7 @@ TilesetEditorWindow::TilesetEditorWindow(QWidget *parent, Tileset *tileset) :
     connect(objectEditor, SIGNAL(updateSelTileLabel(QString)), this, SLOT(setSelTileData(QString)));
     connect(tilesetPicker, SIGNAL(selectedTileChanged(int)), objectEditor, SLOT(selectedPaintTileChanged(int)));
     connect(objectEditor, SIGNAL(tilesetChanged()), this, SLOT(updateObjectEditor()));
-    ui->objectEditor->addWidget(objectEditor);
+    ui->objectEditor->insertWidget(1, objectEditor);
 
     ui->objectsListView->setIconSize(QSize(140,140));
     ui->objectsListView->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
@@ -361,18 +362,20 @@ void TilesetEditorWindow::updateObjectInfo()
 
     if (selObj == -1)
     {
-        ui->oWidthSpinBox->setEnabled(false);
-        ui->oHeightSpinBox->setEnabled(false);
+        ui->objectGroupBox->setEnabled(false);
         return;
     }
 
-    ui->oWidthSpinBox->setEnabled(true);
-    ui->oHeightSpinBox->setEnabled(true);
+    ui->objectGroupBox->setEnabled(true);
 
     ObjectDef& obj = *tileset->getObjectDef(selObj);
 
     ui->oWidthSpinBox->setValue(obj.width);
     ui->oHeightSpinBox->setValue(obj.height);
+
+    ui->randHorizontalCheckBox->setChecked(tileset->getRandomizeH(selObj));
+    ui->randVerticalCheckBox->setChecked(tileset->getRandomizeV(selObj));
+    ui->randTilesSpinBox->setValue(tileset->getRandomizeTiles(selObj));
 }
 
 
@@ -456,6 +459,19 @@ void TilesetEditorWindow::on_pipeColorComboBox_currentIndexChanged(int index)
 
     tileset->setBehaviorByte(selectedTile, 3, pipeColors[index].byte);
     updateHex();
+}
+
+void TilesetEditorWindow::on_actionDeleteAll3DOverlays_triggered()
+{
+    QMessageBox::StandardButton warning = QMessageBox::warning(this, "CoinKiller", "Do you realy want to delete all 3D Overlays?", QMessageBox::Yes|QMessageBox::No);
+
+    if (warning != QMessageBox::Yes)
+        return;
+
+    for (int i = 0; i < 441; i++)
+        tileset->setOverlayTile(i, 0);
+
+    tilesetPicker->setOvTile(0);
 }
 
 
@@ -571,6 +587,21 @@ void TilesetEditorWindow::on_actionSetTilesetSlot_triggered()
     objectEditor->update();
 }
 
+void TilesetEditorWindow::on_randHorizontalCheckBox_toggled(bool checked)
+{
+    tileset->setRandomizeH(ui->objectsListView->currentIndex().row(), checked);
+}
+
+void TilesetEditorWindow::on_randVerticalCheckBox_toggled(bool checked)
+{
+    tileset->setRandomizeV(ui->objectsListView->currentIndex().row(), checked);
+}
+
+void TilesetEditorWindow::on_randTilesSpinBox_valueChanged(int tiles)
+{
+    tileset->setRandomizeTiles(ui->objectsListView->currentIndex().row(), tiles);
+}
+
 
 // General Actions
 
@@ -608,3 +639,4 @@ void TilesetEditorWindow::on_actionSave_triggered()
 {
     tileset->save();
 }
+

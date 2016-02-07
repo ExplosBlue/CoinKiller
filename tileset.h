@@ -75,6 +75,12 @@ public:
 
     quint16 getOverlayTile(int selTile);
     void setOverlayTile(int selTile, int ovTile);
+    bool getRandomizeH(int tile);
+    void setRandomizeH(int tile, bool value);
+    bool getRandomizeV(int tile);
+    void setRandomizeV(int tile, bool value);
+    quint8 getRandomizeTiles(int tile);
+    void setRandomizeTiles(int tile, quint8 value);
 
     Game* game;
 

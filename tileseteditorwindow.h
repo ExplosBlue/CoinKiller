@@ -71,6 +71,14 @@ private slots:
 
     void on_actionSetTilesetSlot_triggered();
 
+    void on_actionDeleteAll3DOverlays_triggered();
+
+    void on_randHorizontalCheckBox_toggled(bool checked);
+
+    void on_randVerticalCheckBox_toggled(bool checked);
+
+    void on_randTilesSpinBox_valueChanged(int tiles);
+
 private:
     Ui::TilesetEditorWindow *ui;
     TilesetPicker* tilesetPicker;
