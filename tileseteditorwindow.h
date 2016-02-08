@@ -79,6 +79,18 @@ private slots:
 
     void on_randTilesSpinBox_valueChanged(int tiles);
 
+    void on_oBehaviorComboBox_currentIndexChanged(int index);
+
+    void on_hStartSpinBox_valueChanged(int value);
+
+    void on_hEndSpinBox_valueChanged(int value);
+
+    void on_vStartSpinBox_valueChanged(int value);
+
+    void on_vEndSpinBox_valueChanged(int value);
+
+    void on_actionShowObjectMarkers_toggled(bool value);
+
 private:
     Ui::TilesetEditorWindow *ui;
     TilesetPicker* tilesetPicker;
@@ -124,6 +136,12 @@ private:
 
     void setupObjectsModel(bool keepIndex);
     void updateObjectInfo();
+    void setupObjectBehaviorModel();
+    void setObectBehavior();
+    void hideHorizEdits(bool toggle);
+    void hideVertEdits(bool toggle);
+    void setRepeatSpinBox(int nbr, int value, bool block);
+    void clampOBehaviorSpinBoxes();
 };
 
 #endif // TILESETEDITORWINDOW_H

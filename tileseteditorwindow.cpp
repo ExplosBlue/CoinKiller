@@ -29,9 +29,11 @@ TilesetEditorWindow::TilesetEditorWindow(QWidget *parent, Tileset *tileset) :
     ui->actionSave->setIcon(QIcon(basePath + "save.png"));
     ui->actionSetBackgroundColor->setIcon(QIcon(basePath + "colors.png"));
     ui->actionExportImage->setIcon(QIcon(basePath + "export.png"));
+    ui->actionImportImage->setIcon(QIcon(basePath + "import.png"));
     ui->actionDeleteAllObjects->setIcon(QIcon(basePath + "delete_objects.png"));
     ui->actionDeleteAll3DOverlays->setIcon(QIcon(basePath + "delete_overlays.png"));
     ui->actionSetTilesetSlot->setIcon(QIcon(basePath + "edit_slot.png"));
+    ui->actionShowObjectMarkers->setIcon(QIcon(basePath + "marker_red.png"));
 
 
     // Setup Behaviors Editor
@@ -53,6 +55,7 @@ TilesetEditorWindow::TilesetEditorWindow(QWidget *parent, Tileset *tileset) :
 
 
     // Setup Objects Editor
+    setupObjectBehaviorModel();
     ui->objectEditor->removeItem(ui->objectEditorSpacer);
     objectEditor = new ObjectEditor(tileset, this);
     connect(this, SIGNAL(selectedObjectChanged(int)), objectEditor, SLOT(selectedObjectChanged(int)));
@@ -60,11 +63,17 @@ TilesetEditorWindow::TilesetEditorWindow(QWidget *parent, Tileset *tileset) :
     connect(tilesetPicker, SIGNAL(selectedTileChanged(int)), objectEditor, SLOT(selectedPaintTileChanged(int)));
     connect(objectEditor, SIGNAL(tilesetChanged()), this, SLOT(updateObjectEditor()));
     ui->objectEditor->insertWidget(1, objectEditor);
+    ui->actionShowObjectMarkers->setChecked(true);
 
     ui->objectsListView->setIconSize(QSize(140,140));
     ui->objectsListView->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
     setupObjectsModel(false);
     updateObjectInfo();
+
+    this->adjustSize();
+
+    hideHorizEdits(true);
+    hideVertEdits(true);
 }
 
 TilesetEditorWindow::~TilesetEditorWindow()
@@ -370,12 +379,168 @@ void TilesetEditorWindow::updateObjectInfo()
 
     ObjectDef& obj = *tileset->getObjectDef(selObj);
 
+    bool oldStateW = ui->oWidthSpinBox->blockSignals(true);
     ui->oWidthSpinBox->setValue(obj.width);
+    ui->oWidthSpinBox->blockSignals(oldStateW);
+    bool oldStateH = ui->oHeightSpinBox->blockSignals(true);
     ui->oHeightSpinBox->setValue(obj.height);
+    ui->oHeightSpinBox->blockSignals(oldStateH);
 
     ui->randHorizontalCheckBox->setChecked(tileset->getRandomizeH(selObj));
     ui->randVerticalCheckBox->setChecked(tileset->getRandomizeV(selObj));
     ui->randTilesSpinBox->setValue(tileset->getRandomizeTiles(selObj));
+
+    setObectBehavior();
+    clampOBehaviorSpinBoxes();
+}
+
+void TilesetEditorWindow::setObectBehavior()
+{
+    // Indexes
+    // -1: None
+    //  0: Tile
+    //  1: Repeat Horizontally
+    //  2: Repeat Vertically
+    //  3: Repeat Horizontally and Vertically
+    //  4: Slope (Up)
+    //  5: Slope (Down)
+    //  6: Upside-Down Slope (Down)
+    //  7: Upside-Down Slope (Up)
+
+    hideHorizEdits(true);
+    hideVertEdits(true);
+
+    bool repeatH = false;
+    bool repeatV = false;
+    bool slopeFlag = false;
+
+    ObjectDef& obj = *tileset->getObjectDef(ui->objectsListView->currentIndex().row());
+
+    for (int r = 0; r < obj.rows.size(); r++)
+    {
+        for (int d = 0; d < obj.rows[r].data.size(); d += 3)
+        {
+            if (obj.rows[r].data[d] & 1) repeatH = true;
+            if ((obj.rows[r].data[d] & 2) >> 1) repeatV = true;
+            if ((obj.rows[r].data[d] & 4) >> 2) slopeFlag = true;
+        }
+    }
+
+    if (repeatH && !repeatV)
+    {
+        ui->oBehaviorComboBox->setCurrentIndex(1);
+        hideHorizEdits(false);
+        setRepeatSpinBox(0, obj.rows[0].xRepeatStart, true);
+        setRepeatSpinBox(1, obj.rows[0].xRepeatEnd, true);
+        return;
+    }
+
+    if (!repeatH && repeatV)
+    {
+        ui->oBehaviorComboBox->setCurrentIndex(2);
+        hideVertEdits(false);
+        setRepeatSpinBox(2, obj.yRepeatStart, true);
+        setRepeatSpinBox(3, obj.yRepeatEnd, true);
+        return;
+    }
+
+    if (repeatH && repeatV)
+    {
+        ui->oBehaviorComboBox->setCurrentIndex(3);
+        hideHorizEdits(false);
+        hideVertEdits(false);
+        setRepeatSpinBox(0, obj.rows[0].xRepeatStart, true);
+        setRepeatSpinBox(1, obj.rows[0].xRepeatEnd, true);
+        setRepeatSpinBox(2, obj.yRepeatStart, true);
+        setRepeatSpinBox(3, obj.yRepeatEnd, true);
+        return;
+    }
+
+    if (obj.rows[0].slopeFlags != 0 && slopeFlag)
+    {
+        quint8 slopeType = obj.rows[0].slopeFlags & 15;
+        if (slopeType == 0) ui->oBehaviorComboBox->setCurrentIndex(4);
+        else if (slopeType == 1) ui->oBehaviorComboBox->setCurrentIndex(5);
+        else if (slopeType == 2) ui->oBehaviorComboBox->setCurrentIndex(6);
+        else if (slopeType == 3) ui->oBehaviorComboBox->setCurrentIndex(7);
+        return;
+    }
+
+    if (slopeFlag)
+    {
+        ui->oBehaviorComboBox->setCurrentIndex(-1);
+        return;
+    }
+
+    ui->oBehaviorComboBox->setCurrentIndex(0);
+}
+
+void TilesetEditorWindow::setRepeatSpinBox(int nbr, int value, bool block)
+{
+    QSpinBox* spinBox;
+    if (nbr == 0) spinBox = ui->hStartSpinBox;
+    if (nbr == 1) spinBox = ui->hEndSpinBox;
+    if (nbr == 2) spinBox = ui->vStartSpinBox;
+    if (nbr == 3) spinBox = ui->vEndSpinBox;
+
+    if (block)
+    {
+        bool oldState = spinBox->blockSignals(true);
+        spinBox->setValue(value);
+        spinBox->blockSignals(oldState);
+    }
+
+    spinBox->setValue(value);
+}
+
+void TilesetEditorWindow::setupObjectBehaviorModel()
+{
+    QStringList oBehaviorsList;
+    oBehaviorsList
+            << "Tile"
+            << "Repeat Horizontally"
+            << "Repeat Vertically"
+            << "Repeat Horizontally and Vertically"
+            << "Slope (Up)"
+            << "Slope (Down)"
+            << "Upside-Down Slope (Down)"
+            << "Upside-Down Slope (Up)";
+    ui->oBehaviorComboBox->setModel(new QStringListModel(oBehaviorsList));
+
+    ui->oBehaviorComboBox->setCurrentIndex(-1);
+}
+
+void TilesetEditorWindow::hideHorizEdits(bool toggle)
+{
+    ui->label_o1->setHidden(toggle);
+    ui->label_o2->setHidden(toggle);
+    ui->label_o3->setHidden(toggle);
+    ui->hStartSpinBox->setHidden(toggle);
+    ui->hEndSpinBox->setHidden(toggle);
+}
+
+void TilesetEditorWindow::hideVertEdits(bool toggle)
+{
+    ui->label_o4->setHidden(toggle);
+    ui->label_o5->setHidden(toggle);
+    ui->label_o6->setHidden(toggle);
+    ui->vStartSpinBox->setHidden(toggle);
+    ui->vEndSpinBox->setHidden(toggle);
+}
+
+void TilesetEditorWindow::clampOBehaviorSpinBoxes()
+{
+    ObjectDef& obj = *tileset->getObjectDef(ui->objectsListView->currentIndex().row());
+
+    ui->hStartSpinBox->setMinimum(0);
+    ui->hStartSpinBox->setMaximum(obj.width-1);
+    ui->hEndSpinBox->setMaximum(obj.width);
+    ui->hEndSpinBox->setMinimum(ui->hStartSpinBox->value()+1);
+
+    ui->vStartSpinBox->setMinimum(0);
+    ui->vStartSpinBox->setMaximum(obj.height-1);
+    ui->vEndSpinBox->setMaximum(obj.height);
+    ui->vEndSpinBox->setMinimum(ui->vStartSpinBox->value()+1);
 }
 
 
@@ -480,7 +645,13 @@ void TilesetEditorWindow::on_actionDeleteAll3DOverlays_triggered()
 void TilesetEditorWindow::on_objectsListView_clicked(const QModelIndex &index)
 {
     emit selectedObjectChanged(index.row());
+    bool oldState1 = ui->oBehaviorComboBox->blockSignals(true);
+    bool oldState2 = ui->hEndSpinBox->blockSignals(true);
+    bool oldState3 = ui->vEndSpinBox->blockSignals(true);
     updateObjectInfo();
+    ui->oBehaviorComboBox->blockSignals(oldState1);
+    ui->hEndSpinBox->blockSignals(oldState2);
+    ui->vEndSpinBox->blockSignals(oldState3);
 }
 
 void TilesetEditorWindow::on_addObjectPushButton_clicked()
@@ -561,6 +732,7 @@ void TilesetEditorWindow::on_actionDeleteAllObjects_triggered()
 void TilesetEditorWindow::on_oWidthSpinBox_valueChanged(int width)
 {
     tileset->resizeObject(ui->objectsListView->currentIndex().row(), width, -1);
+    clampOBehaviorSpinBoxes();
     objectEditor->update();
     setupObjectsModel(true);
 }
@@ -568,6 +740,7 @@ void TilesetEditorWindow::on_oWidthSpinBox_valueChanged(int width)
 void TilesetEditorWindow::on_oHeightSpinBox_valueChanged(int height)
 {
     tileset->resizeObject(ui->objectsListView->currentIndex().row(), -1, height);
+    clampOBehaviorSpinBoxes();
     objectEditor->update();
     setupObjectsModel(true);
 }
@@ -600,6 +773,100 @@ void TilesetEditorWindow::on_randVerticalCheckBox_toggled(bool checked)
 void TilesetEditorWindow::on_randTilesSpinBox_valueChanged(int tiles)
 {
     tileset->setRandomizeTiles(ui->objectsListView->currentIndex().row(), tiles);
+}
+
+void TilesetEditorWindow::on_actionShowObjectMarkers_toggled(bool value)
+{
+    objectEditor->setMarkers(value);
+}
+
+void TilesetEditorWindow::on_oBehaviorComboBox_currentIndexChanged(int index)
+{
+    int selObj = ui->objectsListView->currentIndex().row();
+
+    if (selObj == -1 || index == -1)
+        return;
+
+    ObjectDef& obj = *tileset->getObjectDef(selObj);
+
+    if (index == 1 || index == 3)
+    {
+        int s = 1;
+        int e = obj.width-1;
+        if (obj.width < 3)
+        {
+            s = obj.width-1;
+            e = obj.width;
+        }
+        setRepeatSpinBox(0, s, true);
+        setRepeatSpinBox(1, e, true);
+    }
+    if (index == 2 || index == 3)
+    {
+        int s = 1;
+        int e = obj.height-1;
+        if (obj.height < 3)
+        {
+            s = obj.height-1;
+            e = obj.height;
+        }
+        setRepeatSpinBox(2, s, true);
+        setRepeatSpinBox(3, e, true);
+    }
+
+    tileset->setObjectBehavior(selObj, index, ui->hStartSpinBox->value(), ui->hEndSpinBox->value(), ui->vStartSpinBox->value(), ui->vEndSpinBox->value());
+    bool oldState = ui->oBehaviorComboBox->blockSignals(true);
+    updateObjectInfo();
+    ui->oBehaviorComboBox->blockSignals(oldState);
+    objectEditor->update();
+}
+
+void TilesetEditorWindow::on_hStartSpinBox_valueChanged(int value)
+{
+    int selObj = ui->objectsListView->currentIndex().row();
+
+    if (selObj == -1 || value == -1)
+        return;
+
+    clampOBehaviorSpinBoxes();
+    tileset->setObjectBehavior(selObj, ui->oBehaviorComboBox->currentIndex(), value, ui->hEndSpinBox->value(), ui->vStartSpinBox->value(), ui->vEndSpinBox->value());
+    objectEditor->update();
+}
+
+void TilesetEditorWindow::on_hEndSpinBox_valueChanged(int value)
+{
+    int selObj = ui->objectsListView->currentIndex().row();
+
+    if (selObj == -1 || value == -1)
+        return;
+
+    clampOBehaviorSpinBoxes();
+    tileset->setObjectBehavior(selObj, ui->oBehaviorComboBox->currentIndex(), ui->hStartSpinBox->value(), value, ui->vStartSpinBox->value(), ui->vEndSpinBox->value());
+    objectEditor->update();
+}
+
+void TilesetEditorWindow::on_vStartSpinBox_valueChanged(int value)
+{
+    int selObj = ui->objectsListView->currentIndex().row();
+
+    if (selObj == -1 || value == -1)
+        return;
+
+    tileset->setObjectBehavior(selObj, ui->oBehaviorComboBox->currentIndex(), ui->hStartSpinBox->value(), ui->hEndSpinBox->value(), value, ui->vEndSpinBox->value());
+    objectEditor->update();
+}
+
+void TilesetEditorWindow::on_vEndSpinBox_valueChanged(int value)
+{
+    int selObj = ui->objectsListView->currentIndex().row();
+
+    if (selObj == -1 || value == -1)
+        return;
+
+    qDebug() << "Clamp from vE";
+    clampOBehaviorSpinBoxes();
+    tileset->setObjectBehavior(selObj, ui->oBehaviorComboBox->currentIndex(), ui->hStartSpinBox->value(), ui->hEndSpinBox->value(), ui->vStartSpinBox->value(), value);
+    objectEditor->update();
 }
 
 
@@ -639,4 +906,3 @@ void TilesetEditorWindow::on_actionSave_triggered()
 {
     tileset->save();
 }
-

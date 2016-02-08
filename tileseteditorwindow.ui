@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1064</width>
+    <width>1058</width>
     <height>508</height>
    </rect>
   </property>
@@ -34,6 +34,12 @@
       </property>
       <item>
        <widget class="QScrollArea" name="tilesetPicker">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="minimumSize">
          <size>
           <width>442</width>
@@ -63,6 +69,12 @@
       </item>
       <item>
        <widget class="QLabel" name="selectedTileLabel">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="text">
          <string>Selected Tile: None</string>
         </property>
@@ -370,16 +382,127 @@
           <item>
            <widget class="QGroupBox" name="objectGroupBox">
             <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>0</height>
+             </size>
+            </property>
             <property name="title">
              <string>Object Settings</string>
             </property>
-            <layout class="QVBoxLayout" name="verticalLayout_4">
-             <item>
+            <layout class="QGridLayout" name="gridLayout">
+             <item row="3" column="1">
+              <layout class="QHBoxLayout" name="horizontalLayout_13">
+               <item>
+                <widget class="QLabel" name="label_o1">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string>Horiz. Repeat:</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="label_o2">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string>Start:</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QSpinBox" name="hStartSpinBox">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="label_o3">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string>End:</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QSpinBox" name="hEndSpinBox"/>
+               </item>
+              </layout>
+             </item>
+             <item row="4" column="1">
+              <layout class="QHBoxLayout" name="horizontalLayout_14">
+               <item>
+                <widget class="QLabel" name="label_o4">
+                 <property name="minimumSize">
+                  <size>
+                   <width>70</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>Vert. Repeat:</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="label_o5">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string>Start:</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QSpinBox" name="vStartSpinBox"/>
+               </item>
+               <item>
+                <widget class="QLabel" name="label_o6">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string>End:</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QSpinBox" name="vEndSpinBox"/>
+               </item>
+              </layout>
+             </item>
+             <item row="0" column="1">
               <layout class="QHBoxLayout" name="horizontalLayout_12">
                <item>
                 <widget class="QLabel" name="label_6">
@@ -397,7 +520,7 @@
                <item>
                 <widget class="QSpinBox" name="oWidthSpinBox">
                  <property name="sizePolicy">
-                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                    <horstretch>0</horstretch>
                    <verstretch>0</verstretch>
                   </sizepolicy>
@@ -410,7 +533,7 @@
                  </property>
                  <property name="maximumSize">
                   <size>
-                   <width>50</width>
+                   <width>16777215</width>
                    <height>20</height>
                   </size>
                  </property>
@@ -451,7 +574,7 @@
                  </property>
                  <property name="maximumSize">
                   <size>
-                   <width>50</width>
+                   <width>16777215</width>
                    <height>20</height>
                   </size>
                  </property>
@@ -463,33 +586,29 @@
                  </property>
                 </widget>
                </item>
-               <item>
-                <spacer name="horizontalSpacer">
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
-                 </property>
-                 <property name="sizeType">
-                  <enum>QSizePolicy::Expanding</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>40</width>
-                   <height>20</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
               </layout>
              </item>
-             <item>
+             <item row="2" column="0">
+              <widget class="QLabel" name="label_8">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="text">
+                <string>Behavior:</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1">
               <layout class="QHBoxLayout" name="horizontalLayout_10">
-               <item>
-                <widget class="QLabel" name="label_10">
-                 <property name="text">
-                  <string>Randomize:</string>
-                 </property>
-                </widget>
-               </item>
                <item>
                 <widget class="QCheckBox" name="randHorizontalCheckBox">
                  <property name="sizePolicy">
@@ -532,7 +651,7 @@
                <item>
                 <widget class="QSpinBox" name="randTilesSpinBox">
                  <property name="sizePolicy">
-                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                    <horstretch>0</horstretch>
                    <verstretch>0</verstretch>
                   </sizepolicy>
@@ -551,22 +670,44 @@
                  </property>
                 </widget>
                </item>
-               <item>
-                <spacer name="horizontalSpacer_2">
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>40</width>
-                   <height>20</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
               </layout>
              </item>
+             <item row="1" column="0">
+              <widget class="QLabel" name="label_10">
+               <property name="text">
+                <string>Randomize:</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="0">
+              <widget class="QLabel" name="label_11">
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="text">
+                <string>Size:</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="1">
+              <widget class="QComboBox" name="oBehaviorComboBox"/>
+             </item>
             </layout>
+            <zorder>spinBox_2</zorder>
+            <zorder>label_13</zorder>
+            <zorder>spinBox_3</zorder>
+            <zorder>label_14</zorder>
+            <zorder>spinBox_4</zorder>
+            <zorder>label_15</zorder>
+            <zorder>hStartSpinBox</zorder>
+            <zorder>hEndSpinBox</zorder>
+            <zorder>label_o2</zorder>
+            <zorder>label_o3</zorder>
+            <zorder>layoutWidget</zorder>
+            <zorder>horizontalSpacer</zorder>
            </widget>
           </item>
           <item>
@@ -598,14 +739,6 @@
          </layout>
         </item>
        </layout>
-       <zorder></zorder>
-       <zorder></zorder>
-       <zorder>oBehaviorComboBox</zorder>
-       <zorder>label_8</zorder>
-       <zorder>randTilesSpinBox</zorder>
-       <zorder>randHorizontalCheckBox</zorder>
-       <zorder>randVerticalCheckBox</zorder>
-       <zorder>label_9</zorder>
       </widget>
      </widget>
     </item>
@@ -616,7 +749,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1064</width>
+     <width>1058</width>
      <height>21</height>
     </rect>
    </property>
@@ -625,18 +758,21 @@
      <string>File</string>
     </property>
     <addaction name="actionSave"/>
-    <addaction name="actionExportImage"/>
    </widget>
    <widget class="QMenu" name="menuSettings">
     <property name="title">
      <string>Settings</string>
     </property>
     <addaction name="actionSetBackgroundColor"/>
+    <addaction name="actionShowObjectMarkers"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
      <string>Edit</string>
     </property>
+    <addaction name="actionImportImage"/>
+    <addaction name="actionExportImage"/>
+    <addaction name="separator"/>
     <addaction name="actionDeleteAllObjects"/>
     <addaction name="actionDeleteAll3DOverlays"/>
     <addaction name="actionSetTilesetSlot"/>
@@ -679,6 +815,25 @@
   <action name="actionDeleteAll3DOverlays">
    <property name="text">
     <string>Delete all 3D Overlays</string>
+   </property>
+  </action>
+  <action name="actionImportImage">
+   <property name="text">
+    <string>Import Image...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+I</string>
+   </property>
+  </action>
+  <action name="actionShowObjectMarkers">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Show Object Markers</string>
+   </property>
+   <property name="toolTip">
+    <string>Show Object Markers</string>
    </property>
   </action>
  </widget>

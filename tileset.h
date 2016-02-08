@@ -81,6 +81,7 @@ public:
     void setRandomizeV(int tile, bool value);
     quint8 getRandomizeTiles(int tile);
     void setRandomizeTiles(int tile, quint8 value);
+    void setObjectBehavior(int selObj, int type, int hStart, int hEnd, int vStart, int vEnd);
 
     Game* game;
 

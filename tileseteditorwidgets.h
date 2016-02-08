@@ -3,6 +3,8 @@
 
 #include <QWidget>
 #include <QMouseEvent>
+#include <QGridLayout>
+#include <QSpinBox>
 
 #include "tileset.h"
 
@@ -41,6 +43,7 @@ class ObjectEditor : public QWidget
 public:
     explicit ObjectEditor(Tileset *tileset, QWidget *parent);
     void setBGColor(QColor bgColor) { this->bgColor = bgColor; update(); }
+    void setMarkers(bool value) { this->showMarkers = value; update(); }
 
 signals:
     void updateSelTileLabel(QString text);
@@ -59,6 +62,7 @@ private:
 
     int objNbr;
     QColor bgColor;
+    bool showMarkers;
 
     int currX, currY, currW, currH;
     int selX, selY;

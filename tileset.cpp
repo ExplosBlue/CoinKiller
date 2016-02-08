@@ -56,6 +56,9 @@ Tileset::Tileset(Game *game, QString name)
         obj->randomisation = randomisation;
         obj->unkFlag = crap;
 
+        if (crap != 0)
+            qDebug() << "Found unkFlag value != 0:" << crap << "for Object" << o;
+
         //obj->xRepeatStart = 0xFF;
         obj->yRepeatStart = 0xFF;
 
@@ -199,15 +202,18 @@ Tileset::Tileset(Game *game, QString name)
     delete behaviorsFile;
 
     // parse 3D overlays
-    FileBase* overlaysFile = archive->openFile("BG_unt/" + name + "_add.bin");
-    overlaysFile->open();
-    overlaysFile->seek(0);
-    for (int i = 0; i < 441; i++) // TODO ensure the file has the right size!
+    if (archive->fileExists("BG_unt/" + name + "_add.bin"))
     {
-        overlays3D[i] = overlaysFile->read16();
+        FileBase* overlaysFile = archive->openFile("BG_unt/" + name + "_add.bin");
+        overlaysFile->open();
+        overlaysFile->seek(0);
+        for (int i = 0; i < 441; i++) // TODO ensure the file has the right size!
+        {
+            overlays3D[i] = overlaysFile->read16();
+        }
+        overlaysFile->close();
+        delete overlaysFile;
     }
-    overlaysFile->close();
-    delete overlaysFile;
 }
 
 Tileset::~Tileset()
@@ -530,16 +536,19 @@ void Tileset::save()
 
 
     // Save 3D Overlays
-    FileBase* overlaysFile = archive->openFile("BG_unt/" + name + "_add.bin");
-    overlaysFile->open();
-    overlaysFile->seek(0);
-    for (int i = 0; i < 441; i++)
+    if (archive->fileExists("BG_unt/" + name + "_add.bin"))
     {
-        overlaysFile->write16(overlays3D[i]);
+        FileBase* overlaysFile = archive->openFile("BG_unt/" + name + "_add.bin");
+        overlaysFile->open();
+        overlaysFile->seek(0);
+        for (int i = 0; i < 441; i++)
+        {
+            overlaysFile->write16(overlays3D[i]);
+        }
+        overlaysFile->save();
+        overlaysFile->close();
+        delete overlaysFile;
     }
-    overlaysFile->save();
-    overlaysFile->close();
-    delete overlaysFile;
 
 
     // Save Object Def
@@ -754,4 +763,71 @@ quint8 Tileset::getRandomizeTiles(int tile)
 void Tileset::setRandomizeTiles(int tile, quint8 value)
 {
     objectDefs[tile]->randomisation = (objectDefs[tile]->randomisation & 240) | value;
+}
+
+void Tileset::setObjectBehavior(int selObj, int type, int hStart, int hEnd, int vStart, int vEnd)
+{
+    // Types
+    //  0: Tile
+    //  1: Repeat Horizontally
+    //  2: Repeat Vertically
+    //  3: Repeat Horizontally and Vertically
+    //  4: Slope (Up)
+    //  5: Slope (Down)
+    //  6: Upside-Down Slope (Down)
+    //  7: Upside-Down Slope (Up)
+
+    ObjectDef& obj = *objectDefs[selObj];
+
+    obj.yRepeatStart = 255;
+    obj.yRepeatEnd = 0;
+    for (int r = 0; r < obj.rows.size(); r++) // Tile / Clean Up
+    {
+        obj.rows[r].xRepeatStart = 255;
+        obj.rows[r].xRepeatEnd = 0;
+        obj.rows[r].slopeFlags = 0;
+        for (int d = 0; d < obj.rows[r].data.size(); d += 3)
+            obj.rows[r].data[d] = 0;
+    }
+
+    if (type >= 4 && type <= 7) // Slope
+    {
+        obj.rows[0].slopeFlags = 144 + type-4;
+
+        if (obj.rows.size() < 2)
+            return;
+
+        for (int r = 1; r < obj.rows.size(); r++)
+        {
+            obj.rows[r].slopeFlags = 132;
+
+            for (int d = 0; d < obj.rows[r].data.size(); d += 3)
+                obj.rows[r].data[d] = 4;
+        }
+        return;
+    }
+
+    if (type == 1 || type == 3) // Repeat Horizontally
+    {
+        for (int r = 0; r < obj.rows.size(); r++)
+        {
+            obj.rows[r].xRepeatStart = hStart;
+            obj.rows[r].xRepeatEnd = hEnd;
+
+            for (int d = 0; d < obj.rows[r].data.size(); d += 3)
+                if (d/3 >= hStart && d/3 < hEnd) obj.rows[r].data[d] = (obj.rows[r].data[d] & 254) | true;
+        }
+    }
+
+    if (type == 2 || type == 3) // Repeat Vertically
+    {
+        obj.yRepeatStart = vStart;
+        obj.yRepeatEnd = vEnd;
+
+        for (int r = 0; r < obj.rows.size(); r++)
+        {
+            for (int d = 0; d < obj.rows[r].data.size(); d += 3)
+                if (r >= vStart && r < vEnd) obj.rows[r].data[d] = (obj.rows[r].data[d] & 253) | true << 1;
+        }
+    }
 }
