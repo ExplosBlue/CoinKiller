@@ -19,6 +19,7 @@
 #define LEVELEDITORWINDOW_H
 
 #include <QMainWindow>
+#include <QListView>
 
 #include "filesystem.h"
 #include "levelview.h"
@@ -68,6 +69,18 @@ private slots:
 
     void on_actionDelete_triggered();
 
+    void on_objectsListView0_clicked(const QModelIndex &index);
+
+    void on_objectsListView1_clicked(const QModelIndex &index);
+
+    void on_objectsListView2_clicked(const QModelIndex &index);
+
+    void on_objectsListView3_clicked(const QModelIndex &index);
+
+    void on_radioButton_toggled(bool checked);
+
+    void on_actionDo_shit_I_guess_triggered();
+
 private:
     Ui::LevelEditorWindow *ui;
 
@@ -78,9 +91,13 @@ private:
 
     PropertyGrid* propGrid;
 
+    QListView* objectLists[4];
+
 
     quint8 layerMask;
     float zoom;
+
+    void setupObjectsModel(int tilesetNbr);
 };
 
 #endif // LEVELEDITORWINDOW_H

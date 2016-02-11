@@ -44,14 +44,16 @@ public:
     quint8 unk2;
     quint8 unk3;
 
-    QList<BgdatObject> objects[2];
-    QList<Sprite> sprites;
+    QList<BgdatObject*> objects[2];
+    QList<Sprite*> sprites;
+    QList<Entrance*> entrances;
+    QList<Location*> locations;
+
+    // TODO: Move these to QLists of Pointers
     QList<quint16> spritesUsed;
-    QList<Entrance> entrances;
     QList<Zone> zones;
     QList<ZoneBounding> zoneBoundings;
     QList<ZoneBackground> zoneBackgrounds;
-    QList<Location> locations;
     QList<Path> paths;
     QList<ProgressPath> progressPaths;
 
@@ -59,6 +61,9 @@ public:
     {
         name = QString("%1-%2 area %3").arg(world).arg(level).arg(area);
     }
+
+    void remove(QList<Object*> objs);
+    void remove(Object* obj);
 
 private:
     SarcFilesystem* archive;

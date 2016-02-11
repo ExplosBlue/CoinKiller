@@ -37,7 +37,9 @@ LevelView::LevelView(QWidget *parent, Level* level) : QWidget(parent)
 
     layerMask = 0x7; // failsafe
 
-    editMode = 0;
+    objectEditionMode = ObjectsEditonMode(level);
+
+    //editMode = 0;
     zoom = 1;
     grid = false;
 }
@@ -65,22 +67,22 @@ void LevelView::paintEvent(QPaintEvent* evt)
 
         for (int i = level->objects[l].size()-1; i >= 0; i--)
         {
-            const BgdatObject& obj = level->objects[l].at(i);
+            const BgdatObject* obj = level->objects[l].at(i);
 
             // don't draw shit that is outside of the view
             // (TODO: also eliminate individual out-of-view tiles)
-            if (!drawrect.intersects(QRect(obj.getx(), obj.gety(), obj.getwidth(), obj.getheight())))
+            if (!drawrect.intersects(QRect(obj->getx(), obj->gety(), obj->getwidth(), obj->getheight())))
                 continue;
 
-            quint16 tsid = (obj.getid() >> 12) & 0x3;
+            quint16 tsid = (obj->getid() >> 12) & 0x3;
             if (level->tilesets[tsid])
             {
-                level->tilesets[tsid]->drawObject(painter, tileGrid, obj.getid()&0x0FFF, obj.getx()/20, obj.gety()/20, obj.getwidth()/20, obj.getheight()/20, 1);
+                level->tilesets[tsid]->drawObject(painter, tileGrid, obj->getid()&0x0FFF, obj->getx()/20, obj->gety()/20, obj->getwidth()/20, obj->getheight()/20, 1);
             }
             else
             {
                 // TODO fallback
-                qDebug("attempt to draw obj %04X with non-existing tileset", obj.getid());
+                qDebug("attempt to draw obj %04X with non-existing tileset", obj->getid());
             }
         }
     }
@@ -90,19 +92,19 @@ void LevelView::paintEvent(QPaintEvent* evt)
     // Render Locations
     for (int i = 0; i < level->locations.size(); i++)
     {
-        const Location& loc = level->locations.at(i);
+        const Location* loc = level->locations.at(i);
 
-        QRect locrect(loc.getx(), loc.gety(), loc.getwidth(), loc.getheight());
+        QRect locrect(loc->getx(), loc->gety(), loc->getwidth(), loc->getheight());
 
         if (!drawrect.intersects(locrect))
             continue;
 
-        painter.fillRect(locrect, QBrush(QColor(255,255,0,100)));
+        painter.fillRect(locrect, QBrush(QColor(255,225,0,35)));
 
         painter.setPen(QColor(0,0,0));
         painter.drawRect(locrect);
 
-        QString locText = QString("%1").arg(loc.getid());
+        QString locText = QString("%1").arg(loc->getid());
         painter.setFont(QFont("Arial", 10, QFont::Bold));
         painter.setPen(QColor(255,255,255));
         painter.drawText(locrect.adjusted(5,5,0,0), locText);
@@ -111,23 +113,23 @@ void LevelView::paintEvent(QPaintEvent* evt)
     // Render Sprites
     for (int i = 0; i < level->sprites.size(); i++)
     {
-        const Sprite& spr = level->sprites.at(i);
+        const Sprite* spr = level->sprites.at(i);
 
-        QRect sprRect(spr.getx()+spr.getOffsetX(), spr.gety()+spr.getOffsetY(), spr.getwidth(), spr.getheight());
+        QRect sprRect(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight());
 
         if (!drawrect.intersects(sprRect))
             continue;
 
-        SpriteRenderer sprRend(&spr);
+        SpriteRenderer sprRend(spr);
         sprRend.render(&painter);
     }
 
     // Render Entrences
     for (int i = 0; i < level->entrances.size(); i++)
     {
-        const Entrance& entr = level->entrances.at(i);
+        const Entrance* entr = level->entrances.at(i);
 
-        QRect entrrect(entr.getx(), entr.gety(), 20, 20);
+        QRect entrrect(entr->getx(), entr->gety(), 20, 20);
 
         if (!drawrect.intersects(entrrect))
             continue;
@@ -140,7 +142,7 @@ void LevelView::paintEvent(QPaintEvent* evt)
         painter.fillPath(path, color);
         painter.drawPath(path);
 
-        QString entrText = QString("%1").arg(entr.getid());
+        QString entrText = QString("%1").arg(entr->getid());
         painter.setFont(QFont("Arial", 7, QFont::Normal));
         painter.drawText(entrrect, entrText, Qt::AlignHCenter | Qt::AlignVCenter);
     }
@@ -244,7 +246,7 @@ void LevelView::paintEvent(QPaintEvent* evt)
         painter.drawText(zonerect.adjusted(5,5,0,0), zoneText);
     }
 
-    // Render Selection
+    /*// Render Selection
     for (int i = 0; i < selObjects.size(); i++)
     {
         QRect objrect(selObjects[i]->getx()+selObjects[i]->getOffsetX(), selObjects[i]->gety()+selObjects[i]->getOffsetY(), selObjects[i]->getwidth(), selObjects[i]->getheight());
@@ -252,7 +254,7 @@ void LevelView::paintEvent(QPaintEvent* evt)
         painter.setPen(QPen(QColor(255,255,255,200), 1, Qt::DotLine));
         painter.drawRect(objrect);
         painter.fillRect(objrect, QColor(255,255,255,75));
-    }
+    }*/
 
     // Render Grid
     if (grid)
@@ -314,198 +316,32 @@ void LevelView::paintEvent(QPaintEvent* evt)
         painter.setRenderHint(QPainter::Antialiasing);
     }
 
-    // Render Selection Area
+    /*// Render Selection Area
     if (editMode == 2)
     {
         painter.setPen(QPen(QColor(0,80,180), 0.5));
         painter.fillRect(selArea, QColor(160,222,255,50));
         painter.drawRect(selArea);
-    }
+    }*/
 }
 
 
 void LevelView::mousePressEvent(QMouseEvent* evt)
 {    
-    if (editMode != 0)
-        return;
-
-    int x = evt->x()/zoom;
-    int y = evt->y()/zoom;
-
-    if (evt->button() == Qt::LeftButton)
-    {
-        switch (editMode)
-        {
-            case 0: // Nothing
-            {
-                bool hitSelection = false;
-
-                QList<Object*> hitObject = selObjectsCheck(x,y,0,0,false);
-
-                // Check if hit a object already in Selection
-                for (int i = 0; i < selObjects.size(); i++)
-                {
-                    if (hitObject.size() != 0 && selObjects[i] == hitObject[0])
-                    {
-                        hitSelection = true;
-
-                        // Drag if hit selection
-                        if (evt->modifiers() != Qt::ShiftModifier)
-                        {
-                            dragX = x;
-                            dragY = y;
-
-                            for (int i = 0; i < selObjects.size(); i++)
-                            {
-                                selObjects[i]->setDrag(selObjects[i]->getx(), selObjects[i]->gety());
-                            }
-
-                            editMode = 1;
-                            break;
-                        }
-                        // Remove from selection if shift-clicked on object already in selection
-                        else
-                        {
-                            selObjects.removeAt(i);
-                            break;
-                        }
-                    }
-                }
-
-                // Return if hit object in selection
-                if (hitSelection) break;
-
-                // Clear selection if not shift-clicked
-                if (evt->modifiers() != Qt::ShiftModifier) selObjects.clear();
-
-                // Add object under Mouse
-                selObjects.append(hitObject);
-
-                // Remove doubled entrys
-                for (int i = 0; i < selObjects.size(); i++)
-                {
-                    for (int j = 0; j < selObjects.size(); j++) if (i != j && selObjects[i] == selObjects[j]) selObjects.removeAt(j);
-                }
-
-                // Area Selection if hit nothing
-                if (selObjects.size() == 0)
-                {
-                    dragX = x;
-                    dragY = y;
-
-                    editMode = 2;
-                    selArea = QRect(x,y,0,0);
-                }
-                // Dragging Mode if hit a object
-                else
-                {
-                    dragX = x;
-                    dragY = y;
-
-                    for (int i = 0; i < selObjects.size(); i++)
-                    {
-                        selObjects[i]->setDrag(selObjects[i]->getx(), selObjects[i]->gety());
-                    }
-
-                    editMode = 1;
-                }
-                break;
-            }
-
-            default: {}
-        }
-    }
-
+    objectEditionMode.mousePressEvent(evt);
     update();
 }
 
 
 void LevelView::mouseMoveEvent(QMouseEvent* evt)
 {    
-    int x = evt->x()/zoom;
-    int y = evt->y()/zoom;
-
-    //if (evt->button() != Qt::LeftButton || evt->button() != Qt::MiddleButton) // checkme?
-    //    return;
-
-    switch (editMode)
-    {
-        case 1: // Dragging
-        {
-            // Check if a Bgdat object is in selection
-            bool roundToFullTile = false;
-            for (int i = 0; i < selObjects.size(); i++)
-            {
-                if (selObjects[i]->getType() == 0)
-                {
-                    roundToFullTile = true;
-                    break;
-                }
-            }
-
-            for (int i = 0; i < selObjects.size(); i++)
-            {
-                int finalX, finalY;
-
-                // Rounded to next Tile
-                if (roundToFullTile)
-                {
-                    finalX = selObjects[i]->getDragX() + toNext20(x-dragX);
-                    finalY = selObjects[i]->getDragY() + toNext20(y-dragY);
-                }
-
-                // For Based on 16
-                else
-                {
-                    // Drag stuff freely
-                    if (evt->modifiers() == Qt::AltModifier)
-                    {
-                        finalX = selObjects[i]->getDragX() + toNext16Compatible(x-dragX);
-                        finalY = selObjects[i]->getDragY() + toNext16Compatible(y-dragY);
-                    }
-                    // Rounded to next half Tile
-                    else
-                    {
-                        finalX = selObjects[i]->getDragX() + toNext10(x-dragX);
-                        finalY = selObjects[i]->getDragY() + toNext10(y-dragY);
-                    }
-                }
-
-                // clamp coords
-                if (finalX < 0) finalX = 0;
-                else if (finalX > 0xFFFF*20) finalX = 0xFFFF*20;
-                if (finalY < 0) finalY = 0;
-                else if (finalY > 0xFFFF*20) finalY = 0xFFFF*20;
-
-                selObjects[i]->setPosition(finalX, finalY);
-            }
-
-            break;
-        }
-
-        case 2: // Area Selection
-        {
-            int sx = qMin(dragX,x);
-            int sy = qMin(dragY,y);
-            int width = qAbs(dragX-x);
-            int height = qAbs(dragY-y);
-            selArea = QRect(sx,sy,width,height);
-
-            selObjects.clear();
-            selObjects.append(selObjectsCheck(selArea.x(),selArea.y(),selArea.width(),selArea.height(),true));
-            break;
-        }
-
-        default: {}
-
-    }
+    objectEditionMode.mouseMoveEvent(evt);
     update();
 }
 
 void LevelView::mouseReleaseEvent(QMouseEvent *evt)
 {
-    editMode = 0;
-
+    objectEditionMode.mouseReleaseEvent(evt);
     update();
 }
 
@@ -575,10 +411,10 @@ QList<Object*> LevelView::selObjectsCheck(int x, int y, int w, int h, bool multi
     {
         for (int i = level->locations.size()-1; i >= 0; i--)
         {
-            Location& loc = level->locations[i];
-            if (loc.clickDetection(x,y,w,h))
+            Location* loc = level->locations[i];
+            if (loc->clickDetection(x,y,w,h))
             {
-                objects.append(&loc);
+                objects.append(loc);
 
                 if (!multiSelect)
                 {
@@ -594,10 +430,10 @@ QList<Object*> LevelView::selObjectsCheck(int x, int y, int w, int h, bool multi
     {
         for (int i = level->entrances.size()-1; i >= 0; i--)
         {
-            Entrance& entr = level->entrances[i];
-            if (entr.clickDetection(x,y,w,h))
+            Entrance* entr = level->entrances[i];
+            if (entr->clickDetection(x,y,w,h))
             {
-                objects.append(&entr);
+                objects.append(entr);
 
                 if (!multiSelect)
                 {
@@ -613,10 +449,10 @@ QList<Object*> LevelView::selObjectsCheck(int x, int y, int w, int h, bool multi
     {
         for (int i = level->sprites.size()-1; i >= 0; i--)
         {
-            Sprite& spr = level->sprites[i];
-            if (spr.clickDetection(x,y,w,h))
+            Sprite* spr = level->sprites[i];
+            if (spr->clickDetection(x,y,w,h))
             {
-                objects.append(&spr);
+                objects.append(spr);
 
                 if (!multiSelect)
                 {
@@ -637,10 +473,10 @@ QList<Object*> LevelView::selObjectsCheck(int x, int y, int w, int h, bool multi
 
             for (int i = level->objects[l].size()-1; i >= 0; i--)
             {
-                BgdatObject& obj = level->objects[l][i];
-                if (obj.clickDetection(x,y,w,h))
+                BgdatObject* obj = level->objects[l][i];
+                if (obj->clickDetection(x,y,w,h))
                 {
-                    objects.append(&obj);
+                    objects.append(obj);
 
                     if (!multiSelect)
                     {
@@ -665,7 +501,7 @@ void LevelView::saveLevel()
 
 void LevelView::copy()
 {
-    if (selObjects.size() == 0) return;
+    /*if (selObjects.size() == 0) return;
 
     QString clipboardText("CoinKillerClip");
     for (int i = 0; i < selObjects.size(); i++)
@@ -675,12 +511,12 @@ void LevelView::copy()
     }
     clipboardText += "|";
 
-    QApplication::clipboard()->setText(clipboardText);
+    QApplication::clipboard()->setText(clipboardText);*/
 }
 
 void LevelView::paste()
 {
-    QString clipboardText(QApplication::clipboard()->text());
+    /*QString clipboardText(QApplication::clipboard()->text());
     if (clipboardText.left(14) != "CoinKillerClip") return;
 
     selObjects.clear();
@@ -699,7 +535,7 @@ void LevelView::paste()
         if (parts[0] == 0)
         {
             BgdatObject* obj = new BgdatObject(parts[3], parts[4], parts[5], parts[6], parts[1], parts[2]);
-            level->objects[obj->getLayer()].append(*obj);
+            level->objects[obj->getLayer()].append(obj);
             selObjects.append(obj);
         }
 
@@ -712,14 +548,14 @@ void LevelView::paste()
                spr->setByte(j, parts[j + 4]);
             spr->setRect();
 
-            level->sprites.append(*spr);
+            level->sprites.append(spr);
         }
 
         // Entrances
         else if (parts[0] == 2)
         {
             Entrance* entr = new Entrance(parts[3], parts[4], parts[7], parts[8], parts[1], parts[5], parts[6], parts[9]);
-            level->entrances.append(*entr);
+            level->entrances.append(entr);
             selObjects.append(entr);
         }
 
@@ -727,23 +563,22 @@ void LevelView::paste()
         else if (parts[0] == 4)
         {
             Location* loc = new Location(parts[2], parts[3], parts[4], parts[5], parts[1]);
-            level->locations.append(*loc);
+            level->locations.append(loc);
             selObjects.append(loc);
         }
 
         // Still needing Zones/Paths/ProgPaths
-    }
+    }*/
 
     update();
 }
 
 void LevelView::cut()
 {
-    copy();
-    deleteSel();
+
 }
 
 void LevelView::deleteSel()
 {
-    update();
+
 }

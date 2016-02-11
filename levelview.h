@@ -25,6 +25,7 @@
 #include "filesystem.h"
 #include "level.h"
 #include "tileset.h"
+#include "editionmode.h"
 
 class LevelView : public QWidget
 {
@@ -40,6 +41,8 @@ public:
     void paste();
     void cut();
     void deleteSel();
+
+    ObjectsEditonMode* objEditionModePtr() { return &objectEditionMode; }
 
 signals:
 
@@ -60,15 +63,7 @@ private:
     QRect drawrect;
     float zoom;
 
-    int editMode;
-    // 0: Nothing
-    // 1: Dragging
-    // 2: Area Selection
-
-    int dragX, dragY;
-
-    QList<Object*> selObjects;
-    QRect selArea;
+    ObjectsEditonMode objectEditionMode;
 
     bool grid;
 

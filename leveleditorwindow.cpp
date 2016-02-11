@@ -23,6 +23,7 @@
 
 #include <QHBoxLayout>
 #include <QSizePolicy>
+#include <QStandardItemModel>
 
 LevelEditorWindow::LevelEditorWindow(QWidget *parent, Level* level) :
     QMainWindow(parent),
@@ -102,6 +103,25 @@ LevelEditorWindow::LevelEditorWindow(QWidget *parent, Level* level) :
     levelView->setLayerMask(layerMask);
 
     zoom = 1.0;
+
+
+    // Setup Object Lists
+    objectLists[0] = ui->objectsListView0;
+    objectLists[1] = ui->objectsListView1;
+    objectLists[2] = ui->objectsListView2;
+    objectLists[3] = ui->objectsListView3;
+
+    for (int i = 0; i < 4; i++)
+    {
+        objectLists[i]->setFlow(QListView::LeftToRight);
+        objectLists[i]->setLayoutMode(QListView::SinglePass);
+        objectLists[i]->setMovement(QListView::Static);
+        objectLists[i]->setResizeMode(QListView::Adjust);
+        objectLists[i]->setWrapping(true);
+        objectLists[i]->setIconSize(QSize(140,140));
+        objectLists[i]->setVerticalScrollMode(QListView::ScrollPerPixel);
+        setupObjectsModel(i);
+    }
 }
 
 LevelEditorWindow::~LevelEditorWindow()
@@ -109,6 +129,44 @@ LevelEditorWindow::~LevelEditorWindow()
     delete level;
     delete ui;
 }
+
+
+// Functions
+
+void LevelEditorWindow::setupObjectsModel(int tilesetNbr)
+{
+    if (!level->tilesets[tilesetNbr])
+    {
+        objectLists[tilesetNbr]->setEnabled(false);
+        return;
+    }
+    objectLists[tilesetNbr]->setEnabled(true);
+
+    QStandardItemModel* objectsModel = new QStandardItemModel(this);
+
+    for (int i = 0; i < level->tilesets[tilesetNbr]->getNumObjects(); i++)
+    {
+        ObjectDef* obj = level->tilesets[tilesetNbr]->getObjectDef(i);
+        QPixmap objPixmap(obj->width*20, obj->height*20);
+        objPixmap.fill(Qt::transparent);
+
+        QPainter p(&objPixmap);
+        TileGrid tileGrid;
+        tileGrid.clear();
+        tileGrid[0xFFFFFFFF] = 1;
+        level->tilesets[tilesetNbr]->drawObject(p, tileGrid, i, 0, 0, obj->width, obj->height, 1);
+        p.end();
+        QStandardItem *objItem = new QStandardItem();
+        objItem->setIcon(QIcon(objPixmap));
+        objItem->setToolTip(QString("Object: %1").arg(i));
+        objectsModel->appendRow(objItem);
+    }
+
+    objectLists[tilesetNbr]->setModel(objectsModel);
+}
+
+
+// Actions
 
 void LevelEditorWindow::on_actionToggleLayer1_toggled(bool toggle)
 {
@@ -211,4 +269,38 @@ void LevelEditorWindow::on_actionFullscreen_toggled(bool toggle)
 void LevelEditorWindow::on_actionGrid_toggled(bool toggle)
 {
     levelView->toggleGrid(toggle);
+}
+
+void LevelEditorWindow::on_objectsListView0_clicked(const QModelIndex &index)
+{
+    levelView->objEditionModePtr()->setDrawType(0);
+    levelView->objEditionModePtr()->setObject(index.row(), 0);
+}
+
+void LevelEditorWindow::on_objectsListView1_clicked(const QModelIndex &index)
+{
+    levelView->objEditionModePtr()->setDrawType(0);
+    levelView->objEditionModePtr()->setObject(index.row(), 1);
+}
+
+void LevelEditorWindow::on_objectsListView2_clicked(const QModelIndex &index)
+{
+    levelView->objEditionModePtr()->setDrawType(0);
+    levelView->objEditionModePtr()->setObject(index.row(), 2);
+}
+
+void LevelEditorWindow::on_objectsListView3_clicked(const QModelIndex &index)
+{
+    levelView->objEditionModePtr()->setDrawType(0);
+    levelView->objEditionModePtr()->setObject(index.row(), 3);
+}
+
+void LevelEditorWindow::on_radioButton_toggled(bool checked)
+{
+    levelView->objEditionModePtr()->setLayer(checked);
+}
+
+void LevelEditorWindow::on_actionDo_shit_I_guess_triggered()
+{
+    //levelView->deleteSel();
 }

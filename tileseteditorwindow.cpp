@@ -658,16 +658,13 @@ void TilesetEditorWindow::on_addObjectPushButton_clicked()
 {
     int selObj = ui->objectsListView->currentIndex().row();
 
-    if (selObj == -1)
-        return;
-
     tileset->addObject(selObj);
     setupObjectsModel(false);
 
     QModelIndex newIndex = ui->objectsListView->model()->index(selObj+1, 0, QModelIndex());
     ui->objectsListView->setCurrentIndex(newIndex);
     ui->objectsListView->selectionModel()->select(newIndex, QItemSelectionModel::Select);
-    emit selectedObjectChanged(newIndex.row());
+    emit on_objectsListView_clicked(newIndex);
 }
 
 void TilesetEditorWindow::on_removeObjectButton_clicked()
@@ -874,7 +871,7 @@ void TilesetEditorWindow::on_vEndSpinBox_valueChanged(int value)
 
 void TilesetEditorWindow::on_actionExportImage_triggered()
 {
-    QString filename = QFileDialog::getSaveFileName(this, "Export Tileset Image", QDir::currentPath(), "PNG File (*.png)");
+    QString filename = QFileDialog::getSaveFileName(this, "Export Tileset Image", QDir::currentPath(), "PNG Files (*.png)");
 
     QImage img = QImage(420, 420, QImage::Format_RGBA8888);
     QPainter painter;

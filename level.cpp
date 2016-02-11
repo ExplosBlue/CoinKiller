@@ -19,6 +19,7 @@
 #include "game.h"
 #include "objects.h"
 #include "unitsconvert.h"
+#include "is.h"
 
 Level::Level(Game *game, int world, int level, int area)
 {
@@ -129,7 +130,7 @@ Level::Level(Game *game, int world, int level, int area)
     {
         Entrance* entr = new Entrance(to20(header->read16()), to20(header->read16()), header->read16(), header->read16(), header->read8(), header->read8(), header->read8(), header->read8());
         qDebug("Found Entrance with x: %d, y: %d and ID %d", entr->getx(), entr->gety(), entr->getid());
-        entrances.append(*entr);
+        entrances.append(entr);
 
         header->skip(12);
     }
@@ -146,7 +147,7 @@ Level::Level(Game *game, int world, int level, int area)
         for (int i=0; i<8; i++) spr->setByte(i, header->read8());
 
         spr->setRect();
-        sprites.append(*spr);
+        sprites.append(spr);
 
         header->skip(10); // Unused Sprite Data and Zone
     }
@@ -177,7 +178,7 @@ Level::Level(Game *game, int world, int level, int area)
     {
         Location* loc = new Location(to20(header->read16()), to20(header->read16()), to20(header->read16()), to20(header->read16()), header->read8());
         qDebug("Found Location with x: %d, y: %d, width: %d, height: %d", loc->getx(), loc->gety(), loc->getwidth(), loc->getheight());
-        locations.append(*loc);
+        locations.append(loc);
 
         header->skip(3);
     }
@@ -241,7 +242,7 @@ Level::Level(Game *game, int world, int level, int area)
             if (id == 0xFFFF) break;
 
             BgdatObject* obj = new BgdatObject(bgdat->read16()*20, bgdat->read16()*20, bgdat->read16()*20, bgdat->read16()*20, id, l);
-            objects[l].append(*obj);
+            objects[l].append(obj);
 
             bgdat->skip(6);
         }
@@ -258,11 +259,20 @@ Level::~Level()
             delete tilesets[t];
     }
 
-    /*for (int l = 0; l < 3; l++)
+    for (int l = 0; l < 2; l++)
     {
         for (int o = 0; o < objects[l].size(); o++)
-            //
-    }*/
+            delete objects[l][o];
+    }
+
+    for (int s = 0; s < sprites.size(); s++)
+        delete sprites[s];
+
+    for (int e = 0; e < entrances.size(); e++)
+        delete entrances[e];
+
+    for (int l = 0; l < locations.size(); l++)
+        delete locations[l];
 
     delete archive;
 }
@@ -272,3 +282,41 @@ void Level::save()
     // save
 }
 
+void Level::remove(QList<Object*> objs)
+{
+    for (int i = 0; i < objs.size(); i++)
+        remove(objs[i]);
+}
+
+void Level::remove(Object* obj)
+{
+    // Only if the object is removed from the corresponding list, delete it.
+    bool check = false;
+
+    if (is<BgdatObject*>(obj))
+    {
+        BgdatObject* bgdatobj = dynamic_cast<BgdatObject*>(obj);
+        objects[bgdatobj->getLayer()].removeOne(bgdatobj);
+        check = true;
+    }
+    else if (is<Sprite*>(obj))
+    {
+        sprites.removeOne(dynamic_cast<Sprite*>(obj));
+        check = true;
+    }
+    else if (is<Entrance*>(obj))
+    {
+        entrances.removeOne(dynamic_cast<Entrance*>(obj));
+        check = true;
+    }
+    else if (is<Location*>(obj))
+    {
+        locations.removeOne(dynamic_cast<Location*>(obj));
+        check = true;
+    }
+
+    if (check)
+        delete obj;
+    else
+        qDebug() << "Unhandled Object Remove";
+}

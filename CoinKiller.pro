@@ -32,7 +32,8 @@ SOURCES += main.cpp\
     propertygrid.cpp \
     objectrenderer.cpp \
     tileseteditorwindow.cpp \
-    tileseteditorwidgets.cpp
+    tileseteditorwidgets.cpp \
+    editionmode.cpp
 
 HEADERS  += mainwindow.h \
     filesystembase.h \
@@ -55,8 +56,12 @@ HEADERS  += mainwindow.h \
     propertygrid.h \
     objectrenderer.h \
     tileseteditorwindow.h \
-    tileseteditorwidgets.h
+    tileseteditorwidgets.h \
+    is.h \
+    editionmode.h
 
 FORMS    += mainwindow.ui \
     leveleditorwindow.ui \
     tileseteditorwindow.ui
+
+CONFIG += c++11
