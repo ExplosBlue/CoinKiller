@@ -148,7 +148,11 @@
                   <number>0</number>
                  </property>
                  <item>
-                  <widget class="QListView" name="objectsListView0"/>
+                  <widget class="QListView" name="objectsListView0">
+                   <property name="editTriggers">
+                    <set>QAbstractItemView::NoEditTriggers</set>
+                   </property>
+                  </widget>
                  </item>
                 </layout>
                </widget>
@@ -170,7 +174,11 @@
                   <number>0</number>
                  </property>
                  <item>
-                  <widget class="QListView" name="objectsListView1"/>
+                  <widget class="QListView" name="objectsListView1">
+                   <property name="editTriggers">
+                    <set>QAbstractItemView::NoEditTriggers</set>
+                   </property>
+                  </widget>
                  </item>
                 </layout>
                </widget>
@@ -192,7 +200,11 @@
                   <number>0</number>
                  </property>
                  <item>
-                  <widget class="QListView" name="objectsListView2"/>
+                  <widget class="QListView" name="objectsListView2">
+                   <property name="editTriggers">
+                    <set>QAbstractItemView::NoEditTriggers</set>
+                   </property>
+                  </widget>
                  </item>
                 </layout>
                </widget>
@@ -214,7 +226,11 @@
                   <number>0</number>
                  </property>
                  <item>
-                  <widget class="QListView" name="objectsListView3"/>
+                  <widget class="QListView" name="objectsListView3">
+                   <property name="editTriggers">
+                    <set>QAbstractItemView::NoEditTriggers</set>
+                   </property>
+                  </widget>
                  </item>
                 </layout>
                </widget>
@@ -226,6 +242,19 @@
             <attribute name="title">
              <string>Sprites</string>
             </attribute>
+            <widget class="QPushButton" name="paintLocation">
+             <property name="geometry">
+              <rect>
+               <x>20</x>
+               <y>10</y>
+               <width>101</width>
+               <height>23</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>Paint Location</string>
+             </property>
+            </widget>
            </widget>
           </widget>
           <widget class="QWidget" name="widget_2" native="true"/>

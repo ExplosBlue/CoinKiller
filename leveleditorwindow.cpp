@@ -304,3 +304,8 @@ void LevelEditorWindow::on_actionDo_shit_I_guess_triggered()
 {
     //levelView->deleteSel();
 }
+
+void LevelEditorWindow::on_paintLocation_clicked()
+{
+    levelView->objEditionModePtr()->setDrawType(4);
+}

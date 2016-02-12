@@ -24,5 +24,6 @@ int to16(int nbr);
 int toNext10(int nbr);
 int toNext20(int nbr);
 int toNext16Compatible(int nbr);
+int typeRound(int nbr, int type);
 
 #endif // UNITSCONVERT_H

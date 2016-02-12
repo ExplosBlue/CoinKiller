@@ -34,9 +34,12 @@ public:
     void setLayer(int selLayer) { this->selLayer = selLayer; }
 
 private:
-    int lx, ly;     // Last x/y click
+    int dx, dy;     // Last Click Position
+    int lx, ly;     // Last Mouse Position
 
     QList<Object*> selectedObjects;
+    Object* newObject;
+    bool paintingNewObject;
 
     int drawType;
     int selLayer;

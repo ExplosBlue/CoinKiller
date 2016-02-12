@@ -81,6 +81,8 @@ private slots:
 
     void on_actionDo_shit_I_guess_triggered();
 
+    void on_paintLocation_clicked();
+
 private:
     Ui::LevelEditorWindow *ui;
 
