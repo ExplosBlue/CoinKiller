@@ -37,23 +37,26 @@ void Object::setPosition(int x, int y)
     this->y = y;
 }
 
+void Object::increasePosition(int deltax, int deltay)
+{
+    this->x += deltax;
+    this->y += deltay;
+}
+
 void Object::resize(int width, int height)
 {
     this->width = width;
     this->height = height;
 }
 
-bool Object::clickDetection(int xcheck, int ycheck, int wcheck, int hcheck)
+bool Object::clickDetection(int xcheck, int ycheck)
 {
-    // Click detection
-    if (wcheck == 0 && hcheck == 0)
-    {
-        if (xcheck >= x+offsetx && xcheck < x+offsetx+width && ycheck >= y+offsety && ycheck < y+offsety+height) return true;
-        else return false;
-    }
+    return QRect(x+offsetx,y+offsety,width,height).contains(xcheck, ycheck);
+}
 
-    // Area selection
-    else return QRect(xcheck,ycheck,wcheck,hcheck).intersects(QRect(x+offsetx,y+offsety,width,height));
+bool Object::clickDetection(QRect rect)
+{
+    return rect.intersects(QRect(x+offsetx,y+offsety,width,height));
 }
 
 int Object::getType() const { return -1; }

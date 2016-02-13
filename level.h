@@ -64,6 +64,9 @@ public:
 
     void remove(QList<Object*> objs);
     void remove(Object* obj);
+    void move(QList<Object*> objs, int deltax, int deltay);
+    void raise(BgdatObject* obj);
+    void lower(BgdatObject* obj);
 
 private:
     SarcFilesystem* archive;

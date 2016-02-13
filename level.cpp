@@ -320,3 +320,42 @@ void Level::remove(Object* obj)
     else
         qDebug() << "Unhandled Object Remove";
 }
+
+void Level::move(QList<Object*> objs, int deltax, int deltay)
+{
+    int minX = 4096*20;
+    int minY = 4096*20;
+    int maxX = 0;
+    int maxY = 0;
+
+    foreach (Object* obj, objs)
+    {
+        if (obj->getx() < minX) minX = obj->getx();
+        if (obj->gety() < minY) minY = obj->gety();
+        if (obj->getx()+obj->getwidth() > maxX) maxX = obj->getx()+obj->getwidth();
+        if (obj->gety()+obj->getheight() > maxY) maxY = obj->gety()+obj->getheight();
+    }
+
+    if (minX - deltax < 0)
+        deltax = -minX;
+    if (minY - deltay < 0)
+        deltay = -minY;
+    /*if (minX - deltaX < 0)
+        deltaX = X;
+    if (minX - deltaX < 0)
+        deltaX = -minX;*/
+
+    foreach (Object* obj, objs)
+    {
+        obj->increasePosition(deltax, deltay);
+    }
+}
+void Level::raise(BgdatObject* obj)
+{
+    objects[obj->getLayer()].move(objects[obj->getLayer()].indexOf(obj), objects[obj->getLayer()].size()-1);
+}
+
+void Level::lower(BgdatObject* obj)
+{
+    objects[obj->getLayer()].move(objects[obj->getLayer()].indexOf(obj), 0);
+}

@@ -246,15 +246,8 @@ void LevelView::paintEvent(QPaintEvent* evt)
         painter.drawText(zonerect.adjusted(5,5,0,0), zoneText);
     }
 
-    /*// Render Selection
-    for (int i = 0; i < selObjects.size(); i++)
-    {
-        QRect objrect(selObjects[i]->getx()+selObjects[i]->getOffsetX(), selObjects[i]->gety()+selObjects[i]->getOffsetY(), selObjects[i]->getwidth(), selObjects[i]->getheight());
-
-        painter.setPen(QPen(QColor(255,255,255,200), 1, Qt::DotLine));
-        painter.drawRect(objrect);
-        painter.fillRect(objrect, QColor(255,255,255,75));
-    }*/
+    // Render Selection
+    objectEditionMode.render(&painter);
 
     // Render Grid
     if (grid)
@@ -267,7 +260,7 @@ void LevelView::paintEvent(QPaintEvent* evt)
         int starty = drawrect.y() - drawrect.y() % 20;
         int endy = starty + drawrect.height() + 20;
 
-        int x = startx + 20;
+        int x = startx - 20;
         while (x <= endx)
         {
             x += 20;
@@ -290,7 +283,7 @@ void LevelView::paintEvent(QPaintEvent* evt)
             }
         }
 
-        int y = starty + 20;
+        int y = starty - 20;
         while (y <= endy)
         {
             y += 20;
@@ -315,14 +308,6 @@ void LevelView::paintEvent(QPaintEvent* evt)
 
         painter.setRenderHint(QPainter::Antialiasing);
     }
-
-    /*// Render Selection Area
-    if (editMode == 2)
-    {
-        painter.setPen(QPen(QColor(0,80,180), 0.5));
-        painter.fillRect(selArea, QColor(160,222,255,50));
-        painter.drawRect(selArea);
-    }*/
 }
 
 
@@ -348,150 +333,6 @@ void LevelView::mouseReleaseEvent(QMouseEvent *evt)
 void LevelView::moveEvent(QMoveEvent *)
 {
     update();
-}
-
-QList<Object*> LevelView::selObjectsCheck(int x, int y, int w, int h, bool multiSelect)
-{
-    QList<Object*> objects;
-
-    bool stopChecking = false;
-
-    // Check for Progress Path Nodes
-    if (!stopChecking)
-    {
-        for (int p = level->progressPaths.size()-1; p >= 0; p--)
-        {
-            for (int i = level->progressPaths[p].getNodes().size()-1; i >= 0; i--)
-            {
-                ProgressPathNode& node = level->progressPaths[p].getNodeReference(i);
-
-                if (node.clickDetection(x,y,w,h))
-                {    
-                    objects.append(&node);
-
-                    if (!multiSelect)
-                    {
-                        stopChecking = true;
-                        break;
-                    }
-                }
-            }
-
-            if (stopChecking) break;
-        }
-    }
-
-    // Check for Path Nodes
-    if (!stopChecking)
-    {
-        for (int p = level->paths.size()-1; p >= 0; p--)
-        {
-            for (int i = level->paths[p].getNodes().size()-1; i >= 0; i--)
-            {
-                PathNode& node = level->paths[p].getNodeReference(i);
-
-                if (node.clickDetection(x,y,w,h))
-                {
-                    objects.append(&node);
-
-                    if (!multiSelect)
-                    {
-                        stopChecking = true;
-                        break;
-                    }
-                }
-            }
-
-            if (stopChecking) break;
-        }
-    }
-
-    // Check for Locations
-    if (!stopChecking)
-    {
-        for (int i = level->locations.size()-1; i >= 0; i--)
-        {
-            Location* loc = level->locations[i];
-            if (loc->clickDetection(x,y,w,h))
-            {
-                objects.append(loc);
-
-                if (!multiSelect)
-                {
-                    stopChecking = true;
-                    break;
-                }
-            }
-        }
-    }
-
-    // Check for Entrances
-    if (!stopChecking)
-    {
-        for (int i = level->entrances.size()-1; i >= 0; i--)
-        {
-            Entrance* entr = level->entrances[i];
-            if (entr->clickDetection(x,y,w,h))
-            {
-                objects.append(entr);
-
-                if (!multiSelect)
-                {
-                    stopChecking = true;
-                    break;
-                }
-            }
-        }
-    }
-
-    // Check for Sprites
-    if (!stopChecking)
-    {
-        for (int i = level->sprites.size()-1; i >= 0; i--)
-        {
-            Sprite* spr = level->sprites[i];
-            if (spr->clickDetection(x,y,w,h))
-            {
-                objects.append(spr);
-
-                if (!multiSelect)
-                {
-                    stopChecking = true;
-                    break;
-                }
-            }
-        }
-    }
-
-    // Check for Tiles
-    if (!stopChecking)
-    {
-        for (int l = 0; l < 2; l++)
-        {
-            if (!(layerMask & (1<<l)))
-                continue;
-
-            for (int i = level->objects[l].size()-1; i >= 0; i--)
-            {
-                BgdatObject* obj = level->objects[l][i];
-                if (obj->clickDetection(x,y,w,h))
-                {
-                    objects.append(obj);
-
-                    if (!multiSelect)
-                    {
-                        stopChecking = true;
-                        break;
-                    }
-                }
-            }
-
-            if (stopChecking) break;
-        }
-    }
-
-    return objects;
-
 }
 
 void LevelView::saveLevel()

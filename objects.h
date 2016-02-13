@@ -28,6 +28,7 @@ public:
     Object();
     virtual ~Object();
     void setPosition(int x, int y);
+    void increasePosition(int deltax, int deltay);
     void resize(int width, int height);
     virtual int getType() const;
     int getx() const;
@@ -36,8 +37,8 @@ public:
     int getheight() const;
     int getOffsetX() const;
     int getOffsetY() const;
-    bool clickDetection(int xcheck, int ycheck, int wcheck, int hcheck);
-
+    bool clickDetection(int xcheck, int ycheck);
+    bool clickDetection(QRect rect);
     void setDrag(int dragX, int dragY);
     int getDragX() const;
     int getDragY() const;
