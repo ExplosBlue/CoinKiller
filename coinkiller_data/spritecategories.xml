@@ -1,0 +1,168 @@
+<?xml version="1.0"?>
+<views>
+	<view name="Enemies">
+		<category name="Classic Enemies">
+			<attach sprite="135"/> <!-- Goomba -->
+			<attach sprite="137-139"/> <!-- Other Goombas -->
+			<attach sprite="165"/> <!-- Koopa Troopa -->
+			<attach sprite="185"/> <!-- Koopa Paratroopa -->
+			<attach sprite="158-159"/> <!-- Buzzy Beetle / Spike Top -->
+			<attach sprite="232-233"/> <!-- Spiny -->
+			<attach sprite="33, 31, 32, 34"/> <!-- Bros -->
+			<attach sprite="183, 167, 182, 181"/> <!-- Pipe Piranha Plants -->
+			<attach sprite="171, 168, 170, 171"/> <!-- Pipe Fire Piranha Plants -->
+			<attach sprite="175-178"/> <!-- Gounded Piranha Plants -->
+			<attach sprite="115-119"/> <!-- Bills -->
+			<attach sprite="68"/> <!-- Enemy Generator for Pipe -->
+		</category>
+		<category name="Overworld and Sky">
+			<attach sprite="99"/> <!-- Wiggler -->
+			<attach sprite="244"/> <!-- Chain Chomp -->
+			<attach sprite="113"/> <!-- Flame Chomp -->
+			<attach sprite="104-105"/> <!-- Lakitu -->
+			<attach sprite="16-17"/> <!-- Amp -->
+			<attach sprite="51"/> <!-- Fuzzy -->
+			<attach sprite="115-119"/> <!-- Bills -->
+		</category>
+		<category name="Castle and Tower">
+			<attach sprite="12"/> <!-- Lava -->
+			<attach sprite="35-36"/> <!-- Lava Bubbles -->
+			<attach sprite="78"/> <!-- Fire Bar -->
+			<attach sprite="255"/> <!-- Bowser Head Statue -->
+			<attach sprite="136"/> <!-- Bone Goomba -->
+			<attach sprite="172, 174, 173"/> <!-- Pipe Bone Piranha Plants -->
+			<attach sprite="179-180"/> <!-- Grounded Bone Piranha Plants -->
+			<attach sprite="110-111"/> <!-- Dry Bones -->
+			<attach sprite="29"/> <!-- Bob-omb -->
+			<attach sprite="77, 76"/> <!-- Thwomps -->
+			<attach sprite="9, 295"/> <!-- Whomp -->
+			<attach sprite="234-238"/> <!-- Spiked Balls -->
+			<attach sprite="92, 322"/> <!-- Grinder -->
+			<attach sprite="63-64"/> <!-- Spike Pillars -->
+			<attach sprite="7, 5, 4, 6"/> <!-- Burner -->
+			<attach sprite="43, 41, 40, 42"/> <!-- Track controlled Burner -->
+			<attach sprite="48, 46, 45, 47"/> <!-- ! Burner -->
+		</category>
+		<category name="Desert and Cave">
+			<attach sprite="213"/> <!-- Pokey -->
+			<attach sprite="82"/> <!-- Fire Snake -->
+			<attach sprite="158-159"/> <!-- Buzzy Beetle / Spike Top -->
+			<attach sprite="232-233"/> <!-- Spiny -->
+			<attach sprite="8"/> <!-- Swooper -->
+		</category>
+		<category name="Water">
+			<attach sprite="15"/> <!-- Water -->
+			<attach sprite="194-201"/> <!-- Cheep Cheep -->
+			<attach sprite="3"/> <!-- Cheep Chomp -->
+			<attach sprite="88-89"/> <!-- Porcupuffer -->
+			<attach sprite="83"/> <!-- Fish Bone -->
+			<attach sprite="95-96"/> <!-- Blooper -->
+			<attach sprite="240-241"/> <!-- Urchin -->
+			<attach sprite="207-208"/> <!-- Underwater Rocks -->
+		</category>
+		<category name="Ghosthouse">
+			<attach sprite="228-229"/> <!-- Boos -->
+			<attach sprite="231"/> <!-- Boohemoth -->
+			<attach sprite="230"/> <!-- Peepa Circle -->
+		</category>
+	</view>
+	<view name="Miscellaneous">
+		<category name="Blocks">
+			<attach sprite="267, 275, 276"/> <!-- Long ? Blocks -->
+			<attach sprite="273"/> <!-- Coin Roulette Block -->
+			<attach sprite="274"/> <!-- Flying Gold Block Spawn Point -->
+			<attach sprite="20"/> <!-- Gold Block -->
+			<attach sprite="23"/> <!-- Hidden Block -->
+			<attach sprite="24-25"/> <!-- Flying ? Block -->
+			<attach sprite="26"/> <!-- Roulette Block -->
+			<attach sprite="27-28"/> <!-- POW Block -->
+			<attach sprite="21"/> <!-- Note Block -->
+			<attach sprite="278"/> <!-- Assist Block -->
+			<attach sprite="100-101"/> <!-- Rotation/Movement-controlled ? Block -->
+			<attach sprite="203-204"/> <!-- Rotation/Movement-controlled Brick Block -->
+			<attach sprite="259"/> <!-- Rotation-controlled Hard Block -->
+			<attach sprite="224, 226, 222"/> <!-- Brick Blocks containing Switches -->
+		</category>
+		<category name="Coins">
+			<attach sprite="55-62"/> <!-- Coin Stuff -->
+			<attach sprite="311"/> <!-- Big Coin Meteor -->
+			<attach sprite="205-206"/> <!-- Red/Gold Rings -->
+			<attach sprite="219-220"/> <!-- Star Coin -->
+			<attach sprite="302-303"/> <!-- Moon Coin -->
+			<attach sprite="20"/> <!-- Gold Block -->
+			<attach sprite="273"/> <!-- Coin Roulette Block -->
+			<attach sprite="91"/> <!-- Coin Coffer -->
+		</category>
+		<category name="Doors">
+			<attach sprite="69-75"/> <!-- Doors -->
+			<attach sprite="287"/> <!-- Door (Toad House) -->
+		</category>
+		<category name="Other">
+			<attach sprite="106"/> <!-- Trampoline -->
+			<attach sprite="252"/> <!-- Item -->
+			<attach sprite="251"/> <!-- Treasure Chest -->
+			<attach sprite="280"/> <!-- + Clock -->
+			<attach sprite="288"/> <!-- Resources Loader - Mega Mario -->
+			<attach sprite="312"/> <!-- Disabler - Inventory -->
+			<attach sprite="325"/> <!-- Disabler - Super Mushroom Bubble -->
+		</category>
+	</view>
+	<view name="Platforms and Movement">
+		<category name="Classic Lifts">
+			<attach sprite="144-146"/> <!-- Normal Lifts -->
+			<attach sprite="320"/> <!-- Path Lift -->
+			<attach sprite="151"/> <!-- Scale Lift -->
+			<attach sprite="152"/> <!-- Peepa Path Lift -->
+			<attach sprite="248"/> <!-- Peepa Lift (Move Once On) -->
+			<attach sprite="254"/> <!-- Vertical Lift (Totem) -->
+		</category>
+		<category name="Other Lifts">
+			<attach sprite="150"/> <!-- Seesaw Lift -->
+			<attach sprite="147"/> <!-- 3 Platforms Rickshaw Lift -->
+			<attach sprite="154"/> <!-- 4 Platforms Rickshaw Lift -->
+			<attach sprite="314"/> <!-- 3 Platforms Rickshaw Lift (Ruins) -->
+			<attach sprite="148"/> <!-- Moves While On Lift -->
+			<attach sprite="149"/> <!-- Direction Switchable Lift -->
+			<attach sprite="114"/> <!-- Floating Box -->
+			<attach sprite="227"/> <!-- Floating Barrel -->
+			<attach sprite="284-286"/> <!-- Charliender Lifts -->
+			<attach sprite="217-218"/> <!-- Snake Blocks -->
+		</category>
+		<category name="Rectangle Lifts">
+			<attach sprite="189-193"/> <!-- Tower/Ghost House/Desert/Castle/Underwater -->
+			<attach sprite="313"/> <!-- Underwater (tall) -->
+			<attach sprite="268"/> <!-- Lava -->
+			<attach sprite="282"/> <!-- Ghost House -->
+			<attach sprite="307-308"/> <!-- Ruins/Sand -->
+			<attach sprite="283"/> <!-- Larry Battle -->
+			<attach sprite="299"/> <!-- Lemmy Battle -->
+			<attach sprite="187"/> <!-- Normal or Tower -->
+			<attach sprite="318"/> <!-- Tower, again -->
+			<attach sprite="281"/> <!-- Ice (Path Controlled) -->
+			<attach sprite="249-250"/> <!-- Tower/Ghost House (Rotation Controlled) -->
+		</category>
+		<category name="Mushroom Platforms">
+			<attach sprite="124"/> <!-- Normal -->
+			<attach sprite="321"/> <!-- Normal, Snowy -->
+			<attach sprite="120-123"/> <!-- Others -->
+			<attach sprite="289"/> <!-- Castle Trampoline -->
+		</category>
+	</view>
+	<view name="Events">
+		<category name="General Event Controllers">
+			<attach sprite="84-88"/> <!-- Flag Controllers -->
+		</category>
+		<category name="Switches">
+			<attach sprite="223, 225, 221"/> <!-- Normal Switches -->
+			<attach sprite="224, 226, 222"/> <!-- Switches in Bricks -->
+		</category>
+		<category name="Other Event Activators">
+			<attach sprite="205-206"/> <!-- Red/Gold Ring -->
+			<attach sprite="219"/> <!-- Star Coin -->
+			<attach sprite="19"/> <!-- Desert Crater -->
+		</category>
+		<category name="Triggerable Sprites">
+			<attach sprite="74"/> <!-- Triggerable Door -->
+		</category>
+	</view>
+</views>

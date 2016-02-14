@@ -34,7 +34,7 @@ public:
     explicit LevelView(QWidget *parent, Level* level);
 
     void setLayerMask(quint8 mask) { layerMask = mask; update(); }
-    void setZoom(float zoom) { this->zoom = zoom; setMinimumSize(4096*20*zoom, 4096*20*zoom); setMaximumSize(4096*20*zoom, 4096*20*zoom); update(); }
+    void setZoom(float zoom) { this->zoom = zoom; setMinimumSize(4096*20*zoom, 4096*20*zoom); setMaximumSize(4096*20*zoom, 4096*20*zoom); objEditionModePtr()->setZoom(zoom); update(); }
     void toggleGrid(bool toggle) { grid = toggle; update(); }
     void saveLevel();
     void copy();

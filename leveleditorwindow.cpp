@@ -90,7 +90,7 @@ LevelEditorWindow::LevelEditorWindow(QWidget *parent, Level* level) :
     ui->splitter->setSizes(derpshit);
 
     ui->sidebar->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Ignored);
-    ui->sidebar->setMinimumSize(200, 20);
+    ui->sidebar->setMinimumSize(350, 20);
 
     //this->ui->splitter->setStretchFactor(0, 0); // useless
 
@@ -122,6 +122,11 @@ LevelEditorWindow::LevelEditorWindow(QWidget *parent, Level* level) :
         objectLists[i]->setVerticalScrollMode(QListView::ScrollPerPixel);
         setupObjectsModel(i);
     }
+
+    // Setup Sprite Picker
+    spritePicker = new SpritePicker();
+    ui->spritesTab->layout()->addWidget(spritePicker);
+    connect(spritePicker, SIGNAL(selectedSpriteChanged(int)), this, SLOT(setSelSprite(int)));
 }
 
 LevelEditorWindow::~LevelEditorWindow()
@@ -191,6 +196,7 @@ void LevelEditorWindow::on_actionZoom_In_triggered()
         if (zoom < 1) zoom += 0.1;
         else zoom += 0.25;
         levelView->setZoom(zoom);
+
         update();
     }
 }
@@ -295,17 +301,18 @@ void LevelEditorWindow::on_objectsListView3_clicked(const QModelIndex &index)
     levelView->objEditionModePtr()->setObject(index.row(), 3);
 }
 
-void LevelEditorWindow::on_radioButton_toggled(bool checked)
+void LevelEditorWindow::on_layerRadioButton_toggled(bool checked)
 {
     levelView->objEditionModePtr()->setLayer(checked);
-}
-
-void LevelEditorWindow::on_actionDo_shit_I_guess_triggered()
-{
-    //levelView->deleteSel();
 }
 
 void LevelEditorWindow::on_paintLocation_clicked()
 {
     levelView->objEditionModePtr()->setDrawType(4);
+}
+
+void LevelEditorWindow::setSelSprite(int spriteId)
+{
+    levelView->objEditionModePtr()->setDrawType(1);
+    levelView->objEditionModePtr()->setSprite(spriteId);
 }

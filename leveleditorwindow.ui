@@ -77,7 +77,23 @@
                   </sizepolicy>
                  </property>
                  <property name="text">
-                  <string>Layer:</string>
+                  <string>Paint on:</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QRadioButton" name="layerRadioButton">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string>Layer 1</string>
+                 </property>
+                 <property name="checked">
+                  <bool>true</bool>
                  </property>
                 </widget>
                </item>
@@ -90,23 +106,10 @@
                   </sizepolicy>
                  </property>
                  <property name="text">
-                  <string>0</string>
+                  <string>Layer 2</string>
                  </property>
                  <property name="checked">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QRadioButton" name="radioButton_2">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="text">
-                  <string>1</string>
+                  <bool>false</bool>
                  </property>
                 </widget>
                </item>
@@ -238,23 +241,25 @@
              </item>
             </layout>
            </widget>
-           <widget class="QWidget" name="tab_2">
+           <widget class="QWidget" name="spritesTab">
             <attribute name="title">
              <string>Sprites</string>
             </attribute>
-            <widget class="QPushButton" name="paintLocation">
-             <property name="geometry">
-              <rect>
-               <x>20</x>
-               <y>10</y>
-               <width>101</width>
-               <height>23</height>
-              </rect>
-             </property>
-             <property name="text">
-              <string>Paint Location</string>
-             </property>
-            </widget>
+            <layout class="QVBoxLayout" name="verticalLayout_4"/>
+           </widget>
+           <widget class="QWidget" name="tab_7">
+            <attribute name="title">
+             <string>Locations</string>
+            </attribute>
+            <layout class="QHBoxLayout" name="horizontalLayout_7">
+             <item>
+              <widget class="QPushButton" name="paintLocation">
+               <property name="text">
+                <string>Paint Location</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
            </widget>
           </widget>
           <widget class="QWidget" name="widget_2" native="true"/>

@@ -32,9 +32,12 @@ public:
     void mouseMoveEvent(QMouseEvent *evt);
     void render(QPainter *painter);
 
+    void setZoom(float zoom) { this->zoom = zoom; }
+
     void setDrawType(int drawType) { this->drawType = drawType; }
     void setObject(int selObject, int selTileset) { this->selObject = selObject; this->selTileset = selTileset; }
     void setLayer(int selLayer) { this->selLayer = selLayer; }
+    void setSprite(int selSprite) { this->selSprite = selSprite; }
 
 private:
     int dx, dy;     // Last Click Position
@@ -46,6 +49,8 @@ private:
     bool selectionMode;
     bool selectionHasBGDats;
     bool dragMode;
+    int minSelX, minSelY, maxSelX, maxSelY;
+    float zoom;
 
     void findSelectedObjects(int x1, int y1, int x2, int y2, bool firstOnly, bool clearSelection);
     void setDrags();

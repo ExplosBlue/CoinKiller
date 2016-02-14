@@ -8,6 +8,7 @@ ObjectsEditonMode::ObjectsEditonMode(Level *level)
     selObject = 0;
     selTileset = 0;
     selLayer = 0;
+    zoom = 1;
     paintingNewObject = false;
     selectionMode = false;
     selectionHasBGDats = false;
@@ -15,8 +16,8 @@ ObjectsEditonMode::ObjectsEditonMode(Level *level)
 
 void ObjectsEditonMode::mousePressEvent(QMouseEvent *evt)
 {
-    dx = evt->x();
-    dy = evt->y();
+    dx = evt->x()/zoom;
+    dy = evt->y()/zoom;
     lx = dx;
     ly = dy;
 
@@ -29,12 +30,18 @@ void ObjectsEditonMode::mousePressEvent(QMouseEvent *evt)
         {
             int id = selTileset << 12;
             id = (id & 0xF000) | selObject;
-            BgdatObject* bgdatobj = new BgdatObject(toNext20(evt->x()-10), toNext20(evt->y()-10), 20, 20, id, selLayer);
+            BgdatObject* bgdatobj = new BgdatObject(toNext20(dx-10), toNext20(dy-10), 20, 20, id, selLayer);
             level->objects[selLayer].append(bgdatobj);
             newObject = bgdatobj;
             paintingNewObject = true;
         }
-
+        else if (drawType == 1)
+        {
+            Sprite* spr = new Sprite(toNext10(dx-10), toNext10(dy-10), selSprite);
+            spr->setRect();
+            level->sprites.append(spr);
+            selectedObjects.append(spr);
+        }
         else if (drawType == 4)
         {
             Location* loc = new Location(toNext16Compatible(evt->x()), toNext16Compatible(evt->y()), 4, 4, 0);
@@ -82,13 +89,16 @@ void ObjectsEditonMode::mouseReleaseEvent(QMouseEvent *evt)
 
 void ObjectsEditonMode::mouseMoveEvent(QMouseEvent *evt)
 {
-    lx = evt->x();
-    ly = evt->y();
+    lx = evt->x()/zoom;
+    ly = evt->y()/zoom;
 
     if (dragMode)
     {
         int deltax = lx - dx;
         int deltay = ly - dy;
+
+        if (deltax < -minSelX) deltax = -minSelX;
+        if (deltay < -minSelY) deltay = -minSelY;
 
         if (selectionHasBGDats)
         {
@@ -108,7 +118,16 @@ void ObjectsEditonMode::mouseMoveEvent(QMouseEvent *evt)
 
         foreach (Object* obj, selectedObjects)
         {
-            obj->setPosition(obj->getDragX() + deltax, obj->getDragY() + deltay);
+            int finalX = obj->getDragX() + deltax;
+            int finalY = obj->getDragY() + deltay;
+
+            // clamp coords
+            if (finalX < 0) finalX = 0;
+            else if (finalX > 0xFFFF*20) finalX = 0xFFFF*20;
+            if (finalY < 0) finalY = 0;
+            else if (finalY > 0xFFFF*20) finalY = 0xFFFF*20;
+
+            obj->setPosition(finalX, finalY);
         }
 
         return;
@@ -187,7 +206,7 @@ void ObjectsEditonMode::render(QPainter *painter)
     {
         QRect selArea(qMin(dx, lx), qMin(dy, ly), qAbs(lx-dx), qAbs(ly-dy));
         painter->setPen(QPen(QColor(0,80,180), 0.5));
-        painter->fillRect(selArea, QColor(160,222,255,50));
+        painter->fillRect(selArea, QColor(160,222,255,35));
         painter->drawRect(selArea);
     }
 }
@@ -195,9 +214,17 @@ void ObjectsEditonMode::render(QPainter *painter)
 void ObjectsEditonMode::setDrags()
 {
     dragMode = true;
+    minSelX = 0xFFFF*20;
+    minSelY = 0xFFFF*20;
+    maxSelX = 0;
+    maxSelY = 0;
 
     foreach(Object* obj, selectedObjects)
     {
         obj->setDrag(obj->getx(), obj->gety());
+        if (obj->getx() < minSelX) minSelX = obj->getx();
+        if (obj->gety() < minSelY) minSelY = obj->gety();
+        if (obj->getx() > maxSelX) maxSelX = obj->getx();
+        if (obj->gety() > maxSelY) maxSelY = obj->gety();
     }
 }

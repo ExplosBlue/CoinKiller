@@ -25,6 +25,7 @@
 #include "levelview.h"
 #include "ctpk.h"
 #include "level.h"
+#include "leveleditorwidgets.h"
 
 #include "propertygrid.h"
 
@@ -77,11 +78,11 @@ private slots:
 
     void on_objectsListView3_clicked(const QModelIndex &index);
 
-    void on_radioButton_toggled(bool checked);
-
-    void on_actionDo_shit_I_guess_triggered();
+    void on_layerRadioButton_toggled(bool checked);
 
     void on_paintLocation_clicked();
+
+    void setSelSprite(int spriteId);
 
 private:
     Ui::LevelEditorWindow *ui;
@@ -94,7 +95,7 @@ private:
     PropertyGrid* propGrid;
 
     QListView* objectLists[4];
-
+    SpritePicker* spritePicker;
 
     quint8 layerMask;
     float zoom;
