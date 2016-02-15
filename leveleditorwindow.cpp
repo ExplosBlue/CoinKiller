@@ -85,9 +85,10 @@ LevelEditorWindow::LevelEditorWindow(QWidget *parent, Level* level) :
 
 
     QList<int> derpshit;
-    derpshit.append(200);
+    derpshit.append(350);
     derpshit.append(999999999);
     ui->splitter->setSizes(derpshit);
+    ui->splitter->setCollapsible(0, false);
 
     ui->sidebar->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Ignored);
     ui->sidebar->setMinimumSize(350, 20);

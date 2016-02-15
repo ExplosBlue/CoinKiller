@@ -416,10 +416,12 @@ void LevelView::paste()
 
 void LevelView::cut()
 {
-
+    copy();
+    deleteSel();
 }
 
 void LevelView::deleteSel()
 {
-
+    objectEditionMode.deleteAction();
+    update();
 }

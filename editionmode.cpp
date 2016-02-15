@@ -98,28 +98,28 @@ void ObjectsEditonMode::mouseMoveEvent(QMouseEvent *evt)
         int deltay = ly - dy;
 
         if (deltax < -minSelX) deltax = -minSelX;
-        if (deltay < -minSelY) deltay = -minSelY;
-
-        if (selectionHasBGDats)
-        {
-            deltax = toNext20(deltax);
-            deltay = toNext20(deltay);
-        }
-        else if (evt->modifiers() == Qt::AltModifier)
-        {
-            deltax = toNext16Compatible(deltax);
-            deltay = toNext16Compatible(deltay);
-        }
-        else
-        {
-            deltax = toNext10(deltax);
-            deltay = toNext10(deltay);
-        }
+        if (deltay < -minSelY) deltay = -minSelY;       
 
         foreach (Object* obj, selectedObjects)
         {
             int finalX = obj->getDragX() + deltax;
             int finalY = obj->getDragY() + deltay;
+
+            if (selectionHasBGDats)
+            {
+                finalX = toNext20(finalX);
+                finalY = toNext20(finalY);
+            }
+            else if (evt->modifiers() == Qt::AltModifier)
+            {
+                finalX = toNext16Compatible(finalX);
+                finalY = toNext16Compatible(finalY);
+            }
+            else
+            {
+                finalX = toNext10(finalX);
+                finalY = toNext10(finalY);
+            }
 
             // clamp coords
             if (finalX < 0) finalX = 0;
@@ -189,6 +189,14 @@ void ObjectsEditonMode::findSelectedObjects(int x1, int y1, int x2, int y2, bool
         selectionHasBGDats = is<BgdatObject*>(obj);
         selectedObjects.append(obj);
     }
+}
+
+void ObjectsEditonMode::deleteAction()
+{
+    level->remove(selectedObjects);
+    selectedObjects.clear();
+    selectionHasBGDats = false;
+    dragMode = false;
 }
 
 void ObjectsEditonMode::render(QPainter *painter)

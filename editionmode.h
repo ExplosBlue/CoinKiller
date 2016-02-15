@@ -14,6 +14,8 @@ public:
     virtual void mousePressEvent(QMouseEvent *) {}
     virtual void mouseReleaseEvent(QMouseEvent *) {}
     virtual void mouseMoveEvent(QMouseEvent *) {}
+    virtual void deleteAction() {}
+
 protected:
     Level* level;
 
@@ -21,8 +23,6 @@ protected:
 
 class ObjectsEditonMode: public EditionMode
 {
-    //TODO: Handle Zoom
-
 public:
     ObjectsEditonMode() {}
     ObjectsEditonMode(Level* level);
@@ -30,6 +30,7 @@ public:
     void mousePressEvent(QMouseEvent *evt);
     void mouseReleaseEvent(QMouseEvent *evt);
     void mouseMoveEvent(QMouseEvent *evt);
+    void deleteAction();
     void render(QPainter *painter);
 
     void setZoom(float zoom) { this->zoom = zoom; }

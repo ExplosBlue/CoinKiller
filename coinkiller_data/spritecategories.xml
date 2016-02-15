@@ -162,7 +162,25 @@
 			<attach sprite="19"/> <!-- Desert Crater -->
 		</category>
 		<category name="Triggerable Sprites">
+			<attach sprite="18"/> <!-- Tile God Event -->
+			<attach sprite="252"/> <!-- Item -->
 			<attach sprite="74"/> <!-- Triggerable Door -->
+			<attach sprite="273"/> <!-- Coin Roulette Block -->
+			<attach sprite="0"/> <!-- Autoscrolling Controller -->	
+			<attach sprite="57-58"/> <!-- Coin Spawner -->
+			<attach sprite="61-62"/> <!-- Red Coins -->
+			<attach sprite="15"/> <!-- Water -->
+			<attach sprite="12"/> <!-- Lava -->
+			<attach sprite="13"/> <!-- Poison Water -->
+			<attach sprite="11"/> <!-- Water Flow -->
+			<attach sprite="1"/> <!-- Water Flow for Pipe -->
+			<attach sprite="108"/> <!-- Spider Web -->
+			<attach sprite="189-193"/> <!-- Rectangle Platforms -->
+			<attach sprite="268"/> <!-- Rectangle Platform - Lava -->
+			<attach sprite="308"/> <!-- Rectangle Platform - Sand -->
+			<attach sprite="318"/> <!-- Rectangle Platform - Tower (2) -->
+			<attach sprite="231"/> <!-- Boohemoth -->
+			<attach sprite="240"/> <!-- Urchin -->
 		</category>
 	</view>
 </views>

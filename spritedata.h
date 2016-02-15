@@ -10,6 +10,7 @@ class SpriteDefinition
 public:
     SpriteDefinition(QDomElement spriteElement);
     QString getName() const { return name; }
+    int getID() const { return id; }
 
 private:
     QString name;
@@ -26,6 +27,7 @@ struct spriteView
 {
     QString name;
     QList<spriteCategory> categories;
+    QList<int> simpleSprites;
     QList<QTreeWidgetItem*> categoryNodes;
 };
 

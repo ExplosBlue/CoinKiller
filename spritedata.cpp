@@ -67,6 +67,15 @@ SpriteData::SpriteData()
 
         spriteViews.append(view);
     }
+
+    // Add "All (Sorted by Number)" View
+    spriteView allView;
+    allView.name = "All (Sorted by Number)";
+    foreach (SpriteDefinition sprDef, spriteDefs)
+    {
+        allView.simpleSprites.append(sprDef.getID());
+    }
+    spriteViews.append(allView);
 }
 
 SpriteDefinition::SpriteDefinition(QDomElement spriteElement)
