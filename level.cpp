@@ -314,6 +314,35 @@ Level::~Level()
 
 void Level::save()
 {
+    // Save BGDat
+    QString bgdatfiletemp = QString("/course/course%1_bgdatL%2.bin").arg(area);
+    for (int l = 0; l < 2; l++)
+    {
+        QString bgdatfile = bgdatfiletemp.arg(l+1);
+        if (!archive->fileExists(bgdatfile)) continue;
+
+        FileBase* bgdat = archive->openFile(bgdatfile);
+        bgdat->open();
+        bgdat->resize(objects[l].size()*16+2);
+        bgdat->seek(0);
+
+        foreach (BgdatObject* obj, objects[l])
+        {
+            bgdat->write16(obj->getid());
+            bgdat->write16(obj->getx()/20);
+            bgdat->write16(obj->gety()/20);
+            bgdat->write16(obj->getwidth()/20);
+            bgdat->write16(obj->getheight()/20);
+            for (int i = 0; i < 6; i++) bgdat->write8(0);
+        }
+        bgdat->write16(0xFFFF);
+
+        bgdat->save();
+        bgdat->close();
+        delete bgdat;
+    }
+
+
     // Save Level Header
 
     // Calc Block Offsets/Sizes and File Size
@@ -397,10 +426,28 @@ void Level::save()
     QString headerfile = QString("/course/course%1.bin").arg(area);
     FileBase* header = archive->openFile(headerfile);
     header->open();
+    header->resize(headersize);
+    header->seek(0);
 
-    //header->resize(headersize);
-    //header->save();
+    /*// Block Offsets/Sizes
+    for (int i = 0; i < 17; i++)
+    {
+        header->write32(blockOffsets[i]);
+        header->write32(blockSizes[i]);;
+    }
 
+    // Block 7: Sprites
+    header->seek(blockOffsets[7]);
+    foreach (Sprite* spr, sprites)
+    {
+        header->write16(spr->getid());
+        header->write16(to16(spr->getx()));
+        header->write16(to16(spr->gety()));
+        header->skip(18);
+    }*/
+
+
+    header->save();
     header->close();
     delete header;
 
