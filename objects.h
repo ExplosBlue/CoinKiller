@@ -26,7 +26,7 @@ class Object
 {
 public:
     Object();
-    virtual ~Object();
+    virtual ~Object() {}
     void setPosition(int x, int y);
     void increasePosition(int deltax, int deltay);
     void resize(int width, int height);
@@ -66,7 +66,7 @@ protected:
 class BgdatObject: public Object
 {
 public:
-    BgdatObject();
+    BgdatObject() {}
     BgdatObject(int x, int y, int width, int height, int id, int layer);
     int getType() const;
     int getid() const;
@@ -82,7 +82,7 @@ protected:
 class Sprite: public Object
 {
 public:
-    Sprite();
+    Sprite() {}
     Sprite(int x, int y, int id);
     int getType() const;
     int getid() const;
@@ -102,7 +102,7 @@ protected:
 class Entrance: public Object
 {
 public:
-    Entrance();
+    Entrance() {}
     Entrance(int x, int y, int cameraX, int cameraY, int id, int destArea, int destEntr, int type);
     int getType() const;
     int getid() const;
@@ -118,15 +118,57 @@ protected:
 
 
 // Zone Object
+
+// Structs used while parsing
+struct tempZoneBounding
+{
+    quint16 id;
+    quint32 upperBound;
+    quint32 lowerBound;
+    quint32 unkUpperBound;
+    quint32 unkLowerBound;
+    quint16 upScrolling;
+};
+
+struct tempZoneBackground
+{
+    quint16 id;
+    quint8 xScrollRate;
+    quint8 yScrollRate;
+    quint8 xPos;
+    quint8 yPos;
+    QString name;
+    quint8 unk1;
+};
+
 class Zone: public Object
 {
 public:
-    Zone();
-    Zone(int x, int y, int width, int height, int id);
+    Zone() {}
+    Zone(int x, int y, int width, int height, quint8 id, quint8 progPathId, quint8 musicId, quint8 multiplayerTracking, quint16 unk1);
+    void setBounding(tempZoneBounding bounding);
+    void setBackground(tempZoneBackground background);
     int getType() const;
     int getid() const;
 protected:
-    int id;
+    quint8 id;
+    quint8 progPathId;
+    quint8 musicId;
+    quint8 multiplayerTracking;
+    quint16 unk1;
+    // Boundings
+    quint32 upperBound;
+    quint32 lowerBound;
+    quint32 unkUpperBound;
+    quint32 unkLowerBound;
+    quint16 upScrolling;
+    // Background
+    quint8 xScrollRate;
+    quint8 yScrollRate;
+    quint8 xPos;
+    quint8 yPos;
+    QString name;
+    quint8 bgUnk1;
 };
 
 
@@ -134,7 +176,7 @@ protected:
 class Location: public Object
 {
 public:
-    Location();
+    Location() {}
     Location(int x, int y, int width, int height, int id);
     int getType() const;
     int getid() const;
@@ -148,7 +190,7 @@ protected:
 class PathNode: public Object
 {
 public:
-    PathNode();
+    PathNode() {}
     PathNode(int x, int y, float speed, float accel);
     int getType() const;
 protected:
@@ -161,7 +203,7 @@ protected:
 class Path
 {
 public:
-    Path();
+    Path() {}
     Path(int id, int nodesOffset, int numberOfNodes);
     void insertNode(PathNode &node);
     //void removeNodeAt(int id);
@@ -182,7 +224,7 @@ protected:
 class ProgressPathNode: public Object
 {
 public:
-    ProgressPathNode();
+    ProgressPathNode() {}
     ProgressPathNode(int x, int y);
     int getType() const;
 };
@@ -192,7 +234,7 @@ public:
 class ProgressPath
 {
 public:
-    ProgressPath();
+    ProgressPath() {}
     ProgressPath(int id, int nodesOffset, int numberOfNodes);
     void insertNode(ProgressPathNode &node);
     //void removeNodeAt(int id);
@@ -206,41 +248,6 @@ protected:
     int nodeOffset;
     int numberOfNodes;
     QList<ProgressPathNode> nodes;
-};
-
-
-// Zone Boundings
-class ZoneBounding
-{
-public:
-    ZoneBounding();
-    ZoneBounding(quint32 upperBound, quint32 lowerBound, quint32 unkUpperBound, quint32 unkLowerBound, quint16 id, quint16 upScrolling);
-    // TODO: Getters and Setters
-protected:
-    quint32 upperBound;
-    quint32 lowerBound;
-    quint32 unkUpperBound;
-    quint32 unkLowerBound;
-    quint16 id;
-    quint16 upScrolling;
-};
-
-
-// Zone Background
-class ZoneBackground
-{
-public:
-    ZoneBackground();
-    ZoneBackground(quint16 id, quint8 xScrollRate, quint8 yScrollRate, quint8 xPos, quint8 yPos, QString name);
-    // TODO: Getters and Setters
-protected:
-    quint16 id;
-    quint8 xScrollRate;
-    quint8 yScrollRate;
-    quint8 xPos;
-    quint8 yPos;
-    QString name;
-    // quint8 unk1;
 };
 
 #endif // OBJECTS_H

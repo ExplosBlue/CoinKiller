@@ -52,8 +52,6 @@ public:
     // TODO: Move these to QLists of Pointers
     QList<quint16> spritesUsed;
     QList<Zone> zones;
-    QList<ZoneBounding> zoneBoundings;
-    QList<ZoneBackground> zoneBackgrounds;
     QList<Path> paths;
     QList<ProgressPath> progressPaths;
 

@@ -51,6 +51,8 @@ Level::Level(Game *game, int world, int level, int area)
         blockSizes[b] = header->read32();
     }
 
+    QList<tempZoneBounding> boundings;
+    QList<tempZoneBackground> backgrounds;
 
     // Block 0: Tilesets
     for (int t = 0; t < 4; t++)
@@ -98,28 +100,34 @@ Level::Level(Game *game, int world, int level, int area)
     header->seek(blockOffsets[2]);
     for (int i = 0; i < (int)(blockSizes[2]/28); i++)
     {
-        ZoneBounding* zoneBound = new ZoneBounding(header->read32(), header->read32(), header->read32(), header->read32(), header->read16(), header->read16());
-        zoneBoundings.append(*zoneBound);
+        tempZoneBounding bounding;
+        bounding.upperBound = header->read32();
+        bounding.lowerBound = header->read32();
+        bounding.unkUpperBound = header->read32();
+        bounding.unkUpperBound = header->read32();
+        bounding.id = header->read16();
+        bounding.upScrolling = header->read16();
         header->skip(8);
+        boundings.append(bounding);
     }
 
     // Block 3: Unknown
 
-    // Block 4: Background Information
+    // Block 4: ZoneBackground Information
     header->seek(blockOffsets[4]);
     for (int i = 0; i < (int)(blockSizes[4]/28); i++)
     {
-        quint16 id = header->read16();
-        quint8 xScrollRate = header->read8();
-        quint8 yScrollRate = header->read8();
-        quint8 xPos = header->read8();
-        quint8 yPos = header->read8();
+        tempZoneBackground background;
+        background.id = header->read16();
+        background.xScrollRate = header->read8();
+        background.yScrollRate = header->read8();
+        background.xPos = header->read8();
+        background.yPos = header->read8();
         header->skip(2);
-        QString name;
-        header->readStringASCII(name, 16);
-        ZoneBackground* zoneBg = new ZoneBackground(id, xScrollRate, yScrollRate, xPos, yPos, name);
-        zoneBackgrounds.append(*zoneBg);
-        header->skip(4);
+        header->readStringASCII(background.name, 15);
+        background.unk1 = header->read16();
+        header->skip(2);
+        backgrounds.append(background);
     }
 
     // Block 5: Static / Dummy?
@@ -165,11 +173,43 @@ Level::Level(Game *game, int world, int level, int area)
     header->seek(blockOffsets[9]);
     for (int z = 0; z < (int)(blockSizes[9]/24); z++)
     {
-        Zone* zone = new Zone(to20(header->read16()), to20(header->read16()), to20(header->read16()), to20(header->read16()), z);
-        qDebug("Found Zone with x: %d, y: %d, width: %d, height: %d", zone->getx(), zone->gety(), zone->getwidth(), zone->getheight());
-        zones.append(*zone);
+        quint16 x = header->read16();
+        quint16 y = header->read16();
+        quint16 width = header->read16();
+        quint16 height = header->read16();
+        quint16 zoneUnk1 = header->read16();
+        header->skip(2);
+        quint8 id = header->read8();
+        quint8 boundingId = header->read8();
+        header->skip(6);
+        quint8 multiplayerTracking = header->read8();
+        quint8 progPathId = header->read8();
+        quint8 musicId = header->read8();
+        header->skip(1);
+        quint8 backgroundId = header->read8();
+        header->skip(3);
 
-        header->skip(20); // data we don't care about right now (id is in here, too. For now simply z)
+        Zone* zone = new Zone(to20(x), to20(y), to20(width), to20(height), id, progPathId, musicId, multiplayerTracking, zoneUnk1);
+        foreach(tempZoneBounding bounding, boundings)
+        {
+            if (boundingId == bounding.id)
+            {
+                zone->setBounding(bounding);
+                qDebug() << "Found Bounding for Zone" << z;
+                break;
+            }
+        }
+        foreach(tempZoneBackground background, backgrounds)
+        {
+            if (backgroundId == background.id)
+            {
+                zone->setBackground(background);
+                qDebug() << "Found Background for Zone" << z;
+                break;
+            }
+        }
+
+        zones.append(*zone);
     }
 
     // Block 10: Locations
@@ -217,13 +257,8 @@ Level::Level(Game *game, int world, int level, int area)
         progressPaths.append(*pPath);
     }
 
-
-
-
-
     header->close();
     delete header;
-
 
     // read bgdat
     QString bgdatfiletemp = QString("/course/course%1_bgdatL%2.bin").arg(area);
@@ -279,7 +314,96 @@ Level::~Level()
 
 void Level::save()
 {
-    // save
+    // Save Level Header
+
+    // Calc Block Offsets/Sizes and File Size
+    quint32 blockOffsets[17];
+    quint32 blockSizes[17];
+
+    int headersize = 136;                           // Block Offsets and Sizes
+
+    blockOffsets[0] = headersize;                   // Block 0: Tileset Names
+    headersize += 128;
+    blockSizes[0] = headersize-blockOffsets[0];
+
+    blockOffsets[1] = headersize;                   // Block 1: Area Settings
+    headersize += 24;
+    blockSizes[1] = headersize-blockOffsets[1];
+
+    blockOffsets[2] = headersize;                   // Block 2: Zone Boundings
+    headersize += zones.size()*28;
+    blockSizes[2] = headersize-blockOffsets[2];
+
+    blockOffsets[3] = headersize;                   // Block 3: Unknown
+    headersize += 8;
+    blockSizes[3] = headersize-blockOffsets[3];
+
+    blockOffsets[4] = headersize;                   // Block 4: Zone Backgrounds
+    headersize += zones.size()*28;
+    blockSizes[4] = headersize-blockOffsets[4];
+
+    blockOffsets[5] = headersize;                   // Block 5: Unknown
+    headersize += 20;
+    blockSizes[5] = headersize-blockOffsets[5];
+
+    blockOffsets[6] = headersize;                   // Block 6: Entrances
+    headersize += entrances.size()*24;
+    blockSizes[6] = headersize-blockOffsets[6];
+
+    blockOffsets[7] = headersize;                   // Block 7: Sprites
+    headersize += sprites.size()*24+4;
+    blockSizes[7] = headersize-blockOffsets[7];
+
+    blockOffsets[8] = headersize;                   // Block 8: Sprites Used
+    headersize += spritesUsed.size()*4;
+    blockSizes[8] = headersize-blockOffsets[8];
+
+    blockOffsets[9] = headersize;                   // Block 9: Zone Settings
+    headersize += zones.size()*28;
+    blockSizes[9] = headersize-blockOffsets[9];
+
+    blockOffsets[10] = headersize;                   // Block 10: Locations
+    headersize += locations.size()*12;
+    blockSizes[10] = headersize-blockOffsets[10];
+
+    blockOffsets[11] = headersize;                   // Block 11: Empty
+    blockSizes[11] = headersize-blockOffsets[11];
+
+    blockOffsets[12] = headersize;                   // Block 12: Empty
+    blockSizes[12] = headersize-blockOffsets[12];
+
+    blockOffsets[13] = headersize;                   // Block 13: Paths
+    headersize += paths.size()*12;
+    blockSizes[13] = headersize-blockOffsets[13];
+
+    blockOffsets[14] = headersize;                   // Block 14: Path Nodes
+    foreach (Path p, paths)
+    {
+        headersize += p.getNumberOfNodes()*20;
+    }
+    blockSizes[14] = headersize-blockOffsets[14];
+
+    blockOffsets[15] = headersize;                   // Block 13: Progress Paths
+    headersize += progressPaths.size()*12;
+    blockSizes[15] = headersize-blockOffsets[15];
+
+    blockOffsets[16] = headersize;                   // Block 14: Progress Path Nodes
+    foreach (ProgressPath p, progressPaths)
+    {
+        headersize += p.getNumberOfNodes()*20;
+    }
+    blockSizes[16] = headersize-blockOffsets[16];
+
+    QString headerfile = QString("/course/course%1.bin").arg(area);
+    FileBase* header = archive->openFile(headerfile);
+    header->open();
+
+    //header->resize(headersize);
+    //header->save();
+
+    header->close();
+    delete header;
+
 }
 
 void Level::remove(QList<Object*> objs)

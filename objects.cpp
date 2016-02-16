@@ -29,8 +29,6 @@ Object::Object()
     offsety = 0;
 }
 
-Object::~Object() { }
-
 void Object::setPosition(int x, int y)
 {
     this->x = x;
@@ -79,11 +77,6 @@ int Object::getDragY() const { return dragY; }
 QString Object::toString() const { return QString("-1"); }
 
 // BgdatObject
-BgdatObject::BgdatObject()
-{
-
-}
-
 BgdatObject::BgdatObject(int x, int y, int width, int height, int id, int layer)
 {
     this->x = x;
@@ -103,11 +96,6 @@ QString BgdatObject::toString() const { return QString("0:%1:%2:%3:%4:%5:%6").ar
 
 
 // Sprite
-Sprite::Sprite()
-{
-
-}
-
 Sprite::Sprite(int x, int y, int id)
 {
     this->x = x;
@@ -472,11 +460,6 @@ QString Sprite::toString() const { return QString("1:%1:%2:%3:%4:%5:%6:%7:%8:%9:
 
 
 // Entrance
-Entrance::Entrance()
-{
-
-}
-
 Entrance::Entrance(int x, int y, int cameraX, int cameraY, int id, int destArea, int destEntr, int type)
 {
     this->x = x;
@@ -496,30 +479,43 @@ int Entrance::getid() const { return id; }
 QString Entrance::toString() const { return QString("2:%1:%2:%3:%4:%5:%6:%7:%8:%9").arg(id).arg(type).arg(x).arg(y).arg(destArea).arg(destEntr).arg(cameraX).arg(cameraY).arg(type); }
 
 // Zone
-Zone::Zone()
-{
-
-}
-
-Zone::Zone(int x, int y, int width, int height, int id)
+Zone::Zone(int x, int y, int width, int height, quint8 id, quint8 progPathId, quint8 musicId, quint8 multiplayerTracking, quint16 unk1)
 {
     this->x = x;
     this->y = y;
     this->width = width;
     this->height = height;
     this->id = id;
+    this->progPathId = progPathId;
+    this->musicId = musicId;
+    this->multiplayerTracking = multiplayerTracking;
+    this->unk1 = unk1;
 }
 
 int Zone::getType() const { return 3; }
 int Zone::getid() const { return id; }
 
-
-// Location
-Location::Location()
+void Zone::setBounding(tempZoneBounding bounding)
 {
-
+    this->upperBound = bounding.upperBound;
+    this->lowerBound = bounding.lowerBound;
+    this->unkUpperBound = bounding.unkUpperBound;
+    this->unkLowerBound = bounding.unkLowerBound;
+    this->upScrolling = bounding.upScrolling;
 }
 
+void Zone::setBackground(tempZoneBackground background)
+{
+    this->xScrollRate = background.xScrollRate;
+    this->yScrollRate = background.yScrollRate;
+    this->xPos = background.xPos;
+    this->yPos = background.yPos;
+    this->name = background.name;
+    this->bgUnk1 = background.unk1;
+}
+
+
+// Location
 Location::Location(int x, int y, int width, int height, int id)
 {
     this->x = x;
@@ -595,35 +591,3 @@ ProgressPathNode::ProgressPathNode(int x, int y)
 }
 
 int ProgressPathNode::getType() const { return 6; }
-
-// Zone Background
-ZoneBackground::ZoneBackground()
-{
-
-}
-
-ZoneBackground::ZoneBackground(quint16 id, quint8 xScrollRate, quint8 yScrollRate, quint8 xPos, quint8 yPos, QString name)
-{
-    this->id = id;
-    this->xScrollRate = xScrollRate;
-    this->yScrollRate = yScrollRate;
-    this->xPos = xPos;
-    this->yPos = yPos;
-    this->name = name;
-}
-
-// Zone Bounding
-ZoneBounding::ZoneBounding()
-{
-
-}
-
-ZoneBounding::ZoneBounding(quint32 upperBound, quint32 lowerBound, quint32 unkUpperBound, quint32 unkLowerBound, quint16 id, quint16 upScrolling)
-{
-    this->upperBound = upperBound;
-    this->lowerBound = lowerBound;
-    this->unkUpperBound = unkUpperBound;
-    this->unkLowerBound = unkLowerBound;
-    this->id = id;
-    this->upScrolling = upScrolling;
-}
