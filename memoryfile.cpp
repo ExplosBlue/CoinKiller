@@ -124,7 +124,8 @@ bool MemoryFile::resize(quint64 size)
         return false;
 
     quint8* newdata = new quint8[size];
-    memcpy(newdata, this->data, this->_size);
+    if (size >= this->_size) memcpy(newdata, this->data, this->_size);
+    else memcpy(newdata, this->data, size);
     delete[] this->data;
     this->data = newdata;
     this->_size = size;
