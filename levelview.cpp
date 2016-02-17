@@ -315,6 +315,8 @@ void LevelView::mousePressEvent(QMouseEvent* evt)
 {    
     objectEditionMode.mousePressEvent(evt);
     update();
+
+    editMade = true;
 }
 
 
@@ -424,4 +426,9 @@ void LevelView::deleteSel()
 {
     objectEditionMode.deleteAction();
     update();
+}
+
+bool LevelView::getEditStatus()
+{
+    return editMade;
 }

@@ -136,7 +136,7 @@
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionLoadROM">
    <property name="text">
-    <string>Load ROM (.3ds / .cia)</string>
+    <string>Load ROMFS Folder</string>
    </property>
   </action>
   <action name="actionAbout">
