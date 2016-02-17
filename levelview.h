@@ -46,6 +46,8 @@ public:
 
     bool getEditStatus();
 
+    bool getSaveStatus();
+
 signals:
 
 public slots:
@@ -75,6 +77,8 @@ private:
     TileGrid tileGrid;
 
     bool editMade = false;
+
+    bool didSave = false;
 };
 
 #endif // LEVELVIEW_H

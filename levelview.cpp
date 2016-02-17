@@ -317,6 +317,7 @@ void LevelView::mousePressEvent(QMouseEvent* evt)
     update();
 
     editMade = true;
+    didSave = false;
 }
 
 
@@ -431,4 +432,9 @@ void LevelView::deleteSel()
 bool LevelView::getEditStatus()
 {
     return editMade;
+}
+
+bool LevelView::getSaveStatus()
+{
+    return didSave;
 }

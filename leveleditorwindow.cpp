@@ -250,18 +250,21 @@ void LevelEditorWindow::on_actionPaste_triggered()
 {
     levelView->paste();
     editMade = true;
+    didSave = false;
 }
 
 void LevelEditorWindow::on_actionCut_triggered()
 {
     levelView->cut();
     editMade = true;
+    didSave = false;
 }
 
 void LevelEditorWindow::on_actionDelete_triggered()
 {
     levelView->deleteSel();
     editMade = true;
+    didSave = false;
 }
 
 void LevelEditorWindow::on_actionFullscreen_toggled(bool toggle)
@@ -329,7 +332,7 @@ void LevelEditorWindow::closeEvent(QCloseEvent *event)
     qDebug() << editMade;
     qDebug() << levelView->getEditStatus();
 
-    if(didSave == true)
+    if(didSave == true && levelView->getSaveStatus() == true)
         event->accept();
 
     else if(editMade == false && levelView->getEditStatus() == false)
