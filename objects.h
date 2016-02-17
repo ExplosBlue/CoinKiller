@@ -103,17 +103,26 @@ class Entrance: public Object
 {
 public:
     Entrance() {}
-    Entrance(int x, int y, int cameraX, int cameraY, int id, int destArea, int destEntr, int type);
-    int getType() const;
-    int getid() const;
+    Entrance(int x, int y, qint16 cameraX, qint16 cameraY, quint8 id, quint8 destArea, quint8 destEntr, quint8 entrType, quint8 settings, quint8 unk1, quint8 unk2);
+    int getType() const { return 2; }
     QString toString() const;
+    quint8 getid() const { return id; }
+    quint8 getDestArea() const { return destArea; }
+    quint8 getDestEntr() const { return destEntr; }
+    quint8 getEntrType() const { return entrType; }
+    quint8 getSettings() const { return settings; }
+    quint8 getUnk1() const { return unk1; }
+    quint8 getUnk2() const { return unk2; }
 protected:
-    int cameraX;
-    int cameraY;
-    int id;
-    int destArea;
-    int destEntr;
-    int type;
+    qint16 cameraX;
+    qint16 cameraY;
+    quint8 id;
+    quint8 destArea;
+    quint8 destEntr;
+    quint8 entrType;
+    quint8 settings;
+    quint8 unk1;
+    quint8 unk2;
 };
 
 
@@ -148,8 +157,23 @@ public:
     Zone(int x, int y, int width, int height, quint8 id, quint8 progPathId, quint8 musicId, quint8 multiplayerTracking, quint16 unk1);
     void setBounding(tempZoneBounding bounding);
     void setBackground(tempZoneBackground background);
-    int getType() const;
-    int getid() const;
+    int getType() const { return 3; }
+    quint8 getid() const { return id; }
+    quint8 getProgPathId() const { return progPathId; }
+    quint8 getMusicId() const { return musicId; }
+    quint8 getMultiplayerTracking() const { return multiplayerTracking; }
+    quint16 getUnk1() const { return unk1; }
+    quint32 getUpperBound() const { return upperBound; }
+    quint32 getLowerBound() const { return lowerBound; }
+    quint32 getUnkUpperBound() const { return unkUpperBound; }
+    quint32 getUnkLowerBound() const { return unkLowerBound; }
+    quint32 getUpScrolling() const { return upScrolling; }
+    quint8 getXScrollRate() const { return xScrollRate; }
+    quint8 getYScrollRate() const { return yScrollRate; }
+    quint8 getBgXPos() const { return bgXPos; }
+    quint8 getBgYPos() const { return bgYPos; }
+    QString getBgName() const { return bgName; }
+    quint8 getBgUnk1() const { return bgUnk1; }
 protected:
     quint8 id;
     quint8 progPathId;
@@ -165,9 +189,9 @@ protected:
     // Background
     quint8 xScrollRate;
     quint8 yScrollRate;
-    quint8 xPos;
-    quint8 yPos;
-    QString name;
+    quint8 bgXPos;
+    quint8 bgYPos;
+    QString bgName;
     quint8 bgUnk1;
 };
 
@@ -191,11 +215,15 @@ class PathNode: public Object
 {
 public:
     PathNode() {}
-    PathNode(int x, int y, float speed, float accel);
-    int getType() const;
+    PathNode(int x, int y, float speed, float accel, float unk1);
+    int getType() const { return 5; }
+    float getSpeed() const { return speed; }
+    float getAccel() const { return accel; }
+    float getUnk1() const { return unk1; }
 protected:
     float speed;
     float accel;
+    float unk1;
 };
 
 
@@ -204,18 +232,17 @@ class Path
 {
 public:
     Path() {}
-    Path(int id, int nodesOffset, int numberOfNodes);
+    Path(quint16 id, quint16 unk1);
     void insertNode(PathNode &node);
     //void removeNodeAt(int id);
-    int getid() const;
-    int getNodesOffset() const;
-    int getNumberOfNodes() const;
+    quint16 getid() const { return id; }
+    quint16 getUnk1() const { return unk1; }
+    int getNumberOfNodes() const { return nodes.size(); }
     QList<PathNode> getNodes() const;
     PathNode& getNodeReference(int id);
 protected:
-    int id;
-    int nodeOffset;
-    int numberOfNodes;
+    quint16 id;
+    quint16 unk1;
     QList<PathNode> nodes;
 };
 
@@ -226,7 +253,7 @@ class ProgressPathNode: public Object
 public:
     ProgressPathNode() {}
     ProgressPathNode(int x, int y);
-    int getType() const;
+    int getType() const { return 6; }
 };
 
 
@@ -235,18 +262,17 @@ class ProgressPath
 {
 public:
     ProgressPath() {}
-    ProgressPath(int id, int nodesOffset, int numberOfNodes);
+    ProgressPath(quint16 id, quint8 alternatePathFlag);
     void insertNode(ProgressPathNode &node);
     //void removeNodeAt(int id);
-    int getid() const;
-    int getNodesOffset() const;
-    int getNumberOfNodes() const;
+    quint16 getid() const { return id; }
+    quint8 getAlternatePathFlag() const { return alternatePathFlag; }
+    int getNumberOfNodes() const { return nodes.size(); }
     QList<ProgressPathNode> getNodes() const;
     ProgressPathNode& getNodeReference(int id);
 protected:
-    int id;
-    int nodeOffset;
-    int numberOfNodes;
+    quint16 id;
+    quint8 alternatePathFlag;
     QList<ProgressPathNode> nodes;
 };
 

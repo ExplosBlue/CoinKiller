@@ -55,6 +55,7 @@ public:
     Tileset(Game* game, QString name);
     ~Tileset();
 
+    QString getName() const { return name; }
 
     void drawTile(QPainter& painter, TileGrid& grid, int num, int x, int y, float zoom, int item);
     void drawObject(QPainter& painter, TileGrid& grid, int num, int x, int y, int w, int h, float zoom);
