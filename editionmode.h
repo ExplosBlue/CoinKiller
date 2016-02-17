@@ -16,6 +16,8 @@ public:
     virtual void mouseMoveEvent(QMouseEvent *) {}
     virtual void deleteAction() {}
 
+    void wasEditMade();
+
 protected:
     Level* level;
 
@@ -40,6 +42,8 @@ public:
     void setLayer(int selLayer) { this->selLayer = selLayer; }
     void setSprite(int selSprite) { this->selSprite = selSprite; }
 
+    bool getEditStatus();
+
 private:
     int dx, dy;     // Last Click Position
     int lx, ly;     // Last Mouse Position
@@ -62,6 +66,8 @@ private:
     int selTileset;
     int selSprite;
     // TODO: etc
+
+    bool editMade = false;
 };
 
 #endif // EDITIONMODE_H

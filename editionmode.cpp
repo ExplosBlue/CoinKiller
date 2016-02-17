@@ -23,9 +23,11 @@ void ObjectsEditonMode::mousePressEvent(QMouseEvent *evt)
 
     if (evt->buttons() == Qt::RightButton)
     {
+
         selectionHasBGDats = false;
         selectedObjects.clear();
 
+        //tileset tab
         if (drawType == 0)
         {
             int id = selTileset << 12;
@@ -34,6 +36,7 @@ void ObjectsEditonMode::mousePressEvent(QMouseEvent *evt)
             level->objects[selLayer].append(bgdatobj);
             newObject = bgdatobj;
             paintingNewObject = true;
+            editMade = true;
         }
         else if (drawType == 1)
         {
@@ -41,13 +44,17 @@ void ObjectsEditonMode::mousePressEvent(QMouseEvent *evt)
             spr->setRect();
             level->sprites.append(spr);
             selectedObjects.append(spr);
+            editMade = true;
         }
+
+        //location tab
         else if (drawType == 4)
         {
             Location* loc = new Location(toNext16Compatible(evt->x()), toNext16Compatible(evt->y()), 4, 4, 0);
             level->locations.append(loc);
             newObject = loc;
             paintingNewObject = true;
+            editMade = true;
         }
     }
 
@@ -128,6 +135,8 @@ void ObjectsEditonMode::mouseMoveEvent(QMouseEvent *evt)
             else if (finalY > 0xFFFF*20) finalY = 0xFFFF*20;
 
             obj->setPosition(finalX, finalY);
+
+            editMade = true;
         }
 
         return;
@@ -152,6 +161,8 @@ void ObjectsEditonMode::mouseMoveEvent(QMouseEvent *evt)
 
         newObject->setPosition(qMin(x, mX), qMin(y, mY));
         newObject->resize(w,h);
+
+        editMade = true;
 
         return;
     }
@@ -235,4 +246,9 @@ void ObjectsEditonMode::setDrags()
         if (obj->getx() > maxSelX) maxSelX = obj->getx();
         if (obj->gety() > maxSelY) maxSelY = obj->gety();
     }
+}
+
+bool ObjectsEditonMode::getEditStatus()
+{
+    return editMade;
 }
