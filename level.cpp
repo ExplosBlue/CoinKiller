@@ -79,11 +79,6 @@ Level::Level(Game *game, int world, int level, int area)
         }
     }
 
-    // TEST!!
-    qDebug("SAVING TEST!!!!!!");
-    header->save();
-    qDebug("SAVING TEST END!!!!!!");
-
     // Block 1: Area Settings
     header->seek(blockOffsets[1]);
     header->skip(8); // 8 Zeros
@@ -136,11 +131,23 @@ Level::Level(Game *game, int world, int level, int area)
     header->seek(blockOffsets[6]);
     for (int e = 0; e < (int)(blockSizes[6]/24); e++)
     {
-        Entrance* entr = new Entrance(to20(header->read16()), to20(header->read16()), header->read16(), header->read16(), header->read8(), header->read8(), header->read8(), header->read8());
-        qDebug("Found Entrance with x: %d, y: %d and ID %d", entr->getx(), entr->gety(), entr->getid());
-        entrances.append(entr);
+        quint16 x = header->read16();
+        quint16 y = header->read16();
+        qint16 cameraX = header->read16();
+        qint16 cameraY = header->read16();
+        quint8 id = header->read8();
+        quint8 destArea = header->read8();
+        quint8 destEntr = header->read8();
+        quint8 entrType = header->read8();
+        header->skip(4);
+        quint8 settings = header->read8();
+        header->skip(3);
+        quint8 entrUnk1 = header->read8();
+        quint8 entrUnk2 = header->read8();
+        header->skip(2);
 
-        header->skip(12);
+        Entrance* entr = new Entrance(to20(x), to20(y), cameraX, cameraY, id, destArea, destEntr, entrType, settings, entrUnk1, entrUnk2);
+        entrances.append(entr);
     }
 
     // Block 7: Sprites
@@ -217,7 +224,6 @@ Level::Level(Game *game, int world, int level, int area)
     for (int l = 0; l < (int)(blockSizes[10]/12); l++)
     {
         Location* loc = new Location(to20(header->read16()), to20(header->read16()), to20(header->read16()), to20(header->read16()), header->read8());
-        qDebug("Found Location with x: %d, y: %d, width: %d, height: %d", loc->getx(), loc->gety(), loc->getwidth(), loc->getheight());
         locations.append(loc);
 
         header->skip(3);
@@ -229,14 +235,18 @@ Level::Level(Game *game, int world, int level, int area)
     for (int p = 0; p < (int)(blockSizes[13]/12); p++)
     {
         header->seek(blockOffsets[13]+p*12);
-        int id = header->read8();
+        quint8 id = header->read8();
         header->skip(1);
-        Path* path = new Path(id, header->read16(), header->read16());
-        qDebug("Found Path with ID %d, %d Nodes, Node Offset: %d", path->getid(), path->getNumberOfNodes(), path->getNodesOffset());
-        for (int i = 0; i < path->getNumberOfNodes(); i++)
+        quint16 nodeOffset = header->read16();
+        quint16 nodeCount = header->read16();
+        quint16 pathUnk1 = header->read16();
+
+        Path* path = new Path(id, pathUnk1);
+
+        for (quint16 i = 0; i < nodeCount; i++)
         {
-            header->seek(blockOffsets[14]+i*20+path->getNodesOffset()*20);
-            PathNode* pathN = new PathNode(to20(header->read16()), to20(header->read16()), header->read32(), header->read32());
+            header->seek(blockOffsets[14] + i*20 + nodeOffset*20);
+            PathNode* pathN = new PathNode(to20(header->read16()), to20(header->read16()), header->read32(), header->read32(), header->read32());
             path->insertNode(*pathN);
         }
         paths.append(*path);
@@ -246,11 +256,17 @@ Level::Level(Game *game, int world, int level, int area)
     for (int p = 0; p < (int)(blockSizes[15]/12); p++)
     {
         header->seek(blockOffsets[15]+p*12);
-        ProgressPath* pPath = new ProgressPath(header->read16(), header->read16(), header->read16());
-        qDebug("Found Progress Path with ID %d, %d Nodes, Node Offset: %d", pPath->getid(), pPath->getNumberOfNodes(), pPath->getNodesOffset());
-        for (int i = 0; i < pPath->getNumberOfNodes(); i++)
+        quint16 id = header->read16();
+        quint16 nodeOffset = header->read16();
+        quint16 nodeCount = header->read16();
+        header->skip(3);
+        quint8 alternatePathFlag = header->read8();
+
+        ProgressPath* pPath = new ProgressPath(id, alternatePathFlag);
+
+        for (int i = 0; i < nodeCount; i++)
         {
-            header->seek(blockOffsets[16]+i*20+pPath->getNodesOffset()*20);
+            header->seek(blockOffsets[16] + i*20 + nodeOffset*20);
             ProgressPathNode* pPathN = new ProgressPathNode(to20(header->read16()), to20(header->read16()));
             pPath->insertNode(*pPathN);
         }
@@ -429,11 +445,99 @@ void Level::save()
     header->resize(headersize);
     header->seek(0);
 
-    /*// Block Offsets/Sizes
+    // Block Offsets/Sizes
     for (int i = 0; i < 17; i++)
     {
         header->write32(blockOffsets[i]);
         header->write32(blockSizes[i]);;
+    }
+
+    // Block 0: Tileset Names
+    header->seek(blockOffsets[0]);
+    for (int i = 0; i < 4; i++)
+    {
+        if (!tilesets[i])
+            for (int j = 0; j < 32; j++)
+                header->write8(0);
+        else
+            header->writeStringASCII(tilesets[i]->getName(), 32);
+    }
+
+    // Block 1: Area Settings
+    header->seek(blockOffsets[1]);
+    for (int j = 0; j < 8; j++) header->write8(0);
+    header->write16(unk1);
+    header->write16(timeLimit);
+    header->write32(0);
+    header->write8(toadHouseFlag);
+    header->write8(unk2);
+    header->write8(specialLevelFlag);
+    header->write8(specialLevelFlag2);
+    header->write8(unk3);
+    for (int j = 0; j < 3; j++) header->write8(0);
+
+    // Block 2: Zone Boundings
+    header->seek(blockOffsets[2]);
+    for (quint8 i = 0; i < zones.size(); i++)
+    {
+        Zone z = zones[i];
+        header->write32(z.getUpperBound());
+        header->write32(z.getLowerBound());
+        header->write32(z.getUnkUpperBound());
+        header->write32(z.getUnkLowerBound());
+        header->write8(i);
+        header->write8(z.getUpScrolling());
+        for (int j = 0; j < 8; j++) header->write8(0);
+    }
+
+    // Block 3: Unknown / Useless
+    header->seek(blockOffsets[3]);
+    for (int i = 0; i < 8; i++) header->write8(0);  // There is an unknown value, probably useless
+
+    // Block 4: Zone Backgrounds
+    header->seek(blockOffsets[4]);
+    for (quint16 i = 0; i < zones.size(); i++)
+    {
+        Zone z = zones[i];
+        header->write16(i);
+        header->write8(z.getXScrollRate());
+        header->write8(z.getYScrollRate());
+        header->write8(z.getBgXPos());
+        header->write8(z.getBgYPos());
+        header->write16(0);
+        header->writeStringASCII(z.getBgName(), 15);
+        header->write16(z.getBgUnk1());
+        header->write16(0);
+    }
+
+    // Block 5: Unknown / Dummy
+    header->seek(blockOffsets[5]);
+    {
+        header->write16(0);
+        header->write32(0xFFFFFFFF);
+        for (int i = 0; i < 14; i++) header->write8(0);
+    }
+
+    // Block 6: Entrances
+    header->seek(blockOffsets[6]);
+    foreach (Entrance* entr, entrances)
+    {
+        header->write16(to16(entr->getx()));
+        header->write16(to16(entr->gety()));
+        header->write16(entr->getOffsetX());
+        header->write16(entr->getOffsetY());
+        header->write8(entr->getid());
+        header->write8(entr->getDestArea());
+        header->write8(entr->getDestEntr());
+        header->write8(entr->getEntrType());
+        header->write8(0);
+        header->write8(0);  // TODO: Zone ID
+        for (int i = 0; i < 2; i++) header->write8(0);
+        header->write8(entr->getSettings());
+        for (int i = 0; i < 3; i++) header->write8(0);
+        header->write8(entr->getUnk1());
+        header->write8(entr->getUnk2());
+        for (int i = 0; i < 2; i++) header->write8(0);
     }
 
     // Block 7: Sprites
@@ -443,9 +547,109 @@ void Level::save()
         header->write16(spr->getid());
         header->write16(to16(spr->getx()));
         header->write16(to16(spr->gety()));
-        header->skip(18);
-    }*/
+        for (int i = 0; i < 10; i++) header->write8(spr->getByte(i));
+        header->write8(0);  // TODO: Zone ID
+        header->write8(0);
+        header->write8(spr->getByte(10));
+        header->write8(spr->getByte(11));
+        for (int i = 0; i < 4; i++) header->write8(0);
+    }
+    header->write16(0xFFFF);
 
+    // Block 8: Sprites Used
+    // TODO: Generate this one first / Doesn't have to be read.
+    header->seek(blockOffsets[8]);
+    foreach (quint16 sprite, spritesUsed)
+    {
+        header->write16(sprite);
+        header->write16(0);
+    }
+
+    // Block 9: Zones
+    header->seek(blockOffsets[9]);
+    for (quint8 i = 0; i < zones.size(); i++)
+    {
+        Zone z = zones[i];
+        header->write16(to16(z.getx()));
+        header->write16(to16(z.gety()));
+        header->write16(to16(z.getwidth()));
+        header->write16(to16(z.getheight()));
+        header->write16(z.getUnk1());
+        header->write16(0);
+        header->write8(z.getid());
+        header->write8(i);
+        for (int j = 0; j < 6; j++) header->write8(0);
+        header->write8(z.getMultiplayerTracking());
+        header->write8(z.getProgPathId());
+        header->write8(z.getMusicId());
+        header->write8(0);
+        header->write8(i);
+        for (int j = 0; j < 3; j++) header->write8(0);
+    }
+
+
+    // Block 10: Locations
+    header->seek(blockOffsets[10]);
+    foreach (Location* loc, locations)
+    {
+        header->write16(to16(loc->getx()));
+        header->write16(to16(loc->gety()));
+        header->write16(to16(loc->getwidth()));
+        header->write16(to16(loc->getheight()));
+        header->write8(loc->getid());
+        for (int i = 0; i < 3; i++) header->write8(0);
+    }
+
+    // Block 11/12: Empty
+
+    // Block 13/14: Paths
+    quint16 actualNodeCount1 = 0;
+    for (int i = 0; i < paths.size(); i++)
+    {
+        Path p = paths[i];
+        header->seek(blockOffsets[13] + i*12);
+        header->write8(p.getid());
+        header->write8(0);
+        header->write16(actualNodeCount1);
+        header->write16(p.getNumberOfNodes());
+        header->write16(p.getUnk1());
+        header->write32(0);
+
+        foreach (PathNode pNode, p.getNodes())
+        {
+            header->seek(blockOffsets[14] + actualNodeCount1*20);
+            header->write16(to16(pNode.getx()));
+            header->write16(to16(pNode.gety()));
+            header->write32(pNode.getSpeed());
+            header->write32(pNode.getAccel());
+            header->write32(pNode.getUnk1());
+            header->write32(0);
+            actualNodeCount1++;
+        }
+    }
+
+    // Block 15/16: Progress Paths
+    quint16 actualNodeCount2 = 0;
+    for (int i = 0; i < progressPaths.size(); i++)
+    {
+        ProgressPath p = progressPaths[i];
+        header->seek(blockOffsets[15] + i*12);
+        header->write16(p.getid());
+        header->write16(actualNodeCount2);
+        header->write16(p.getNumberOfNodes());
+        for (int j = 0; j < 3; j++) header->write8(0);
+        header->write8(p.getAlternatePathFlag());
+        header->write16(0);
+
+        foreach (ProgressPathNode pNode, p.getNodes())
+        {
+            header->seek(blockOffsets[16] + actualNodeCount2*20);
+            header->write16(to16(pNode.getx()));
+            header->write16(to16(pNode.gety()));
+            for (int j = 0; j < 16; j++) header->write8(0);
+            actualNodeCount2++;
+        }
+    }
 
     header->save();
     header->close();

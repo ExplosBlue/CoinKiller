@@ -18,6 +18,7 @@
 #ifndef FILEBASE
 #define FILEBASE
 
+#include <QString>
 
 class FileBase
 {
@@ -106,6 +107,18 @@ public:
     void write32(quint32 val)
     {
         writeData((quint8*)&val, 4);
+    }
+
+    void writeStringASCII(QString str, int len)
+    {
+        if (len < str.length())
+            str = str.left(len);
+
+        for (int i = 0; i < str.length(); i++)
+            write8(str.at(i).toLatin1());
+
+        for (int i = 0; i < len-str.length(); i++)
+            write8(0);
     }
 
     void skip(qint64 num)

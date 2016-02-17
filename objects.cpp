@@ -460,7 +460,7 @@ QString Sprite::toString() const { return QString("1:%1:%2:%3:%4:%5:%6:%7:%8:%9:
 
 
 // Entrance
-Entrance::Entrance(int x, int y, int cameraX, int cameraY, int id, int destArea, int destEntr, int type)
+Entrance::Entrance(int x, int y, qint16 cameraX, qint16 cameraY, quint8 id, quint8 destArea, quint8 destEntr, quint8 entrType, quint8 settings, quint8 unk1, quint8 unk2)
 {
     this->x = x;
     this->y = y;
@@ -469,14 +469,15 @@ Entrance::Entrance(int x, int y, int cameraX, int cameraY, int id, int destArea,
     this->id = id;
     this->destArea = destArea;
     this->destEntr = destEntr;
-    this->type = type;
+    this->entrType = entrType;
+    this->settings = settings;
+    this->unk1 = unk1;
+    this->unk2 = unk2;
 }
 
-int Entrance::getType() const { return 2; }
-int Entrance::getid() const { return id; }
-
 // Format: 2:ID:Type:X:Y:DestArea:DestEntr:CamX:CamY:Type
-QString Entrance::toString() const { return QString("2:%1:%2:%3:%4:%5:%6:%7:%8:%9").arg(id).arg(type).arg(x).arg(y).arg(destArea).arg(destEntr).arg(cameraX).arg(cameraY).arg(type); }
+QString Entrance::toString() const { return QString("2:%1:%2:%3:%4:%5:%6:%7:%8:%9").arg(id).arg(x).arg(y).arg(destArea).arg(destEntr).arg(cameraX).arg(cameraY).arg(entrType); }
+
 
 // Zone
 Zone::Zone(int x, int y, int width, int height, quint8 id, quint8 progPathId, quint8 musicId, quint8 multiplayerTracking, quint16 unk1)
@@ -492,9 +493,6 @@ Zone::Zone(int x, int y, int width, int height, quint8 id, quint8 progPathId, qu
     this->unk1 = unk1;
 }
 
-int Zone::getType() const { return 3; }
-int Zone::getid() const { return id; }
-
 void Zone::setBounding(tempZoneBounding bounding)
 {
     this->upperBound = bounding.upperBound;
@@ -508,9 +506,9 @@ void Zone::setBackground(tempZoneBackground background)
 {
     this->xScrollRate = background.xScrollRate;
     this->yScrollRate = background.yScrollRate;
-    this->xPos = background.xPos;
-    this->yPos = background.yPos;
-    this->name = background.name;
+    this->bgXPos = background.xPos;
+    this->bgYPos = background.yPos;
+    this->bgName = background.name;
     this->bgUnk1 = background.unk1;
 }
 
@@ -533,11 +531,10 @@ QString Location::toString() const { return QString("4:%1:%2:%3:%4:%5").arg(id).
 
 
 // Path
-Path::Path(int id, int nodesOffset, int numberOfNodes)
+Path::Path(quint16 id, quint16 unk1)
 {
     this->id = id;
-    this->nodeOffset = nodesOffset;
-    this->numberOfNodes = numberOfNodes;
+    this->unk1 = unk1;
 }
 
 void Path::insertNode(PathNode &node)
@@ -545,31 +542,26 @@ void Path::insertNode(PathNode &node)
     nodes.append(node);
 }
 
-int Path::getid() const { return id; }
-int Path::getNodesOffset() const { return nodeOffset; }
-int Path::getNumberOfNodes() const { return numberOfNodes; }
 QList<PathNode> Path::getNodes() const { return nodes; }
 PathNode& Path::getNodeReference(int id) { return nodes[id]; }
 
 
 // Path Node
-PathNode::PathNode(int x, int y, float speed, float accel)
+PathNode::PathNode(int x, int y, float speed, float accel, float unk1)
 {
     this->x = x;
     this->y = y;
     this->speed = speed;
     this->accel = accel;
+    this->unk1 = unk1;
 }
-
-int PathNode::getType() const { return 5; }
 
 
 // Progress Path
-ProgressPath::ProgressPath(int id, int nodesOffset, int numberOfNodes)
+ProgressPath::ProgressPath(quint16 id, quint8 alternatePathFlag)
 {
     this->id = id;
-    this->nodeOffset = nodesOffset;
-    this->numberOfNodes = numberOfNodes;
+    this->alternatePathFlag = alternatePathFlag;
 }
 
 void ProgressPath::insertNode(ProgressPathNode &node)
@@ -577,9 +569,6 @@ void ProgressPath::insertNode(ProgressPathNode &node)
     nodes.append(node);
 }
 
-int ProgressPath::getid() const { return id; }
-int ProgressPath::getNodesOffset() const { return nodeOffset; }
-int ProgressPath::getNumberOfNodes() const { return numberOfNodes; }
 QList<ProgressPathNode> ProgressPath::getNodes() const { return nodes; }
 ProgressPathNode& ProgressPath::getNodeReference(int id) { return nodes[id]; }
 
@@ -589,5 +578,3 @@ ProgressPathNode::ProgressPathNode(int x, int y)
     this->x = x;
     this->y = y;
 }
-
-int ProgressPathNode::getType() const { return 6; }

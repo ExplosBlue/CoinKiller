@@ -304,7 +304,7 @@ void LevelEditorWindow::on_objectsListView3_clicked(const QModelIndex &index)
 
 void LevelEditorWindow::on_layerRadioButton_toggled(bool checked)
 {
-    levelView->objEditionModePtr()->setLayer(checked);
+    levelView->objEditionModePtr()->setLayer(!checked);
 }
 
 void LevelEditorWindow::on_paintLocation_clicked()
