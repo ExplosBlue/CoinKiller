@@ -328,11 +328,9 @@ void LevelEditorWindow::setSelSprite(int spriteId)
 
 void LevelEditorWindow::closeEvent(QCloseEvent *event)
 {
-    /* Unsaved changes debugging
     qDebug() << "Did save: " << didSave;
     qDebug() << "Level Window edit made: " << editMade;
     qDebug() << "Level View edit made: " << levelView->objEditionModePtr()->getEditStatus();
-    */
 
     //if no edits were made
     if(editMade == false && levelView->objEditionModePtr()->getEditStatus() == false)
@@ -340,7 +338,7 @@ void LevelEditorWindow::closeEvent(QCloseEvent *event)
 
     //if user did save
     //hack: getEditStatus can also be used to get the save status
-    else if(didSave == true && levelView->objEditionModePtr()->getEditStatus() == false)
+    else if(didSave == true)
         event->accept();
 
     else
