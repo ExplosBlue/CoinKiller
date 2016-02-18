@@ -44,6 +44,10 @@ public:
 
     ObjectsEditonMode* objEditionModePtr() { return &objectEditionMode; }
 
+    bool getEditStatus();
+
+    bool getSaveStatus();
+
 signals:
 
 public slots:
@@ -71,6 +75,8 @@ private:
 
     // determines which tiles are already occupied
     TileGrid tileGrid;
+
+    bool editMade = false;
 };
 
 #endif // LEVELVIEW_H

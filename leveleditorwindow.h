@@ -101,6 +101,11 @@ private:
     float zoom;
 
     void setupObjectsModel(int tilesetNbr);
+    void closeEvent(QCloseEvent *event);
+
+    bool didSave = false;
+
+    bool editMade = false;
 };
 
 #endif // LEVELEDITORWINDOW_H

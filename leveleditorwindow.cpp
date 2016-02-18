@@ -24,6 +24,7 @@
 #include <QHBoxLayout>
 #include <QSizePolicy>
 #include <QStandardItemModel>
+#include <QMessageBox>
 
 LevelEditorWindow::LevelEditorWindow(QWidget *parent, Level* level) :
     QMainWindow(parent),
@@ -237,6 +238,7 @@ void LevelEditorWindow::on_actionZoom_Minimum_triggered()
 void LevelEditorWindow::on_actionSave_triggered()
 {
     levelView->saveLevel();
+    didSave = true;
 }
 
 void LevelEditorWindow::on_actionCopy_triggered()
@@ -247,16 +249,22 @@ void LevelEditorWindow::on_actionCopy_triggered()
 void LevelEditorWindow::on_actionPaste_triggered()
 {
     levelView->paste();
+    editMade = true;
+    didSave = false;
 }
 
 void LevelEditorWindow::on_actionCut_triggered()
 {
     levelView->cut();
+    editMade = true;
+    didSave = false;
 }
 
 void LevelEditorWindow::on_actionDelete_triggered()
 {
     levelView->deleteSel();
+    editMade = true;
+    didSave = false;
 }
 
 void LevelEditorWindow::on_actionFullscreen_toggled(bool toggle)
@@ -316,4 +324,42 @@ void LevelEditorWindow::setSelSprite(int spriteId)
 {
     levelView->objEditionModePtr()->setDrawType(1);
     levelView->objEditionModePtr()->setSprite(spriteId);
+}
+
+void LevelEditorWindow::closeEvent(QCloseEvent *event)
+{
+    qDebug() << "Did save: " << didSave;
+    qDebug() << "Level Window edit made: " << editMade;
+    qDebug() << "Level View edit made: " << levelView->objEditionModePtr()->getEditStatus();
+
+    //if no edits were made
+    if(editMade == false && levelView->objEditionModePtr()->getEditStatus() == false)
+        event->accept();
+
+    //if user did save
+    //hack: getEditStatus can also be used to get the save status
+    else if(didSave == true)
+        event->accept();
+
+    else
+    {
+        QMessageBox message(this);
+        message.setWindowTitle("Unsaved Changes");
+        message.setText("You didn't save your level!");
+        message.setStandardButtons(QMessageBox::Save | QMessageBox::Cancel | QMessageBox::Discard);
+        switch (message.exec())
+        {
+            case QMessageBox::Save:
+                levelView->saveLevel();
+                event->accept();
+                break;
+            case QMessageBox::Cancel:
+                event->ignore();
+                break;
+            case QMessageBox::Discard:
+                event->accept();
+                break;
+        }
+    }
+    return;
 }
