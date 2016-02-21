@@ -37,7 +37,7 @@ public:
 
     // Area Settings
     quint16 timeLimit;
-    bool toadHouseFlag;
+    quint8 toadHouseFlag;
     quint16 specialLevelFlag;
     quint16 specialLevelFlag2;
     quint16 unk1;
@@ -50,7 +50,6 @@ public:
     QList<Location*> locations;
 
     // TODO: Move these to QLists of Pointers
-    QList<quint16> spritesUsed;
     QList<Zone> zones;
     QList<Path> paths;
     QList<ProgressPath> progressPaths;

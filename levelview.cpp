@@ -37,13 +37,19 @@ LevelView::LevelView(QWidget *parent, Level* level) : QWidget(parent)
 
     layerMask = 0x7; // failsafe
 
-    objectEditionMode = ObjectsEditonMode(level);
+    setMouseTracking(true);
+    objectEditionMode = new ObjectsEditonMode(level);
+    mode = objectEditionMode;
 
     //editMode = 0;
     zoom = 1;
     grid = false;
 }
 
+LevelView::~LevelView()
+{
+    delete objectEditionMode;
+}
 
 void LevelView::paintEvent(QPaintEvent* evt)
 {
@@ -247,7 +253,7 @@ void LevelView::paintEvent(QPaintEvent* evt)
     }
 
     // Render Selection
-    objectEditionMode.render(&painter);
+    objectEditionMode->render(&painter);
 
     // Render Grid
     if (grid)
@@ -313,20 +319,37 @@ void LevelView::paintEvent(QPaintEvent* evt)
 
 void LevelView::mousePressEvent(QMouseEvent* evt)
 {    
-    objectEditionMode.mousePressEvent(evt);
+    if (mode != NULL)
+    {
+        mode->mouseDown(evt->x()/zoom, evt->y()/zoom, evt->buttons(), evt->modifiers());
+    }
+    setCursor(QCursor(mode->getActualCursor()));
     update();
 }
 
 
 void LevelView::mouseMoveEvent(QMouseEvent* evt)
 {    
-    objectEditionMode.mouseMoveEvent(evt);
+    if (mode != NULL)
+    {
+        int x = evt->x()/zoom;
+        int y = evt->y()/zoom;
+
+        if (evt->buttons() == Qt::LeftButton || evt->buttons() == Qt::RightButton)
+        {
+            mode->mouseDrag(x, y, evt->modifiers());
+        }
+        else
+            mode->mouseMove(x, y);
+    }
+    setCursor(QCursor(mode->getActualCursor()));
     update();
 }
 
 void LevelView::mouseReleaseEvent(QMouseEvent *evt)
 {
-    objectEditionMode.mouseReleaseEvent(evt);
+    mode->mouseUp(evt->x()/zoom, evt->y()/zoom);
+    setCursor(QCursor(mode->getActualCursor()));
     update();
 }
 
@@ -422,6 +445,7 @@ void LevelView::cut()
 
 void LevelView::deleteSel()
 {
-    objectEditionMode.deleteAction();
+    mode->deleteSelection();
+    setCursor(QCursor(mode->getActualCursor()));
     update();
 }

@@ -2,38 +2,46 @@
 #define EDITIONMODE_H
 
 #include "level.h"
-#include "unitsconvert.h"
 
-#include <QMouseEvent>
+#include <QList>
 
 class EditionMode
 {
 public:
     EditionMode() {}
     virtual ~EditionMode() {}
-    virtual void mousePressEvent(QMouseEvent *) {}
-    virtual void mouseReleaseEvent(QMouseEvent *) {}
-    virtual void mouseMoveEvent(QMouseEvent *) {}
-    virtual void deleteAction() {}
+
+    virtual void mouseDown(int, int, Qt::MouseButtons, Qt::KeyboardModifiers) {}
+    virtual void mouseDrag(int, int, Qt::KeyboardModifiers) {}
+    virtual void mouseMove(int, int) {}
+    virtual void mouseUp(int, int) {}
+
+    virtual void render(QPainter*) {}
+
+    virtual void deleteSelection() {}
+
+    Qt::CursorShape getActualCursor() { return actualCursor; }
 
 protected:
-    Level* level;
-
+    Level *level;
+    Qt::CursorShape actualCursor;
 };
+
 
 class ObjectsEditonMode: public EditionMode
 {
 public:
-    ObjectsEditonMode() {}
-    ObjectsEditonMode(Level* level);
+    ObjectsEditonMode(Level *level);
     ~ObjectsEditonMode() {}
-    void mousePressEvent(QMouseEvent *evt);
-    void mouseReleaseEvent(QMouseEvent *evt);
-    void mouseMoveEvent(QMouseEvent *evt);
-    void deleteAction();
+
+    void mouseDown(int x, int y, Qt::MouseButtons buttons, Qt::KeyboardModifiers modifiers);
+    void mouseDrag(int x, int y, Qt::KeyboardModifiers modifieres);
+    void mouseMove(int x, int y);
+    void mouseUp(int x, int y);
+
     void render(QPainter *painter);
 
-    void setZoom(float zoom) { this->zoom = zoom; }
+    void deleteSelection();
 
     void setDrawType(int drawType) { this->drawType = drawType; }
     void setObject(int selObject, int selTileset) { this->selObject = selObject; this->selTileset = selTileset; }
@@ -41,27 +49,61 @@ public:
     void setSprite(int selSprite) { this->selSprite = selSprite; }
 
 private:
-    int dx, dy;     // Last Click Position
-    int lx, ly;     // Last Mouse Position
+
+    enum resizeType
+    {
+        ResizeNone,
+        ResizeBegin,
+        ResizeEnd
+    };
+
+    struct mouseAction
+    {
+        bool drag = false;
+        resizeType vert = ResizeNone;
+        resizeType hor = ResizeNone;
+    };
+
+    int dx, dy;
+    int lx, ly;
+    mouseAction mouseAct;
 
     QList<Object*> selectedObjects;
-    Object* newObject;
-    bool paintingNewObject;
     bool selectionMode;
     bool selectionHasBGDats;
-    bool dragMode;
-    int minSelX, minSelY, maxSelX, maxSelY;
-    float zoom;
 
-    void findSelectedObjects(int x1, int y1, int x2, int y2, bool firstOnly, bool clearSelection);
-    void setDrags();
+    int minBoundX, minBoundY;
+    int maxBoundX, maxBoundY;
+    int minSizeX, minSizeY;
 
-    int drawType;
-    int selLayer;
-    int selObject;
-    int selTileset;
-    int selSprite;
-    // TODO: etc
+    bool creatNewObject = false;
+    Object* newObject;
+
+    int drawType = -1;
+    // -1: Invalid
+    //  0: BGDat
+    //  1: Sprite
+    //  2: Entrance
+    //  3: Zone
+    //  4: Location
+    //  etc
+
+    int selTileset = 0;
+    int selObject = 0;
+    int selLayer = 0;
+    int selSprite = 0;
+
+    QList<Object*> getObjectsAtPos(int x1, int y1, int x2, int y2, bool firstOnly);
+    mouseAction getActionAtPos(int x, int y);
+    Qt::CursorShape getCursorAtPos(int x, int y);
+
+    void updateSelectionBounds();
+
+    void drawResizeKnob(int x, int y, QPainter *painter);
+
+    // Last Deltas. Needed to prevent wiggling of dragging objects
+    int xDeltaL;
+    int yDeltaL;
 };
 
 #endif // EDITIONMODE_H

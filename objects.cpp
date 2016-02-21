@@ -47,6 +47,13 @@ void Object::resize(int width, int height)
     this->height = height;
 }
 
+void Object::increaseSize(int deltax, int deltay)
+{
+    this->width += deltax;
+    this->height += deltay;
+}
+
+
 bool Object::clickDetection(int xcheck, int ycheck)
 {
     return QRect(x+offsetx,y+offsety,width,height).contains(xcheck, ycheck);
@@ -57,22 +64,17 @@ bool Object::clickDetection(QRect rect)
     return rect.intersects(QRect(x+offsetx,y+offsety,width,height));
 }
 
-int Object::getType() const { return -1; }
-int Object::getx() const { return x; }
-int Object::gety() const { return y; }
-int Object::getwidth() const { return width; }
-int Object::getheight() const { return height; }
-int Object::getOffsetX() const { return offsetx; }
-int Object::getOffsetY() const { return offsety; }
-
 void Object::setDrag(int dragX, int dragY)
 {
     this->dragX = dragX;
     this->dragY = dragY;
 }
 
-int Object::getDragX() const { return dragX; }
-int Object::getDragY() const { return dragY; }
+void Object::setResize(int resizeX, int resizeY)
+{
+    this->resizeX = resizeX;
+    this->resizeY = resizeY;
+}
 
 QString Object::toString() const { return QString("-1"); }
 

@@ -32,9 +32,10 @@ class LevelView : public QWidget
     Q_OBJECT
 public:
     explicit LevelView(QWidget *parent, Level* level);
+    ~LevelView();
 
     void setLayerMask(quint8 mask) { layerMask = mask; update(); }
-    void setZoom(float zoom) { this->zoom = zoom; setMinimumSize(4096*20*zoom, 4096*20*zoom); setMaximumSize(4096*20*zoom, 4096*20*zoom); objEditionModePtr()->setZoom(zoom); update(); }
+    void setZoom(float zoom) { this->zoom = zoom; setMinimumSize(4096*20*zoom, 4096*20*zoom); setMaximumSize(4096*20*zoom, 4096*20*zoom); update(); }
     void toggleGrid(bool toggle) { grid = toggle; update(); }
     void saveLevel();
     void copy();
@@ -42,7 +43,7 @@ public:
     void cut();
     void deleteSel();
 
-    ObjectsEditonMode* objEditionModePtr() { return &objectEditionMode; }
+    ObjectsEditonMode* objEditionModePtr() { return objectEditionMode; }
 
 signals:
 
@@ -56,14 +57,13 @@ protected:
     void moveEvent(QMoveEvent *) Q_DECL_OVERRIDE;
 
 private:
-    QList<Object*> selObjectsCheck(int x, int y, int w, int h, bool multiSelect);
-
     Level* level;
 
     QRect drawrect;
     float zoom;
 
-    ObjectsEditonMode objectEditionMode;
+    ObjectsEditonMode* objectEditionMode;
+    EditionMode* mode;
 
     bool grid;
 
@@ -71,6 +71,7 @@ private:
 
     // determines which tiles are already occupied
     TileGrid tileGrid;
+
 };
 
 #endif // LEVELVIEW_H

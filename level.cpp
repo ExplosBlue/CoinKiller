@@ -42,6 +42,7 @@ Level::Level(Game *game, int world, int level, int area)
     FileBase* header = archive->openFile(headerfile);
     header->open();
     header->seek(0);
+    qDebug() << "HEADER SIZE:" << header->size();
 
     quint32 blockOffsets[17];
     quint32 blockSizes[17];
@@ -85,7 +86,7 @@ Level::Level(Game *game, int world, int level, int area)
     unk1 = header->read16();
     timeLimit = header->read16();
     header->skip(4);
-    if (header->read8() == 2) toadHouseFlag = true;
+    toadHouseFlag = header->read8();
     unk2 = header->read8();
     specialLevelFlag = header->read8();
     specialLevelFlag2 = header->read8();
@@ -167,14 +168,7 @@ Level::Level(Game *game, int world, int level, int area)
         header->skip(10); // Unused Sprite Data and Zone
     }
 
-    // Block 8: Sprites Used List
-    header->seek(blockOffsets[8]);
-    for (int i = 0; i < (int)(blockSizes[8]/4); i++)
-    {
-        spritesUsed.append(header->read16());
-        qDebug("Sprites Used [%d]: ID %d", i, spritesUsed[i]);
-        header->skip(2);
-    }
+    // Block 8: Sprites Used List (no need to read this)
 
     // Block 9: Zones
     header->seek(blockOffsets[9]);
@@ -361,6 +355,13 @@ void Level::save()
 
     // Save Level Header
 
+    // Generate Sprites Used List
+    QList<quint16> spritesUsed;
+    foreach (Sprite* spr, sprites)
+    {
+        if (!spritesUsed.contains(spr->getid())) spritesUsed.append(spr->getid());
+    }
+
     // Calc Block Offsets/Sizes and File Size
     quint32 blockOffsets[17];
     quint32 blockSizes[17];
@@ -468,7 +469,8 @@ void Level::save()
     for (int j = 0; j < 8; j++) header->write8(0);
     header->write16(unk1);
     header->write16(timeLimit);
-    header->write32(0);
+    header->write8(0);
+    for (int j = 0; j < 3; j++) header->write8(0x64);
     header->write8(toadHouseFlag);
     header->write8(unk2);
     header->write8(specialLevelFlag);
@@ -485,8 +487,8 @@ void Level::save()
         header->write32(z.getLowerBound());
         header->write32(z.getUnkUpperBound());
         header->write32(z.getUnkLowerBound());
-        header->write8(i);
-        header->write8(z.getUpScrolling());
+        header->write16(i);
+        header->write16(z.getUpScrolling());
         for (int j = 0; j < 8; j++) header->write8(0);
     }
 
@@ -557,7 +559,6 @@ void Level::save()
     header->write16(0xFFFF);
 
     // Block 8: Sprites Used
-    // TODO: Generate this one first / Doesn't have to be read.
     header->seek(blockOffsets[8]);
     foreach (quint16 sprite, spritesUsed)
     {

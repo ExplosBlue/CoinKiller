@@ -1,202 +1,263 @@
 #include "editionmode.h"
+#include "unitsconvert.h"
 #include "is.h"
 
 ObjectsEditonMode::ObjectsEditonMode(Level *level)
 {
     this->level = level;
-    drawType = -1;
-    selObject = 0;
-    selTileset = 0;
-    selLayer = 0;
-    zoom = 1;
-    paintingNewObject = false;
     selectionMode = false;
-    selectionHasBGDats = false;
 }
 
-void ObjectsEditonMode::mousePressEvent(QMouseEvent *evt)
+void ObjectsEditonMode::mouseDown(int x, int y, Qt::MouseButtons buttons, Qt::KeyboardModifiers modifiers)
 {
-    dx = evt->x()/zoom;
-    dy = evt->y()/zoom;
-    lx = dx;
-    ly = dy;
+    dx = x;
+    dy = y;
+    lx = x;
+    ly = y;
 
-    if (evt->buttons() == Qt::RightButton)
+    if (buttons == Qt::RightButton)
     {
-        selectionHasBGDats = false;
         selectedObjects.clear();
 
         if (drawType == 0)
         {
             int id = selTileset << 12;
             id = (id & 0xF000) | selObject;
-            BgdatObject* bgdatobj = new BgdatObject(toNext20(dx-10), toNext20(dy-10), 20, 20, id, selLayer);
+            BgdatObject* bgdatobj = new BgdatObject(toNext20(x-10), toNext20(y-10), 20, 20, id, selLayer);
             level->objects[selLayer].append(bgdatobj);
             newObject = bgdatobj;
-            paintingNewObject = true;
+            creatNewObject = true;
+            selectedObjects.append(bgdatobj);
         }
         else if (drawType == 1)
         {
-            Sprite* spr = new Sprite(toNext10(dx-10), toNext10(dy-10), selSprite);
+            Sprite* spr = new Sprite(0, 0, selSprite);
             spr->setRect();
+            int xpos = toNext10(dx-spr->getwidth()/2-spr->getOffsetX());
+            int ypos = toNext10(dy-spr->getheight()/2-spr->getOffsetY());
+            if (xpos < 0) xpos = 0;
+            if (ypos < 0) ypos = 0;
+            spr->setPosition(xpos, ypos);
             level->sprites.append(spr);
             selectedObjects.append(spr);
         }
         else if (drawType == 4)
         {
-            Location* loc = new Location(toNext16Compatible(evt->x()), toNext16Compatible(evt->y()), 4, 4, 0);
+            Location* loc = new Location(toNext16Compatible(x), toNext16Compatible(y), 4, 4, 0);
             level->locations.append(loc);
             newObject = loc;
-            paintingNewObject = true;
+            creatNewObject = true;
         }
     }
 
-    else if (evt->buttons() == Qt::LeftButton)
+    if (buttons == Qt::LeftButton)
     {
-        dragMode = false;
+        mouseAct = getActionAtPos(x, y);
 
-        foreach (Object* obj, selectedObjects)
+        if (!mouseAct.drag || (mouseAct.hor == ResizeNone && mouseAct.vert == ResizeNone))
         {
-            if (obj->clickDetection(dx, dy))
-            {
-                setDrags();
-                return;
-            }
-        }
+            QList<Object*> tempSelObjects = selectedObjects;
+            bool shift = false;
 
-        selectionHasBGDats = false;
-        selectedObjects.clear();
-
-        findSelectedObjects(dx, dy, dx, dy, true, true);
-
-        if (selectedObjects.size() == 0)
-        {
-            selectionMode = true;
-        }
-        else
-        {
-            setDrags();
-        }
-    }
-}
-
-void ObjectsEditonMode::mouseReleaseEvent(QMouseEvent *evt)
-{
-    dragMode = false;
-    paintingNewObject = false;
-    selectionMode = false;
-}
-
-void ObjectsEditonMode::mouseMoveEvent(QMouseEvent *evt)
-{
-    lx = evt->x()/zoom;
-    ly = evt->y()/zoom;
-
-    if (dragMode)
-    {
-        int deltax = lx - dx;
-        int deltay = ly - dy;
-
-        if (deltax < -minSelX) deltax = -minSelX;
-        if (deltay < -minSelY) deltay = -minSelY;       
-
-        foreach (Object* obj, selectedObjects)
-        {
-            int finalX = obj->getDragX() + deltax;
-            int finalY = obj->getDragY() + deltay;
-
-            if (selectionHasBGDats)
-            {
-                finalX = toNext20(finalX);
-                finalY = toNext20(finalY);
-            }
-            else if (evt->modifiers() == Qt::AltModifier)
-            {
-                finalX = toNext16Compatible(finalX);
-                finalY = toNext16Compatible(finalY);
-            }
+            if (modifiers != Qt::ShiftModifier)
+                selectedObjects = getObjectsAtPos(dx, dy, dx, dy, true);
             else
             {
-                finalX = toNext10(finalX);
-                finalY = toNext10(finalY);
+                shift = true;
+                QList<Object*> newObjList = getObjectsAtPos(dx, dy, dx, dy, true);
+                if (newObjList.size() == 1)
+                {
+                    if(!selectedObjects.contains(newObjList[0]))
+                        selectedObjects.append(newObjList[0]);
+                    else
+                        selectedObjects.removeOne(newObjList[0]);
+                }
             }
 
-            // clamp coords
-            if (finalX < 0) finalX = 0;
-            else if (finalX > 0xFFFF*20) finalX = 0xFFFF*20;
-            if (finalY < 0) finalY = 0;
-            else if (finalY > 0xFFFF*20) finalY = 0xFFFF*20;
+            if (!shift && selectedObjects.size() != 0 && tempSelObjects.contains(selectedObjects[0]))
+            {
+                selectedObjects = tempSelObjects;
+            }
 
-            obj->setPosition(finalX, finalY);
+            if (selectedObjects.size() == 0)
+                selectionMode = true;
         }
 
-        return;
+        mouseAct = getActionAtPos(x, y);
+        actualCursor = getCursorAtPos(x, y);
+        updateSelectionBounds();
     }
+}
 
-    if (paintingNewObject)
+void ObjectsEditonMode::mouseDrag(int x, int y, Qt::KeyboardModifiers modifieres)
+{
+    if (creatNewObject)
     {
-        int x = typeRound(dx, newObject->getType());
-        int y = typeRound(dy, newObject->getType());
+        lx = x;
+        ly = y;
+
+        int xpos = typeRound(dx, newObject->getType());
+        int ypos = typeRound(dy, newObject->getType());
 
         int mX = typeRound(qMax(0, lx), newObject->getType());
         int mY = typeRound(qMax(0, ly), newObject->getType());
 
-        int w = qAbs(mX-x);
-        int h = qAbs(mY-y);
+        int w = qAbs(mX-xpos);
+        int h = qAbs(mY-ypos);
 
         if (newObject->getType() == 0)
         {
-            w += 20;
-            h += 20;
+            if (mX < 0) mX = 0;
+            else w += 20;
+            if (mY < 0) mY = 0;
+            else h += 20;
         }
 
-        newObject->setPosition(qMin(x, mX), qMin(y, mY));
-        newObject->resize(w,h);
+        newObject->setPosition(qMin(xpos, mX), qMin(ypos, mY));
+        newObject->resize(w, h);
 
         return;
     }
 
     if (selectionMode)
     {
-        findSelectedObjects(dx, dy, lx, ly, false, true);
+        lx = x;
+        ly = y;
+        selectedObjects.clear();
+        selectedObjects = getObjectsAtPos(lx, ly, dx, dy, false);
+    }
+    else
+    {
+        updateSelectionBounds();
+
+        // Drag
+        if (mouseAct.hor == ResizeNone && mouseAct.vert == ResizeNone)
+        {
+            int xDelta = x-lx;
+            int yDelta = y-ly;
+
+            // Quick and dirty fix to prevent the dragging objects from wiggling sometimes
+            if (xDelta == -xDeltaL) xDelta = 0;
+            else xDeltaL = xDelta;
+            if (yDelta == -yDeltaL) yDelta = 0;
+            else yDeltaL = yDelta;
+
+            if (xDelta < -minBoundX) xDelta = -minBoundX;
+            if (yDelta < -minBoundY) yDelta = -minBoundY;
+            if (xDelta == 0 && yDelta == 0) return;
+
+            if (selectionHasBGDats)
+            {
+                xDelta = toNext20(xDelta);
+                yDelta = toNext20(yDelta);
+            }
+            else if (modifieres == Qt::AltModifier)
+            {
+                xDelta = toNext16Compatible(xDelta);
+                xDelta = toNext16Compatible(xDelta);
+            }
+            else
+            {
+                xDelta = toNext10(xDelta);
+                yDelta = toNext10(yDelta);
+            }
+
+            foreach (Object* obj, selectedObjects)
+            {
+                obj->increasePosition(xDelta, yDelta);
+            }
+
+            minBoundX += xDelta;
+            minBoundY += yDelta;
+            lx += xDelta;
+            ly += yDelta;
+        }
+        // Resize
+        else
+        {
+            int xDelta = x-lx;
+            int yDelta = y-ly;
+            int minSize = 5;
+
+            if (selectionHasBGDats)
+            {
+                xDelta = toNext20(xDelta);
+                yDelta = toNext20(yDelta);
+                minSize = 20;
+            }
+            else if (modifieres == Qt::AltModifier)
+            {
+                xDelta = toNext16Compatible(xDelta);
+                xDelta = toNext16Compatible(xDelta);
+            }
+            else
+            {
+                xDelta = toNext10(xDelta);
+                yDelta = toNext10(yDelta);
+            }
+
+            int xMoveDelta = 0;
+            int xResizeDelta = 0;
+            int yMoveDelta = 0;
+            int yResizeDelta = 0;
+
+            if (xDelta == 0 && yDelta == 0) return;
+
+            if (mouseAct.hor == ResizeBegin)
+            {
+                if (-xDelta <= -minSizeX) xDelta = -(-minSizeX) - minSize;
+                if (xDelta < -minBoundX) xDelta = -minBoundX;
+                xMoveDelta = xDelta;
+                xResizeDelta = -xDelta;
+            }
+            if (mouseAct.vert == ResizeBegin)
+            {
+                if (-yDelta <= -minSizeY) yDelta = -(-minSizeY) - minSize;
+                if (yDelta < -minBoundY) yDelta = -minBoundY;
+                yMoveDelta = yDelta;
+                yResizeDelta = -yDelta;
+            }
+            if (mouseAct.hor == ResizeEnd)
+            {
+                if (xDelta <= -minSizeX) xDelta = -minSizeX + minSize;
+                xResizeDelta = xDelta;
+            }
+            if (mouseAct.vert == ResizeEnd)
+            {
+                if (yDelta <= -minSizeY) yDelta = -minSizeY + minSize;
+                yResizeDelta = yDelta;
+            }
+
+            if (xMoveDelta == 0 && yMoveDelta == 0 && xResizeDelta == 0 && yResizeDelta == 0) return;
+
+            minBoundX += xMoveDelta;
+            minBoundY += yMoveDelta;
+            minSizeX += xResizeDelta;
+            minSizeY += yResizeDelta;
+
+            foreach (Object* obj, selectedObjects)
+            {
+                obj->increasePosition(xMoveDelta, yMoveDelta);
+                if (obj->isResizable()) obj->increaseSize(xResizeDelta, yResizeDelta);
+            }
+
+            lx += xDelta;
+            ly += yDelta;
+        }
     }
 }
 
-void ObjectsEditonMode::findSelectedObjects(int x1, int y1, int x2, int y2, bool firstOnly, bool clearSelection)
+void ObjectsEditonMode::mouseMove(int x, int y)
 {
-    if (clearSelection)
-    {
-        selectionHasBGDats = false;
-        selectedObjects.clear();
-    }
-
-
-    if (x1 > x2) { int tmp = x1; x1 = x2; x2 = tmp; }
-    if (y1 > y2) { int tmp = y1; y1 = y2; y2 = tmp; }
-
-    QRect rect(QPoint(x1, y1), QPoint(x2, y2));
-
-    for (int l = 1; l >= 0; l--) foreach (BgdatObject* o, level->objects[l]) if (o->clickDetection(rect)) selectedObjects.append(o);
-    if (selectedObjects.size() != 0) selectionHasBGDats = true;
-    foreach (Location* l, level->locations) if (l->clickDetection(rect)) selectedObjects.append(l);
-    foreach (Sprite* s, level->sprites) if (s->clickDetection(rect)) selectedObjects.append(s);
-    foreach (Entrance* e, level->entrances) if (e->clickDetection(rect)) selectedObjects.append(e);
-
-    if (firstOnly && selectedObjects.size() > 1)
-    {
-        Object* obj = selectedObjects[selectedObjects.size()-1];
-        selectedObjects.clear();
-        selectionHasBGDats = is<BgdatObject*>(obj);
-        selectedObjects.append(obj);
-    }
+    actualCursor = getCursorAtPos(x, y);
 }
 
-void ObjectsEditonMode::deleteAction()
+void ObjectsEditonMode::mouseUp(int x, int y)
 {
-    level->remove(selectedObjects);
-    selectedObjects.clear();
-    selectionHasBGDats = false;
-    dragMode = false;
+    mouseAct = getActionAtPos(x, y);
+    actualCursor = getCursorAtPos(x, y);
+    selectionMode = false;
+    creatNewObject = false;
 }
 
 void ObjectsEditonMode::render(QPainter *painter)
@@ -208,31 +269,163 @@ void ObjectsEditonMode::render(QPainter *painter)
         painter->setPen(QPen(QColor(255,255,255,200), 1, Qt::DotLine));
         painter->drawRect(objrect);
         painter->fillRect(objrect, QColor(255,255,255,75));
+
+        if (obj->isResizable())
+        {
+            drawResizeKnob(obj->getx(), obj->gety(), painter);
+            drawResizeKnob(obj->getx() + obj->getwidth(), obj->gety(), painter);
+            drawResizeKnob(obj->getx(), obj->gety() + obj->getheight(), painter);
+            drawResizeKnob(obj->getx() + obj->getwidth(), obj->gety() + obj->getheight(), painter);
+            drawResizeKnob(obj->getx() + obj->getwidth()/2, obj->gety(), painter);
+            drawResizeKnob(obj->getx(), obj->gety() + obj->getheight()/2, painter);
+            drawResizeKnob(obj->getx() + obj->getwidth()/2, obj->gety() + obj->getheight(), painter);
+            drawResizeKnob(obj->getx() + obj->getwidth(), obj->gety() + obj->getheight()/2, painter);
+        }
     }
 
     if (selectionMode)
     {
         QRect selArea(qMin(dx, lx), qMin(dy, ly), qAbs(lx-dx), qAbs(ly-dy));
         painter->setPen(QPen(QColor(0,80,180), 0.5));
-        painter->fillRect(selArea, QColor(160,222,255,35));
+        painter->fillRect(selArea, QColor(160,222,255,50));
         painter->drawRect(selArea);
     }
 }
 
-void ObjectsEditonMode::setDrags()
+void ObjectsEditonMode::drawResizeKnob(int x, int y, QPainter *painter)
 {
-    dragMode = true;
-    minSelX = 0xFFFF*20;
-    minSelY = 0xFFFF*20;
-    maxSelX = 0;
-    maxSelY = 0;
+    painter->fillRect(x-2, y-2, 4, 4, QBrush(Qt::white));
+}
 
-    foreach(Object* obj, selectedObjects)
+QList<Object*> ObjectsEditonMode::getObjectsAtPos(int x1, int y1, int x2, int y2, bool firstOnly)
+{
+    QList<Object*> objects;
+
+    if (x1>x2)
     {
-        obj->setDrag(obj->getx(), obj->gety());
-        if (obj->getx() < minSelX) minSelX = obj->getx();
-        if (obj->gety() < minSelY) minSelY = obj->gety();
-        if (obj->getx() > maxSelX) maxSelX = obj->getx();
-        if (obj->gety() > maxSelY) maxSelY = obj->gety();
+        int tmp = x1;
+        x1 = x2;
+        x2 = tmp;
     }
+
+    if (y1>y2)
+    {
+        int tmp = y1;
+        y1 = y2;
+        y2 = tmp;
+    }
+
+    QRect area = QRect(QPoint(x1, y1), QPoint(x2, y2));
+
+    for (int l = 1; l >= 0; l--) foreach (BgdatObject* bgdat, level->objects[l]) if (bgdat->clickDetection(area)) objects.append(bgdat);
+    foreach (Location* loc, level->locations) if (loc->clickDetection(area)) objects.append(loc);
+    foreach (Sprite* spr, level->sprites) if (spr->clickDetection(area)) objects.append(spr);
+    foreach (Entrance* entr, level->entrances) if (entr->clickDetection(area)) objects.append(entr);
+
+    if (firstOnly && objects.size() > 1)
+    {
+        Object* object = objects[objects.size()-1];
+        objects.clear();
+        objects.append(object);
+    }
+
+    return objects;
+}
+
+ObjectsEditonMode::mouseAction ObjectsEditonMode::getActionAtPos(int x, int y)
+{
+    mouseAction act;
+
+    for (int i = selectedObjects.size()-1; i >= 0; i--)
+    {
+        Object* o = selectedObjects[i];
+
+        if (o->isResizable())
+        {
+            act.drag = true;
+
+            if (x >= o->getx() - 8 && x <= o->getx() + 4)
+                act.hor = ResizeBegin;
+            else if (x >= o->getx() + o->getwidth() - 4 && x <= o->getx() + o->getwidth() + 8)
+                act.hor = ResizeEnd;
+            else if (x >= o->getx() && x <= o->getx() + o->getwidth())
+                act.hor = ResizeNone;
+            else act.drag = false;
+
+            if (y >= o->gety() - 8 && y <= o->gety() + 4)
+                act.vert = ResizeBegin;
+            else if (y >= o->gety() + o->getheight() - 4 && y <= o->gety() + o->getheight() + 8)
+                act.vert = ResizeEnd;
+            else if (y >= o->gety() && y <= o->gety() + o->getheight())
+                act.vert = ResizeNone;
+            else act.drag = false;
+        }
+        else
+        {
+            act.hor = ResizeNone;
+            act.vert = ResizeNone;
+
+            act.drag = false;
+            if (x >= o->getx() + o->getOffsetX() && x < o->getx() + o->getOffsetX() + o->getwidth() && y >= o->gety() + o->getOffsetY() && y < o->gety() + o->getOffsetY() + o->getheight())
+                act.drag = true;
+        }
+
+        if (act.drag) return act;
+    }
+
+    return act;
+}
+
+Qt::CursorShape ObjectsEditonMode::getCursorAtPos(int x, int y)
+{
+    mouseAction act = getActionAtPos(x, y);
+
+    if (!act.drag) return Qt::ArrowCursor;
+
+    if (act.vert == ResizeBegin && act.hor == ResizeBegin) return Qt::SizeFDiagCursor;
+    if (act.vert == ResizeEnd && act.hor == ResizeEnd) return Qt::SizeFDiagCursor;
+    if (act.vert == ResizeBegin && act.hor == ResizeEnd) return Qt::SizeBDiagCursor;
+    if (act.vert == ResizeEnd && act.hor == ResizeBegin) return Qt::SizeBDiagCursor;
+    if (act.vert == ResizeNone && act.hor == ResizeNone) return Qt::SizeAllCursor;
+    if (act.vert == ResizeNone) return Qt::SizeHorCursor;
+    if (act.hor == ResizeNone) return Qt::SizeVerCursor;
+
+    return Qt::ArrowCursor;
+}
+
+void ObjectsEditonMode::updateSelectionBounds()
+{
+    minBoundX = 2147483647;
+    minBoundY = 2147483647;
+    maxBoundX = 0;
+    maxBoundY = 0;
+    minSizeX = 2147483647;
+    minSizeY = 2147483647;
+    selectionHasBGDats = false;
+
+    foreach (Object* o, selectedObjects)
+    {
+        if (o->getx() < minBoundX) minBoundX = o->getx();
+        if (o->gety() < minBoundY) minBoundY = o->gety();
+        if (o->getx() + o->getwidth() > maxBoundX) maxBoundX = o->getx() + o->getwidth();
+        if (o->gety() + o->getheight() > maxBoundY) maxBoundY = o->gety() + o->getheight();
+
+        if (o->isResizable())
+        {
+            if (o->getwidth() < minSizeX) minSizeX = o->getwidth();
+            if (o->getheight() < minSizeY) minSizeY = o->getheight();
+        }
+
+        if (is<BgdatObject*>(o))
+            selectionHasBGDats = true;
+    }
+}
+
+void ObjectsEditonMode::deleteSelection()
+{
+    level->remove(selectedObjects);
+    selectedObjects.clear();
+    actualCursor = Qt::ArrowCursor;
+    mouseAction act;
+    mouseAct = act;
 }

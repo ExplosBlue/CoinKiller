@@ -30,6 +30,9 @@ Tileset::Tileset(Game *game, QString name)
 
     texImage = texture->getTexture(0);
 
+    if (name == "J_Kihon" || name == "J_Chika" || name == "J_Gold" || name == "J_Setsugen" || name == "J_Suichu" || name == "J_Yougan")
+        drawOverrides = true;
+
     // parse the object def
     FileBase* objindex = archive->openFile("/BG_unt/"+name+"_hd.bin");
     objindex->open();
@@ -236,8 +239,22 @@ void Tileset::drawTile(QPainter& painter, TileGrid& grid, int num, int x, int y,
     x *= tsize;
     y *= tsize;
 
-    QRect rsrc(2 + ((num%21)*24), 2 + ((num/21)*24), 20, 20);
     QRect rdst(x, y, tsize, tsize);
+
+    if (drawOverrides)
+    {
+        QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/tileoverrides/");
+
+        int xx = num % 21;
+        int yy = num /21;
+
+        if (xx == 15 && yy == 0) { painter.drawPixmap(rdst, QPixmap(basePath + "coin.png")); return; }
+        if (xx == 16 && yy == 0) { painter.drawPixmap(rdst, QPixmap(basePath + "blue_coin.png")); return; }
+        if (xx == 10 && yy == 3) { painter.drawPixmap(rdst, QPixmap(basePath + "vine.png")); return; }
+
+    }
+
+    QRect rsrc(2 + ((num%21)*24), 2 + ((num/21)*24), 20, 20);
 
     painter.drawImage(rdst, *texImage, rsrc);
     grid[gridid] = grid[0xFFFFFFFF];

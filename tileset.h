@@ -95,6 +95,7 @@ public:
 
 private:
     QString name;
+    bool drawOverrides = false;
     int slot;
     SarcFilesystem* archive;
     Ctpk* texture;

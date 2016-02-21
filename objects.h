@@ -30,18 +30,23 @@ public:
     void setPosition(int x, int y);
     void increasePosition(int deltax, int deltay);
     void resize(int width, int height);
-    virtual int getType() const;
-    int getx() const;
-    int gety() const;
-    int getwidth() const;
-    int getheight() const;
-    int getOffsetX() const;
-    int getOffsetY() const;
+    void increaseSize(int deltax, int deltay);
+    virtual int getType() const { return -1; }
+    virtual bool isResizable() const { return false; }
+    int getx() const { return x; }
+    int gety() const { return y; }
+    int getwidth() const { return width; }
+    int getheight() const { return height; }
+    int getOffsetX() const { return offsetx; }
+    int getOffsetY() const { return offsety; }
     bool clickDetection(int xcheck, int ycheck);
     bool clickDetection(QRect rect);
     void setDrag(int dragX, int dragY);
-    int getDragX() const;
-    int getDragY() const;
+    void setResize(int resizeX, int resizeY);
+    int getDragX() const { return dragX; }
+    int getDragY() const { return dragY; }
+    int getResizeX() const { return resizeX; }
+    int getResizeY() const { return resizeY; }
 
     virtual QString toString() const;
     // First Number:
@@ -59,8 +64,8 @@ protected:
     int width, height;
     int offsetx, offsety;
     int dragX, dragY;
+    int resizeX, resizeY;
 };
-
 
 // Bgdat Object
 class BgdatObject: public Object
@@ -69,6 +74,7 @@ public:
     BgdatObject() {}
     BgdatObject(int x, int y, int width, int height, int id, int layer);
     int getType() const;
+    bool isResizable() const { return true; }
     int getid() const;
     int getLayer() const;
     QString toString() const;
@@ -85,6 +91,7 @@ public:
     Sprite() {}
     Sprite(int x, int y, int id);
     int getType() const;
+    bool isResizable() const { return false; }
     int getid() const;
     void setByte(int id, qint8 nbr);
     void setNybble(int id, qint8 nbr);
@@ -105,6 +112,7 @@ public:
     Entrance() {}
     Entrance(int x, int y, qint16 cameraX, qint16 cameraY, quint8 id, quint8 destArea, quint8 destEntr, quint8 entrType, quint8 settings, quint8 unk1, quint8 unk2);
     int getType() const { return 2; }
+    bool isResizable() const { return false; }
     QString toString() const;
     quint8 getid() const { return id; }
     quint8 getDestArea() const { return destArea; }
@@ -158,6 +166,7 @@ public:
     void setBounding(tempZoneBounding bounding);
     void setBackground(tempZoneBackground background);
     int getType() const { return 3; }
+    bool isResizable() const { return true; }
     quint8 getid() const { return id; }
     quint8 getProgPathId() const { return progPathId; }
     quint8 getMusicId() const { return musicId; }
@@ -203,6 +212,7 @@ public:
     Location() {}
     Location(int x, int y, int width, int height, int id);
     int getType() const;
+    bool isResizable() const { return true; }
     int getid() const;
     QString toString() const;
 protected:
@@ -217,6 +227,7 @@ public:
     PathNode() {}
     PathNode(int x, int y, float speed, float accel, float unk1);
     int getType() const { return 5; }
+    bool isResizable() const { return false; }
     float getSpeed() const { return speed; }
     float getAccel() const { return accel; }
     float getUnk1() const { return unk1; }
@@ -254,6 +265,7 @@ public:
     ProgressPathNode() {}
     ProgressPathNode(int x, int y);
     int getType() const { return 6; }
+    bool isResizable() const { return false; }
 };
 
 
