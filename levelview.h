@@ -43,6 +43,7 @@ public:
     void cut();
     void deleteSel();
 
+    EditionMode* editionModePtr() { return mode; }
     ObjectsEditonMode* objEditionModePtr() { return objectEditionMode; }
 
 signals:

@@ -5,8 +5,9 @@
 
 #include <QList>
 
-class EditionMode
+class EditionMode : public QObject
 {
+    Q_OBJECT
 public:
     EditionMode() {}
     virtual ~EditionMode() {}
@@ -24,12 +25,19 @@ public:
 
 protected:
     Level *level;
+    QList<Object*> selectedObjects;
     Qt::CursorShape actualCursor;
+
+signals:
+    void deselected();
+    void selectdObjectChanged(Object* obj);
+    void updateEditors();
 };
 
 
 class ObjectsEditonMode: public EditionMode
 {
+    Q_OBJECT
 public:
     ObjectsEditonMode(Level *level);
     ~ObjectsEditonMode() {}
@@ -68,7 +76,6 @@ private:
     int lx, ly;
     mouseAction mouseAct;
 
-    QList<Object*> selectedObjects;
     bool selectionMode;
     bool selectionHasBGDats;
 
@@ -104,6 +111,8 @@ private:
     // Last Deltas. Needed to prevent wiggling of dragging objects
     int xDeltaL;
     int yDeltaL;
+
+    void checkEmits();
 };
 
 #endif // EDITIONMODE_H

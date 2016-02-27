@@ -1,18 +1,20 @@
-#ifndef LEVELEDITORWIDGETS_H
-#define LEVELEDITORWIDGETS_H
+#ifndef SPRITESEDITOR_H
+#define SPRITESEDITOR_H
 
 #include "spritedata.h"
+#include "level.h"
 
 #include <QWidget>
+#include <QListWidget>
 #include <QTreeWidget>
 #include <QComboBox>
 #include <QLineEdit>
 
-class SpritePicker : public QWidget
+class SpriteEditorWidget : public QWidget
 {
     Q_OBJECT
 public:
-    SpritePicker();
+    SpriteEditorWidget();
 
 signals:
     void selectedSpriteChanged(int);
@@ -31,4 +33,4 @@ private:
     QTreeWidget* spriteTree;
 };
 
-#endif // LEVELEDITORWIDGETS_H
+#endif // SPRITESEDITOR_H

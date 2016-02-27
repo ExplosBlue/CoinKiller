@@ -65,9 +65,13 @@ public:
     void raise(BgdatObject* obj);
     void lower(BgdatObject* obj);
 
+    Entrance* newEntrance(int x, int y);
+
 private:
     SarcFilesystem* archive;
     int world, level, area;
+
+    quint8 getNextZoneID(Object* obj);
 };
 
 #endif // LEVEL_H

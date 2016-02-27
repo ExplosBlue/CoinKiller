@@ -20,6 +20,7 @@
 
 #include "levelview.h"
 #include "game.h"
+#include "is.h"
 
 #include <QHBoxLayout>
 #include <QSizePolicy>
@@ -68,30 +69,30 @@ LevelEditorWindow::LevelEditorWindow(QWidget *parent, Level* level) :
 
     // TEST ZONE
 
-    propGrid = new PropertyGrid(this);
-    QHBoxLayout* crappyshit = new QHBoxLayout(ui->widget_2);
-    ui->widget_2->setLayout(crappyshit);
-    crappyshit->addWidget(propGrid);
+    //propGrid = new PropertyGrid(this);
+    //QHBoxLayout* crappyshit = new QHBoxLayout(ui->widget_2);
+    //ui->widget_2->setLayout(crappyshit);
+    //crappyshit->addWidget(propGrid);
     //ui->widget_2->layout()->addWidget(propGrid);
 
-    propGrid->verticalHeader()->hide();
-    propGrid->horizontalHeader()->hide();
+    //propGrid->verticalHeader()->hide();
+    //propGrid->horizontalHeader()->hide();
 
-    PropertyGridModel* model = new PropertyGridModel(propGrid);
-    propGrid->setModel(model);
+    //PropertyGridModel* model = new PropertyGridModel(propGrid);
+    //propGrid->setModel(model);
 
     // TEST ZONE END
 
 
 
     QList<int> derpshit;
-    derpshit.append(350);
+    derpshit.append(300);
     derpshit.append(999999999);
     ui->splitter->setSizes(derpshit);
     ui->splitter->setCollapsible(0, false);
 
     ui->sidebar->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Ignored);
-    ui->sidebar->setMinimumSize(350, 20);
+    ui->sidebar->setMinimumSize(300, 20);
 
     //this->ui->splitter->setStretchFactor(0, 0); // useless
 
@@ -105,70 +106,33 @@ LevelEditorWindow::LevelEditorWindow(QWidget *parent, Level* level) :
 
     zoom = 1.0;
 
+    // Setup Area Editor
+    areaEditor = new AreaEditorWidget(level);
+    ui->sidebarTabWidget->addTab(areaEditor, "Area Settings");
 
-    // Setup Object Lists
-    objectLists[0] = ui->objectsListView0;
-    objectLists[1] = ui->objectsListView1;
-    objectLists[2] = ui->objectsListView2;
-    objectLists[3] = ui->objectsListView3;
-
-    for (int i = 0; i < 4; i++)
-    {
-        objectLists[i]->setFlow(QListView::LeftToRight);
-        objectLists[i]->setLayoutMode(QListView::SinglePass);
-        objectLists[i]->setMovement(QListView::Static);
-        objectLists[i]->setResizeMode(QListView::Adjust);
-        objectLists[i]->setWrapping(true);
-        objectLists[i]->setIconSize(QSize(140,140));
-        objectLists[i]->setVerticalScrollMode(QListView::ScrollPerPixel);
-        setupObjectsModel(i);
-    }
+    // Setup Tileset Picker
+    tilesetPalette = new TilesetPalette(level, levelView->objEditionModePtr());
+    ui->sidebarTabWidget->addTab(tilesetPalette, "Tilesets");
 
     // Setup Sprite Picker
-    spritePicker = new SpritePicker();
-    ui->spritesTab->layout()->addWidget(spritePicker);
-    connect(spritePicker, SIGNAL(selectedSpriteChanged(int)), this, SLOT(setSelSprite(int)));
+    spriteEditor = new SpriteEditorWidget();
+    ui->sidebarTabWidget->addTab(spriteEditor, "Sprites");
+    connect(spriteEditor, SIGNAL(selectedSpriteChanged(int)), this, SLOT(setSelSprite(int)));
+
+    // Setup Entrance Editor
+    entranceEditor = new EntranceEditorWidget(&level->entrances);
+    connect(entranceEditor, SIGNAL(updateLevelView()), levelView, SLOT(update()));
+    ui->sidebarTabWidget->addTab(entranceEditor, "Entrances");
+
+    connect(levelView->editionModePtr(), SIGNAL(selectdObjectChanged(Object*)), this, SLOT(setObjectEdition(Object*)));
+    connect(levelView->editionModePtr(), SIGNAL(deselected()), this, SLOT(deselect()));
+    connect(levelView->editionModePtr(), SIGNAL(updateEditors()), this, SLOT(updateEditors()));
 }
 
 LevelEditorWindow::~LevelEditorWindow()
 {
     delete level;
     delete ui;
-}
-
-
-// Functions
-
-void LevelEditorWindow::setupObjectsModel(int tilesetNbr)
-{
-    if (!level->tilesets[tilesetNbr])
-    {
-        objectLists[tilesetNbr]->setEnabled(false);
-        return;
-    }
-    objectLists[tilesetNbr]->setEnabled(true);
-
-    QStandardItemModel* objectsModel = new QStandardItemModel(this);
-
-    for (int i = 0; i < level->tilesets[tilesetNbr]->getNumObjects(); i++)
-    {
-        ObjectDef* obj = level->tilesets[tilesetNbr]->getObjectDef(i);
-        QPixmap objPixmap(obj->width*20, obj->height*20);
-        objPixmap.fill(Qt::transparent);
-
-        QPainter p(&objPixmap);
-        TileGrid tileGrid;
-        tileGrid.clear();
-        tileGrid[0xFFFFFFFF] = 1;
-        level->tilesets[tilesetNbr]->drawObject(p, tileGrid, i, 0, 0, obj->width, obj->height, 1);
-        p.end();
-        QStandardItem *objItem = new QStandardItem();
-        objItem->setIcon(QIcon(objPixmap));
-        objItem->setToolTip(QString("Object: %1").arg(i));
-        objectsModel->appendRow(objItem);
-    }
-
-    objectLists[tilesetNbr]->setModel(objectsModel);
 }
 
 
@@ -264,12 +228,12 @@ void LevelEditorWindow::on_actionFullscreen_toggled(bool toggle)
     if (toggle)
     {
         showFullScreen();
-        ui->actionFullscreen->setIcon(QIcon(QCoreApplication::applicationDirPath() + "/coinkiller_data/collapse.png"));
+        ui->actionFullscreen->setIcon(QIcon(QCoreApplication::applicationDirPath() + "/coinkiller_data/icons/collapse.png"));
     }
     else
     {
         showNormal();
-        ui->actionFullscreen->setIcon(QIcon(QCoreApplication::applicationDirPath() + "/coinkiller_data/expand.png"));
+        ui->actionFullscreen->setIcon(QIcon(QCoreApplication::applicationDirPath() + "/coinkiller_data/icons/expand.png"));
     }
 }
 
@@ -278,42 +242,35 @@ void LevelEditorWindow::on_actionGrid_toggled(bool toggle)
     levelView->toggleGrid(toggle);
 }
 
-void LevelEditorWindow::on_objectsListView0_clicked(const QModelIndex &index)
-{
-    levelView->objEditionModePtr()->setDrawType(0);
-    levelView->objEditionModePtr()->setObject(index.row(), 0);
-}
-
-void LevelEditorWindow::on_objectsListView1_clicked(const QModelIndex &index)
-{
-    levelView->objEditionModePtr()->setDrawType(0);
-    levelView->objEditionModePtr()->setObject(index.row(), 1);
-}
-
-void LevelEditorWindow::on_objectsListView2_clicked(const QModelIndex &index)
-{
-    levelView->objEditionModePtr()->setDrawType(0);
-    levelView->objEditionModePtr()->setObject(index.row(), 2);
-}
-
-void LevelEditorWindow::on_objectsListView3_clicked(const QModelIndex &index)
-{
-    levelView->objEditionModePtr()->setDrawType(0);
-    levelView->objEditionModePtr()->setObject(index.row(), 3);
-}
-
-void LevelEditorWindow::on_layerRadioButton_toggled(bool checked)
-{
-    levelView->objEditionModePtr()->setLayer(!checked);
-}
-
-void LevelEditorWindow::on_paintLocation_clicked()
-{
-    levelView->objEditionModePtr()->setDrawType(4);
-}
-
 void LevelEditorWindow::setSelSprite(int spriteId)
 {
     levelView->objEditionModePtr()->setDrawType(1);
     levelView->objEditionModePtr()->setSprite(spriteId);
+}
+
+void LevelEditorWindow::setObjectEdition(Object* obj)
+{
+    deselect();
+
+    if (is<Entrance*>(obj))
+    {
+        ui->sidebarTabWidget->setCurrentIndex(3);
+        entranceEditor->select(dynamic_cast<Entrance*>(obj));
+    }
+}
+
+void LevelEditorWindow::deselect()
+{
+    entranceEditor->deselect();
+}
+
+void LevelEditorWindow::updateEditors()
+{
+    entranceEditor->updateEditor();
+}
+
+void LevelEditorWindow::on_sidebarTabWidget_currentChanged(int index)
+{
+    if (index == 3)
+        levelView->objEditionModePtr()->setDrawType(2);
 }

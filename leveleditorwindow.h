@@ -25,7 +25,10 @@
 #include "levelview.h"
 #include "ctpk.h"
 #include "level.h"
-#include "leveleditorwidgets.h"
+#include "areaeditorwidget.h"
+#include "tilesetpalette.h"
+#include "spriteeditorwidget.h"
+#include "entranceeditorwidget.h"
 
 #include "propertygrid.h"
 
@@ -40,6 +43,11 @@ class LevelEditorWindow : public QMainWindow
 public:
     explicit LevelEditorWindow(QWidget *parent, Level* voltmeter);
     ~LevelEditorWindow();
+
+public slots:
+    void setObjectEdition(Object* obj);
+    void deselect();
+    void updateEditors();
 
 private slots:
     void on_actionToggleLayer1_toggled(bool arg1);
@@ -70,19 +78,9 @@ private slots:
 
     void on_actionDelete_triggered();
 
-    void on_objectsListView0_clicked(const QModelIndex &index);
-
-    void on_objectsListView1_clicked(const QModelIndex &index);
-
-    void on_objectsListView2_clicked(const QModelIndex &index);
-
-    void on_objectsListView3_clicked(const QModelIndex &index);
-
-    void on_layerRadioButton_toggled(bool checked);
-
-    void on_paintLocation_clicked();
-
     void setSelSprite(int spriteId);
+
+    void on_sidebarTabWidget_currentChanged(int index);
 
 private:
     Ui::LevelEditorWindow *ui;
@@ -94,13 +92,13 @@ private:
 
     PropertyGrid* propGrid;
 
-    QListView* objectLists[4];
-    SpritePicker* spritePicker;
+    AreaEditorWidget* areaEditor;
+    TilesetPalette* tilesetPalette;
+    SpriteEditorWidget* spriteEditor;
+    EntranceEditorWidget* entranceEditor;
 
     quint8 layerMask;
     float zoom;
-
-    void setupObjectsModel(int tilesetNbr);
 };
 
 #endif // LEVELEDITORWINDOW_H

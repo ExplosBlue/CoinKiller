@@ -40,12 +40,13 @@ class RoundedRectRenderer: public ObjectRenderer
 {
 public:
     RoundedRectRenderer();
-    RoundedRectRenderer(const Object *obj, QString text, QColor color);
+    RoundedRectRenderer(const Object *obj, QString text, QColor color, QTextOption align = Qt::AlignHCenter | Qt::AlignVCenter);
     void render(QPainter *painter);
 protected:
     const Object *obj;
     QString text;
     QColor color;
+    QTextOption align;
 };
 
 
@@ -120,5 +121,16 @@ protected:
     QString filename;
     NormalImageRenderer *img;
 };
+
+class EntranceRenderer : public ObjectRenderer
+{
+public:
+    EntranceRenderer(const Entrance *entrance);
+    void render(QPainter *painter);
+private:
+    RoundedRectRenderer *rect;
+    const Entrance* entr;
+};
+
 
 #endif // OBJECTRENDERER_H

@@ -21,6 +21,8 @@
 #include "unitsconvert.h"
 #include "is.h"
 
+#include <limits>
+
 Level::Level(Game *game, int world, int level, int area)
 {
     this->game = game;
@@ -526,14 +528,14 @@ void Level::save()
     {
         header->write16(to16(entr->getx()));
         header->write16(to16(entr->gety()));
-        header->write16(entr->getOffsetX());
-        header->write16(entr->getOffsetY());
+        header->write16(entr->getCameraX());
+        header->write16(entr->getCameraY());
         header->write8(entr->getid());
         header->write8(entr->getDestArea());
         header->write8(entr->getDestEntr());
         header->write8(entr->getEntrType());
         header->write8(0);
-        header->write8(0);  // TODO: Zone ID
+        header->write8(getNextZoneID(entr));
         for (int i = 0; i < 2; i++) header->write8(0);
         header->write8(entr->getSettings());
         for (int i = 0; i < 3; i++) header->write8(0);
@@ -550,7 +552,7 @@ void Level::save()
         header->write16(to16(spr->getx()));
         header->write16(to16(spr->gety()));
         for (int i = 0; i < 10; i++) header->write8(spr->getByte(i));
-        header->write8(0);  // TODO: Zone ID
+        header->write8(getNextZoneID(spr));
         header->write8(0);
         header->write8(spr->getByte(10));
         header->write8(spr->getByte(11));
@@ -658,6 +660,29 @@ void Level::save()
 
 }
 
+quint8 Level::getNextZoneID(Object* obj)
+{
+    quint8 zoneID = 0;
+    int actualDistance = 2147483647;
+    foreach (Zone zone, zones)
+    {
+        int distance = 0;
+
+        if (!QRect(zone.getx(), zone.gety(), zone.getwidth(), zone.getheight()).contains(obj->getx(), obj->gety()))
+        {
+            int dx = qMax(qAbs(obj->getx() - zone.getx()) - zone.getwidth() / 2, 0);
+            int dy = qMax(qAbs(obj->gety() - zone.getx()) - zone.getheight() / 2, 0);
+            distance = dx * dx + dy * dy;
+        }
+        if (distance < actualDistance)
+        {
+            zoneID = zone.getid();
+            actualDistance = distance;
+        }
+    }
+    return zoneID;
+}
+
 void Level::remove(QList<Object*> objs)
 {
     for (int i = 0; i < objs.size(); i++)
@@ -734,4 +759,20 @@ void Level::raise(BgdatObject* obj)
 void Level::lower(BgdatObject* obj)
 {
     objects[obj->getLayer()].move(objects[obj->getLayer()].indexOf(obj), 0);
+}
+
+Entrance* Level::newEntrance(int x, int y)
+{
+    if (x < 0) x = 0;
+    if (y < 0) y = 0;
+
+    quint8 id = 0;
+    for(;; id++)
+    {
+        bool check = false;
+        foreach (Entrance* entr, entrances)
+            if (entr->getid() == id) check = true;
+        if (!check) break;
+    }
+    return new Entrance(toNext16Compatible(x), toNext16Compatible(y), 0, 0, id, 0, 0, 0, 0, 0, 0);
 }

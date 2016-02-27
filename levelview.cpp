@@ -140,17 +140,8 @@ void LevelView::paintEvent(QPaintEvent* evt)
         if (!drawrect.intersects(entrrect))
             continue;
 
-        painter.setPen(QColor(0,0,0));
-
-        QPainterPath path;
-        path.addRoundedRect(entrrect, 2.0, 2.0);
-        QColor color(182,3,3,200);
-        painter.fillPath(path, color);
-        painter.drawPath(path);
-
-        QString entrText = QString("%1").arg(entr->getid());
-        painter.setFont(QFont("Arial", 7, QFont::Normal));
-        painter.drawText(entrrect, entrText, Qt::AlignHCenter | Qt::AlignVCenter);
+        EntranceRenderer entrRend(entr);
+        entrRend.render(&painter);
     }
 
     // Render Paths

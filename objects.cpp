@@ -16,6 +16,7 @@
 */
 
 #include "objects.h"
+#include "unitsconvert.h"
 
 #include <QPainter>
 
@@ -35,10 +36,16 @@ void Object::setPosition(int x, int y)
     this->y = y;
 }
 
-void Object::increasePosition(int deltax, int deltay)
+void Object::increasePosition(int deltax, int deltay, int snap)
 {
     this->x += deltax;
     this->y += deltay;
+
+    if (snap == 10)
+    {
+        x = toNext10(x);
+        y = toNext10(y);
+    }
 }
 
 void Object::resize(int width, int height)
@@ -62,18 +69,6 @@ bool Object::clickDetection(int xcheck, int ycheck)
 bool Object::clickDetection(QRect rect)
 {
     return rect.intersects(QRect(x+offsetx,y+offsety,width,height));
-}
-
-void Object::setDrag(int dragX, int dragY)
-{
-    this->dragX = dragX;
-    this->dragY = dragY;
-}
-
-void Object::setResize(int resizeX, int resizeY)
-{
-    this->resizeX = resizeX;
-    this->resizeY = resizeY;
 }
 
 QString Object::toString() const { return QString("-1"); }
@@ -479,7 +474,6 @@ Entrance::Entrance(int x, int y, qint16 cameraX, qint16 cameraY, quint8 id, quin
 
 // Format: 2:ID:Type:X:Y:DestArea:DestEntr:CamX:CamY:Type
 QString Entrance::toString() const { return QString("2:%1:%2:%3:%4:%5:%6:%7:%8:%9").arg(id).arg(x).arg(y).arg(destArea).arg(destEntr).arg(cameraX).arg(cameraY).arg(entrType); }
-
 
 // Zone
 Zone::Zone(int x, int y, int width, int height, quint8 id, quint8 progPathId, quint8 musicId, quint8 multiplayerTracking, quint16 unk1)

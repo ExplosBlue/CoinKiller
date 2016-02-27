@@ -1,10 +1,10 @@
-#include "leveleditorwidgets.h"
+#include "spriteeditorwidget.h"
 
 #include <QGridLayout>
 #include <QLabel>
 #include <QStringListModel>
 
-SpritePicker::SpritePicker()
+SpriteEditorWidget::SpriteEditorWidget()
 {
     QLabel* viewLabel = new QLabel("View:");
     viewLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
@@ -28,7 +28,6 @@ SpritePicker::SpritePicker()
     topLayout->addWidget(searchEdit, 1, 1);
 
     QVBoxLayout* layout = new QVBoxLayout();
-    layout->setMargin(0);
     layout->addItem(topLayout);
     layout->addWidget(spriteTree);
 
@@ -72,7 +71,7 @@ SpritePicker::SpritePicker()
     connect(spriteTree, SIGNAL(currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)), this, SLOT(handleIndexChange(QTreeWidgetItem*)));
 }
 
-void SpritePicker::setView(int view)
+void SpriteEditorWidget::setView(int view)
 {
     for (int i = 0; i < spriteTree->topLevelItemCount(); i++)
     {
@@ -85,7 +84,7 @@ void SpritePicker::setView(int view)
     search(searchEdit->text());
 }
 
-void SpritePicker::search(QString text)
+void SpriteEditorWidget::search(QString text)
 {
     foreach (QTreeWidgetItem* categoryNode, spriteData.spriteViewPtr(viewComboBox->currentIndex())->categoryNodes)
     {
@@ -108,9 +107,10 @@ void SpritePicker::search(QString text)
     }
 }
 
-void SpritePicker::handleIndexChange(QTreeWidgetItem *item)
+void SpriteEditorWidget::handleIndexChange(QTreeWidgetItem *item)
 {
     int data = item->data(0, Qt::UserRole).toInt();
     if (data >= 0 && data <= 325)
         emit(selectedSpriteChanged(data));
 }
+

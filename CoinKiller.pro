@@ -35,7 +35,10 @@ SOURCES += main.cpp\
     tileseteditorwidgets.cpp \
     editionmode.cpp \
     spritedata.cpp \
-    leveleditorwidgets.cpp
+    tilesetpalette.cpp \
+    entranceeditorwidget.cpp \
+    spriteeditorwidget.cpp \
+    areaeditorwidget.cpp
 
 HEADERS  += mainwindow.h \
     filesystembase.h \
@@ -62,7 +65,10 @@ HEADERS  += mainwindow.h \
     is.h \
     editionmode.h \
     spritedata.h \
-    leveleditorwidgets.h
+    tilesetpalette.h \
+    entranceeditorwidget.h \
+    spriteeditorwidget.h \
+    areaeditorwidget.h
 
 FORMS    += mainwindow.ui \
     leveleditorwindow.ui \

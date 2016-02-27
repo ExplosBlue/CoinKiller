@@ -20,6 +20,7 @@
 
 #include <QtCore>
 #include <QPainter>
+#include <QList>
 
 // Obj Baseclass
 class Object
@@ -28,7 +29,7 @@ public:
     Object();
     virtual ~Object() {}
     void setPosition(int x, int y);
-    void increasePosition(int deltax, int deltay);
+    void increasePosition(int deltax, int deltay, int snap = 0);
     void resize(int width, int height);
     void increaseSize(int deltax, int deltay);
     virtual int getType() const { return -1; }
@@ -41,12 +42,6 @@ public:
     int getOffsetY() const { return offsety; }
     bool clickDetection(int xcheck, int ycheck);
     bool clickDetection(QRect rect);
-    void setDrag(int dragX, int dragY);
-    void setResize(int resizeX, int resizeY);
-    int getDragX() const { return dragX; }
-    int getDragY() const { return dragY; }
-    int getResizeX() const { return resizeX; }
-    int getResizeY() const { return resizeY; }
 
     virtual QString toString() const;
     // First Number:
@@ -119,8 +114,18 @@ public:
     quint8 getDestEntr() const { return destEntr; }
     quint8 getEntrType() const { return entrType; }
     quint8 getSettings() const { return settings; }
+    quint16 getCameraX() const { return cameraX; }
+    quint16 getCameraY() const { return cameraY; }
     quint8 getUnk1() const { return unk1; }
     quint8 getUnk2() const { return unk2; }
+    void setId(quint8 id) { this->id = id; }
+    void setEntrType(quint8 entrType) { this->entrType = entrType; }
+    void setDestEntr(quint8 destEntr) { this->destEntr = destEntr; }
+    void setDestArea(quint8 destArea) { this->destArea = destArea; }
+    void setCameraX(qint16 cameraX) { this->cameraX = cameraX; }
+    void setCameraY(qint16 cameraY) { this->cameraY = cameraY; }
+    void setSettings(quint8 settings) { this->settings = settings; }
+    void setSettingsBit(bool value, int bit) { settings ^= (-value ^ settings) & (1 << bit); }
 protected:
     qint16 cameraX;
     qint16 cameraY;

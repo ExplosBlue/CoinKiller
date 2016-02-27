@@ -214,7 +214,7 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr)
         ret = new NormalImageRenderer(spr, basePath + "big_grinder.png");
         break;
     default:
-        ret = new RoundedRectRenderer(spr, QString("%1").arg(spr->getid()), QColor(0,90,150,200));
+        ret = new RoundedRectRenderer(spr, QString("%1").arg(spr->getid()), QColor(0,90,150,150));
         break;
     }
 }
@@ -243,11 +243,12 @@ void NormalImageRenderer::render(QPainter *painter)
 }
 
 
-RoundedRectRenderer::RoundedRectRenderer(const Object *obj, QString text, QColor color)
+RoundedRectRenderer::RoundedRectRenderer(const Object *obj, QString text, QColor color, QTextOption align)
 {
     this->obj = obj;
     this->text = text;
     this->color = color;
+    this->align = align;
 }
 
 void RoundedRectRenderer::render(QPainter *painter)
@@ -262,7 +263,7 @@ void RoundedRectRenderer::render(QPainter *painter)
     painter->drawPath(path);
 
     painter->setFont(QFont("Arial", 7, QFont::Normal));
-    painter->drawText(rect, text, Qt::AlignHCenter | Qt::AlignVCenter);
+    painter->drawText(rect, text, align);
 }
 
 
@@ -368,4 +369,86 @@ SwitchRenderer::SwitchRenderer(const Sprite *spr, QString filename)
 void SwitchRenderer::render(QPainter *painter)
 {
     img->render(painter);
+}
+
+
+// Entrance Renderer
+EntranceRenderer::EntranceRenderer(const Entrance *entrance)
+{
+    this->entr = entrance;
+
+    this->rect = new RoundedRectRenderer(entrance, "", QColor(255,0,0,150));
+}
+
+void EntranceRenderer::render(QPainter *painter)
+{
+    rect->render(painter);
+    QRect textRect(entr->getx()+2, entr->gety()+1, 16, 20);
+    QRect imgRect(entr->getx(), entr->gety(), 20, 20);
+
+    QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/entrances/");
+
+    switch (entr->getEntrType())
+    {
+    case 0: case 1:
+        painter->drawText(textRect, "N", Qt::AlignLeft | Qt::AlignBottom);
+        painter->drawPixmap(imgRect, QPixmap(basePath + "normal.png"));
+        break;
+    case 2:
+        painter->drawPixmap(imgRect, QPixmap(basePath + "door_exit.png"));
+        break;
+    case 3:
+        painter->drawPixmap(imgRect, QPixmap(basePath + "pipe_up.png"));
+        break;
+    case 4:
+        painter->drawPixmap(imgRect, QPixmap(basePath + "pipe_down.png"));
+        break;
+    case 5:
+        painter->drawPixmap(imgRect, QPixmap(basePath + "pipe_left.png"));
+        break;
+    case 6:
+        painter->drawPixmap(imgRect, QPixmap(basePath + "pipe_right.png"));
+        break;
+    case 7:
+        painter->drawText(textRect, "F", Qt::AlignLeft | Qt::AlignBottom);
+        painter->drawPixmap(imgRect, QPixmap(basePath + "down.png"));
+        break;
+    case 8:
+        painter->drawText(textRect, "G", Qt::AlignLeft | Qt::AlignBottom);
+        painter->drawPixmap(imgRect, QPixmap(basePath + "down.png"));
+        break;
+    case 9:
+        painter->drawText(textRect, "S", Qt::AlignLeft | Qt::AlignBottom);
+        painter->drawPixmap(imgRect, QPixmap(basePath + "normal.png"));
+        break;
+    case 10:
+        painter->drawText(textRect, "S", Qt::AlignLeft | Qt::AlignBottom);
+        painter->drawPixmap(imgRect, QPixmap(basePath + "swimming.png"));
+        break;
+    case 20:
+        painter->drawText(textRect, "J", Qt::AlignLeft | Qt::AlignBottom);
+        painter->drawPixmap(imgRect, QPixmap(basePath + "up.png"));
+        break;
+    case 21:
+        painter->drawText(textRect, "V", Qt::AlignLeft | Qt::AlignBottom);
+        painter->drawPixmap(imgRect, QPixmap(basePath + "up.png"));
+        break;
+    case 23: case 25: case 26:
+        painter->drawText(textRect, "B", Qt::AlignLeft | Qt::AlignBottom);
+        painter->drawPixmap(imgRect, QPixmap(basePath + "normal.png"));
+        break;
+    case 24:
+        painter->drawText(textRect, "J", Qt::AlignLeft | Qt::AlignBottom);
+        painter->drawPixmap(imgRect, QPixmap(basePath + "left.png"));
+        break;
+    case 27:
+        painter->drawPixmap(imgRect, QPixmap(basePath + "door_entrance.png"));
+        break;
+    default:painter->drawText(textRect, "?", Qt::AlignLeft | Qt::AlignBottom);
+        painter->drawPixmap(imgRect, QPixmap(basePath + "unknown.png"));
+        break;
+    }
+
+    painter->setFont(QFont("Arial", 7, QFont::Normal));
+    painter->drawText(textRect, QString("%1").arg(entr->getid()), Qt::AlignLeft | Qt::AlignTop);
 }

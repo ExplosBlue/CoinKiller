@@ -41,13 +41,23 @@ void ObjectsEditonMode::mouseDown(int x, int y, Qt::MouseButtons buttons, Qt::Ke
             level->sprites.append(spr);
             selectedObjects.append(spr);
         }
+        else if (drawType == 2)
+        {
+            Entrance* entr = level->newEntrance(x-10, y-10);
+            level->entrances.append(entr);
+            selectedObjects.append(entr);
+        }
         else if (drawType == 4)
         {
             Location* loc = new Location(toNext16Compatible(x), toNext16Compatible(y), 4, 4, 0);
             level->locations.append(loc);
             newObject = loc;
             creatNewObject = true;
+            selectedObjects.append(loc);
         }
+
+        checkEmits();
+        emit updateEditors();
     }
 
     if (buttons == Qt::LeftButton)
@@ -80,7 +90,11 @@ void ObjectsEditonMode::mouseDown(int x, int y, Qt::MouseButtons buttons, Qt::Ke
             }
 
             if (selectedObjects.size() == 0)
+            {
                 selectionMode = true;
+            }
+
+            checkEmits();
         }
 
         mouseAct = getActionAtPos(x, y);
@@ -116,6 +130,8 @@ void ObjectsEditonMode::mouseDrag(int x, int y, Qt::KeyboardModifiers modifieres
         newObject->setPosition(qMin(xpos, mX), qMin(ypos, mY));
         newObject->resize(w, h);
 
+        emit updateEditors();
+
         return;
     }
 
@@ -125,6 +141,7 @@ void ObjectsEditonMode::mouseDrag(int x, int y, Qt::KeyboardModifiers modifieres
         ly = y;
         selectedObjects.clear();
         selectedObjects = getObjectsAtPos(lx, ly, dx, dy, false);
+        checkEmits();
     }
     else
     {
@@ -146,10 +163,12 @@ void ObjectsEditonMode::mouseDrag(int x, int y, Qt::KeyboardModifiers modifieres
             if (yDelta < -minBoundY) yDelta = -minBoundY;
             if (xDelta == 0 && yDelta == 0) return;
 
+            int snap = 0;
             if (selectionHasBGDats)
             {
                 xDelta = toNext20(xDelta);
                 yDelta = toNext20(yDelta);
+                snap = 20;
             }
             else if (modifieres == Qt::AltModifier)
             {
@@ -160,17 +179,20 @@ void ObjectsEditonMode::mouseDrag(int x, int y, Qt::KeyboardModifiers modifieres
             {
                 xDelta = toNext10(xDelta);
                 yDelta = toNext10(yDelta);
+                snap = 10;
             }
 
             foreach (Object* obj, selectedObjects)
             {
-                obj->increasePosition(xDelta, yDelta);
+                obj->increasePosition(xDelta, yDelta, snap);
             }
 
             minBoundX += xDelta;
             minBoundY += yDelta;
             lx += xDelta;
             ly += yDelta;
+
+            emit updateEditors();
         }
         // Resize
         else
@@ -243,6 +265,8 @@ void ObjectsEditonMode::mouseDrag(int x, int y, Qt::KeyboardModifiers modifieres
 
             lx += xDelta;
             ly += yDelta;
+
+            emit updateEditors();
         }
     }
 }
@@ -428,4 +452,14 @@ void ObjectsEditonMode::deleteSelection()
     actualCursor = Qt::ArrowCursor;
     mouseAction act;
     mouseAct = act;
+    checkEmits();
+    updateEditors();
+}
+
+void ObjectsEditonMode::checkEmits()
+{
+    if (selectedObjects.size() != 1)
+        emit deselected();
+    else
+        emit selectdObjectChanged(selectedObjects[0]);
 }
