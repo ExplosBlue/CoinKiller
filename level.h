@@ -48,9 +48,9 @@ public:
     QList<Sprite*> sprites;
     QList<Entrance*> entrances;
     QList<Location*> locations;
+    QList<Zone*> zones;
 
     // TODO: Move these to QLists of Pointers
-    QList<Zone> zones;
     QList<Path> paths;
     QList<ProgressPath> progressPaths;
 
@@ -66,6 +66,7 @@ public:
     void lower(BgdatObject* obj);
 
     Entrance* newEntrance(int x, int y);
+    Zone* newZone(int x, int y);
 
 private:
     SarcFilesystem* archive;

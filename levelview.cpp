@@ -227,9 +227,9 @@ void LevelView::paintEvent(QPaintEvent* evt)
     // Render Zones
     for (int i = 0; i < level->zones.size(); i++)
     {
-        const Zone& zone = level->zones.at(i);
+        const Zone* zone = level->zones.at(i);
 
-        QRect zonerect(zone.getx(), zone.gety(), zone.getwidth(), zone.getheight());
+        QRect zonerect(zone->getx(), zone->gety(), zone->getwidth(), zone->getheight());
 
         if (!drawrect.intersects(zonerect))
             continue;
@@ -238,9 +238,9 @@ void LevelView::paintEvent(QPaintEvent* evt)
 
         painter.drawRect(zonerect);
 
-        QString zoneText = QString("Zone %1").arg(zone.getid());
-        painter.setFont(QFont("Arial", 10, QFont::Normal));
-        painter.drawText(zonerect.adjusted(5,5,0,0), zoneText);
+        QString zoneText = QString("Zone %1").arg(zone->getid());
+        painter.setFont(QFont("Arial", 8, QFont::Normal));
+        painter.drawText(zonerect.adjusted(3,3,0,0), zoneText);
     }
 
     // Render Selection

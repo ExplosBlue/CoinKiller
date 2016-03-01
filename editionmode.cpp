@@ -47,6 +47,12 @@ void ObjectsEditonMode::mouseDown(int x, int y, Qt::MouseButtons buttons, Qt::Ke
             level->entrances.append(entr);
             selectedObjects.append(entr);
         }
+        else if (drawType == 3)
+        {
+            Zone* zone = level->newZone(x-200, y-120);
+            level->zones.append(zone);
+            selectedObjects.append(zone);
+        }
         else if (drawType == 4)
         {
             Location* loc = new Location(toNext16Compatible(x), toNext16Compatible(y), 4, 4, 0);
@@ -58,6 +64,7 @@ void ObjectsEditonMode::mouseDown(int x, int y, Qt::MouseButtons buttons, Qt::Ke
 
         checkEmits();
         emit updateEditors();
+        if (selectedObjects.size() == 1) emit selectdObjectChanged(selectedObjects[0]);
     }
 
     if (buttons == Qt::LeftButton)
@@ -141,7 +148,7 @@ void ObjectsEditonMode::mouseDrag(int x, int y, Qt::KeyboardModifiers modifieres
         ly = y;
         selectedObjects.clear();
         selectedObjects = getObjectsAtPos(lx, ly, dx, dy, false);
-        checkEmits();
+        //checkEmits();
     }
     else
     {
@@ -199,13 +206,15 @@ void ObjectsEditonMode::mouseDrag(int x, int y, Qt::KeyboardModifiers modifieres
         {
             int xDelta = x-lx;
             int yDelta = y-ly;
-            int minSize = 5;
+            int minSize = 0;
 
+            int snap = 0;
             if (selectionHasBGDats)
             {
                 xDelta = toNext20(xDelta);
                 yDelta = toNext20(yDelta);
                 minSize = 20;
+                snap = 0;
             }
             else if (modifieres == Qt::AltModifier)
             {
@@ -216,6 +225,7 @@ void ObjectsEditonMode::mouseDrag(int x, int y, Qt::KeyboardModifiers modifieres
             {
                 xDelta = toNext10(xDelta);
                 yDelta = toNext10(yDelta);
+                snap = 10;
             }
 
             int xMoveDelta = 0;
@@ -260,7 +270,7 @@ void ObjectsEditonMode::mouseDrag(int x, int y, Qt::KeyboardModifiers modifieres
             foreach (Object* obj, selectedObjects)
             {
                 obj->increasePosition(xMoveDelta, yMoveDelta);
-                if (obj->isResizable()) obj->increaseSize(xResizeDelta, yResizeDelta);
+                if (obj->isResizable()) obj->increaseSize(xResizeDelta, yResizeDelta, snap);
             }
 
             lx += xDelta;
@@ -282,6 +292,7 @@ void ObjectsEditonMode::mouseUp(int x, int y)
     actualCursor = getCursorAtPos(x, y);
     selectionMode = false;
     creatNewObject = false;
+    checkEmits();
 }
 
 void ObjectsEditonMode::render(QPainter *painter)
@@ -345,6 +356,7 @@ QList<Object*> ObjectsEditonMode::getObjectsAtPos(int x1, int y1, int x2, int y2
     foreach (Location* loc, level->locations) if (loc->clickDetection(area)) objects.append(loc);
     foreach (Sprite* spr, level->sprites) if (spr->clickDetection(area)) objects.append(spr);
     foreach (Entrance* entr, level->entrances) if (entr->clickDetection(area)) objects.append(entr);
+    foreach (Zone* zone, level->zones) if (zone->clickDetection(area)) objects.append(zone);
 
     if (firstOnly && objects.size() > 1)
     {
@@ -383,6 +395,9 @@ ObjectsEditonMode::mouseAction ObjectsEditonMode::getActionAtPos(int x, int y)
             else if (y >= o->gety() && y <= o->gety() + o->getheight())
                 act.vert = ResizeNone;
             else act.drag = false;
+
+            if (act.hor == ResizeNone && act.vert == ResizeNone && is<Zone*>(o) && !dynamic_cast<Zone*>(o)->clickDetection(x, y))
+                act.drag = false;
         }
         else
         {
@@ -436,8 +451,16 @@ void ObjectsEditonMode::updateSelectionBounds()
 
         if (o->isResizable())
         {
-            if (o->getwidth() < minSizeX) minSizeX = o->getwidth();
-            if (o->getheight() < minSizeY) minSizeY = o->getheight();
+            if (is<Zone*>(o))
+            {
+                if (o->getwidth() - 400 < minSizeX) minSizeX = o->getwidth() - 400;
+                if (o->getheight() - 240 < minSizeY) minSizeY = o->getheight() - 240;
+            }
+            else
+            {
+                if (o->getwidth() < minSizeX) minSizeX = o->getwidth();
+                if (o->getheight() < minSizeY) minSizeY = o->getheight();
+            }
         }
 
         if (is<BgdatObject*>(o))

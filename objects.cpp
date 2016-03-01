@@ -54,10 +54,16 @@ void Object::resize(int width, int height)
     this->height = height;
 }
 
-void Object::increaseSize(int deltax, int deltay)
+void Object::increaseSize(int deltax, int deltay, int snap)
 {
     this->width += deltax;
     this->height += deltay;
+
+    if (snap == 10)
+    {
+        width = toNext10(width + x) - x;
+        height = toNext10(height + y) - y;
+    }
 }
 
 
@@ -302,10 +308,34 @@ void Sprite::setRect()
         offsetx = -5;
         offsety = -15;
         break;
+    case 167: // Pipe Piranha Plant - Down
+        width = 30;
+        height = 37;
+        offsetx = 5;
+        offsety = 40;
+        break;
     case 175: // Grounded Piranha Plant
         width = 54;
         height = 33;
         offsetx = -8;
+        break;
+    case 181: // Pipe Piranha Plant - Left
+        width = 37;
+        height = 30;
+        offsetx = -37;
+        offsety = 5;
+        break;
+    case 182: // Pipe Piranha Plant - Right
+        width = 37;
+        height = 30;
+        offsetx = 40;
+        offsety = 5;
+        break;
+    case 183: // Pipe Piranha Plant - Up
+        width = 30;
+        height = 37;
+        offsetx = 5;
+        offsety = -37;
         break;
     case 184: // Parabomb
         width = 29;
@@ -487,6 +517,16 @@ Zone::Zone(int x, int y, int width, int height, quint8 id, quint8 progPathId, qu
     this->musicId = musicId;
     this->multiplayerTracking = multiplayerTracking;
     this->unk1 = unk1;
+}
+
+bool Zone::clickDetection(int xcheck, int ycheck)
+{
+    return QRect(x,y,38,18).contains(xcheck, ycheck);
+}
+
+bool Zone::clickDetection(QRect rect)
+{
+    return rect.intersects(QRect(x,y,38,18));
 }
 
 void Zone::setBounding(tempZoneBounding bounding)

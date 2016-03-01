@@ -29,6 +29,7 @@
 #include "tilesetpalette.h"
 #include "spriteeditorwidget.h"
 #include "entranceeditorwidget.h"
+#include "zoneeditorwidget.h"
 
 #include "propertygrid.h"
 
@@ -96,6 +97,7 @@ private:
     TilesetPalette* tilesetPalette;
     SpriteEditorWidget* spriteEditor;
     EntranceEditorWidget* entranceEditor;
+    ZoneEditorWidget* zoneEditor;
 
     quint8 layerMask;
     float zoom;

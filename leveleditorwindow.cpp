@@ -108,21 +108,26 @@ LevelEditorWindow::LevelEditorWindow(QWidget *parent, Level* level) :
 
     // Setup Area Editor
     areaEditor = new AreaEditorWidget(level);
-    ui->sidebarTabWidget->addTab(areaEditor, "Area Settings");
+    ui->sidebarTabWidget->addTab(areaEditor, QIcon(basePath + "settings.png"), "");
 
     // Setup Tileset Picker
     tilesetPalette = new TilesetPalette(level, levelView->objEditionModePtr());
-    ui->sidebarTabWidget->addTab(tilesetPalette, "Tilesets");
+    ui->sidebarTabWidget->addTab(tilesetPalette, QIcon(basePath + "filled_box"), "");
 
     // Setup Sprite Picker
     spriteEditor = new SpriteEditorWidget();
-    ui->sidebarTabWidget->addTab(spriteEditor, "Sprites");
+    ui->sidebarTabWidget->addTab(spriteEditor, QIcon(basePath + "goomba.png"), "");
     connect(spriteEditor, SIGNAL(selectedSpriteChanged(int)), this, SLOT(setSelSprite(int)));
 
     // Setup Entrance Editor
     entranceEditor = new EntranceEditorWidget(&level->entrances);
     connect(entranceEditor, SIGNAL(updateLevelView()), levelView, SLOT(update()));
-    ui->sidebarTabWidget->addTab(entranceEditor, "Entrances");
+    ui->sidebarTabWidget->addTab(entranceEditor, QIcon(basePath + "entrance.png"), "");
+
+    // Setup Zone Editor
+    zoneEditor = new ZoneEditorWidget(&level->zones);
+    connect(zoneEditor, SIGNAL(updateLevelView()), levelView, SLOT(update()));
+    ui->sidebarTabWidget->addTab(zoneEditor, QIcon(basePath + "zone.png"), "");
 
     connect(levelView->editionModePtr(), SIGNAL(selectdObjectChanged(Object*)), this, SLOT(setObjectEdition(Object*)));
     connect(levelView->editionModePtr(), SIGNAL(deselected()), this, SLOT(deselect()));
@@ -257,20 +262,29 @@ void LevelEditorWindow::setObjectEdition(Object* obj)
         ui->sidebarTabWidget->setCurrentIndex(3);
         entranceEditor->select(dynamic_cast<Entrance*>(obj));
     }
+    else if (is<Zone*>(obj))
+    {
+        ui->sidebarTabWidget->setCurrentIndex(4);
+        zoneEditor->select(dynamic_cast<Zone*>(obj));
+    }
 }
 
 void LevelEditorWindow::deselect()
 {
     entranceEditor->deselect();
+    zoneEditor->deselect();
 }
 
 void LevelEditorWindow::updateEditors()
 {
     entranceEditor->updateEditor();
+    zoneEditor->updateEditor();
 }
 
 void LevelEditorWindow::on_sidebarTabWidget_currentChanged(int index)
 {
     if (index == 3)
         levelView->objEditionModePtr()->setDrawType(2);
+    else if (index == 4)
+        levelView->objEditionModePtr()->setDrawType(3);
 }

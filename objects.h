@@ -31,7 +31,7 @@ public:
     void setPosition(int x, int y);
     void increasePosition(int deltax, int deltay, int snap = 0);
     void resize(int width, int height);
-    void increaseSize(int deltax, int deltay);
+    void increaseSize(int deltax, int deltay, int snap = 0);
     virtual int getType() const { return -1; }
     virtual bool isResizable() const { return false; }
     int getx() const { return x; }
@@ -145,10 +145,10 @@ protected:
 struct tempZoneBounding
 {
     quint16 id;
-    quint32 upperBound;
-    quint32 lowerBound;
-    quint32 unkUpperBound;
-    quint32 unkLowerBound;
+    qint32 upperBound;
+    qint32 lowerBound;
+    qint32 unkUpperBound;
+    qint32 unkLowerBound;
     quint16 upScrolling;
 };
 
@@ -168,6 +168,8 @@ class Zone: public Object
 public:
     Zone() {}
     Zone(int x, int y, int width, int height, quint8 id, quint8 progPathId, quint8 musicId, quint8 multiplayerTracking, quint16 unk1);
+    bool clickDetection(int xcheck, int ycheck);
+    bool clickDetection(QRect rect);
     void setBounding(tempZoneBounding bounding);
     void setBackground(tempZoneBackground background);
     int getType() const { return 3; }
@@ -177,10 +179,10 @@ public:
     quint8 getMusicId() const { return musicId; }
     quint8 getMultiplayerTracking() const { return multiplayerTracking; }
     quint16 getUnk1() const { return unk1; }
-    quint32 getUpperBound() const { return upperBound; }
-    quint32 getLowerBound() const { return lowerBound; }
-    quint32 getUnkUpperBound() const { return unkUpperBound; }
-    quint32 getUnkLowerBound() const { return unkLowerBound; }
+    qint32 getUpperBound() const { return upperBound; }
+    qint32 getLowerBound() const { return lowerBound; }
+    qint32 getUnkUpperBound() const { return unkUpperBound; }
+    qint32 getUnkLowerBound() const { return unkLowerBound; }
     quint32 getUpScrolling() const { return upScrolling; }
     quint8 getXScrollRate() const { return xScrollRate; }
     quint8 getYScrollRate() const { return yScrollRate; }
@@ -188,6 +190,15 @@ public:
     quint8 getBgYPos() const { return bgYPos; }
     QString getBgName() const { return bgName; }
     quint8 getBgUnk1() const { return bgUnk1; }
+    void setID(quint8 id) { this->id = id; }
+    void setProgPathId(quint8 progPathId) { this->progPathId = progPathId; }
+    void setMusicID(quint8 musicId) { this->musicId = musicId; }
+    void setMultiplayerTracking(quint8 multiplayerTracking) { this->multiplayerTracking = multiplayerTracking; }
+    void setBackgroundName(QString bgName) { this->bgName = bgName; }
+    void setUpperBound(qint32 upperBound) { this->upperBound = upperBound; }
+    void setLowerBound(qint32 lowerBound) { this->lowerBound = lowerBound; }
+    void setUnkUpperBound(qint32 unkUpperBound) { this->unkUpperBound = unkUpperBound; }
+    void setUnkLowerBound(qint32 unkLowerBound) { this->unkLowerBound = unkLowerBound; }
 protected:
     quint8 id;
     quint8 progPathId;
@@ -195,18 +206,18 @@ protected:
     quint8 multiplayerTracking;
     quint16 unk1;
     // Boundings
-    quint32 upperBound;
-    quint32 lowerBound;
-    quint32 unkUpperBound;
-    quint32 unkLowerBound;
-    quint16 upScrolling;
+    qint32 upperBound = 0;
+    qint32 lowerBound = 0;
+    qint32 unkUpperBound = 0;
+    qint32 unkLowerBound = 0;
+    quint16 upScrolling = 0;
     // Background
-    quint8 xScrollRate;
-    quint8 yScrollRate;
-    quint8 bgXPos;
-    quint8 bgYPos;
-    QString bgName;
-    quint8 bgUnk1;
+    quint8 xScrollRate = 0;
+    quint8 yScrollRate = 0;
+    quint8 bgXPos = 0;
+    quint8 bgYPos = 0;
+    QString bgName = "Nohara";
+    quint8 bgUnk1 = 0;
 };
 
 

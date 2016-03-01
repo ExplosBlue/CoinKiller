@@ -44,7 +44,6 @@ Level::Level(Game *game, int world, int level, int area)
     FileBase* header = archive->openFile(headerfile);
     header->open();
     header->seek(0);
-    qDebug() << "HEADER SIZE:" << header->size();
 
     quint32 blockOffsets[17];
     quint32 blockSizes[17];
@@ -102,7 +101,7 @@ Level::Level(Game *game, int world, int level, int area)
         bounding.upperBound = header->read32();
         bounding.lowerBound = header->read32();
         bounding.unkUpperBound = header->read32();
-        bounding.unkUpperBound = header->read32();
+        bounding.unkLowerBound = header->read32();
         bounding.id = header->read16();
         bounding.upScrolling = header->read16();
         header->skip(8);
@@ -122,7 +121,7 @@ Level::Level(Game *game, int world, int level, int area)
         background.xPos = header->read8();
         background.yPos = header->read8();
         header->skip(2);
-        header->readStringASCII(background.name, 15);
+        header->readStringASCII(background.name, 16);
         background.unk1 = header->read16();
         header->skip(2);
         backgrounds.append(background);
@@ -193,26 +192,26 @@ Level::Level(Game *game, int world, int level, int area)
         header->skip(3);
 
         Zone* zone = new Zone(to20(x), to20(y), to20(width), to20(height), id, progPathId, musicId, multiplayerTracking, zoneUnk1);
+
         foreach(tempZoneBounding bounding, boundings)
         {
             if (boundingId == bounding.id)
             {
                 zone->setBounding(bounding);
-                qDebug() << "Found Bounding for Zone" << z;
                 break;
             }
         }
+
         foreach(tempZoneBackground background, backgrounds)
         {
             if (backgroundId == background.id)
             {
                 zone->setBackground(background);
-                qDebug() << "Found Background for Zone" << z;
                 break;
             }
         }
 
-        zones.append(*zone);
+        zones.append(zone);
     }
 
     // Block 10: Locations
@@ -484,13 +483,13 @@ void Level::save()
     header->seek(blockOffsets[2]);
     for (quint8 i = 0; i < zones.size(); i++)
     {
-        Zone z = zones[i];
-        header->write32(z.getUpperBound());
-        header->write32(z.getLowerBound());
-        header->write32(z.getUnkUpperBound());
-        header->write32(z.getUnkLowerBound());
+        Zone* z = zones[i];
+        header->write32(z->getUpperBound());
+        header->write32(z->getLowerBound());
+        header->write32(z->getUnkUpperBound());
+        header->write32(z->getUnkLowerBound());
         header->write16(i);
-        header->write16(z.getUpScrolling());
+        header->write16(z->getUpScrolling());
         for (int j = 0; j < 8; j++) header->write8(0);
     }
 
@@ -502,15 +501,15 @@ void Level::save()
     header->seek(blockOffsets[4]);
     for (quint16 i = 0; i < zones.size(); i++)
     {
-        Zone z = zones[i];
+        Zone* z = zones[i];
         header->write16(i);
-        header->write8(z.getXScrollRate());
-        header->write8(z.getYScrollRate());
-        header->write8(z.getBgXPos());
-        header->write8(z.getBgYPos());
+        header->write8(z->getXScrollRate());
+        header->write8(z->getYScrollRate());
+        header->write8(z->getBgXPos());
+        header->write8(z->getBgYPos());
         header->write16(0);
-        header->writeStringASCII(z.getBgName(), 15);
-        header->write16(z.getBgUnk1());
+        header->writeStringASCII(z->getBgName(), 16);
+        header->write16(z->getBgUnk1());
         header->write16(0);
     }
 
@@ -572,19 +571,19 @@ void Level::save()
     header->seek(blockOffsets[9]);
     for (quint8 i = 0; i < zones.size(); i++)
     {
-        Zone z = zones[i];
-        header->write16(to16(z.getx()));
-        header->write16(to16(z.gety()));
-        header->write16(to16(z.getwidth()));
-        header->write16(to16(z.getheight()));
-        header->write16(z.getUnk1());
+        Zone* z = zones[i];
+        header->write16(to16(z->getx()));
+        header->write16(to16(z->gety()));
+        header->write16(to16(z->getwidth()));
+        header->write16(to16(z->getheight()));
+        header->write16(z->getUnk1());
         header->write16(0);
-        header->write8(z.getid());
+        header->write8(z->getid());
         header->write8(i);
         for (int j = 0; j < 6; j++) header->write8(0);
-        header->write8(z.getMultiplayerTracking());
-        header->write8(z.getProgPathId());
-        header->write8(z.getMusicId());
+        header->write8(z->getMultiplayerTracking());
+        header->write8(z->getProgPathId());
+        header->write8(z->getMusicId());
         header->write8(0);
         header->write8(i);
         for (int j = 0; j < 3; j++) header->write8(0);
@@ -664,19 +663,19 @@ quint8 Level::getNextZoneID(Object* obj)
 {
     quint8 zoneID = 0;
     int actualDistance = 2147483647;
-    foreach (Zone zone, zones)
+    foreach (Zone* zone, zones)
     {
         int distance = 0;
 
-        if (!QRect(zone.getx(), zone.gety(), zone.getwidth(), zone.getheight()).contains(obj->getx(), obj->gety()))
+        if (!QRect(zone->getx(), zone->gety(), zone->getwidth(), zone->getheight()).contains(obj->getx(), obj->gety()))
         {
-            int dx = qMax(qAbs(obj->getx() - zone.getx()) - zone.getwidth() / 2, 0);
-            int dy = qMax(qAbs(obj->gety() - zone.getx()) - zone.getheight() / 2, 0);
+            int dx = qMax(qAbs(obj->getx() - zone->getx()) - zone->getwidth() / 2, 0);
+            int dy = qMax(qAbs(obj->gety() - zone->getx()) - zone->getheight() / 2, 0);
             distance = dx * dx + dy * dy;
         }
         if (distance < actualDistance)
         {
-            zoneID = zone.getid();
+            zoneID = zone->getid();
             actualDistance = distance;
         }
     }
@@ -708,6 +707,11 @@ void Level::remove(Object* obj)
     else if (is<Entrance*>(obj))
     {
         entrances.removeOne(dynamic_cast<Entrance*>(obj));
+        check = true;
+    }
+    else if (is<Zone*>(obj))
+    {
+        zones.removeOne(dynamic_cast<Zone*>(obj));
         check = true;
     }
     else if (is<Location*>(obj))
@@ -775,4 +779,20 @@ Entrance* Level::newEntrance(int x, int y)
         if (!check) break;
     }
     return new Entrance(toNext16Compatible(x), toNext16Compatible(y), 0, 0, id, 0, 0, 0, 0, 0, 0);
+}
+
+Zone* Level::newZone(int x, int y)
+{
+    if (x < 0) x = 0;
+    if (y < 0) y = 0;
+
+    quint8 id = 0;
+    for(;; id++)
+    {
+        bool check = false;
+        foreach (Zone* zone, zones)
+            if (zone->getid() == id) check = true;
+        if (!check) break;
+    }
+    return new Zone(toNext16Compatible(x), toNext16Compatible(y), 400, 240, id, 0, 0, 0, 0);
 }

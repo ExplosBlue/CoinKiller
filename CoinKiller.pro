@@ -38,7 +38,8 @@ SOURCES += main.cpp\
     tilesetpalette.cpp \
     entranceeditorwidget.cpp \
     spriteeditorwidget.cpp \
-    areaeditorwidget.cpp
+    areaeditorwidget.cpp \
+    zoneeditorwidget.cpp
 
 HEADERS  += mainwindow.h \
     filesystembase.h \
@@ -68,7 +69,8 @@ HEADERS  += mainwindow.h \
     tilesetpalette.h \
     entranceeditorwidget.h \
     spriteeditorwidget.h \
-    areaeditorwidget.h
+    areaeditorwidget.h \
+    zoneeditorwidget.h
 
 FORMS    += mainwindow.ui \
     leveleditorwindow.ui \

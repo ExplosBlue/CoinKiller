@@ -50,6 +50,7 @@ EntranceEditorWidget::EntranceEditorWidget(QList<Entrance*> *entrances)
 
     edits = new QWidget;
     QGridLayout* subLayout = new QGridLayout();
+    subLayout->setMargin(0);
     edits->setLayout(subLayout);
     layout->addWidget(edits);
 
@@ -95,7 +96,9 @@ void EntranceEditorWidget::select(Entrance* entr)
     this->editEntrance = entr;
     editingAnEntrance = true;
     updateInfo();
+    handleChanges = false;
     entrancesList->setCurrentRow(entrances->indexOf(entr));
+    handleChanges = true;
 }
 
 void EntranceEditorWidget::loadEntranceTypes()
@@ -120,6 +123,8 @@ void EntranceEditorWidget::updateEditor()
 
 void EntranceEditorWidget::updateList()
 {
+    QModelIndex index;
+    if (entrancesList->selectionModel()->selectedIndexes().size() != 0) index = entrancesList->selectionModel()->selectedIndexes().at(0);
     entrancesList->clear();
     foreach (Entrance* entr, *entrances)
     {
@@ -130,6 +135,7 @@ void EntranceEditorWidget::updateList()
             type = "UNKNOWN";
         entrancesList->addItem(QString("%1: %2 (at %3,%4)").arg(entr->getid()).arg(type).arg(to16(entr->getx())).arg(to16(entr->gety())));
     }
+    entrancesList->setCurrentIndex(index);
 }
 
 void EntranceEditorWidget::updateInfo()
@@ -155,6 +161,7 @@ void EntranceEditorWidget::updateInfo()
 
 void EntranceEditorWidget::handleEntranceListIndexChanged(QListWidgetItem *item)
 {
+    if (!handleChanges) return;
     editEntrance = entrances->at(entrancesList->row(item));
     editingAnEntrance = true;
     updateInfo();

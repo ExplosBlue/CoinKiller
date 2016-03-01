@@ -144,8 +144,20 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr)
     case 165: // Koopa Troopa
         ret = new KoopaTroopaRenderer(spr);
         break;
+    case 167: // Pipe Piranha Plant - Down
+        ret = new NormalImageRenderer(spr, basePath + "piranha_pipe_down.png");
+        break;
     case 175: // Grounded Piranha Plant
         ret = new NormalImageRenderer(spr, basePath + "piranha_plant.png");
+        break;
+    case 181: // Pipe Piranha Plant - Left
+        ret = new NormalImageRenderer(spr, basePath + "piranha_pipe_left.png");
+        break;
+    case 182: // Pipe Piranha Plant - Right
+        ret = new NormalImageRenderer(spr, basePath + "piranha_pipe_right.png");
+        break;
+    case 183: // Pipe Piranha Plant - Up
+        ret = new NormalImageRenderer(spr, basePath + "piranha_pipe_up.png");
         break;
     case 184: // Parabomb
         ret = new NormalImageRenderer(spr, basePath + "parabomb.png");
