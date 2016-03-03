@@ -473,13 +473,38 @@ void Sprite::setRect()
 int Sprite::getType() const { return 1; }
 int Sprite::getid() const { return id; }
 
-qint8 Sprite::getByte(int id) const { return spriteData[id]; }
-void Sprite::setByte(int id, qint8 nbr) { spriteData[id] = nbr; }
+quint8 Sprite::getByte(int id) const { return spriteData[id]; }
+void Sprite::setByte(int id, quint8 nbr) { spriteData[id] = nbr; }
 
-qint8 Sprite::getNybble(int id) const
+quint8 Sprite::getNybble(int id) const
 {
     if (id%2 == 0) return spriteData[id/2] >> 4;
-    else return spriteData[id/2] & 0x0F;
+    else return spriteData[id/2] & 0xF;
+}
+
+void Sprite::setNybble(int id, quint8 nbr)
+{
+    if (id%2 == 0) spriteData[id/2] = ((spriteData[id/2] & 0xF) | nbr << 4);
+    else spriteData[id/2] = ((spriteData[id/2] & 0xF0) | nbr);
+}
+
+int Sprite::getNybbleData(int startNybble, int endNybble)
+{
+    int data = 0;
+
+    for (int i = startNybble; i <= endNybble; i++)
+        data = data << 4 | getNybble(i);
+
+    return data;
+}
+
+void Sprite::setNybbleData(int data, int startNybble, int endNybble)
+{
+    for (int i = endNybble; i >= startNybble; i--)
+    {
+        setNybble(i, (quint8)(data & 0xF));
+        data = data >> 4;
+    }
 }
 
 // Format: 1:ID:X:Y:SD0:SD1:SD2:SD3:SD4:SD5:SD6:SD7

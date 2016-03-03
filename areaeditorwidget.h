@@ -9,15 +9,37 @@
 #include <QCheckBox>
 #include <QComboBox>
 #include <QMap>
+#include <QTreeWidget>
+
+class TilesetChooser : public QTreeWidget
+{
+    Q_OBJECT
+public:
+    TilesetChooser(Level* level, int tsNbr, Game *game, QMap<QString, QString>* names);
+private:
+    Level* level;
+    Game* game;
+    int tsNbr;
+private slots:
+    void handleTilesetChange(QTreeWidgetItem* item, int);
+signals:
+    void updateLevelEditor();
+    void relaodTilesetPicker();
+};
 
 class AreaEditorWidget : public QWidget
 {
     Q_OBJECT
 public:
-    AreaEditorWidget(Level* level);
+    AreaEditorWidget(Level* level, Game* game);
+
+signals:
+    void updateLevelView();
+    void relaodTilesetPicker();
 
 private:
     Level* level;
+    Game* game;
 
     QSpinBox* timeLimit;
     QCheckBox* toadhouseFlag;
@@ -37,6 +59,9 @@ private slots:
     void handleSpecialLevelFlag1Change(QString text);
     void handleSpecialLevelFlag2Change(QString text);
     void handleToadHouseFlagChanged(bool flag);
+
+    void passUpdateLevelView() { emit updateLevelView(); }
+    void passRelaodTilesetPicker() { emit relaodTilesetPicker(); }
 };
 
 #endif // AREAEDITORWIDGET_H

@@ -192,7 +192,7 @@ void MainWindow::on_levelList_doubleClicked(const QModelIndex &index)
     int world = data.left(1).toInt();
     int level = data.mid(2, data.size()-2).toInt();
 
-    LevelEditorWindow* lvlEditor = new LevelEditorWindow(this, game->getLevel(world, level, 1));
+    LevelEditorWindow* lvlEditor = new LevelEditorWindow(this, game, world, level);
     lvlEditor->show();
 }
 

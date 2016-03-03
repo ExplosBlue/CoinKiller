@@ -4,6 +4,29 @@
 #include <QList>
 #include <QtXml>
 #include <QTreeWidgetItem>
+#include <QMap>
+
+class Field
+{
+public:
+
+    enum fieldType
+    {
+        List,
+        Value,
+        Checkbox
+    };
+
+    Field() {}
+    QString title;
+    QString notes;
+    QString comment;
+    fieldType type;
+    int startNybble;
+    int endNybble;
+
+    QMap<int, QString> listEntries;
+};
 
 class SpriteDefinition
 {
@@ -11,10 +34,13 @@ public:
     SpriteDefinition(QDomElement spriteElement);
     QString getName() const { return name; }
     int getID() const { return id; }
+    Field* getFieldPtr(int id) { return &fields[id]; }
+    int getFieldCount() { return fields.size(); }
 
 private:
     QString name;
     int id;
+    QList<Field> fields;
 };
 
 struct spriteCategory
@@ -38,6 +64,7 @@ public:
     int spriteViewCount() { return spriteViews.count(); }
     spriteView *spriteViewPtr(int view) { return &spriteViews[view]; }
     SpriteDefinition getSpriteDef(int nbr) { return spriteDefs[nbr]; }
+    SpriteDefinition* getSpriteDefPtr(int nbr) { return &spriteDefs[nbr]; }
 
 private:
     QList<spriteView> spriteViews;

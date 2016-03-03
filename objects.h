@@ -88,15 +88,17 @@ public:
     int getType() const;
     bool isResizable() const { return false; }
     int getid() const;
-    void setByte(int id, qint8 nbr);
-    void setNybble(int id, qint8 nbr);
-    qint8 getByte(int id) const;
-    qint8 getNybble(int id) const;
+    void setByte(int id, quint8 nbr);
+    void setNybble(int id, quint8 nbr);
+    quint8 getByte(int id) const;
+    quint8 getNybble(int id) const;
     void setRect();
     QString toString() const;
+    int getNybbleData(int startNybble, int endNybble);
+    void setNybbleData(int data, int startNybble, int endNybble);
 protected:
     int id;
-    qint8 spriteData[8];
+    quint8 spriteData[12] = {0,0,0,0,0,0,0,0,0,0,0,0};
 };
 
 

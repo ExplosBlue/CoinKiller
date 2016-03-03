@@ -42,7 +42,7 @@ class LevelEditorWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit LevelEditorWindow(QWidget *parent, Level* voltmeter);
+    explicit LevelEditorWindow(QWidget *parent, Game* game, int worldNbr, int levelNbr);
     ~LevelEditorWindow();
 
 public slots:
@@ -88,6 +88,7 @@ private:
 
     //SarcFilesystem* levelArchive;
     Level* level;
+    Game* game;
     Tileset* tileset;
     LevelView* levelView;
 

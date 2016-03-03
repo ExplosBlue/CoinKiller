@@ -13,7 +13,8 @@ class TilesetPalette : public QWidget
 public:
     explicit TilesetPalette(Level* level, ObjectsEditonMode *objEditionMode);
 
-signals:
+public slots:
+    void reloadTilesets();
 
 private slots:
     void on_objectsListView0_clicked(const QModelIndex &index);

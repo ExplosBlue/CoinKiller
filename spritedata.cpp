@@ -82,4 +82,44 @@ SpriteDefinition::SpriteDefinition(QDomElement spriteElement)
 {
     id = spriteElement.attribute("id", "999").toInt();
     name = spriteElement.attribute("name", "Invalid Name");
+
+    QDomElement fieldElement = spriteElement.firstChild().toElement();
+    while (!fieldElement.isNull())
+    {
+        Field field;
+        field.title = fieldElement.attribute("title", "INVALID TITLE");
+        field.notes = fieldElement.attribute("notes", "");
+        field.comment = fieldElement.attribute("comment", "");
+
+        QString nybbleStr = fieldElement.attribute("nybble");
+        if (nybbleStr.contains('-'))
+        {
+            QStringList nybbleParts = nybbleStr.split('-');
+            field.startNybble = nybbleParts[0].toInt()-1;
+            field.endNybble = nybbleParts[1].toInt()-1;
+        }
+        else
+        {
+            field.startNybble = fieldElement.attribute("nybble").toInt()-1;
+            field.endNybble = field.startNybble;
+        }
+
+        if (fieldElement.tagName() == "value") field.type = Field::Value;
+        else if (fieldElement.tagName() == "checkbox") field.type = Field::Checkbox;
+
+        else if (fieldElement.tagName() == "list")
+        {
+            field.type = Field::List;
+            QDomNodeList entries = fieldElement.elementsByTagName("entry");
+            for (int i = 0; i < entries.size(); i++)
+            {
+                QDomElement entryElement = entries.at(i).toElement();
+                field.listEntries.insert(entryElement.attribute("value").toInt(), entryElement.text());
+            }
+        }
+
+        fields.append(field);
+
+        fieldElement = fieldElement.nextSibling().toElement();
+    }
 }

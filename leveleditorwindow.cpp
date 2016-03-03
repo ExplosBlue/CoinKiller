@@ -26,11 +26,12 @@
 #include <QSizePolicy>
 #include <QStandardItemModel>
 
-LevelEditorWindow::LevelEditorWindow(QWidget *parent, Level* level) :
+LevelEditorWindow::LevelEditorWindow(QWidget *parent, Game *game, int worldNbr, int levelNbr) :
     QMainWindow(parent),
     ui(new Ui::LevelEditorWindow)
 {
-    this->level = level;
+    this->game = game;
+    level = game->getLevel(worldNbr, levelNbr, 1);
     // some extra shit here
 
 
@@ -86,13 +87,13 @@ LevelEditorWindow::LevelEditorWindow(QWidget *parent, Level* level) :
 
 
     QList<int> derpshit;
-    derpshit.append(300);
+    derpshit.append(350);
     derpshit.append(999999999);
     ui->splitter->setSizes(derpshit);
     ui->splitter->setCollapsible(0, false);
 
     ui->sidebar->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Ignored);
-    ui->sidebar->setMinimumSize(300, 20);
+    ui->sidebar->setMinimumSize(350, 20);
 
     //this->ui->splitter->setStretchFactor(0, 0); // useless
 
@@ -107,17 +108,21 @@ LevelEditorWindow::LevelEditorWindow(QWidget *parent, Level* level) :
     zoom = 1.0;
 
     // Setup Area Editor
-    areaEditor = new AreaEditorWidget(level);
+    areaEditor = new AreaEditorWidget(level, game);
+    connect(areaEditor, SIGNAL(updateLevelView()), levelView, SLOT(update()));
     ui->sidebarTabWidget->addTab(areaEditor, QIcon(basePath + "settings.png"), "");
 
     // Setup Tileset Picker
     tilesetPalette = new TilesetPalette(level, levelView->objEditionModePtr());
     ui->sidebarTabWidget->addTab(tilesetPalette, QIcon(basePath + "filled_box"), "");
 
+    connect(areaEditor, SIGNAL(relaodTilesetPicker()), tilesetPalette, SLOT(reloadTilesets()));
+
     // Setup Sprite Picker
     spriteEditor = new SpriteEditorWidget();
     ui->sidebarTabWidget->addTab(spriteEditor, QIcon(basePath + "goomba.png"), "");
     connect(spriteEditor, SIGNAL(selectedSpriteChanged(int)), this, SLOT(setSelSprite(int)));
+    connect(spriteEditor->spriteDataEditorPtr(), SIGNAL(updateLevelView()), levelView, SLOT(update()));
 
     // Setup Entrance Editor
     entranceEditor = new EntranceEditorWidget(&level->entrances);
@@ -257,6 +262,11 @@ void LevelEditorWindow::setObjectEdition(Object* obj)
 {
     deselect();
 
+    if (is<Sprite*>(obj))
+    {
+        ui->sidebarTabWidget->setCurrentIndex(2);
+        spriteEditor->spriteDataEditorPtr()->select(dynamic_cast<Sprite*>(obj));
+    }
     if (is<Entrance*>(obj))
     {
         ui->sidebarTabWidget->setCurrentIndex(3);
@@ -271,12 +281,14 @@ void LevelEditorWindow::setObjectEdition(Object* obj)
 
 void LevelEditorWindow::deselect()
 {
+    spriteEditor->spriteDataEditorPtr()->deselect();
     entranceEditor->deselect();
     zoneEditor->deselect();
 }
 
 void LevelEditorWindow::updateEditors()
 {
+    spriteEditor->spriteDataEditorPtr()->updateEditor();
     entranceEditor->updateEditor();
     zoneEditor->updateEditor();
 }

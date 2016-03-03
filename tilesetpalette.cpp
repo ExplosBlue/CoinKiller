@@ -4,7 +4,6 @@
 #include <QVBoxLayout>
 #include <QLabel>
 #include <QRadioButton>
-#include <QTabWidget>
 #include <QStandardItemModel>
 #include <QSpacerItem>
 
@@ -56,6 +55,12 @@ TilesetPalette::TilesetPalette(Level* level, ObjectsEditonMode* objEditionMode)
     connect(objectLists[2], SIGNAL(clicked(QModelIndex)), this, SLOT(on_objectsListView2_clicked(QModelIndex)));
     connect(objectLists[3], SIGNAL(clicked(QModelIndex)), this, SLOT(on_objectsListView3_clicked(QModelIndex)));
     connect(layer1RadioBtn, SIGNAL(toggled(bool)), SLOT(on_layerRadioButton_toggled(bool)));
+}
+
+void TilesetPalette::reloadTilesets()
+{
+    qDebug() << "RELOAD";
+    for (int i = 0; i < 4; i++) loadTileset(i);
 }
 
 void TilesetPalette::loadTileset(int tilesetNbr)

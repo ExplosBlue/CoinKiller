@@ -66,9 +66,14 @@ SpriteEditorWidget::SpriteEditorWidget()
     }
 
     viewComboBox->setModel(new QStringListModel(viewNames));
+
+    editor = new SpriteDataEditorWidget(&spriteData);
+    layout->addWidget(editor);
+
     setLayout(layout);
 
     connect(spriteTree, SIGNAL(currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)), this, SLOT(handleIndexChange(QTreeWidgetItem*)));
+
 }
 
 void SpriteEditorWidget::setView(int view)
@@ -114,3 +119,182 @@ void SpriteEditorWidget::handleIndexChange(QTreeWidgetItem *item)
         emit(selectedSpriteChanged(data));
 }
 
+SpriteDataEditorWidget::SpriteDataEditorWidget(SpriteData *spriteData)
+{
+    this->spriteData = spriteData;
+    layout = new QGridLayout();
+    layout->setMargin(0);
+
+    spriteName = new QLabel();
+    layout->addWidget(spriteName, 0, 0, 1, 2);
+
+    rawSpriteData = new QLineEdit();
+    rawSpriteData->setInputMask("HH HH HH HH HH HH HH HH HH HH HH HH");
+    layout->addWidget(new QLabel("Raw Sprite Data:"), 1, 0, 1, 1, Qt::AlignRight);
+    layout->addWidget(rawSpriteData, 1, 1);
+    connect(rawSpriteData, SIGNAL(textEdited(QString)), this, SLOT(handleRawSpriteDataChange(QString)));
+
+    this->setLayout(layout);
+    setHidden(true);
+}
+
+void SpriteDataEditorWidget::select(Sprite *sprite)
+{
+    editSprite = sprite;
+    editingASprite = true;
+    setHidden(false);
+
+    updateRawSpriteData();
+    spriteName->setText(QString("<b>%1 (%2)</b>").arg(spriteData->getSpriteDefPtr(sprite->getid())->getName()).arg(sprite->getid()));
+
+    for (int i = 0; i < spriteData->getSpriteDefPtr(sprite->getid())->getFieldCount(); i++)
+    {
+        Field* field = spriteData->getSpriteDefPtr(sprite->getid())->getFieldPtr(i);
+
+        if (field->type != Field::Checkbox)
+        {
+            QLabel* label = new QLabel(field->title + ":");
+            layout->addWidget(label, i+2, 0, 1, 1, Qt::AlignRight);
+            fieldNames.append(label);
+        }
+
+        if (field->type == Field::List)
+        {
+            SpriteListFieldWidget* fieldWidget = new SpriteListFieldWidget(sprite, field);
+            layout->addWidget(fieldWidget, i+2, 1);
+            listFieldWidgets.append(fieldWidget);
+            connect(fieldWidget, SIGNAL(updateHex()), this, SLOT(updateRawSpriteData()));
+        }
+        else if (field->type == Field::Checkbox)
+        {
+            SpriteCheckboxFieldWidget* fieldWidget = new SpriteCheckboxFieldWidget(sprite, field);
+            layout->addWidget(fieldWidget, i+2, 1);
+            checkboxFieldWidgets.append(fieldWidget);
+            connect(fieldWidget, SIGNAL(updateHex()), this, SLOT(updateRawSpriteData()));
+        }
+        else if (field->type == Field::Value)
+        {
+            SpriteValueFieldWidget* fieldWidget = new SpriteValueFieldWidget(sprite, field);
+            layout->addWidget(fieldWidget, i+2, 1);
+            valueFieldWidgets.append(fieldWidget);
+            connect(fieldWidget, SIGNAL(updateHex()), this, SLOT(updateRawSpriteData()));
+        }
+    }
+}
+
+void SpriteDataEditorWidget::deselect()
+{
+    editingASprite = false;
+    setHidden(true);
+
+    foreach (QLabel* fieldName, fieldNames) { layout->removeWidget(fieldName); delete fieldName; } fieldNames.clear();
+    foreach (SpriteValueFieldWidget* field, valueFieldWidgets) { layout->removeWidget(field); delete field; } valueFieldWidgets.clear();
+    foreach (SpriteListFieldWidget* field, listFieldWidgets) { layout->removeWidget(field); delete field; } listFieldWidgets.clear();
+    foreach (SpriteCheckboxFieldWidget* field, checkboxFieldWidgets) { layout->removeWidget(field); delete field; } checkboxFieldWidgets.clear();
+}
+
+void SpriteDataEditorWidget::updateRawSpriteData()
+{
+    QString rawSpriteDataStr;
+    for (int i = 0; i < 12; i++) rawSpriteDataStr.append(QString("%1").arg(editSprite->getByte(i), 2, 16, QChar('0')));
+    rawSpriteData->setText(rawSpriteDataStr);
+    emit updateLevelView();
+}
+
+void SpriteDataEditorWidget::handleRawSpriteDataChange(QString text)
+{
+    QStringList bytes = text.split(" ");
+
+    for (int i = 0; i < 12; i++)
+        editSprite->setByte(i, (quint8)bytes[i].toUInt(0, 16));
+
+    editSprite->setRect();
+
+    foreach (SpriteValueFieldWidget* field, valueFieldWidgets) field->updateValue();
+    foreach (SpriteListFieldWidget* field, listFieldWidgets) field->updateValue();
+    foreach (SpriteCheckboxFieldWidget* field, checkboxFieldWidgets) field->updateValue();
+
+    emit updateLevelView();
+}
+
+
+// Field Widgets
+
+SpriteValueFieldWidget::SpriteValueFieldWidget(Sprite *sprite, Field *field)
+{
+    this->sprite = sprite;
+    this->field = field;
+    setRange(0, (1 << ((field->endNybble - field->startNybble + 1) * 4)) - 1);
+
+    updateValue();
+    connect(this, SIGNAL(valueChanged(int)), this, SLOT(handleValueChange(int)));
+}
+
+void SpriteValueFieldWidget::updateValue()
+{
+    handleValueChanges = false;
+    setValue(sprite->getNybbleData(field->startNybble, field->endNybble));
+    handleValueChanges = true;
+}
+
+void SpriteValueFieldWidget::handleValueChange(int value)
+{
+    if (!handleValueChanges) return;
+    sprite->setNybbleData(value, field->startNybble, field->endNybble);
+    sprite->setRect();
+    emit updateHex();
+}
+
+
+SpriteCheckboxFieldWidget::SpriteCheckboxFieldWidget(Sprite *sprite, Field *field)
+{
+    this->sprite = sprite;
+    this->field = field;
+    setText(field->title);
+
+    updateValue();
+    connect(this, SIGNAL(toggled(bool)), this, SLOT(handleValueChange(bool)));
+}
+
+void SpriteCheckboxFieldWidget::updateValue()
+{
+    handleValueChanges = false;
+    setChecked(sprite->getNybbleData(field->startNybble, field->endNybble) == 1);
+    handleValueChanges = true;
+}
+
+void SpriteCheckboxFieldWidget::handleValueChange(bool checked)
+{
+    if (!handleValueChanges) return;
+    sprite->setNybbleData(checked, field->startNybble, field->endNybble);
+    sprite->setRect();
+    emit updateHex();
+}
+
+
+SpriteListFieldWidget::SpriteListFieldWidget(Sprite *sprite, Field *field)
+{
+    this->sprite = sprite;
+    this->field = field;
+
+    addItems(field->listEntries.values());
+
+    updateValue();
+    connect(this, SIGNAL(currentIndexChanged(QString)), this, SLOT(handleIndexChange(QString)));
+}
+
+void SpriteListFieldWidget::updateValue()
+{
+    handleValueChanges = false;
+    if (field->listEntries.keys().contains(sprite->getNybbleData(field->startNybble, field->endNybble))) setCurrentText(field->listEntries.value(sprite->getNybbleData(field->startNybble, field->endNybble)));
+    else setCurrentIndex(-1);
+    handleValueChanges = true;
+}
+
+void SpriteListFieldWidget::handleIndexChange(QString text)
+{
+    if (!handleValueChanges) return;
+    sprite->setNybbleData(field->listEntries.key(text, 0), field->startNybble, field->endNybble);
+    sprite->setRect();
+    emit updateHex();
+}

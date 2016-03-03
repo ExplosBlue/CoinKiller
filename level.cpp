@@ -161,12 +161,14 @@ Level::Level(Game *game, int world, int level, int area)
 
         Sprite* spr = new Sprite(to20(header->read16()), to20(header->read16()), id);
 
-        for (int i=0; i<8; i++) spr->setByte(i, header->read8());
+        for (int i=0; i<10; i++) spr->setByte(i, header->read8());
+        header->skip(2);
+        for (int i=10; i<12; i++) spr->setByte(i, header->read8());
+
+        header->skip(4);
 
         spr->setRect();
         sprites.append(spr);
-
-        header->skip(10); // Unused Sprite Data and Zone
     }
 
     // Block 8: Sprites Used List (no need to read this)
@@ -541,6 +543,7 @@ void Level::save()
         header->write8(entr->getUnk1());
         header->write8(entr->getUnk2());
         for (int i = 0; i < 2; i++) header->write8(0);
+        qDebug() << "ENtrance" << entr->getid() << "-> Zone" << getNextZoneID(entr);
     }
 
     // Block 7: Sprites
@@ -777,6 +780,11 @@ Entrance* Level::newEntrance(int x, int y)
         foreach (Entrance* entr, entrances)
             if (entr->getid() == id) check = true;
         if (!check) break;
+        else if (id == 255)
+        {
+            id = 0;
+            break;
+        }
     }
     return new Entrance(toNext16Compatible(x), toNext16Compatible(y), 0, 0, id, 0, 0, 0, 0, 0, 0);
 }
@@ -793,6 +801,11 @@ Zone* Level::newZone(int x, int y)
         foreach (Zone* zone, zones)
             if (zone->getid() == id) check = true;
         if (!check) break;
+        else if (id == 255)
+        {
+            id = 0;
+            break;
+        }
     }
     return new Zone(toNext16Compatible(x), toNext16Compatible(y), 400, 240, id, 0, 0, 0, 0);
 }

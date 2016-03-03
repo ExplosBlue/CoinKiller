@@ -148,7 +148,6 @@ void ObjectsEditonMode::mouseDrag(int x, int y, Qt::KeyboardModifiers modifieres
         ly = y;
         selectedObjects.clear();
         selectedObjects = getObjectsAtPos(lx, ly, dx, dy, false);
-        //checkEmits();
     }
     else
     {
@@ -290,9 +289,9 @@ void ObjectsEditonMode::mouseUp(int x, int y)
 {
     mouseAct = getActionAtPos(x, y);
     actualCursor = getCursorAtPos(x, y);
+    if (selectionMode) checkEmits();
     selectionMode = false;
     creatNewObject = false;
-    checkEmits();
 }
 
 void ObjectsEditonMode::render(QPainter *painter)

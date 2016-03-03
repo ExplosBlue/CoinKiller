@@ -1,13 +1,16 @@
 #include "areaeditorwidget.h"
+#include "game.h"
 
 #include <QGridLayout>
 #include <QLabel>
 #include <QSpacerItem>
 #include <QTabWidget>
+#include <QMessageBox>
 
-AreaEditorWidget::AreaEditorWidget(Level* level)
+AreaEditorWidget::AreaEditorWidget(Level* level, Game *game)
 {
     this->level = level;
+    this->game = game;
 
     specialLevelFlags1.insert(0, "Normal");
     specialLevelFlags1.insert(2, "Powerup / Star Toad House");
@@ -49,13 +52,28 @@ AreaEditorWidget::AreaEditorWidget(Level* level)
 
     layout->addWidget(new HorLine(), 5, 0, 1, 2);
 
+    layout->addWidget(new QLabel("Tilesets:"), 6, 0, 1, 2);
     QTabWidget* tabWidget = new QTabWidget();
-    layout->addWidget(tabWidget, 6, 0, 1, 2);
+    layout->addWidget(tabWidget, 7, 0, 1, 2);
 
-    tabWidget->addTab(new QWidget(), "0");
-    tabWidget->addTab(new QWidget(), "1");
-    tabWidget->addTab(new QWidget(), "2");
-    tabWidget->addTab(new QWidget(), "3");
+    QMap<QString, QString> tsNames;
+    QFile file(QCoreApplication::applicationDirPath() + "/coinkiller_data/tilesetnames.txt");
+    if(!file.open(QIODevice::ReadOnly)) return;
+    QTextStream in(&file);
+    while(!in.atEnd())
+    {
+        QStringList nameStrings = in.readLine().split(":");
+        tsNames.insert(nameStrings[0], nameStrings[1]);
+    }
+    file.close();
+
+    for (int i = 0; i < 4; i++)
+    {
+        TilesetChooser* tsChooser = new TilesetChooser(level, i, game, &tsNames);
+        connect(tsChooser, SIGNAL(updateLevelEditor()), this, SLOT(passUpdateLevelView()));
+        connect(tsChooser, SIGNAL(relaodTilesetPicker()), this, SLOT(passRelaodTilesetPicker()));
+        tabWidget->addTab(tsChooser, QString("%1").arg(i));
+    }
 
     updateInfo();
 }
@@ -93,4 +111,49 @@ void AreaEditorWidget::handleToadHouseFlagChanged(bool flag)
     if (!handleChanges) return;
     level->toadHouseFlag = flag ? 2 : 0;
 
+}
+
+TilesetChooser::TilesetChooser(Level* level, int tsNbr, Game* game, QMap<QString, QString> *names)
+{
+    this->level = level;
+    this->game = game;
+    this->tsNbr = tsNbr;
+
+    QStringList headers;
+    headers << "Name" << "File";
+    setHeaderLabels(headers);
+
+    setRootIsDecorated(false);
+
+    QStringList tilesetFileNames;
+    game->fs->directoryContents("/Unit/", QDir::Files, tilesetFileNames);
+
+    QString prefix;
+
+    if (tsNbr == 0) prefix = "J_";
+    else if (tsNbr == 1) prefix = "M_";
+    else if (tsNbr == 2) prefix = "S1_";
+    else if (tsNbr == 3) prefix = "S2_";
+
+    foreach (QString fileName, tilesetFileNames)
+    {
+        if (!fileName.startsWith(prefix)) continue;
+        fileName.chop(5);
+
+        QTreeWidgetItem *ts = new QTreeWidgetItem(this);
+
+        QString name;
+
+        ts->setText(0, names->value(fileName, fileName.right(fileName.length() - (tsNbr/2 + 2))));
+        ts->setText(1, fileName);
+    }
+
+    connect(this, SIGNAL(itemClicked(QTreeWidgetItem*, int)), this, SLOT(handleTilesetChange(QTreeWidgetItem*,int)));
+}
+
+void TilesetChooser::handleTilesetChange(QTreeWidgetItem* item, int)
+{
+    level->tilesets[tsNbr] = game->getTileset(item->text(1));
+    emit updateLevelEditor();
+    emit relaodTilesetPicker();
 }
