@@ -30,7 +30,7 @@ Level::Level(Game *game, int world, int level, int area)
     this->world = world;
     this->level = level;
 
-    QString arcpath = QString("/Course/%1-%2.sarc").arg(world).arg(level);
+    QString arcpath = QString("/Course%1%2-%3.sarc").arg(world < 10 ? "/" : "/dlc/").arg(world).arg(level);
     qDebug(arcpath.toStdString().c_str());
     archive = new SarcFilesystem(game->fs->openFile(arcpath));
     this->area = area;
@@ -543,7 +543,7 @@ void Level::save()
         header->write8(entr->getUnk1());
         header->write8(entr->getUnk2());
         for (int i = 0; i < 2; i++) header->write8(0);
-        qDebug() << "ENtrance" << entr->getid() << "-> Zone" << getNextZoneID(entr);
+        qDebug() << "Entrance" << entr->getid() << "-> Zone" << getNextZoneID(entr);
     }
 
     // Block 7: Sprites
@@ -668,14 +668,14 @@ quint8 Level::getNextZoneID(Object* obj)
     int actualDistance = 2147483647;
     foreach (Zone* zone, zones)
     {
-        int distance = 0;
+        if (QRect(zone->getx(), zone->gety(), zone->getwidth(), zone->getheight()).contains(obj->getx(), obj->gety()))
+            return zone->getid();
 
-        if (!QRect(zone->getx(), zone->gety(), zone->getwidth(), zone->getheight()).contains(obj->getx(), obj->gety()))
-        {
-            int dx = qMax(qAbs(obj->getx() - zone->getx()) - zone->getwidth() / 2, 0);
-            int dy = qMax(qAbs(obj->gety() - zone->getx()) - zone->getheight() / 2, 0);
-            distance = dx * dx + dy * dy;
-        }
+        int distance = 0;
+        int dx = qMax(qAbs(obj->getx() - zone->getx()) - zone->getwidth() / 2, 0);
+        int dy = qMax(qAbs(obj->gety() - zone->gety()) - zone->getheight() / 2, 0);
+        distance = dx * dx + dy * dy;
+
         if (distance < actualDistance)
         {
             zoneID = zone->getid();

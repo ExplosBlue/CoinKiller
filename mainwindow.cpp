@@ -125,6 +125,22 @@ void MainWindow::on_actionLoadROM_triggered()
         }
     }
 
+    if (fs->directoryExists("/Course/dlc"))
+    {
+        fs->directoryContents("/Course/dlc", QDir::Files, coursefiles);
+
+        QStandardItem* world = new QStandardItem(QString("DLC Levels"));
+        levels->appendRow(world);
+
+        foreach (QString levelname, coursefiles)
+        {
+            levelname.replace(".sarc", "");
+            QStandardItem* level = new QStandardItem(levelname);
+            level->setData(levelname);
+            world->appendRow(level);
+        }
+    }
+
     ui->levelList->setModel(levels);
 
 
@@ -187,10 +203,10 @@ void MainWindow::on_levelList_doubleClicked(const QModelIndex &index)
     if (index.data(Qt::UserRole+1).isNull())
         return;
 
-    QString data = index.data(Qt::UserRole+1).toString();
+    QStringList data = index.data(Qt::UserRole+1).toString().split('-');
 
-    int world = data.left(1).toInt();
-    int level = data.mid(2, data.size()-2).toInt();
+    int world = data[0].toInt();
+    int level = data[1].toInt();
 
     LevelEditorWindow* lvlEditor = new LevelEditorWindow(this, game, world, level);
     lvlEditor->show();

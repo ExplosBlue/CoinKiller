@@ -318,8 +318,8 @@ void Tileset::drawTile(QPainter& painter, TileGrid& grid, int num, int x, int y,
             default: break;
         }
     }
-    if (behaviors[num][0] == 33) // Clown Car Flash Safe Area
-        painter.drawPixmap(rdst, QPixmap(basePath + "flash_safe_area.png"));
+    //if (behaviors[num][0] == 33) // Clown Car Flash Safe Area
+    //    painter.drawPixmap(rdst, QPixmap(basePath + "flash_safe_area.png"));
 }
 
 void Tileset::drawRow(QPainter& painter, TileGrid& grid, ObjectDef& def, ObjectRow& row, int x, int y, int w, float zoom)

@@ -3,7 +3,7 @@
 2:Underground
 3:Underwater
 4:Mushrooms/Athletic
-5:Pyramids
+5:Desert
 6:Snow
 7:Lava
 8:Lava Cave

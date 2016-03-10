@@ -3,20 +3,6 @@
 
 #include <QPainter>
 
-ObjectRenderer::ObjectRenderer() { }
-
-ObjectRenderer::ObjectRenderer(Object *obj)
-{
-
-}
-
-ObjectRenderer::~ObjectRenderer() { }
-
-void ObjectRenderer::render(QPainter *painter) { }
-
-
-SpriteRenderer::SpriteRenderer() { }
-
 SpriteRenderer::SpriteRenderer(const Sprite *spr)
 {
     this->spr = spr;
@@ -161,6 +147,21 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr)
         break;
     case 184: // Parabomb
         ret = new NormalImageRenderer(spr, basePath + "parabomb.png");
+        break;
+    case 189: // Rectangle Lift - Tower
+        ret = new RecLiftRenderer(spr, basePath + "tower_rectangle_lift/");
+        break;
+    case 190: // Rectangle Lift - Ghosthouse (Checkered)
+        ret = new RecLiftRenderer(spr, basePath + "checkered_rectangle_lift/");
+        break;
+    case 191: // Rectangle Lift - Desert
+        ret = new RecLiftRenderer(spr, basePath + "desert_rectangle_lift/");
+        break;
+    case 192: // Rectangle Lift - Castle
+        ret = new RecLiftRenderer(spr, basePath + "castle_rectangle_lift/");
+        break;
+    case 193: // Rectangle Lift - Underwater
+        ret = new RecLiftRenderer(spr, basePath + "underwater_rectangle_lift/");
         break;
     case 205: // Red Ring
         ret = new NormalImageRenderer(spr, basePath + "red_ring.png");
@@ -381,6 +382,44 @@ SwitchRenderer::SwitchRenderer(const Sprite *spr, QString filename)
 void SwitchRenderer::render(QPainter *painter)
 {
     img->render(painter);
+}
+
+
+// RecLiftRenderer
+RecLiftRenderer::RecLiftRenderer(const Sprite *spr, QString path)
+{
+    this->spr = spr;
+    this->path = path;
+    if (spr->getid() == 192) sideOffset = 3;
+}
+
+void RecLiftRenderer::render(QPainter *painter)
+{
+    int blockWidth = spr->getNybble(15) > 0 ? spr->getNybble(15)*20 : 20;
+    int blockHeight = spr->getNybble(13) > 0 ? spr->getNybble(13)*20 : 20;
+
+    painter->drawPixmap(QRect(spr->getx()-sideOffset, spr->gety(), 20+sideOffset, 20), QPixmap(path + "tl.png"));
+    painter->drawPixmap(QRect(spr->getx()-sideOffset, spr->gety()+blockHeight, 20+sideOffset, 20), QPixmap(path + "bl.png"));
+    painter->drawPixmap(QRect(spr->getx()+blockWidth, spr->gety(), 20+sideOffset, 20), QPixmap(path + "tr.png"));
+    painter->drawPixmap(QRect(spr->getx()+blockWidth, spr->gety()+blockHeight, 20+sideOffset, 20), QPixmap(path + "br.png"));
+
+    for (int i = 0; i < spr->getNybble(15)-1; i++)
+    {
+        painter->drawPixmap(QRect(spr->getx() + i*20+20, spr->gety(), 20, 20), QPixmap(path + "t.png"));
+        painter->drawPixmap(QRect(spr->getx() + i*20+20, spr->gety()+blockHeight, 20, 20), QPixmap(path + "b.png"));
+    }
+    for (int i = 0; i < spr->getNybble(13)-1; i++)
+    {
+        painter->drawPixmap(QRect(spr->getx(), spr->gety() + i*20+20, 20, 20), QPixmap(path + "l.png"));
+        painter->drawPixmap(QRect(spr->getx()+blockWidth, spr->gety() + i*20+20, 20, 20), QPixmap(path + "r.png"));
+    }
+    for (int x = 20; x < blockWidth; x+=20)
+        for (int y = 20; y < blockHeight; y+=20)
+            painter->drawPixmap(QRect(spr->getx()+x, spr->gety()+y, 20, 20), QPixmap(path + "c.png"));
+    if (spr->getNybble(9) == 1 || spr->getNybble(9) == 3) for (int x = 0; x < blockWidth+20; x+=20) painter->drawPixmap(QRect(spr->getx()+x, spr->gety()-20, 20, 20), QPixmap(path + "s_t.png"));
+    if (spr->getNybble(9) == 2 || spr->getNybble(9) == 3) for (int x = 0; x < blockWidth+20; x+=20) painter->drawPixmap(QRect(spr->getx()+x, spr->gety()+blockHeight+20, 20, 20), QPixmap(path + "s_b.png"));
+    if (spr->getNybble(9) == 4 || spr->getNybble(9) == 6) for (int y = 0; y < blockHeight+20; y+=20) painter->drawPixmap(QRect(spr->getx()-20, spr->gety()+y, 20, 20), QPixmap(path + "s_l.png"));
+    if (spr->getNybble(9) == 5 || spr->getNybble(9) == 6) for (int y = 0; y < blockHeight+20; y+=20) painter->drawPixmap(QRect(spr->getx()+blockWidth+20, spr->gety()+y, 20, 20), QPixmap(path + "s_r.png"));
 }
 
 

@@ -108,6 +108,8 @@ Sprite::Sprite(int x, int y, int id)
 
 void Sprite::setRect()
 {
+    offsetx = 0;
+    offsety = 0;
     switch (id) {
     case 3: // Cheep Chomp
         width = 79;
@@ -348,6 +350,21 @@ void Sprite::setRect()
         height = 36;
         offsetx = -7;
         offsety = -15;
+        break;
+    case 189: case 190: case 191: case 192: case 193: // Rect Blocks
+        width = getNybble(15)*20+20;
+        if (width == 20) width = 40;
+        height = getNybble(13)*20+20;
+        if (height == 20) height = 40;
+        if (getNybble(9) == 1 || getNybble(9) == 3) { height += 20; offsety-=20; }
+        if (getNybble(9) == 2 || getNybble(9) == 3) height += 20;
+        if (getNybble(9) == 4 || getNybble(9) == 6) { width += 20; offsetx-=20; }
+        if (getNybble(9) == 5 || getNybble(9) == 6) width += 20;
+        if (id == 192)
+        {
+            width += 6;
+            offsetx -= 3;
+        }
         break;
     case 205: // Red Ring
         width = 39;

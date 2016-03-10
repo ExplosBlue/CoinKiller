@@ -58,23 +58,24 @@ AreaEditorWidget::AreaEditorWidget(Level* level, Game *game)
 
     QMap<QString, QString> tsNames;
     QFile file(QCoreApplication::applicationDirPath() + "/coinkiller_data/tilesetnames.txt");
-    if(!file.open(QIODevice::ReadOnly)) return;
-    QTextStream in(&file);
-    while(!in.atEnd())
+    if(file.open(QIODevice::ReadOnly))
     {
-        QStringList nameStrings = in.readLine().split(":");
-        tsNames.insert(nameStrings[0], nameStrings[1]);
-    }
-    file.close();
+        QTextStream in(&file);
+        while(!in.atEnd())
+        {
+            QStringList nameStrings = in.readLine().split(":");
+            tsNames.insert(nameStrings[0], nameStrings[1]);
+        }
+        file.close();
 
-    for (int i = 0; i < 4; i++)
-    {
-        TilesetChooser* tsChooser = new TilesetChooser(level, i, game, &tsNames);
-        connect(tsChooser, SIGNAL(updateLevelEditor()), this, SLOT(passUpdateLevelView()));
-        connect(tsChooser, SIGNAL(relaodTilesetPicker()), this, SLOT(passRelaodTilesetPicker()));
-        tabWidget->addTab(tsChooser, QString("%1").arg(i));
+        for (int i = 0; i < 4; i++)
+        {
+            TilesetChooser* tsChooser = new TilesetChooser(level, i, game, &tsNames);
+            connect(tsChooser, SIGNAL(updateLevelEditor()), this, SLOT(passUpdateLevelView()));
+            connect(tsChooser, SIGNAL(relaodTilesetPicker()), this, SLOT(passRelaodTilesetPicker()));
+            tabWidget->addTab(tsChooser, QString("%1").arg(i));
+        }
     }
-
     updateInfo();
 }
 
@@ -141,8 +142,6 @@ TilesetChooser::TilesetChooser(Level* level, int tsNbr, Game* game, QMap<QString
         fileName.chop(5);
 
         QTreeWidgetItem *ts = new QTreeWidgetItem(this);
-
-        QString name;
 
         ts->setText(0, names->value(fileName, fileName.right(fileName.length() - (tsNbr/2 + 2))));
         ts->setText(1, fileName);

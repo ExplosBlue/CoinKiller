@@ -1,0 +1,60 @@
+J_Kihon:Overworld
+J_Chika:Underground
+J_Setsugen:Snow
+J_Suichu:Underwater
+J_Yougan:Lava
+J_Gold:Gold
+J_Kihon_Test:Overworld (BETA)
+M_Chika:Underground
+M_Gake:Mountains
+M_Gake_Setsugen:Snowy Mountains
+M_Jungle:Forest
+M_Kaigan:Beach
+M_Kaigan_Obake:Haunted Beach
+M_Kazan:Volcano
+M_Kinopio_Normal:Bonus House Ground
+M_Koopa:Final Castle
+M_Nohara:Overworld/Grassland
+M_Nohara_BigTree:Overworld/Grassland with Trees
+M_Nohara_Onpu:Overworld/Grassland with Note Block
+M_Nohara2:Sky
+M_Obake:Ghosthouse Interior
+M_Obake_Soto:Ghosthouse Exterior
+M_Rainbow:Rainbow Bonus
+M_Sabaku:Desert
+M_Sabaku_Chika:Desert Underground
+M_Setsugen:Snow/Winterlands
+M_Shiro:Castle
+M_Shiro_Boss:Castle (Bossfight)
+M_Shiro_Yogan:Castle (Lava)
+M_SkyTower:Sky (Building with grass on top)
+M_Sora:Bonus
+M_Suichu:Underwater
+M_Toride:Tower
+M_Toride_Blue:Tower (Underwater)
+M_Toride_Red:Tower (Lava)
+M_Totempole:Totem poles
+M_WarpZone:Cannon
+S1_Iseki:Desert decoration 2 (various other platforms)
+S1_Kanaami:Fences
+S1_Kinoko:Mushrooms (blocks, stems and platforms)
+S1_Kinoko_Snow:Snowy mushrooms (stems and platforms)
+S1_Kori:Ice
+S1_Obake_Room:Ghost house decoration
+S1_Rail_Black:Black rails
+S1_Rail_Gray:Grey rails
+S1_Rail_Gray_Mae:Grey rails
+S1_Rail_White:White rails
+S1_Sabaku:Desert decoration (stones and cacti)
+S1_SkyTower:Sky building decoration
+S1_Suichu:Underwater decoration
+S1_Toride:Castle wall and fence
+S2_Assist:Various decoration tiles
+S2_Kanaami:Fences
+S2_Kinoko_variation:Big and small mushrooms
+S2_Obake_Room:Ghost house decoration
+S2_Obake_Soto:Haunted garden
+S2_Rail_Black:Black rails
+S2_Rail_Gray:Grey rails
+S2_Rail_White:White rails
+S2_Sabaku:Desert decoration (stones and cacti)

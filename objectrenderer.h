@@ -8,16 +8,16 @@
 class ObjectRenderer
 {
 public:
-    ObjectRenderer();
-    ObjectRenderer(Object *obj);
-    virtual ~ObjectRenderer();
-    virtual void render(QPainter *painter);
+    ObjectRenderer() {}
+    ObjectRenderer(Object *) {}
+    virtual ~ObjectRenderer() {}
+    virtual void render(QPainter *) {}
 };
 
 class SpriteRenderer
 {
 public:
-    SpriteRenderer();
+    SpriteRenderer() {}
     SpriteRenderer(const Sprite *spr);
     void render(QPainter *painter);
 protected:
@@ -108,6 +108,18 @@ public:
 protected:
     const Object *obj;
     NormalImageRenderer *img;
+};
+
+// Sprite 189: RecLiftRenderer
+class RecLiftRenderer: public ObjectRenderer
+{
+public:
+    RecLiftRenderer(const Sprite *spr, QString path);
+    void render(QPainter *painter);
+protected:
+    const Sprite *spr;
+    QString path;
+    int sideOffset = 0;
 };
 
 // Sprite 221/223/225: Switches
