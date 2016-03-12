@@ -657,7 +657,12 @@
       <entry value="7">Up-Left</entry>
     </list>
   </sprite>
-  <sprite id="119" name="Banzai Bill"/>
+  <sprite id="119" name="Banzai Bill">
+	<list nybble="6" title="Direction" comment="Tested.">
+		<entry value="0">Right</entry>
+		<entry value="1">Left</entry>
+	</list>
+  </sprite>
   <sprite id="120" name="Rise or lower while/once on Mushroom Platform lift" notes="Has appeared previously in the original NSMB."/>
   <sprite id="121" name="Expanding and contracting Mushroom Platform">
     <value nybble="5" title="Unknown Value 5" comment="Checkbox?"/>

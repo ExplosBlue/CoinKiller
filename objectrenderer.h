@@ -86,6 +86,17 @@ protected:
     NormalImageRenderer *img;
 };
 
+//Sprite 119: Banzai Bill
+class BanzaiBillRenderer: public ObjectRenderer
+{
+public:
+    BanzaiBillRenderer(const Sprite *spr);
+    void render(QPainter *painter);
+protected:
+    const Object *obj;
+    NormalImageRenderer *img;
+};
+
 // Sprite 139: Goomba Tower
 class GoombaTowerRenderer: public ObjectRenderer
 {

@@ -264,6 +264,15 @@ void Sprite::setRect()
             offsety = 3;
         }
         break;
+
+    case 119: // Banzai Bill
+    {
+        width = 111;
+        height = 82;
+        offsety = -24;
+        offsetx = -48;
+        break;
+    }
     case 135: // Goomba
         width = 24;
         height = 24;

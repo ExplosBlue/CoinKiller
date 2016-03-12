@@ -103,6 +103,9 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr)
     case 114: // Floating Box
         ret = new FloatingBoxRenderer(spr);
         break;
+    case 119: // Banzai Bill
+        ret = new BanzaiBillRenderer(spr);
+        break;
     case 135: // Goomba
         ret = new NormalImageRenderer(spr, basePath + "goomba.png");
         break;
@@ -334,6 +337,20 @@ void FloatingBoxRenderer::render(QPainter *painter)
     img->render(painter);
 }
 
+//Sprite 119: Banzai Bill
+BanzaiBillRenderer::BanzaiBillRenderer(const Sprite *spr)
+{
+    QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/");
+
+    if (spr->getNybble(5) == 1) img = new NormalImageRenderer(spr, basePath + "banzai_bill_left.png");
+    //default to right
+    else img = new NormalImageRenderer(spr, basePath + "banzai_bill_right.png");
+}
+
+void BanzaiBillRenderer::render(QPainter *painter)
+{
+    img->render(painter);
+}
 
 // Sprite 139: Goomba Tower
 GoombaTowerRenderer::GoombaTowerRenderer(const Sprite *spr)
@@ -353,7 +370,6 @@ void GoombaTowerRenderer::render(QPainter *painter)
     for(int i = 0; i < middle.size(); i++) middle[i]->render(painter);
     bottom->render(painter);
 }
-
 
 // Sprite 165: Koopa Troopa
 KoopaTroopaRenderer::KoopaTroopaRenderer(const Sprite *spr)
