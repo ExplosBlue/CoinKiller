@@ -267,7 +267,7 @@ void Sprite::setRect()
 
     case 119: // Banzai Bill
     {
-        width = 111;
+        width = 110;
         height = 82;
         offsety = -24;
         offsetx = -48;
