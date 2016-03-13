@@ -6,12 +6,14 @@
 
 #include <QWidget>
 #include <QListView>
+#include <QTabWidget>
 
 class TilesetPalette : public QWidget
 {
     Q_OBJECT
 public:
     explicit TilesetPalette(Level* level, ObjectsEditonMode *objEditionMode);
+    void select(BgdatObject* obj);
 
 public slots:
     void reloadTilesets();
@@ -27,9 +29,11 @@ private:
     Level* level;
     ObjectsEditonMode* objEditionMode;
 
+    QTabWidget* tabWidget;
     QListView* objectLists[4];
 
     void loadTileset(int tilesetNbr);
+    void updatePalettes(int actualPal);
 };
 
 #endif // TILESETPALETTE_H

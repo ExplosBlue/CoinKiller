@@ -42,7 +42,7 @@ public:
     quint16 specialLevelFlag2;
     quint16 unk1;
     quint8 unk2;
-    quint8 unk3;
+    quint16 coinRushTimeLimit;
 
     QList<BgdatObject*> objects[2];
     QList<Sprite*> sprites;
@@ -67,6 +67,7 @@ public:
 
     Entrance* newEntrance(int x, int y);
     Zone* newZone(int x, int y);
+    Location* newLocation(int x, int y);
 
 private:
     SarcFilesystem* archive;

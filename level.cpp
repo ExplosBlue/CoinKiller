@@ -91,7 +91,7 @@ Level::Level(Game *game, int world, int level, int area)
     unk2 = header->read8();
     specialLevelFlag = header->read8();
     specialLevelFlag2 = header->read8();
-    unk3 = header->read8();
+    coinRushTimeLimit = header->read16();
 
     // Block 2: Zone Boundings
     header->seek(blockOffsets[2]);
@@ -478,8 +478,8 @@ void Level::save()
     header->write8(unk2);
     header->write8(specialLevelFlag);
     header->write8(specialLevelFlag2);
-    header->write8(unk3);
-    for (int j = 0; j < 3; j++) header->write8(0);
+    header->write16(coinRushTimeLimit);
+    header->write16(0);
 
     // Block 2: Zone Boundings
     header->seek(blockOffsets[2]);
@@ -808,4 +808,25 @@ Zone* Level::newZone(int x, int y)
         }
     }
     return new Zone(toNext16Compatible(x), toNext16Compatible(y), 400, 240, id, 0, 0, 0, 0);
+}
+
+Location* Level::newLocation(int x, int y)
+{
+    if (x < 0) x = 0;
+    if (y < 0) y = 0;
+
+    quint8 id = 0;
+    for(;; id++)
+    {
+        bool check = false;
+        foreach (Location* loc, locations)
+            if (loc->getid() == id) check = true;
+        if (!check) break;
+        else if (id == 255)
+        {
+            id = 0;
+            break;
+        }
+    }
+    return new Location(toNext16Compatible(x), toNext16Compatible(y), 4, 4, id);
 }
