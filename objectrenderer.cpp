@@ -22,6 +22,9 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr)
     case 19: // Desert Crater
         ret = new NormalImageRenderer(spr, basePath + "desert_crater.png");
         break;
+    case 21: // Note Block
+        ret = new NormalImageRenderer(spr, basePath + "note_block.png");
+        break;
     case 27: // POW Block
         ret = new NormalImageRenderer(spr, basePath + "pow_block.png");
         break;
@@ -49,6 +52,9 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr)
     case 66: // Pipe Cannon
         ret = new NormalImageRenderer(spr, basePath + "pipe_cannon.png");
         break;
+    case 67: // Pipe Cannon - Ludwig Bossfight
+        ret = new NormalImageRenderer(spr, basePath + "pipe_cannon_ludwig.png");
+        break;
     case 69: // Door
         ret = new NormalImageRenderer(spr, basePath + "door.png");
         break;
@@ -67,14 +73,23 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr)
     case 75: // Tower Boss Door
         ret = new NormalImageRenderer(spr, basePath + "door_tower.png");
         break;
+    case 76: // Big Thwomp
+        ret = new NormalImageRenderer(spr, basePath + "big_thwomp.png");
+        break;
     case 77: // Thwomp
         ret = new NormalImageRenderer(spr, basePath + "thwomp.png");
+        break;
+    case 81: // Fireball Pipe - ! Junction
+        ret = new NormalImageRenderer(spr, basePath + "fireballpipe_junction.png");
         break;
     case 83: // Fish Bone
         ret = new NormalImageRenderer(spr, basePath + "fish_bone.png");
         break;
     case 92: // Grinder
         ret = new NormalImageRenderer(spr, basePath + "grinder.png");
+        break;
+    case 93: // Scuttlebug
+        ret = new NormalImageRenderer(spr, basePath + "scuttlebug.png");
         break;
     case 95: // Blooper
         ret = new NormalImageRenderer(spr, basePath + "blooper.png");
@@ -103,8 +118,20 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr)
     case 114: // Floating Box
         ret = new FloatingBoxRenderer(spr);
         break;
+    case 115: // Floating Box
+        ret = new BulletBillLauncherRenderer(spr);
+        break;
+    case 117: // Banzi Bill Launcher
+        ret = new NormalImageRenderer(spr, basePath + "banzai_bill_launcher.png");
+        break;
+    case 124: // Mushroom Platform
+        ret = new MushroomPlatformRenderer(spr, basePath + "mushroom_platform/");
+        break;
+    case 125: // Bowser
+        ret = new NormalImageRenderer(spr, basePath + "bowser.png");
+        break;
     case 135: // Goomba
-        ret = new NormalImageRenderer(spr, basePath + "goomba.png");
+        ret = new GoombaRenderer(spr);
         break;
     case 136: // Bone Goomba
         ret = new NormalImageRenderer(spr, basePath + "bone_goomba.png");
@@ -120,6 +147,9 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr)
         break;
     case 140: // Crowber
         ret = new NormalImageRenderer(spr, basePath + "crowber.png");
+        break;
+    case 143: // Conveyor Belt Switch
+        ret = new NormalImageRenderer(spr, basePath + "conveyor_belt_switch.png");
         break;
     case 150: // Seesaw Lift
         ret = new NormalImageRenderer(spr, basePath + "seesaw_lift.png");
@@ -163,11 +193,23 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr)
     case 193: // Rectangle Lift - Underwater
         ret = new RecLiftRenderer(spr, basePath + "underwater_rectangle_lift/");
         break;
+    case 194: // Cheep Cheep
+        ret = new NormalImageRenderer(spr, basePath + "cheep_cheep.png");
+        break;
+    case 195: // Big Cheep Cheep
+        ret = new NormalImageRenderer(spr, basePath + "big_cheep_cheep.png");
+        break;
     case 205: // Red Ring
         ret = new NormalImageRenderer(spr, basePath + "red_ring.png");
         break;
     case 206: // Gold Ring
         ret = new NormalImageRenderer(spr, basePath + "gold_ring.png");
+        break;
+    case 211: // Roy Koopa
+        ret = new NormalImageRenderer(spr, basePath + "boss_roy.png");
+        break;
+    case 215: // Bob-omb Cannon
+        ret = new BobOmbCannonRenderer(spr);
         break;
     case 219: // Star Coin
         ret = new NormalImageRenderer(spr, basePath + "star_coin.png");
@@ -183,6 +225,15 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr)
         break;
     case 234: // Spiked Ball
         ret = new NormalImageRenderer(spr, basePath + "spiked_ball.png");
+        break;
+    case 235: // Big Spiked Ball
+        ret = new NormalImageRenderer(spr, basePath + "big_spiked_ball.png");
+        break;
+    case 236: // Mega Spiked Ball
+        ret = new NormalImageRenderer(spr, basePath + "mega_spiked_ball.png");
+        break;
+    case 240: // Urchin
+        ret = new UrchinRenderer(spr);
         break;
     case 255: // Bowser Head Statue
         ret = new NormalImageRenderer(spr, basePath + "bowser_head_statue.png");
@@ -202,11 +253,23 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr)
     case 274: // Flying Gold Block Spawn Point
         ret = new NormalImageRenderer(spr, basePath + "flying_gold_block.png");
         break;
+    case 275: // Long Question Block - Underground
+        ret = new NormalImageRenderer(spr, basePath + "long_question_block_underground.png");
+        break;
+    case 276: // Long Question Block - Lava
+        ret = new NormalImageRenderer(spr, basePath + "long_question_block_lava.png");
+        break;
+    case 277: // Switchable Conveyor Belt
+        ret = new NormalImageRenderer(spr, basePath + "switchable_conveyor_belt.png");
+        break;
     case 278: // Assist Block
         ret = new NormalImageRenderer(spr, basePath + "assist_block.png");
         break;
     case 279: // Lemmy Ball
         ret = new NormalImageRenderer(spr, basePath + "lemmy_ball.png");
+        break;
+    case 280: // + Clock
+        ret = new ClockRenderer(spr);
         break;
     case 287: // Toad House Door
         ret = new NormalImageRenderer(spr, basePath + "door_toadhouse.png");
@@ -335,6 +398,44 @@ void FloatingBoxRenderer::render(QPainter *painter)
 }
 
 
+// Sprite 115: Bullet Bill Launcher
+BulletBillLauncherRenderer::BulletBillLauncherRenderer(const Sprite *spr)
+{
+    this->spr = spr;
+}
+
+void BulletBillLauncherRenderer::render(QPainter *painter)
+{
+    QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/");
+
+    if (spr->getNybble(10) == 1)
+    {
+        painter->drawPixmap(spr->getx(), spr->gety()+spr->getheight()-40, 20, 40, QPixmap(basePath + "bullet_bill_launcher_flipped.png"));
+        for (int i = 0; i < spr->getNybble(4); i++) painter->drawPixmap(spr->getx(), spr->gety()+i*20, 20, 20, QPixmap(basePath + "bullet_bill_launcher_middle.png"));
+    }
+    else
+    {
+        painter->drawPixmap(spr->getx(), spr->gety()+spr->getOffsetY(), 20, 40, QPixmap(basePath + "bullet_bill_launcher.png"));
+        for (int i = 0; i < spr->getNybble(4); i++) painter->drawPixmap(spr->getx(), spr->gety()+spr->getOffsetY()+40+i*20, 20, 20, QPixmap(basePath + "bullet_bill_launcher_middle.png"));
+    }
+}
+
+
+// Sprite 135: Goomba
+GoombaRenderer::GoombaRenderer(const Sprite *spr)
+{
+    this->spr = spr;
+}
+
+void GoombaRenderer::render(QPainter *painter)
+{
+    QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/");
+
+    if (spr->getNybble(14) % 2 == 0) painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), QPixmap(basePath + "goomba.png"));
+    else painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), QPixmap(basePath + "goomba_blue.png"));
+}
+
+
 // Sprite 139: Goomba Tower
 GoombaTowerRenderer::GoombaTowerRenderer(const Sprite *spr)
 {
@@ -420,6 +521,66 @@ void RecLiftRenderer::render(QPainter *painter)
     if (spr->getNybble(9) == 2 || spr->getNybble(9) == 3) for (int x = 0; x < blockWidth+20; x+=20) painter->drawPixmap(QRect(spr->getx()+x, spr->gety()+blockHeight+20, 20, 20), QPixmap(path + "s_b.png"));
     if (spr->getNybble(9) == 4 || spr->getNybble(9) == 6) for (int y = 0; y < blockHeight+20; y+=20) painter->drawPixmap(QRect(spr->getx()-20, spr->gety()+y, 20, 20), QPixmap(path + "s_l.png"));
     if (spr->getNybble(9) == 5 || spr->getNybble(9) == 6) for (int y = 0; y < blockHeight+20; y+=20) painter->drawPixmap(QRect(spr->getx()+blockWidth+20, spr->gety()+y, 20, 20), QPixmap(path + "s_r.png"));
+}
+
+// Sprite 124: Mushroom Platform Renderer
+MushroomPlatformRenderer::MushroomPlatformRenderer(const Sprite *spr, QString basePath)
+{
+    this->spr = spr;
+    this->basePath = basePath;
+}
+
+void MushroomPlatformRenderer::render(QPainter *painter)
+{
+    painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX(), spr->gety(), 24, 20), QPixmap(basePath + "l.png"));
+    painter->drawPixmap(QRect(spr->getx()-spr->getOffsetX()-24, spr->gety(), 24, 20), QPixmap(basePath + "r.png"));
+    for (int i = 24; i < spr->getwidth()-24; i += 20)
+        painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()+i, spr->gety(), 20, 20), QPixmap(basePath + "m.png"));
+}
+
+
+// Sprite 215: Bob-omb Cannon
+BobOmbCannonRenderer::BobOmbCannonRenderer(const Sprite *spr)
+{
+    this->spr = spr;
+}
+
+void BobOmbCannonRenderer::render(QPainter *painter)
+{
+    QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/");
+
+    if (spr->getNybble(5) != 1) painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), QPixmap(basePath + "cannon_right.png"));
+    else painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), QPixmap(basePath + "cannon_left.png"));
+}
+
+
+// Sprite 240: Urchin
+UrchinRenderer::UrchinRenderer(const Sprite *spr)
+{
+    this->spr = spr;
+}
+
+void UrchinRenderer::render(QPainter *painter)
+{
+    QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/");
+
+    if (spr->getNybble(5) != 1) painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), QPixmap(basePath + "urchin.png"));
+    else painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), QPixmap(basePath + "urchin_big.png"));
+}
+
+
+// Sprite 280: + Clock
+ClockRenderer::ClockRenderer(const Sprite *spr)
+{
+    this->spr = spr;
+}
+
+void ClockRenderer::render(QPainter *painter)
+{
+    QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/");
+
+    if (spr->getNybble(5) != 1) painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), QPixmap(basePath + "clock_50.png"));
+    else painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), QPixmap(basePath + "clock_10.png"));
 }
 
 

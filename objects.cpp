@@ -108,6 +108,8 @@ Sprite::Sprite(int x, int y, int id)
 
 void Sprite::setRect()
 {
+    width = 20;
+    height = 20;
     offsetx = 0;
     offsety = 0;
     switch (id) {
@@ -161,7 +163,7 @@ void Sprite::setRect()
         offsetx = 1;
         offsety = -25;
         break;
-    case 66: // Pipe Cannon
+    case 66: case 67: // Pipe Cannons
         width = 40;
         height = 80;
         break;
@@ -195,11 +197,21 @@ void Sprite::setRect()
         offsetx = -2;
         offsety = 5;
         break;
+    case 76: // Big Thwomp
+        width = 102;
+        height = 114;
+        offsetx = -11;
+        offsety = -3;
+        break;
     case 77: // Thwomp
         width = 54;
         height = 59;
         offsetx = -7;
         offsety = -2;
+        break;
+    case 81: // Fireball Pipe - ! Junction
+        width = 40;
+        height = 40;
         break;
     case 83: // Fish Bone
         width = 33;
@@ -211,6 +223,12 @@ void Sprite::setRect()
         height = 49;
         offsetx = -6;
         offsety = -6;
+        break;
+    case 93: // Scuttlebug
+        width = 52;
+        height = 49;
+        offsetx = -18;
+        offsety = -21;
         break;
     case 95: // Blooper
         width = 28;
@@ -264,10 +282,32 @@ void Sprite::setRect()
             offsety = 3;
         }
         break;
+    case 115: // Bullet Bill Launcher
+        width = 20;
+        height = (2 + getNybble(4)) * 20;
+        if (getNybble(10) == 0)
+            offsety = -height+20;
+        break;
+    case 117: // Banzai Bill Launcher
+        width = 80;
+        height = 103;
+        offsety = -3;
+        break;
+    case 124: // Mushroom Platform
+        width = getNybble(6)*20 + 68;
+        height = 20;
+        offsetx = -(width / 2);
+        break;
+    case 125: // Bowser
+        width = 138;
+        height = 108;
+        offsetx = -58;
+        offsety = -87;
+        break;
     case 135: // Goomba
-        width = 24;
+        width = 21;
         height = 24;
-        offsetx = -2;
+        offsetx = -1;
         offsety = -4;
         break;
     case 136: // Bone Goomba
@@ -296,8 +336,14 @@ void Sprite::setRect()
     case 140: // Crowber
         width = 31;
         height = 21;
-        offsetx= -5;
+        offsetx = -5;
         offsety = -6;
+        break;
+    case 143: // 	Conveyor Belt Switch
+        width = 28;
+        height = 42;
+        offsetx = -4;
+        offsety = -21;
         break;
     case 150: // Seesaw Lift
         width = 280;
@@ -366,16 +412,38 @@ void Sprite::setRect()
             offsetx -= 3;
         }
         break;
+    case 194: // Cheep Cheep
+        width = 22;
+        height = 21;
+        offsety = -3;
+        break;
+    case 195: // Big Cheep Cheep
+        width = 60;
+        height = 56;
+        offsety = -5;
+        break;
     case 205: // Red Ring
         width = 39;
         height = 56;
         offsety = 2;
         break;
     case 206: // Gold Ring
-        width = 42;
-        height = 57;
-        offsetx = 3;
+        width = 40;
+        height = 56;
         offsety = 2;
+        break;
+    case 211: // Roy Koopa
+        width = 78;
+        height = 47;
+        offsetx = -46;
+        offsety = -27;
+        break;
+    case 215: // Bob-omb Cannon
+        width = 31;
+        height = 32;
+        if (getNybble(5) != 1) offsetx = -1;
+        else offsetx = -10;
+        offsety = -12;
         break;
     case 219: // Star Coin
         width = 40;
@@ -405,13 +473,41 @@ void Sprite::setRect()
         offsetx = 1;
         offsety = 1;
         break;
+    case 235: // Big Spiked Ball
+        width = 76;
+        height = 76;
+        offsetx = 12;
+        offsety = 2;
+        break;
+    case 236: // Mega Spiked Ball
+        width = 154;
+        height = 154;
+        offsetx = -23;
+        offsety = -7;
+        break;
+    case 240: // Urchin
+        if (getNybble(5) != 1)
+        {
+            width = 26;
+            height = 26;
+            offsetx = -3;
+            offsety = -3;
+        }
+        else
+        {
+            width = 51;
+            height = 48;
+            offsetx = -5;
+            offsety = -4;
+        }
+        break;
     case 255: // Bowser Head Statue
         width = 40;
         height = 42;
         offsetx = -18;
         offsety = -1;
         break;
-    case 267: // Long Question Block
+    case 267: case 275: case 276: // Long Question Blocks
         width = 60;
         height = 20;
         break;
@@ -437,17 +533,26 @@ void Sprite::setRect()
         offsetx = -4;
         offsety = -1;
         break;
+    case 277: // Switchable Conveyor Belt
+        width = 160;
+        break;
     case 278: // Assist Block
         width = 26;
         height = 26;
         offsetx = -3;
-        offsety = -3;
+        offsety = -5;
         break;
     case 279: // Lemmy Ball
         width = 30;
         height = 30;
         offsetx = -3;
         offsety = -15;
+        break;
+    case 280: // + Clock
+        width = 22;
+        height = 26;
+        offsetx = -3;
+        offsety = -1;
         break;
     case 287: // Toad House Door
         width = 40;
