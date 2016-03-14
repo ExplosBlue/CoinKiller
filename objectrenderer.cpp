@@ -123,6 +123,7 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr)
         break;
     case 117: // Banzi Bill Launcher
         ret = new NormalImageRenderer(spr, basePath + "banzai_bill_launcher.png");
+        break;
     case 119: // Banzai Bill
         ret = new BanzaiBillRenderer(spr);
         break;
