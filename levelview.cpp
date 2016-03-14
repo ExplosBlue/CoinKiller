@@ -41,7 +41,6 @@ LevelView::LevelView(QWidget *parent, Level* level) : QWidget(parent)
     objectEditionMode = new ObjectsEditonMode(level);
     mode = objectEditionMode;
 
-    //editMode = 0;
     zoom = 1;
     grid = false;
 }
@@ -105,7 +104,7 @@ void LevelView::paintEvent(QPaintEvent* evt)
         if (!drawrect.intersects(locrect))
             continue;
 
-        painter.fillRect(locrect, QBrush(QColor(255,225,0,35)));
+        painter.fillRect(locrect, QBrush(QColor(85,80,185,50)));
 
         painter.setPen(QColor(0,0,0));
         painter.drawRect(locrect);

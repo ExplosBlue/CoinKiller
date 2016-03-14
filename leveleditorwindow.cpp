@@ -134,6 +134,11 @@ LevelEditorWindow::LevelEditorWindow(QWidget *parent, Game *game, int worldNbr, 
     connect(zoneEditor, SIGNAL(updateLevelView()), levelView, SLOT(update()));
     ui->sidebarTabWidget->addTab(zoneEditor, QIcon(basePath + "zone.png"), "");
 
+    // Setup Location Editor
+    locationEditor = new LocationEditorWidget(&level->locations);
+    connect(locationEditor, SIGNAL(updateLevelView()), levelView, SLOT(update()));
+    ui->sidebarTabWidget->addTab(locationEditor, QIcon(basePath + "location.png"), "");
+
     connect(levelView->editionModePtr(), SIGNAL(selectdObjectChanged(Object*)), this, SLOT(setObjectEdition(Object*)));
     connect(levelView->editionModePtr(), SIGNAL(deselected()), this, SLOT(deselect()));
     connect(levelView->editionModePtr(), SIGNAL(updateEditors()), this, SLOT(updateEditors()));
@@ -262,9 +267,15 @@ void LevelEditorWindow::setObjectEdition(Object* obj)
 {
     deselect();
 
-    if (is<Sprite*>(obj))
+    if (is<BgdatObject*>(obj))
+    {
+        ui->sidebarTabWidget->setCurrentIndex(1);
+        tilesetPalette->select(dynamic_cast<BgdatObject*>(obj));
+    }
+    else if (is<Sprite*>(obj))
     {
         ui->sidebarTabWidget->setCurrentIndex(2);
+        spriteEditor->select(dynamic_cast<Sprite*>(obj));
         spriteEditor->spriteDataEditorPtr()->select(dynamic_cast<Sprite*>(obj));
     }
     if (is<Entrance*>(obj))
@@ -277,6 +288,11 @@ void LevelEditorWindow::setObjectEdition(Object* obj)
         ui->sidebarTabWidget->setCurrentIndex(4);
         zoneEditor->select(dynamic_cast<Zone*>(obj));
     }
+    else if (is<Location*>(obj))
+    {
+        ui->sidebarTabWidget->setCurrentIndex(5);
+        locationEditor->select(dynamic_cast<Location*>(obj));
+    }
 }
 
 void LevelEditorWindow::deselect()
@@ -284,6 +300,7 @@ void LevelEditorWindow::deselect()
     spriteEditor->spriteDataEditorPtr()->deselect();
     entranceEditor->deselect();
     zoneEditor->deselect();
+    locationEditor->deselect();
 }
 
 void LevelEditorWindow::updateEditors()
@@ -291,12 +308,13 @@ void LevelEditorWindow::updateEditors()
     spriteEditor->spriteDataEditorPtr()->updateEditor();
     entranceEditor->updateEditor();
     zoneEditor->updateEditor();
+    locationEditor->updateEditor();
 }
 
 void LevelEditorWindow::on_sidebarTabWidget_currentChanged(int index)
-{
-    if (index == 3)
-        levelView->objEditionModePtr()->setDrawType(2);
-    else if (index == 4)
-        levelView->objEditionModePtr()->setDrawType(3);
+{    
+    if (index == 0)
+        levelView->objEditionModePtr()->setDrawType(-1);
+    else
+        levelView->objEditionModePtr()->setDrawType(index-1);
 }

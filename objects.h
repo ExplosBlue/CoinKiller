@@ -232,6 +232,7 @@ public:
     int getType() const;
     bool isResizable() const { return true; }
     int getid() const;
+    void setId(quint8 id) { this->id = id; }
     QString toString() const;
 protected:
     int id;

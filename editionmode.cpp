@@ -21,6 +21,7 @@ void ObjectsEditonMode::mouseDown(int x, int y, Qt::MouseButtons buttons, Qt::Ke
 
         if (drawType == 0)
         {
+            if (selTileset == -1 || selObject == -1) return;
             int id = selTileset << 12;
             id = (id & 0xF000) | selObject;
             BgdatObject* bgdatobj = new BgdatObject(toNext20(x-10), toNext20(y-10), 20, 20, id, selLayer);
@@ -31,6 +32,7 @@ void ObjectsEditonMode::mouseDown(int x, int y, Qt::MouseButtons buttons, Qt::Ke
         }
         else if (drawType == 1)
         {
+            if (selSprite == -1) return;
             Sprite* spr = new Sprite(0, 0, selSprite);
             spr->setRect();
             int xpos = toNext10(dx-spr->getwidth()/2-spr->getOffsetX());
@@ -55,7 +57,7 @@ void ObjectsEditonMode::mouseDown(int x, int y, Qt::MouseButtons buttons, Qt::Ke
         }
         else if (drawType == 4)
         {
-            Location* loc = new Location(toNext16Compatible(x), toNext16Compatible(y), 4, 4, 0);
+            Location* loc = level->newLocation(x, y);
             level->locations.append(loc);
             newObject = loc;
             creatNewObject = true;

@@ -14,7 +14,7 @@ public:
     virtual void render(QPainter *) {}
 };
 
-class SpriteRenderer
+class SpriteRenderer: public ObjectRenderer
 {
 public:
     SpriteRenderer() {}
@@ -85,6 +85,15 @@ protected:
     const Object *obj;
     NormalImageRenderer *img;
 };
+// Sprite 115: Bullet Bill Launcher
+class BulletBillLauncherRenderer: public SpriteRenderer
+{
+public:
+    BulletBillLauncherRenderer(const Sprite *spr);
+    void render(QPainter *painter);
+protected:
+    const Sprite *spr;
+};
 
 //Sprite 119: Banzai Bill
 class BanzaiBillRenderer: public ObjectRenderer
@@ -97,8 +106,29 @@ protected:
     NormalImageRenderer *img;
 };
 
+// Sprite 124: Mushroom Platform
+class MushroomPlatformRenderer: public ObjectRenderer
+{
+public:
+    MushroomPlatformRenderer(const Sprite *spr, QString basePath);
+    void render(QPainter *painter);
+protected:
+    const Sprite *spr;
+    QString basePath;
+};
+
+// Sprite 135: Goomba
+class GoombaRenderer : public SpriteRenderer
+{
+public:
+    GoombaRenderer(const Sprite *spr);
+    void render(QPainter *painter);
+protected:
+    const Sprite *spr;
+};
+
 // Sprite 139: Goomba Tower
-class GoombaTowerRenderer: public ObjectRenderer
+class GoombaTowerRenderer : public ObjectRenderer
 {
 public:
     GoombaTowerRenderer(const Sprite *spr);
@@ -122,7 +152,7 @@ protected:
 };
 
 // Sprite 189: RecLiftRenderer
-class RecLiftRenderer: public ObjectRenderer
+class RecLiftRenderer: public SpriteRenderer
 {
 public:
     RecLiftRenderer(const Sprite *spr, QString path);
@@ -131,6 +161,16 @@ protected:
     const Sprite *spr;
     QString path;
     int sideOffset = 0;
+};
+
+// Sprite 215: Bob-omb Cannon
+class BobOmbCannonRenderer: public SpriteRenderer
+{
+public:
+    BobOmbCannonRenderer(const Sprite *spr);
+    void render(QPainter *painter);
+protected:
+    const Sprite *spr;
 };
 
 // Sprite 221/223/225: Switches
@@ -143,6 +183,26 @@ protected:
     const Object *obj;
     QString filename;
     NormalImageRenderer *img;
+};
+
+// Sprite 240: Urchin
+class UrchinRenderer: public SpriteRenderer
+{
+public:
+    UrchinRenderer(const Sprite *spr);
+    void render(QPainter *painter);
+protected:
+    const Sprite *spr;
+};
+
+// Sprite 280: + Clock
+class ClockRenderer: public SpriteRenderer
+{
+public:
+    ClockRenderer(const Sprite *spr);
+    void render(QPainter *painter);
+protected:
+    const Sprite *spr;
 };
 
 class EntranceRenderer : public ObjectRenderer

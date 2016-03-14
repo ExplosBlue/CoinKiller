@@ -39,7 +39,8 @@ SOURCES += main.cpp\
     entranceeditorwidget.cpp \
     spriteeditorwidget.cpp \
     areaeditorwidget.cpp \
-    zoneeditorwidget.cpp
+    zoneeditorwidget.cpp \
+    locationeditorwidget.cpp
 
 HEADERS  += mainwindow.h \
     filesystembase.h \
@@ -70,7 +71,8 @@ HEADERS  += mainwindow.h \
     entranceeditorwidget.h \
     spriteeditorwidget.h \
     areaeditorwidget.h \
-    zoneeditorwidget.h
+    zoneeditorwidget.h \
+    locationeditorwidget.h
 
 FORMS    += mainwindow.ui \
     leveleditorwindow.ui \

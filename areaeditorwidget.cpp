@@ -32,29 +32,35 @@ AreaEditorWidget::AreaEditorWidget(Level* level, Game *game)
     connect(timeLimit, SIGNAL(valueChanged(int)), this, SLOT(handleTimeLimitChange(int)));
     layout->addWidget(timeLimit, 0, 1);
 
-    layout->addWidget(new HorLine(), 1, 0, 1, 2);
+    layout->addWidget(new QLabel("Coin Rush Time Limit:"), 1, 0, 1, 1, Qt::AlignRight);
+    coinRushtimeLimit = new QSpinBox();
+    coinRushtimeLimit->setRange(0, 999);
+    connect(coinRushtimeLimit, SIGNAL(valueChanged(int)), this, SLOT(handleCoinRushTimeLimitChange(int)));
+    layout->addWidget(coinRushtimeLimit, 1, 1);
 
-    layout->addWidget(new QLabel("Level Setting 1:"), 2, 0, 1, 1, Qt::AlignRight);
+    layout->addWidget(new HorLine(), 2, 0, 1, 2);
+
+    layout->addWidget(new QLabel("Level Setting 1:"), 3, 0, 1, 1, Qt::AlignRight);
     specialLevelFlag1 = new QComboBox();
     specialLevelFlag1->addItems(specialLevelFlags1.values());
     connect(specialLevelFlag1, SIGNAL(currentIndexChanged(QString)), this, SLOT(handleSpecialLevelFlag1Change(QString)));
-    layout->addWidget(specialLevelFlag1, 2, 1);
+    layout->addWidget(specialLevelFlag1, 3, 1);
 
-    layout->addWidget(new QLabel("Level Setting 2:"), 3, 0, 1, 1, Qt::AlignRight);
+    layout->addWidget(new QLabel("Level Setting 2:"), 4, 0, 1, 1, Qt::AlignRight);
     specialLevelFlag2 = new QComboBox();
     specialLevelFlag2->addItems(specialLevelFlags2.values());
     connect(specialLevelFlag2, SIGNAL(currentIndexChanged(QString)), this, SLOT(handleSpecialLevelFlag2Change(QString)));
-    layout->addWidget(specialLevelFlag2, 3, 1);
+    layout->addWidget(specialLevelFlag2, 4, 1);
 
     toadhouseFlag = new QCheckBox("Toad House Flag");
     connect(toadhouseFlag, SIGNAL(toggled(bool)), this, SLOT(handleToadHouseFlagChanged(bool)));
-    layout->addWidget(toadhouseFlag, 4, 1, 1, 1);
+    layout->addWidget(toadhouseFlag, 5, 1, 1, 1);
 
-    layout->addWidget(new HorLine(), 5, 0, 1, 2);
+    layout->addWidget(new HorLine(), 6, 0, 1, 2);
 
-    layout->addWidget(new QLabel("Tilesets:"), 6, 0, 1, 2);
+    layout->addWidget(new QLabel("Tilesets:"), 7, 0, 1, 2);
     QTabWidget* tabWidget = new QTabWidget();
-    layout->addWidget(tabWidget, 7, 0, 1, 2);
+    layout->addWidget(tabWidget, 8, 0, 1, 2);
 
     QMap<QString, QString> tsNames;
     QFile file(QCoreApplication::applicationDirPath() + "/coinkiller_data/tilesetnames.txt");
@@ -83,6 +89,7 @@ void AreaEditorWidget::updateInfo()
 {
     handleChanges = false;
     timeLimit->setValue(level->timeLimit);
+    coinRushtimeLimit->setValue(level->coinRushTimeLimit);
     toadhouseFlag->setChecked(level->toadHouseFlag == 2);
     specialLevelFlag1->setCurrentText(specialLevelFlags1.value(level->specialLevelFlag, "Unknown"));
     specialLevelFlag2->setCurrentText(specialLevelFlags2.value(level->specialLevelFlag2, "Unknown"));
@@ -93,6 +100,12 @@ void AreaEditorWidget::handleTimeLimitChange(int timeLimitVal)
 {
     if (!handleChanges) return;
     level->timeLimit = timeLimitVal;
+}
+
+void AreaEditorWidget::handleCoinRushTimeLimitChange(int timeLimitVal)
+{
+    if (!handleChanges) return;
+    level->coinRushTimeLimit = timeLimitVal;
 }
 
 void AreaEditorWidget::handleSpecialLevelFlag1Change(QString text)

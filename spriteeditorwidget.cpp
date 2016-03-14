@@ -119,6 +119,11 @@ void SpriteEditorWidget::handleIndexChange(QTreeWidgetItem *item)
         emit(selectedSpriteChanged(data));
 }
 
+void SpriteEditorWidget::select(Sprite *sprite)
+{
+    emit(selectedSpriteChanged(sprite->getid()));
+}
+
 SpriteDataEditorWidget::SpriteDataEditorWidget(SpriteData *spriteData)
 {
     this->spriteData = spriteData;

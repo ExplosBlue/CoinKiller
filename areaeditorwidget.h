@@ -42,6 +42,7 @@ private:
     Game* game;
 
     QSpinBox* timeLimit;
+    QSpinBox* coinRushtimeLimit;
     QCheckBox* toadhouseFlag;
     QComboBox* specialLevelFlag1;
     QComboBox* specialLevelFlag2;
@@ -56,6 +57,7 @@ private:
 
 private slots:
     void handleTimeLimitChange(int timeLimitVal);
+    void handleCoinRushTimeLimitChange(int timeLimitVal);
     void handleSpecialLevelFlag1Change(QString text);
     void handleSpecialLevelFlag2Change(QString text);
     void handleToadHouseFlagChanged(bool flag);

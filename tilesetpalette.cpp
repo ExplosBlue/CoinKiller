@@ -33,7 +33,7 @@ TilesetPalette::TilesetPalette(Level* level, ObjectsEditonMode* objEditionMode)
 
     topLayout->addSpacerItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Preferred));
 
-    QTabWidget* tabWidget = new QTabWidget();
+    tabWidget = new QTabWidget();
     layout->addWidget(tabWidget);
 
     for (int i = 0; i < 4; i++)
@@ -47,6 +47,7 @@ TilesetPalette::TilesetPalette(Level* level, ObjectsEditonMode* objEditionMode)
         objectLists[i]->setWrapping(true);
         objectLists[i]->setIconSize(QSize(140,140));
         objectLists[i]->setVerticalScrollMode(QListView::ScrollPerPixel);
+        objectLists[i]->setEditTriggers(QAbstractItemView::NoEditTriggers);
         loadTileset(i);
     }
 
@@ -54,12 +55,15 @@ TilesetPalette::TilesetPalette(Level* level, ObjectsEditonMode* objEditionMode)
     connect(objectLists[1], SIGNAL(clicked(QModelIndex)), this, SLOT(on_objectsListView1_clicked(QModelIndex)));
     connect(objectLists[2], SIGNAL(clicked(QModelIndex)), this, SLOT(on_objectsListView2_clicked(QModelIndex)));
     connect(objectLists[3], SIGNAL(clicked(QModelIndex)), this, SLOT(on_objectsListView3_clicked(QModelIndex)));
+    connect(objectLists[0], SIGNAL(entered(QModelIndex)), this, SLOT(on_objectsListView0_clicked(QModelIndex)));
+    connect(objectLists[1], SIGNAL(entered(QModelIndex)), this, SLOT(on_objectsListView1_clicked(QModelIndex)));
+    connect(objectLists[2], SIGNAL(entered(QModelIndex)), this, SLOT(on_objectsListView2_clicked(QModelIndex)));
+    connect(objectLists[3], SIGNAL(entered(QModelIndex)), this, SLOT(on_objectsListView3_clicked(QModelIndex)));
     connect(layer1RadioBtn, SIGNAL(toggled(bool)), SLOT(on_layerRadioButton_toggled(bool)));
 }
 
 void TilesetPalette::reloadTilesets()
 {
-    qDebug() << "RELOAD";
     for (int i = 0; i < 4; i++) loadTileset(i);
 }
 
@@ -97,29 +101,53 @@ void TilesetPalette::loadTileset(int tilesetNbr)
 
 void TilesetPalette::on_objectsListView0_clicked(const QModelIndex &index)
 {
+    updatePalettes(0);
     objEditionMode->setDrawType(0);
     objEditionMode->setObject(index.row(), 0);
 }
 
 void TilesetPalette::on_objectsListView1_clicked(const QModelIndex &index)
 {
+    updatePalettes(1);
     objEditionMode->setDrawType(0);
     objEditionMode->setObject(index.row(), 1);
 }
 
 void TilesetPalette::on_objectsListView2_clicked(const QModelIndex &index)
 {
+    updatePalettes(2);
     objEditionMode->setDrawType(0);
     objEditionMode->setObject(index.row(), 2);
 }
 
 void TilesetPalette::on_objectsListView3_clicked(const QModelIndex &index)
 {
+    updatePalettes(3);
     objEditionMode->setDrawType(0);
     objEditionMode->setObject(index.row(), 3);
+}
+
+void TilesetPalette::updatePalettes(int actualPal)
+{
+    for (int i = 0; i < 4; i++)
+    {
+        if (i == actualPal) continue;
+        objectLists[i]->clearSelection();
+    }
 }
 
 void TilesetPalette::on_layerRadioButton_toggled(bool checked)
 {
     objEditionMode->setLayer(!checked);
+}
+
+void TilesetPalette::select(BgdatObject *obj)
+{
+    int tsid = (obj->getid() >> 12) & 0x3;
+    tabWidget->setCurrentIndex(tsid);
+    objectLists[tsid]->setCurrentIndex(objectLists[tsid]->model()->index(obj->getid()&0x0FFF, 0));
+
+    updatePalettes(tsid);
+    objEditionMode->setDrawType(0);
+    objEditionMode->setObject(obj->getid()&0x0FFF, (obj->getid() >> 12) & 0x3);
 }

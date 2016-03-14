@@ -316,8 +316,8 @@
   <sprite id="62" name="Rotation-controlled Red Coin" notes="Actor: 0x0d7">
     <value nybble="1-2" title="Triggering Flag" comment="Todo: For what?"/>
   </sprite>
-  <sprite id="63" name="Spike Pillar - Left" notes="Despite what the Actor Name says, this is the small variation.&#13;&#10;Actor: 0x19a"/>
-  <sprite id="64" name="Spike Pillar - Right" notes="Despite what the Actor Name says, this is the small variation.&#13;&#10;Actor: 0x19b"/>
+  <sprite id="63" name="Skewer - Left" notes="Despite what the Actor Name says, this is the small variation.&#13;&#10;Actor: 0x19a"/>
+  <sprite id="64" name="Skewer - Right" notes="Despite what the Actor Name says, this is the small variation.&#13;&#10;Actor: 0x19b"/>
   <sprite id="65" name="Morton Koopa Jr. - Respawn Pipe" notes="Used without data. Strangely, this is a NSMBW style pipe.&#13;&#10;Actor: 0x093&#13;&#10;Existing In-Game Sprite Data: Inaccurate"/>
   <sprite id="66" name="Pipe Cannon">
     <list nybble="6" title="Firing Direction">
@@ -1664,15 +1664,26 @@
     <value nybble="10" title="Unknown Value 10" comment="Checkbox?"/>
   </sprite>
   <sprite id="307" name="Rectangle Lift - Ruins" notes="As seen in 2-3 A2.">
-    <value nybble="1-2" title="Triggering Flag" comment="_Needs further testing_."/>
+    <value nybble="1-2" title="Triggering Flag"/>
+    <value nybble="6" title="Tiles to move"/>
+    <value nybble="11" title="New Field 11"/>
+    <value nybble="14" title="Useless" comment="Probably meant to be width, but does nothing"/>
+    <value nybble="16" title="Useless" comment="Probably meant to be height, but does nothing"/>
+    <value nybble="18" title="New Field 18"/>
+    <value nybble="12" title="Direction"/>
   </sprite>
   <sprite id="308" name="Rectangle Lift - Sand">
-    <value nybble="1-2" title="Triggering Flag" comment="Only used as 6..."/>
-    <value nybble="6" title="Unknown Value 6" comment="Always 2"/>
+    <value nybble="1-2" title="Triggering Flag"/>
+    <value nybble="6" title="TIles to move"/>
     <value nybble="11" title="Unknown Value 11" comment="Always 2"/>
-    <value nybble="12" title="Unknown Value 12" comment="Always 3"/>
-    <value nybble="14" title="Unknown Value 14" comment="Always 6"/>
-    <value nybble="16" title="Unknown Value 16" comment="Always 5"/>
+    <list nybble="12" title="Direction">
+      <entry value="0">Right</entry>
+      <entry value="1">Left</entry>
+      <entry value="2">Up</entry>
+      <entry value="3">Down</entry>
+    </list>
+    <value nybble="14" title="Useless" comment="Probably meant to be width, but does nothing"/>
+    <value nybble="16" title="Useless" comment="Probably meant to be height, but does nothing"/>
   </sprite>
   <sprite id="309" name="&quot;Drift Animation&quot;"/>
   <sprite id="310" name="Big Bowser Battles - Up-moving Lift ">

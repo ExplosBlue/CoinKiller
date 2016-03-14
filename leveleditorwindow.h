@@ -30,6 +30,7 @@
 #include "spriteeditorwidget.h"
 #include "entranceeditorwidget.h"
 #include "zoneeditorwidget.h"
+#include "locationeditorwidget.h"
 
 #include "propertygrid.h"
 
@@ -99,6 +100,7 @@ private:
     SpriteEditorWidget* spriteEditor;
     EntranceEditorWidget* entranceEditor;
     ZoneEditorWidget* zoneEditor;
+    LocationEditorWidget* locationEditor;
 
     quint8 layerMask;
     float zoom;

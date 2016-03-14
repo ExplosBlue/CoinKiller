@@ -100,6 +100,7 @@ class SpriteEditorWidget : public QWidget
     Q_OBJECT
 public:
     SpriteEditorWidget();
+    void select(Sprite* sprite);
     SpriteDataEditorWidget* spriteDataEditorPtr() { return editor; }
 
 signals:
