@@ -58,6 +58,12 @@ private:
 
 
     quint32 filenameHash(QString &name);
+
+
+    quint32 align16(quint32 v)
+    {
+        return (v + 0xF) & ~0xF;
+    }
 };
 
 #endif // SARCFILESYSTEM_H

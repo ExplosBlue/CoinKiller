@@ -179,12 +179,15 @@ bool SarcFilesystem::save(FileBase *file)
         qDebug("writeoffset = %08X + %08X", dataOffset, thisfile->offset);
 
         // move shit
-        quint32 sizetomove = sarc->size() - (writeoffset + thisfile->size);
+        quint32 oldmoveoffset = align16(writeoffset + thisfile->size);
+        quint32 newmoveoffset = align16(writeoffset + writesize);
+        quint32 fix_diff = newmoveoffset - oldmoveoffset;
+        quint32 sizetomove = sarc->size() - oldmoveoffset;
         qDebug("allocating %08X (%08X - (%08X + %08X))", sizetomove, (quint32)sarc->size(), writeoffset, thisfile->size);
         quint8* tempbuf = new quint8[sizetomove]; // TODO might fail if it's too big
-        sarc->seek(writeoffset + thisfile->size);
+        sarc->seek(oldmoveoffset);
         sarc->readData(tempbuf, sizetomove);
-        sarc->seek(writeoffset + writesize);
+        sarc->seek(newmoveoffset);
         sarc->writeData(tempbuf, sizetomove);
         delete[] tempbuf;
 
@@ -206,14 +209,19 @@ bool SarcFilesystem::save(FileBase *file)
                 continue;
 
             qDebug("file %s (%08X %08X %08X) gets fixed -> %08X", "lalala", tofix->entryOffset, tofix->offset, tofix->size,
-                   tofix->offset+sizediff);
+                   tofix->offset+fix_diff);
 
-            tofix->offset += sizediff;
+            tofix->offset += fix_diff;
 
             sarc->seek(tofix->entryOffset + 0x8);
             sarc->write32(tofix->offset);
             sarc->write32(tofix->offset + tofix->size);
         }
+
+        /*for (auto i : files)
+        {
+            i->name;
+        }*/
 
         // fix the internal shit
         thisfile->size = writesize;
