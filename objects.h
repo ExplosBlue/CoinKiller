@@ -197,6 +197,7 @@ public:
     void setMusicID(quint8 musicId) { this->musicId = musicId; }
     void setMultiplayerTracking(quint8 multiplayerTracking) { this->multiplayerTracking = multiplayerTracking; }
     void setBackgroundName(QString bgName) { this->bgName = bgName; }
+    void setUpScrolling(quint16 upScrolling) { this->upScrolling = upScrolling; }
     void setUpperBound(qint32 upperBound) { this->upperBound = upperBound; }
     void setLowerBound(qint32 lowerBound) { this->lowerBound = lowerBound; }
     void setUnkUpperBound(qint32 unkUpperBound) { this->unkUpperBound = unkUpperBound; }

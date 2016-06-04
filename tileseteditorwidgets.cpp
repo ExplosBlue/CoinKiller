@@ -206,7 +206,10 @@ void ObjectEditor::mousePressEvent(QMouseEvent* evt)
                 tileset->setData(objNbr, selX, selY, 2, 0x00);
             }
             else if (paintTileNbr != -1)
+            {
                 tileset->setData(objNbr, selX, selY, 1, paintTileNbr);
+                tileset->setData(objNbr, selX, selY, 2, tileset->getSlot() << 1);
+            }
 
             emit tilesetChanged();
         }

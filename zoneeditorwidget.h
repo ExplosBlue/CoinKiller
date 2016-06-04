@@ -11,6 +11,7 @@
 #include <QCheckBox>
 #include <QLabel>
 #include <QScrollArea>
+#include <QCheckBox>
 
 class BgPreview : public QLabel
 {
@@ -81,6 +82,7 @@ private slots:
     void handleProgPathIDChange(int ppIDVal);
     void handleMusicIDChange(QString text);
     void handleMultiPlayerTrackingChange(QString text);
+    void handleUpScrollingChange(bool val);
     void handleUpperBoundChange(int val);
     void handleLowerBoundChange(int val);
     void handleUnkUpperBoundChange(int val);

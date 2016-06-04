@@ -744,12 +744,14 @@ void Tileset::setSlot(int slot)
 
 quint16 Tileset::getOverlayTile(int selTile)
 {
+    qDebug() << overlays3D[selTile];
     return overlays3D[selTile] & 511;
 }
 
-void Tileset::setOverlayTile(int selTile, int ovTile)
+void Tileset::setOverlayTile(int selTile, int ovTile, int slot)
 {
     overlays3D[selTile] = (overlays3D[selTile] & 65024) | ovTile;
+    overlays3D[selTile] = (overlays3D[selTile] & 61951) | (slot << 9);
 }
 
 bool Tileset::getRandomizeH(int tile)

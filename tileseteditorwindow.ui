@@ -696,18 +696,6 @@
               <widget class="QComboBox" name="oBehaviorComboBox"/>
              </item>
             </layout>
-            <zorder>spinBox_2</zorder>
-            <zorder>label_13</zorder>
-            <zorder>spinBox_3</zorder>
-            <zorder>label_14</zorder>
-            <zorder>spinBox_4</zorder>
-            <zorder>label_15</zorder>
-            <zorder>hStartSpinBox</zorder>
-            <zorder>hEndSpinBox</zorder>
-            <zorder>label_o2</zorder>
-            <zorder>label_o3</zorder>
-            <zorder>layoutWidget</zorder>
-            <zorder>horizontalSpacer</zorder>
            </widget>
           </item>
           <item>
@@ -773,6 +761,7 @@
     <addaction name="actionImportImage"/>
     <addaction name="actionExportImage"/>
     <addaction name="separator"/>
+    <addaction name="actionDeleteAllBehaviors"/>
     <addaction name="actionDeleteAllObjects"/>
     <addaction name="actionDeleteAll3DOverlays"/>
     <addaction name="actionSetTilesetSlot"/>
@@ -834,6 +823,11 @@
    </property>
    <property name="toolTip">
     <string>Show Object Markers</string>
+   </property>
+  </action>
+  <action name="actionDeleteAllBehaviors">
+   <property name="text">
+    <string>Delete all Behaviors</string>
    </property>
   </action>
  </widget>

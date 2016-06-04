@@ -106,7 +106,7 @@ void TilesetEditorWindow::updateSelectedTile(int tile)
 void TilesetEditorWindow::updateSelectedOvTile(int ovTile)
 {
     if (selectedTile != -1)
-        tileset->setOverlayTile(selectedTile, ovTile);
+        tileset->setOverlayTile(selectedTile, ovTile, tileset->getSlot());
 }
 
 
@@ -634,9 +634,21 @@ void TilesetEditorWindow::on_actionDeleteAll3DOverlays_triggered()
         return;
 
     for (int i = 0; i < 441; i++)
-        tileset->setOverlayTile(i, 0);
+        tileset->setOverlayTile(i, 0, 0);
 
     tilesetPicker->setOvTile(0);
+}
+
+void TilesetEditorWindow::on_actionDeleteAllBehaviors_triggered()
+{
+    QMessageBox::StandardButton warning = QMessageBox::warning(this, "CoinKiller", "Do you realy want to delete all Behaviors?", QMessageBox::Yes|QMessageBox::No);
+
+    if (warning != QMessageBox::Yes)
+        return;
+
+    for (int i = 0; i < 441; i++)
+        for (int j = 0; j < 8; j++)
+            tileset->setBehaviorByte(i, j, 0);
 }
 
 

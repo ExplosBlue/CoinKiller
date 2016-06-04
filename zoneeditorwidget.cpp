@@ -35,6 +35,10 @@ ZoneEditorWidget::ZoneEditorWidget(QList<Zone*> *zones)
     musicId->addItems(musicIds.values());
     connect(musicId, SIGNAL(currentIndexChanged(QString)), this, SLOT(handleMusicIDChange(QString)));
 
+    upScrolling = new QCheckBox();
+    upScrolling->setText("Scroll Vertically");
+    connect(upScrolling, SIGNAL(toggled(bool)), this, SLOT(handleUpScrollingChange(bool)));
+
     upperBound = new QSpinBox();
     upperBound->setRange(-2147483648, 2147483647);
     connect(upperBound, SIGNAL(valueChanged(int)), this, SLOT(handleUpperBoundChange(int)));
@@ -82,29 +86,31 @@ ZoneEditorWidget::ZoneEditorWidget(QList<Zone*> *zones)
 
     subLayout->addWidget(new HorLine(), 4, 0, 1, 2);
 
-    subLayout->addWidget(new QLabel("Upper Bound:"), 5, 0, 1, 1, Qt::AlignRight);
-    subLayout->addWidget(upperBound, 5, 1);
+    subLayout->addWidget(upScrolling, 5, 0, 1, 2, Qt::AlignRight);
 
-    subLayout->addWidget(new QLabel("Lower Bound:"), 6, 0, 1, 1, Qt::AlignRight);
-    subLayout->addWidget(lowerBound, 6, 1);
+    subLayout->addWidget(new QLabel("Upper Bound:"), 6, 0, 1, 1, Qt::AlignRight);
+    subLayout->addWidget(upperBound, 6, 1);
 
-    subLayout->addWidget(new QLabel("Unknown Upper Bound:"), 7, 0, 1, 1, Qt::AlignRight);
-    subLayout->addWidget(unkUpperBound, 7, 1);
+    subLayout->addWidget(new QLabel("Lower Bound:"), 7, 0, 1, 1, Qt::AlignRight);
+    subLayout->addWidget(lowerBound, 7, 1);
 
-    subLayout->addWidget(new QLabel("Unknown Lower Bound:"), 8, 0, 1, 1, Qt::AlignRight);
-    subLayout->addWidget(unkLowerBound, 8, 1);
+    subLayout->addWidget(new QLabel("Unknown Upper Bound:"), 8, 0, 1, 1, Qt::AlignRight);
+    subLayout->addWidget(unkUpperBound, 8, 1);
 
-    subLayout->addWidget(new HorLine(), 9, 0, 1, 2);
+    subLayout->addWidget(new QLabel("Unknown Lower Bound:"), 9, 0, 1, 1, Qt::AlignRight);
+    subLayout->addWidget(unkLowerBound, 9, 1);
 
-    subLayout->addWidget(new QLabel("Background:"), 10, 0, 1, 1, Qt::AlignRight);
-    subLayout->addWidget(background, 10, 1);
+    subLayout->addWidget(new HorLine(), 10, 0, 1, 2);
+
+    subLayout->addWidget(new QLabel("Background:"), 11, 0, 1, 1, Qt::AlignRight);
+    subLayout->addWidget(background, 11, 1);
 
     QHBoxLayout* bgAlign = new QHBoxLayout();
     QWidget* spacer = new QWidget();
     spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
     bgAlign->addWidget(spacer);
     bgAlign->addWidget(backgroundPreview, 1);
-    subLayout->addLayout(bgAlign, 11, 0, 1, 2);
+    subLayout->addLayout(bgAlign, 12, 0, 1, 2);
 
     updateList();
     updateInfo();
@@ -222,6 +228,7 @@ void ZoneEditorWidget::updateInfo()
     multiplayerTracking->setCurrentText(multiplayerTrackings.value(editZone->getMultiplayerTracking()));
     musicId->setCurrentText(musicIds.value(editZone->getMusicId()));
     progPathId->setValue(editZone->getProgPathId());
+    upScrolling->setChecked(editZone->getUpScrolling() != 0);
     upperBound->setValue(editZone->getUpperBound());
     lowerBound->setValue(editZone->getLowerBound());
     unkUpperBound->setValue(editZone->getUnkUpperBound());
@@ -263,6 +270,12 @@ void ZoneEditorWidget::handleMultiPlayerTrackingChange(QString text)
 {
     if (!handleChanges) return;
     editZone->setMultiplayerTracking(multiplayerTrackings.key(text, 0));
+}
+
+void ZoneEditorWidget::handleUpScrollingChange(bool val)
+{
+    if (!handleChanges) return;
+    editZone->setUpScrolling(val? 0x0F : 0x00);
 }
 
 void ZoneEditorWidget::handleUpperBoundChange(int val)

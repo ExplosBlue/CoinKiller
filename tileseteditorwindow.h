@@ -91,6 +91,8 @@ private slots:
 
     void on_actionShowObjectMarkers_toggled(bool value);
 
+    void on_actionDeleteAllBehaviors_triggered();
+
 private:
     Ui::TilesetEditorWindow *ui;
     TilesetPicker* tilesetPicker;

@@ -56,6 +56,7 @@ public:
     ~Tileset();
 
     QString getName() const { return name; }
+    int getSlot() { return slot; }
 
     void drawTile(QPainter& painter, TileGrid& grid, int num, int x, int y, float zoom, int item);
     void drawObject(QPainter& painter, TileGrid& grid, int num, int x, int y, int w, int h, float zoom);
@@ -75,7 +76,7 @@ public:
     void setSlot(int slot);
 
     quint16 getOverlayTile(int selTile);
-    void setOverlayTile(int selTile, int ovTile);
+    void setOverlayTile(int selTile, int ovTile, int slot);
     bool getRandomizeH(int tile);
     void setRandomizeH(int tile, bool value);
     bool getRandomizeV(int tile);
