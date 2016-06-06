@@ -64,11 +64,6 @@ private:
     {
         return (v + 0xF) & ~0xF;
     }
-
-    quint32 align (quint32 v, quint32 a)
-    {
-        return (v + a - 1) / a * a;
-    }
 };
 
 #endif // SARCFILESYSTEM_H

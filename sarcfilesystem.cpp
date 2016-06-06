@@ -179,7 +179,7 @@ bool SarcFilesystem::save(FileBase *file)
         qDebug("writeoffset = %08X + %08X", dataOffset, thisfile->offset);
 
         // move shit
-        quint32 oldmoveoffset = align16(writeoffset + thisfile->size);
+        quint32 oldmoveoffset = writeoffset + thisfile->size;
         quint32 newmoveoffset = align16(writeoffset + writesize);
         quint32 fix_diff = newmoveoffset - oldmoveoffset;
         quint32 sizetomove = sarc->size() - oldmoveoffset;
