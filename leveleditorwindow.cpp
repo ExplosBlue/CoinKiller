@@ -25,13 +25,18 @@
 #include <QHBoxLayout>
 #include <QSizePolicy>
 #include <QStandardItemModel>
+#include <QInputDialog>
 
 LevelEditorWindow::LevelEditorWindow(QWidget *parent, Game *game, int worldNbr, int levelNbr) :
     QMainWindow(parent),
     ui(new Ui::LevelEditorWindow)
 {
     this->game = game;
-    level = game->getLevel(worldNbr, levelNbr, 1);
+
+    // temp shit to select an area
+    int area = QInputDialog::getInt(this, "CoinKiller", "Select an area", 1, 1, 4);
+
+    level = game->getLevel(worldNbr, levelNbr, area);
     // some extra shit here
 
 
