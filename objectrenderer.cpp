@@ -22,6 +22,9 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr)
     case 19: // Desert Crater
         ret = new NormalImageRenderer(spr, basePath + "desert_crater.png");
         break;
+    case 20: // Gold Block
+        ret = new NormalImageRenderer(spr, basePath + "gold_block.png");
+        break;
     case 21: // Note Block
         ret = new NormalImageRenderer(spr, basePath + "note_block.png");
         break;
@@ -239,7 +242,7 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr)
         ret = new NormalImageRenderer(spr, basePath + "bowser_head_statue.png");
         break;
     case 267: // Long Question Block
-        ret = new NormalImageRenderer(spr, basePath + "long_question_block.png");
+        ret = new LongQBlockRenderer(spr, basePath + "long_question_block.png");
         break;
     case 269: // Gold Ship
         ret = new NormalImageRenderer(spr, basePath + "gold_ship.png");
@@ -254,10 +257,10 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr)
         ret = new NormalImageRenderer(spr, basePath + "flying_gold_block.png");
         break;
     case 275: // Long Question Block - Underground
-        ret = new NormalImageRenderer(spr, basePath + "long_question_block_underground.png");
+        ret = new LongQBlockRenderer(spr, basePath + "long_question_block_underground.png");
         break;
     case 276: // Long Question Block - Lava
-        ret = new NormalImageRenderer(spr, basePath + "long_question_block_lava.png");
+        ret = new LongQBlockRenderer(spr, basePath + "long_question_block_lava.png");
         break;
     case 277: // Switchable Conveyor Belt
         ret = new NormalImageRenderer(spr, basePath + "switchable_conveyor_belt.png");
@@ -566,6 +569,39 @@ void UrchinRenderer::render(QPainter *painter)
 
     if (spr->getNybble(5) != 1) painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), QPixmap(basePath + "urchin.png"));
     else painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), QPixmap(basePath + "urchin_big.png"));
+}
+
+
+// Sprites 267/275/276: Long ? Blocks
+LongQBlockRenderer::LongQBlockRenderer(const Sprite *spr, QString filename)
+{
+    this->spr = spr;
+    block = new NormalImageRenderer(spr, filename);
+}
+
+void LongQBlockRenderer::render(QPainter *painter)
+{
+    block->render(painter);
+
+    QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/tileoverlays/");
+    QString overlay;
+
+    switch (spr->getNybble(13))
+    {
+        case 1: case 8: overlay = "coin.png"; break;
+        case 2: overlay = "fire_flower.png"; break;
+        case 4: overlay = "super_leaf.png"; break;
+        case 5: overlay = "gold_flower.png"; break;
+        case 6: overlay = "mini_mushroom.png"; break;
+        case 7: overlay = "super_star.png"; break;
+        case 10: overlay = "10_coins.png"; break;
+        case 11: overlay = "1up_mushroom.png"; break;
+        case 13: overlay = "trampoline.png"; break;
+        case 14: overlay = "coin_super_mushroom.png"; break;
+        default: return; break;
+    }
+
+    painter->drawPixmap(spr->getx()+spr->getOffsetX()+20, spr->gety()+spr->getOffsetY(), 20, 20, QPixmap(basePath + overlay));
 }
 
 

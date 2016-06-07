@@ -18,6 +18,7 @@
 #ifndef SARCFILESYSTEM_H
 #define SARCFILESYSTEM_H
 
+#include "filebase.h"
 
 class SarcFilesystem : public FilesystemBase
 {
@@ -59,11 +60,12 @@ private:
 
     quint32 filenameHash(QString &name);
 
+    const quint8 dataAlign = 0x10;
 
-    quint32 align16(quint32 v)
+    quint32 align(quint32 v, quint32 a)
     {
-        return (v + 0xF) & ~0xF;
+        return (v + a - 1) / a * a;
     }
-};
+}
 
 #endif // SARCFILESYSTEM_H

@@ -861,6 +861,7 @@ void TilesetEditorWindow::on_vStartSpinBox_valueChanged(int value)
     if (selObj == -1 || value == -1)
         return;
 
+    clampOBehaviorSpinBoxes();
     tileset->setObjectBehavior(selObj, ui->oBehaviorComboBox->currentIndex(), ui->hStartSpinBox->value(), ui->hEndSpinBox->value(), value, ui->vEndSpinBox->value());
     objectEditor->update();
 }
@@ -872,7 +873,6 @@ void TilesetEditorWindow::on_vEndSpinBox_valueChanged(int value)
     if (selObj == -1 || value == -1)
         return;
 
-    qDebug() << "Clamp from vE";
     clampOBehaviorSpinBoxes();
     tileset->setObjectBehavior(selObj, ui->oBehaviorComboBox->currentIndex(), ui->hStartSpinBox->value(), ui->hEndSpinBox->value(), ui->vStartSpinBox->value(), value);
     objectEditor->update();

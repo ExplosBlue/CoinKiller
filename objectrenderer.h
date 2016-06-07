@@ -185,6 +185,17 @@ protected:
     const Sprite *spr;
 };
 
+// Sprites 267/275/276: Long ? Blocks
+class LongQBlockRenderer: public SpriteRenderer
+{
+public:
+    LongQBlockRenderer(const Sprite *spr, QString filename);
+    void render(QPainter *painter);
+protected:
+    const Sprite *spr;
+    NormalImageRenderer* block;
+};
+
 // Sprite 280: + Clock
 class ClockRenderer: public SpriteRenderer
 {

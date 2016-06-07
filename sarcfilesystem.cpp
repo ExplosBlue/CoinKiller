@@ -17,6 +17,8 @@
 
 #include "filesystem.h"
 
+#include <QDebug>
+
 SarcFilesystem::SarcFilesystem(FileBase* file)
 {
     sarc = file;
@@ -154,77 +156,102 @@ FileBase* SarcFilesystem::openFile(QString path)
 bool SarcFilesystem::save(FileBase *file)
 {
     QString path = file->getIdPath();
-    quint32 writeoffset = 0;
 
     file->open();
-    quint32 writesize = file->size();
-
     sarc->open();
 
     if (files.contains(path))
     {
         // reinsert existing file
 
-        quint32 hash = filenameHash(path);
         InternalSarcFile* thisfile = files[path];
-
-        qDebug("new file size %08X", writesize);
 
         if (thisfile == NULL)
             throw std::logic_error("thisfile is NULL, shouldn't happen");
 
-        writeoffset = dataOffset + thisfile->offset;
-        quint32 sizediff = writesize - thisfile->size;
-        qDebug("moving data %08X", sizediff);
-        qDebug("writeoffset = %08X + %08X", dataOffset, thisfile->offset);
 
-        // move shit
-        quint32 oldmoveoffset = writeoffset + thisfile->size;
-        quint32 newmoveoffset = align16(writeoffset + writesize);
-        quint32 fix_diff = newmoveoffset - oldmoveoffset;
-        quint32 sizetomove = sarc->size() - oldmoveoffset;
-        qDebug("allocating %08X (%08X - (%08X + %08X))", sizetomove, (quint32)sarc->size(), writeoffset, thisfile->size);
-        quint8* tempbuf = new quint8[sizetomove]; // TODO might fail if it's too big
-        sarc->seek(oldmoveoffset);
-        sarc->readData(tempbuf, sizetomove);
-        sarc->seek(newmoveoffset);
-        sarc->writeData(tempbuf, sizetomove);
-        delete[] tempbuf;
+        // temp data after the file
+        quint32 oldmoveoffset = dataOffset + thisfile->offset + thisfile->size;
 
-        qDebug("done moving crap");
-
-        // fix size
-        sarc->seek(thisfile->entryOffset + 0xC);
-        sarc->write32(thisfile->offset + writesize);
-
-        qDebug("file size fixed");
-
-        // fix offsets of files that come later
+        // get first file offset after thisfile
+        quint32 bufOffset = 0xFFFFFFFF;
+        bool lastFile = true;
         for (int i = 0; i < files.size(); i++)
         {
-            InternalSarcFile* tofix = files.values()[i];
-            if (tofix == thisfile)
+            InternalSarcFile* ifile = files.values()[i];
+            if (ifile == thisfile)
                 continue;
-            if (tofix->offset <= thisfile->offset)
+            if (ifile->offset <= thisfile->offset)
                 continue;
+            if (ifile->offset + dataOffset < bufOffset)
+            {
+                bufOffset = ifile->offset + dataOffset;
+                lastFile = false;
+            }
+        }
+        quint32 oldPad = bufOffset - oldmoveoffset;
 
-            qDebug("file %s (%08X %08X %08X) gets fixed -> %08X", "lalala", tofix->entryOffset, tofix->offset, tofix->size,
-                   tofix->offset+fix_diff);
+        quint32 tempsize = sarc->size() - bufOffset;
+        qDebug() << "temping data: from" << bufOffset << "-" << tempsize << "bytes";
+        qDebug() << "old pad size:" << oldPad;
 
-            tofix->offset += fix_diff;
+        quint8* tempbuf = new quint8[tempsize];     // TODO: might fail if it's too big
+        sarc->seek(bufOffset);
+        sarc->readData(tempbuf, tempsize);
 
-            sarc->seek(tofix->entryOffset + 0x8);
-            sarc->write32(tofix->offset);
-            sarc->write32(tofix->offset + tofix->size);
+
+        // resize properly
+        quint32 writeOffset = dataOffset + thisfile->offset;
+        quint32 writeSize = file->size();
+        quint32 newSarcSize = sarc->size();
+        if (!lastFile)
+            newSarcSize +=  -oldPad + align(writeOffset+writeSize, dataAlign) - (writeOffset+writeSize);
+
+        qDebug() << "new SARC size:" << newSarcSize << "old:" << sarc->size();
+        sarc->resize(newSarcSize);
+
+        sarc->seek(0x8);
+        sarc->write32(sarc->size());
+
+
+        // write file and fix SFAT
+        quint8* filetempbuf = new quint8[writeSize];
+        file->seek(0);
+        file->readData(filetempbuf, writeSize);
+        sarc->seek(dataOffset + thisfile->offset);
+        sarc->writeData(filetempbuf, writeSize);
+        delete[] filetempbuf;
+
+
+        // write align and following data if existing and fix their SFAT entries
+        if (!lastFile)
+        {
+            quint8 padSize = align(sarc->pos(), dataAlign) - sarc->pos();
+            for (quint8 i=0; i < padSize; i++) sarc->write8(0x00);
+            quint32 fix_diff = sarc->pos() - bufOffset;
+            sarc->writeData(tempbuf, tempsize);
+
+            for (int i = 0; i < files.size(); i++)
+            {
+                InternalSarcFile* tofix = files.values()[i];
+                if (tofix == thisfile)
+                    continue;
+                if (tofix->offset <= thisfile->offset)
+                    continue;
+
+                tofix->offset += fix_diff;
+
+                sarc->seek(tofix->entryOffset + 0x8);
+                sarc->write32(tofix->offset);
+                sarc->write32(tofix->offset + tofix->size);
+            }
         }
 
-        /*for (auto i : files)
-        {
-            i->name;
-        }*/
+        delete[] tempbuf;
 
-        // fix the internal shit
-        thisfile->size = writesize;
+        // fix thisfile SFAT entry
+        sarc->seek(thisfile->entryOffset + 0xC);
+        sarc->write32(thisfile->offset + writeSize);
     }
     else
     {
@@ -234,28 +261,8 @@ bool SarcFilesystem::save(FileBase *file)
         return true;
     }
 
-    /*quint8* tempbuf = new quint8[4096];
-        quint64 pos = 0;
-        while (pos < size)
-        {
-            quint64 toread = 4096;
-            if ((pos+toread) > size) toread = size-pos;
-
-            readData(tempbuf, toread);
-            ret->writeData(tempbuf, toread);
-            pos += toread;
-        }
-
-        ret->close();
-        delete[] tempbuf;*/
-    // same lazy shit
-    file->seek(0);
-    quint8* tempbuf = new quint8[writesize];
-    file->readData(tempbuf, writesize);
-    sarc->seek(writeoffset);
-    sarc->writeData(tempbuf, writesize);
-
     file->close();
+
     sarc->save();
     sarc->close();
 
