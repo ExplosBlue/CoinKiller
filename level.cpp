@@ -331,10 +331,23 @@ void Level::save()
     QString bgdatfiletemp = QString("/course/course%1_bgdatL%2.bin").arg(area);
     for (int l = 0; l < 2; l++)
     {
-        QString bgdatfile = bgdatfiletemp.arg(l+1);
-        if (!archive->fileExists(bgdatfile)) continue;
+        QString bgdatfile = bgdatfiletemp.arg(l+1);  
 
-        FileBase* bgdat = archive->openFile(bgdatfile);
+        // TODO
+        /*if (objects[l].length() == 0)
+        {
+            if (archive->fileExists(bgdatfile)) archive->deleteFile(bgdatfile);
+            continue;
+        }*/
+
+        FileBase* bgdat;
+        if (archive->fileExists(bgdatfile)) bgdat = archive->openFile(bgdatfile);
+        else
+        {
+            bgdat = new MemoryFile(archive);
+            bgdat->setIdPath(bgdatfile);
+        }
+
         bgdat->open();
         bgdat->resize(objects[l].size()*16+2);
         bgdat->seek(0);

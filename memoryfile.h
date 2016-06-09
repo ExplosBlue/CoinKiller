@@ -23,6 +23,7 @@ class MemoryFile : public FileBase
 {
 public:
     MemoryFile(FilesystemBase *fs, quint8* blob, quint32 size);
+    MemoryFile(FilesystemBase *fs, quint32 size=0);
     ~MemoryFile();
 
     void open();

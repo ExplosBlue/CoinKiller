@@ -66,6 +66,17 @@ private:
     {
         return (v + a - 1) / a * a;
     }
-}
+
+    void writeAlign(quint32 a)
+    {
+        quint8 padSize = align(sarc->pos(), a) - sarc->pos();
+        for (quint8 i=0; i < padSize; i++) sarc->write8(0x00);
+    }
+
+    static bool hashSort(InternalSarcFile* f1, InternalSarcFile* f2)
+    {
+        return f1->nameHash < f2->nameHash;
+    }
+};
 
 #endif // SARCFILESYSTEM_H

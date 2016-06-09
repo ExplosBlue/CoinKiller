@@ -27,6 +27,17 @@ MemoryFile::MemoryFile(FilesystemBase* fs, quint8* blob, quint32 size)
     openCount = 0;
 }
 
+MemoryFile::MemoryFile(FilesystemBase *fs, quint32 size)
+{
+    this->parent = fs;
+    this->data = new quint8[size];
+    memset(data, 0, size);
+    this->_size = size;
+    this->_pos = 0;
+
+    openCount = 0;
+}
+
 MemoryFile::~MemoryFile()
 {
     qDebug("MemoryFile destructor");

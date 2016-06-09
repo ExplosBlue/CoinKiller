@@ -109,8 +109,11 @@ public:
         writeData((quint8*)&val, 4);
     }
 
-    void writeStringASCII(QString str, int len)
+    void writeStringASCII(QString str, int len=0) // len=0 for NULL terminated string
     {
+        if (len == 0)
+            len = str.length() + 1;
+
         if (len < str.length())
             str = str.left(len);
 
@@ -132,6 +135,9 @@ public:
 
     void setIdPath(QString path)
     {
+        if (path[0] == '/')
+            path.remove(0,1);
+
         if (idPath.isEmpty())
             idPath = path;
         else

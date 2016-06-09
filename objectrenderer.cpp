@@ -351,10 +351,10 @@ GoalRenderer::GoalRenderer(const Sprite *spr)
 {
     QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/");
 
-    if (spr->getNybble(5) == 1)
+    if (spr->getNybble(10) == 1)
     {
         pole = new NormalImageRenderer(spr, basePath + "flagpole_secret.png");
-        fort = new NormalImageRenderer(QRect(spr->getx()+200, spr->gety()+80, 120, 120), basePath + "secret_castle.png");
+        fort = new NormalImageRenderer(QRect(spr->getx()+200, spr->gety()+80, 120, 120), basePath + "castle_secret.png");
     }
     else
     {

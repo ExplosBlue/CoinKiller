@@ -155,114 +155,157 @@ FileBase* SarcFilesystem::openFile(QString path)
 
 bool SarcFilesystem::save(FileBase *file)
 {
+    sarc->open();
+    file->open();
+
+    numFiles = files.size();    // just to be sure
+
     QString path = file->getIdPath();
 
-    file->open();
-    sarc->open();
+    if (path.isNull() || path.isEmpty())
+        throw std::runtime_error("tried saving file without specified filename");
 
-    if (files.contains(path))
+    if (!files.contains(path))
     {
-        // reinsert existing file
+        InternalSarcFile* entry = new InternalSarcFile();
+        entry->name = path;
+        entry->size = file->size();
+        files.insert(entry->name, entry);
 
+        numFiles++;
+    }
+    else
+    {
         InternalSarcFile* thisfile = files[path];
 
         if (thisfile == NULL)
             throw std::logic_error("thisfile is NULL, shouldn't happen");
 
-
-        // temp data after the file
-        quint32 oldmoveoffset = dataOffset + thisfile->offset + thisfile->size;
-
-        // get first file offset after thisfile
-        quint32 bufOffset = 0xFFFFFFFF;
-        bool lastFile = true;
-        for (int i = 0; i < files.size(); i++)
-        {
-            InternalSarcFile* ifile = files.values()[i];
-            if (ifile == thisfile)
-                continue;
-            if (ifile->offset <= thisfile->offset)
-                continue;
-            if (ifile->offset + dataOffset < bufOffset)
-            {
-                bufOffset = ifile->offset + dataOffset;
-                lastFile = false;
-            }
-        }
-        quint32 oldPad = bufOffset - oldmoveoffset;
-
-        quint32 tempsize = sarc->size() - bufOffset;
-        qDebug() << "temping data: from" << bufOffset << "-" << tempsize << "bytes";
-        qDebug() << "old pad size:" << oldPad;
-
-        quint8* tempbuf = new quint8[tempsize];     // TODO: might fail if it's too big
-        sarc->seek(bufOffset);
-        sarc->readData(tempbuf, tempsize);
-
-
-        // resize properly
-        quint32 writeOffset = dataOffset + thisfile->offset;
-        quint32 writeSize = file->size();
-        quint32 newSarcSize = sarc->size();
-        if (!lastFile)
-            newSarcSize +=  -oldPad + align(writeOffset+writeSize, dataAlign) - (writeOffset+writeSize);
-
-        qDebug() << "new SARC size:" << newSarcSize << "old:" << sarc->size();
-        sarc->resize(newSarcSize);
-
-        sarc->seek(0x8);
-        sarc->write32(sarc->size());
-
-
-        // write file and fix SFAT
-        quint8* filetempbuf = new quint8[writeSize];
-        file->seek(0);
-        file->readData(filetempbuf, writeSize);
-        sarc->seek(dataOffset + thisfile->offset);
-        sarc->writeData(filetempbuf, writeSize);
-        delete[] filetempbuf;
-
-
-        // write align and following data if existing and fix their SFAT entries
-        if (!lastFile)
-        {
-            quint8 padSize = align(sarc->pos(), dataAlign) - sarc->pos();
-            for (quint8 i=0; i < padSize; i++) sarc->write8(0x00);
-            quint32 fix_diff = sarc->pos() - bufOffset;
-            sarc->writeData(tempbuf, tempsize);
-
-            for (int i = 0; i < files.size(); i++)
-            {
-                InternalSarcFile* tofix = files.values()[i];
-                if (tofix == thisfile)
-                    continue;
-                if (tofix->offset <= thisfile->offset)
-                    continue;
-
-                tofix->offset += fix_diff;
-
-                sarc->seek(tofix->entryOffset + 0x8);
-                sarc->write32(tofix->offset);
-                sarc->write32(tofix->offset + tofix->size);
-            }
-        }
-
-        delete[] tempbuf;
-
-        // fix thisfile SFAT entry
-        sarc->seek(thisfile->entryOffset + 0xC);
-        sarc->write32(thisfile->offset + writeSize);
+        thisfile->size = file->size();
     }
-    else
+
+
+    // Generate sorted List, since SARCs want to be ordered after their File Name Hash
+    QList<InternalSarcFile*> sortedFiles;
+    for (int i = 0; i < files.size(); i++)
     {
-        // insert new file
-
-        // TODO
-        return true;
+        InternalSarcFile* ifile = files.values()[i];
+        ifile->nameHash = filenameHash(ifile->name);
+        sortedFiles.append(ifile);
     }
+    qSort(sortedFiles.begin(), sortedFiles.end(), hashSort);
+
+
+    // recreate SARC
+
+    // get correct size
+    quint32 newSarcSize = 0x28;             // SARC, SFAT and SFNT headers
+    newSarcSize += numFiles*0x10;           // SFAT nodes
+
+    quint32 sfntNodeOffset = newSarcSize;
+
+    for (int i = 0; i < sortedFiles.size(); i++)  // SFNT nodes
+    {
+        InternalSarcFile* ifile = sortedFiles[i];
+        ifile->nameOffset = (newSarcSize-sfntNodeOffset) / 4;
+        newSarcSize += ifile->name.length() + 1;
+        newSarcSize = align(newSarcSize, 4);
+    }
+
+    newSarcSize = align(newSarcSize, dataAlign);
+    quint32 newDataOffset = newSarcSize;
+
+    quint32 oldOffsets[numFiles];
+
+    for (int i = 0; i < sortedFiles.size(); i++)  // data
+    {
+        InternalSarcFile* ifile = sortedFiles[i];
+        oldOffsets[i] = ifile->offset;
+        ifile->offset = newSarcSize - newDataOffset;
+        newSarcSize += ifile->size;
+        if (i < sortedFiles.size() - 1) newSarcSize = align(newSarcSize, dataAlign);
+    }
+
+    qDebug() << "final SARC size:" << newSarcSize;
+
+
+    // buffer old SARC file data
+    quint8* oldSarc = new quint8[sarc->size() - dataOffset];
+    sarc->seek(dataOffset);
+    sarc->readData(oldSarc, sarc->size() - dataOffset);
+
+    sarc->resize(newSarcSize);
+    sarc->seek(0);
+
+
+    dataOffset = newDataOffset;
+
+
+    // write SARC
+
+    // Header
+    sarc->write32(0x43524153);      // Magic
+    sarc->write16(0x14);            // Header Length
+    sarc->write16(0xFEFF);          // Byte order mark (little endian)
+    sarc->write32(newSarcSize);     // SARC size
+    sarc->write32(newDataOffset);   // Beginning of data
+    sarc->write32(0x00000100);
+
+    // SFAT Header
+    sarc->write32(0x54414653);      // Magic
+    sarc->write16(0xC);             // Header Length
+    sarc->write16(numFiles);        // Node count
+    sarc->write32(hashMult);        // Hash Multiplier
+
+    // SFAT Nodes
+    for (int i = 0; i < sortedFiles.size(); i++)
+    {
+        InternalSarcFile* ifile = sortedFiles[i];
+        sarc->write32(filenameHash(ifile->name));   // File Name Hash
+        sarc->write32(ifile->nameOffset);           // File name table entry
+        sarc->seek(sarc->pos()-1);
+        sarc->write8(0x1);                          // whatever this is
+        sarc->write32(ifile->offset);               // Beginning of node file data
+        sarc->write32(ifile->offset + ifile->size); // End of node file data
+    }
+
+    // SFNT Header
+    sarc->write32(0x544E4653);      // Magic
+    sarc->write16(0x8);             // Header Length
+    sarc->write16(0x0);             // whatever this is
+
+    // Filename Strings
+    for (int i = 0; i < sortedFiles.size(); i++)
+    {
+        InternalSarcFile* ifile = sortedFiles[i];
+        sarc->writeStringASCII(ifile->name);
+        writeAlign(4);
+    }
+
+    // File data
+    for (int i = 0; i < sortedFiles.size(); i++)
+    {
+        writeAlign(dataAlign);
+
+        InternalSarcFile* ifile = sortedFiles[i];
+
+        if (ifile->name == path)
+        {
+            quint8* filetempbuf = new quint8[file->size()];
+            file->seek(0);
+            file->readData(filetempbuf, file->size());
+            sarc->writeData(filetempbuf, file->size());
+            delete[] filetempbuf;
+
+            continue;
+        }
+
+        sarc->writeData(oldSarc+oldOffsets[i], ifile->size);
+    }
+
+    delete[] oldSarc;
 
     file->close();
-
     sarc->save();
     sarc->close();
 
