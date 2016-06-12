@@ -75,121 +75,14 @@ void MainWindow::on_actionLoadROM_triggered()
 
 
     FilesystemBase* fs = new ExternalFilesystem(dirpath);
-    game = new Game(fs); // hax!!
+    game = new Game(fs);
 
 
+    ui->levelList->setModel(game->getCourseModel());
 
-    FilesystemBase* test = new SarcFilesystem(game->fs->openFile("/Course/1-1.sarc"));
-    QList<QString> testlist;
-    test->directoryContents("/course", QDir::Files, testlist);
-    qDebug("FILES");
-    for (int i = 0; i < testlist.size(); i++)
-        qDebug(testlist[i].toStdString().c_str());
-    test->directoryContents("/", QDir::Dirs, testlist);
-    qDebug("DIRS");
-    for (int i = 0; i < testlist.size(); i++)
-        qDebug(testlist[i].toStdString().c_str());
-
-
-    // TODO: move all that crap to the Game class
-
-    QStandardItemModel* levels = new QStandardItemModel();
-
-    QList<QString> coursefiles;
-    fs->directoryContents("/Course", QDir::Files, coursefiles);
-
-    int l = 0;
-    for (int w = 1; w <= 9; w++)
-    {
-        QStandardItem* world = new QStandardItem(QString("World %1").arg(w));
-        levels->appendRow(world);
-
-        for (;;)
-        {
-            // incredibly cheap way to name levels
-            // way to go, me
-            QString levelname = coursefiles[l];
-            levelname.replace(".sarc", "");
-
-            QStandardItem* level = new QStandardItem(levelname);
-            level->setData(levelname);
-            world->appendRow(level);
-
-            //
-
-            l++;
-            if (l >= coursefiles.length())
-                break;
-            if (w != coursefiles[l].section('-',0,0).toInt())
-                break;
-        }
-    }
-
-    if (fs->directoryExists("/Course/dlc"))
-    {
-        fs->directoryContents("/Course/dlc", QDir::Files, coursefiles);
-
-        QStandardItem* world = new QStandardItem(QString("DLC Levels"));
-        levels->appendRow(world);
-
-        foreach (QString levelname, coursefiles)
-        {
-            levelname.replace(".sarc", "");
-            QStandardItem* level = new QStandardItem(levelname);
-            level->setData(levelname);
-            world->appendRow(level);
-        }
-    }
-
-    ui->levelList->setModel(levels);
-
-
-    QStandardItemModel* tilesets = new QStandardItemModel();
-
-    QStandardItem* standardSuite = new QStandardItem(QString("Standard Suite"));
-    QStandardItem* stageSuite = new QStandardItem(QString("Stage Suite"));
-    QStandardItem* backgroundSuite = new QStandardItem(QString("Background Suite"));
-    QStandardItem* interactiveSuite = new QStandardItem(QString("Interactive Suite"));
-    tilesets->appendRow(standardSuite);
-    tilesets->appendRow(stageSuite);
-    tilesets->appendRow(backgroundSuite);
-    tilesets->appendRow(interactiveSuite);
-
-    QList<QString> tilesetfiles;
-    fs->directoryContents("/Unit", QDir::Files, tilesetfiles);
-
-    for (int i = 0; i < tilesetfiles.length(); i++)
-    {
-        QString tilesetname = tilesetfiles[i];
-        tilesetname.chop(5);
-
-        QStandardItem* tileset;
-        tileset = new QStandardItem();
-        tileset->setData(tilesetname);
-
-        if (tilesetname.startsWith("J_"))
-        {
-            tileset->setText(tilesetname.right(tilesetname.size() - 2));
-            standardSuite->appendRow(tileset);
-        }
-        else if (tilesetname.startsWith("M_"))
-        {
-            tileset->setText(tilesetname.right(tilesetname.size() - 2));
-            stageSuite->appendRow(tileset);
-        }
-        else if (tilesetname.startsWith("S1_"))
-        {
-            tileset->setText(tilesetname.right(tilesetname.size() - 3));
-            backgroundSuite->appendRow(tileset);
-        }
-        else if (tilesetname.startsWith("S2_"))
-        {
-            tileset->setText(tilesetname.right(tilesetname.size() - 3));
-            interactiveSuite->appendRow(tileset);
-        }
-    }
-
-    ui->tilesetView->setModel(tilesets);
+    ui->tilesetView->setHeaderHidden(false);
+    ui->tilesetView->setModel(game->getTilesetModel());
+    ui->tilesetView->setColumnWidth(0, 200);
 }
 
 void MainWindow::on_actionDebug_test_triggered()
@@ -203,12 +96,9 @@ void MainWindow::on_levelList_doubleClicked(const QModelIndex &index)
     if (index.data(Qt::UserRole+1).isNull())
         return;
 
-    QStringList data = index.data(Qt::UserRole+1).toString().split('-');
+    QString path = "/Course/" + index.data(Qt::UserRole+1).toString() + ".sarc";
 
-    int world = data[0].toInt();
-    int level = data[1].toInt();
-
-    LevelEditorWindow* lvlEditor = new LevelEditorWindow(this, game, world, level);
+    LevelEditorWindow* lvlEditor = new LevelEditorWindow(this, game, path);
     lvlEditor->show();
 }
 
