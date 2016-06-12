@@ -19,6 +19,7 @@
 #define SARCFILESYSTEM_H
 
 #include "filebase.h"
+#include <QDebug>
 
 class SarcFilesystem : public FilesystemBase
 {
@@ -32,6 +33,8 @@ public:
     bool fileExists(QString path);
     FileBase* openFile(QString path);
     bool save(FileBase* file);
+    bool deleteFile(QString path);
+    bool renameFile(QString path, QString newName);
 
 
 private:
@@ -56,6 +59,7 @@ private:
     quint32 dataOffset;
 
     QHash<QString,InternalSarcFile*> files;
+    void repack();
 
 
     quint32 filenameHash(QString &name);

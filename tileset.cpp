@@ -744,8 +744,12 @@ void Tileset::setSlot(int slot)
 
 quint16 Tileset::getOverlayTile(int selTile)
 {
-    qDebug() << overlays3D[selTile];
     return overlays3D[selTile] & 511;
+}
+
+quint16 Tileset::getOverlayTileSlot(int selTile)
+{
+    return (overlays3D[selTile] & 3584) >> 9;
 }
 
 void Tileset::setOverlayTile(int selTile, int ovTile, int slot)
@@ -849,4 +853,32 @@ void Tileset::setObjectBehavior(int selObj, int type, int hStart, int hEnd, int 
                 if (r >= vStart && r < vEnd) obj.rows[r].data[d] = (obj.rows[r].data[d] & 253) | true << 1;
         }
     }
+}
+
+
+void Tileset::replaceCTPK(QString filename)
+{
+    QFile newCtpk(filename);
+
+    if(!newCtpk.open(QIODevice::ReadOnly))
+        return;
+
+    newCtpk.seek(0);
+    char* data = new char[newCtpk.size()];
+    newCtpk.read(data, newCtpk.size());
+    newCtpk.close();
+
+    delete texture;
+
+    FileBase* texFile = archive->openFile("/BG_tex/"+name+".ctpk");
+    texFile->open();
+    texFile->resize(newCtpk.size());
+    texFile->seek(0);
+    texFile->writeData((quint8*)data, texFile->size());
+    texFile->save();
+    texFile->close();
+
+    texture = new Ctpk(archive->openFile("/BG_tex/"+name+".ctpk"));
+
+    texImage = texture->getTexture(0);
 }

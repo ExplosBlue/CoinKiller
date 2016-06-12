@@ -333,12 +333,11 @@ void Level::save()
     {
         QString bgdatfile = bgdatfiletemp.arg(l+1);  
 
-        // TODO
-        /*if (objects[l].length() == 0)
+        if (objects[l].length() == 0)
         {
             if (archive->fileExists(bgdatfile)) archive->deleteFile(bgdatfile);
             continue;
-        }*/
+        }
 
         FileBase* bgdat;
         if (archive->fileExists(bgdatfile)) bgdat = archive->openFile(bgdatfile);

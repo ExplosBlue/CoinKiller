@@ -312,7 +312,169 @@ bool SarcFilesystem::save(FileBase *file)
     return true;
 }
 
+void SarcFilesystem::repack()
+{
+    // oddly copy-pasted the code from the save method, but who cares :P
 
+    sarc->open();
+
+    numFiles = files.size();    // just to be sure
+
+    // Generate sorted List, since SARCs want to be ordered after their File Name Hash
+    QList<InternalSarcFile*> sortedFiles;
+    for (int i = 0; i < files.size(); i++)
+    {
+        InternalSarcFile* ifile = files.values()[i];
+        ifile->nameHash = filenameHash(ifile->name);
+        sortedFiles.append(ifile);
+    }
+    qSort(sortedFiles.begin(), sortedFiles.end(), hashSort);
+
+
+    // recreate SARC
+
+    // get correct size
+    quint32 newSarcSize = 0x28;             // SARC, SFAT and SFNT headers
+    newSarcSize += numFiles*0x10;           // SFAT nodes
+
+    quint32 sfntNodeOffset = newSarcSize;
+
+    for (int i = 0; i < sortedFiles.size(); i++)  // SFNT nodes
+    {
+        InternalSarcFile* ifile = sortedFiles[i];
+        ifile->nameOffset = (newSarcSize-sfntNodeOffset) / 4;
+        newSarcSize += ifile->name.length() + 1;
+        newSarcSize = align(newSarcSize, 4);
+    }
+
+    newSarcSize = align(newSarcSize, dataAlign);
+    quint32 newDataOffset = newSarcSize;
+
+    quint32 oldOffsets[numFiles];
+
+    for (int i = 0; i < sortedFiles.size(); i++)  // data
+    {
+        InternalSarcFile* ifile = sortedFiles[i];
+        oldOffsets[i] = ifile->offset;
+        ifile->offset = newSarcSize - newDataOffset;
+        newSarcSize += ifile->size;
+        if (i < sortedFiles.size() - 1) newSarcSize = align(newSarcSize, dataAlign);
+    }
+
+    qDebug() << "final SARC size:" << newSarcSize;
+
+
+    // buffer old SARC file data
+    quint8* oldSarc = new quint8[sarc->size() - dataOffset];
+    sarc->seek(dataOffset);
+    sarc->readData(oldSarc, sarc->size() - dataOffset);
+
+    sarc->resize(newSarcSize);
+    sarc->seek(0);
+
+
+    dataOffset = newDataOffset;
+
+
+    // write SARC
+
+    // Header
+    sarc->write32(0x43524153);      // Magic
+    sarc->write16(0x14);            // Header Length
+    sarc->write16(0xFEFF);          // Byte order mark (little endian)
+    sarc->write32(newSarcSize);     // SARC size
+    sarc->write32(newDataOffset);   // Beginning of data
+    sarc->write32(0x00000100);
+
+    // SFAT Header
+    sarc->write32(0x54414653);      // Magic
+    sarc->write16(0xC);             // Header Length
+    sarc->write16(numFiles);        // Node count
+    sarc->write32(hashMult);        // Hash Multiplier
+
+    // SFAT Nodes
+    for (int i = 0; i < sortedFiles.size(); i++)
+    {
+        InternalSarcFile* ifile = sortedFiles[i];
+        sarc->write32(filenameHash(ifile->name));   // File Name Hash
+        sarc->write32(ifile->nameOffset);           // File name table entry
+        sarc->seek(sarc->pos()-1);
+        sarc->write8(0x1);                          // whatever this is
+        sarc->write32(ifile->offset);               // Beginning of node file data
+        sarc->write32(ifile->offset + ifile->size); // End of node file data
+    }
+
+    // SFNT Header
+    sarc->write32(0x544E4653);      // Magic
+    sarc->write16(0x8);             // Header Length
+    sarc->write16(0x0);             // whatever this is
+
+    // Filename Strings
+    for (int i = 0; i < sortedFiles.size(); i++)
+    {
+        InternalSarcFile* ifile = sortedFiles[i];
+        sarc->writeStringASCII(ifile->name);
+        writeAlign(4);
+    }
+
+    // File data
+    for (int i = 0; i < sortedFiles.size(); i++)
+    {
+        writeAlign(dataAlign);
+        InternalSarcFile* ifile = sortedFiles[i];
+        sarc->writeData(oldSarc+oldOffsets[i], ifile->size);
+    }
+
+    delete[] oldSarc;
+
+    sarc->save();
+    sarc->close();
+}
+
+
+bool SarcFilesystem::deleteFile(QString path)
+{
+    if (path[0] == '/')
+        path.remove(0,1);
+
+    if (!files.contains(path))
+        return false;
+
+    files.remove(path);
+
+    repack();
+
+    return true;
+}
+
+bool SarcFilesystem::renameFile(QString path, QString newName)
+{
+    if (path[0] == '/')
+        path.remove(0,1);
+
+    if (!files.contains(path))
+        return false;
+
+    InternalSarcFile* thisfile = files.value(path);
+
+    if (thisfile == NULL)
+        throw std::logic_error("thisfile is NULL, shouldn't happen");
+
+    QStringList splitted = thisfile->name.split("/");
+    splitted[splitted.length()-1] = newName;
+
+    thisfile->name = "";
+
+    for(int i = 0; i < splitted.length(); i++)
+    {
+        thisfile->name.append(splitted.at(i));
+        if (i < splitted.length()-1) thisfile->name.append("/");
+    }
+
+    repack();
+
+    return true;
+}
 
 quint32 SarcFilesystem::filenameHash(QString& name)
 {

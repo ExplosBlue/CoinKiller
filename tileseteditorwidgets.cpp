@@ -34,7 +34,7 @@ void TilesetPicker::paintEvent(QPaintEvent* evt)
     if (selectedTile != -1)
         painter.fillRect(QRect(selectedTile%21*21, selectedTile/21*21, 20, 20), QBrush(QColor(160,222,255,150), Qt::SolidPattern));
 
-    if (selectedOvTile > 0)
+    if (selectedOvTile != -1)
         painter.fillRect(QRect(selectedOvTile%21*21, selectedOvTile/21*21, 20, 20), QBrush(QColor(255,40,0,150), Qt::SolidPattern));
 }
 
@@ -60,14 +60,18 @@ void TilesetPicker::mousePressEvent(QMouseEvent* evt)
             update();
         }
     }
-    else if(evt->button() == Qt::RightButton && selectedTile != -1)
+    else if (evt->button() == Qt::RightButton && selectedTile != -1)
     {
-        if (evt->x() % 21 != 20 && evt->x() % 21 != 20)
+        if (evt->modifiers() == Qt::ControlModifier)
+        {
+            selectedOvTile = -1;
+            emit selectedOvTileChanged(-1);
+            update();
+        }
+        else if (evt->x() % 21 != 20 && evt->x() % 21 != 20)
         {
             selectedOvTile = evt->x() / 21 + evt->y() / 21 * 21;
-
             emit selectedOvTileChanged(selectedOvTile);
-
             update();
         }
     }

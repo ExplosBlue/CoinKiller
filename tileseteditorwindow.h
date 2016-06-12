@@ -93,6 +93,8 @@ private slots:
 
     void on_actionDeleteAllBehaviors_triggered();
 
+    void on_actionImportImage_triggered();
+
 private:
     Ui::TilesetEditorWindow *ui;
     TilesetPicker* tilesetPicker;

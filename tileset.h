@@ -76,6 +76,7 @@ public:
     void setSlot(int slot);
 
     quint16 getOverlayTile(int selTile);
+    quint16 getOverlayTileSlot(int selTile);
     void setOverlayTile(int selTile, int ovTile, int slot);
     bool getRandomizeH(int tile);
     void setRandomizeH(int tile, bool value);
@@ -93,6 +94,9 @@ public:
     }
 
     void save();
+
+    // temp function
+    void replaceCTPK(QString filename);
 
 private:
     QString name;

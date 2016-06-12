@@ -64,3 +64,16 @@ bool ExternalFilesystem::save(FileBase *file)
     return true;
 }
 
+bool ExternalFilesystem::deleteFile(QString path)
+{
+    QFile file(basepath + path);
+    if (!file.exists()) return false;
+    return file.remove();
+}
+
+bool ExternalFilesystem::renameFile(QString path, QString newName)
+{
+    QFile file(basepath + path);
+    if (!file.exists()) return false;
+    return file.rename(newName);
+}

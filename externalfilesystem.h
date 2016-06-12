@@ -31,6 +31,8 @@ public:
     bool fileExists(QString path);
     FileBase* openFile(QString path);
     bool save(FileBase* file);
+    bool deleteFile(QString path);
+    bool renameFile(QString path, QString newName);
 
 
 private:

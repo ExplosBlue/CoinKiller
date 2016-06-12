@@ -45,7 +45,7 @@ TilesetPalette::TilesetPalette(Level* level, ObjectsEditonMode* objEditionMode)
         objectLists[i]->setMovement(QListView::Static);
         objectLists[i]->setResizeMode(QListView::Adjust);
         objectLists[i]->setWrapping(true);
-        objectLists[i]->setIconSize(QSize(140,140));
+        objectLists[i]->setIconSize(QSize(400,400));
         objectLists[i]->setVerticalScrollMode(QListView::ScrollPerPixel);
         objectLists[i]->setEditTriggers(QAbstractItemView::NoEditTriggers);
         loadTileset(i);
