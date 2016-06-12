@@ -41,6 +41,7 @@ S1_Kinoko:Mushrooms (blocks, stems and platforms)
 S1_Kinoko_Snow:Snowy mushrooms (stems and platforms)
 S1_Kori:Ice
 S1_Obake_Room:Ghost house decoration
+S1_Obake_Soto:Haunted garden
 S1_Rail_Black:Black rails
 S1_Rail_Gray:Grey rails
 S1_Rail_Gray_Mae:Grey rails

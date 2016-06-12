@@ -29,16 +29,15 @@
 #include <QComboBox>
 #include <QMessageBox>
 
-LevelEditorWindow::LevelEditorWindow(QWidget *parent, Game *game, int worldNbr, int levelNbr) :
+LevelEditorWindow::LevelEditorWindow(QWidget *parent, Game *game, QString path) :
     QMainWindow(parent),
     ui(new Ui::LevelEditorWindow)
 {
     this->game = game;
-    this->worldNbr = worldNbr;
-    this->levelNbr = levelNbr;
     currArea = 1;
 
-    level = game->getLevel(worldNbr, levelNbr, currArea);
+    lvlPath = path;
+    level = game->getLevel(path, currArea);
 
     ui->setupUi(this);
 
@@ -331,7 +330,7 @@ void LevelEditorWindow::loadArea(int area)
         return;
     }
 
-    level = game->getLevel(worldNbr, levelNbr, area);
+    level = game->getLevel(lvlPath, area);
 
     levelView = new LevelView(this, level);
     levelView->setMinimumSize(4096*20, 4096*20);

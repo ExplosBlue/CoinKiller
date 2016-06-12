@@ -27,7 +27,7 @@ class Game;
 class Level
 {
 public:
-    Level(Game* game, int world, int level, int area);
+    Level(Game* game, QString path, int area);
     ~Level();
     void save();
 
@@ -56,7 +56,7 @@ public:
 
     void getName(QString& name)
     {
-        name = QString("%1-%2 area %3").arg(world).arg(level).arg(area);
+        name = lvlPath;
     }
 
     int addArea();
@@ -77,7 +77,8 @@ public:
 
 private:
     SarcFilesystem* archive;
-    int world, level, area;
+    QString lvlPath;
+    int area;
 
     quint8 getNextZoneID(Object* obj);
 };

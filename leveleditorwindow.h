@@ -43,7 +43,7 @@ class LevelEditorWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit LevelEditorWindow(QWidget *parent, Game* game, int worldNbr, int levelNbr);
+    explicit LevelEditorWindow(QWidget *parent, Game* game, QString path);
     ~LevelEditorWindow();
 
 public slots:
@@ -109,8 +109,7 @@ private:
     ZoneEditorWidget* zoneEditor;
     LocationEditorWidget* locationEditor;
 
-    int worldNbr;
-    int levelNbr;
+    QString lvlPath;
     int currArea;
 
     quint8 layerMask;

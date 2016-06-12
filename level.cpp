@@ -24,15 +24,12 @@
 #include <QFile>
 #include <limits>
 
-Level::Level(Game *game, int world, int level, int area)
+Level::Level(Game *game, QString path, int area)
 {
     this->game = game;
 
-    this->world = world;
-    this->level = level;
-
-    QString arcpath = QString("/Course%1%2-%3.sarc").arg(world < 10 ? "/" : "/dlc/").arg(world).arg(level);
-    archive = new SarcFilesystem(game->fs->openFile(arcpath));
+    archive = new SarcFilesystem(game->fs->openFile(path));
+    lvlPath = path;
     this->area = area;
 
 
