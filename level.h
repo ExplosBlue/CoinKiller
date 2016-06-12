@@ -59,6 +59,12 @@ public:
         name = QString("%1-%2 area %3").arg(world).arg(level).arg(area);
     }
 
+    int addArea();
+    int removeArea(int area);
+
+    int getAreaCount();
+    bool hasArea(int area) { return archive->fileExists(QString("course/course%1.bin").arg(area)); }
+
     void remove(QList<Object*> objs);
     void remove(Object* obj);
     void move(QList<Object*> objs, int deltax, int deltay);

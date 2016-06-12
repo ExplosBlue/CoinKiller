@@ -140,6 +140,9 @@
    <addaction name="separator"/>
    <addaction name="actionToggleLayer1"/>
    <addaction name="actionToggleLayer2"/>
+   <addaction name="separator"/>
+   <addaction name="actionAddArea"/>
+   <addaction name="actionDeleteCurrentArea"/>
   </widget>
   <action name="actionDo_shit_I_guess">
    <property name="text">
@@ -304,6 +307,22 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+G</string>
+   </property>
+  </action>
+  <action name="actionAddArea">
+   <property name="text">
+    <string>Add Area</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Alt+N</string>
+   </property>
+  </action>
+  <action name="actionDeleteCurrentArea">
+   <property name="text">
+    <string>Delete Current Area</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Alt+D</string>
    </property>
   </action>
  </widget>

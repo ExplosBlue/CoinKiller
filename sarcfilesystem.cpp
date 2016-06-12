@@ -226,8 +226,6 @@ bool SarcFilesystem::save(FileBase *file)
         if (i < sortedFiles.size() - 1) newSarcSize = align(newSarcSize, dataAlign);
     }
 
-    qDebug() << "final SARC size:" << newSarcSize;
-
 
     // buffer old SARC file data
     quint8* oldSarc = new quint8[sarc->size() - dataOffset];
@@ -361,8 +359,6 @@ void SarcFilesystem::repack()
         if (i < sortedFiles.size() - 1) newSarcSize = align(newSarcSize, dataAlign);
     }
 
-    qDebug() << "final SARC size:" << newSarcSize;
-
 
     // buffer old SARC file data
     quint8* oldSarc = new quint8[sarc->size() - dataOffset];
@@ -470,6 +466,9 @@ bool SarcFilesystem::renameFile(QString path, QString newName)
         thisfile->name.append(splitted.at(i));
         if (i < splitted.length()-1) thisfile->name.append("/");
     }
+
+    files.remove(path);
+    files.insert(thisfile->name, thisfile);
 
     repack();
 

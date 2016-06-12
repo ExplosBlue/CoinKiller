@@ -52,6 +52,8 @@ public slots:
     void updateEditors();
 
 private slots:
+    void selectedAreaChanged(int area);
+
     void on_actionToggleLayer1_toggled(bool arg1);
 
     void on_actionToggleLayer2_toggled(bool arg1);
@@ -84,6 +86,10 @@ private slots:
 
     void on_sidebarTabWidget_currentChanged(int index);
 
+    void on_actionAddArea_triggered();
+
+    void on_actionDeleteCurrentArea_triggered();
+
 private:
     Ui::LevelEditorWindow *ui;
 
@@ -92,6 +98,7 @@ private:
     Game* game;
     Tileset* tileset;
     LevelView* levelView;
+    QComboBox* areaSelector;
 
     PropertyGrid* propGrid;
 
@@ -102,8 +109,15 @@ private:
     ZoneEditorWidget* zoneEditor;
     LocationEditorWidget* locationEditor;
 
+    int worldNbr;
+    int levelNbr;
+    int currArea;
+
     quint8 layerMask;
     float zoom;
+
+    void loadArea(int area);
+    void updateAreaSelector(int index=-1);
 };
 
 #endif // LEVELEDITORWINDOW_H

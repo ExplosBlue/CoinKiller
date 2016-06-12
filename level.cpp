@@ -21,6 +21,7 @@
 #include "unitsconvert.h"
 #include "is.h"
 
+#include <QFile>
 #include <limits>
 
 Level::Level(Game *game, int world, int level, int area)
@@ -31,7 +32,6 @@ Level::Level(Game *game, int world, int level, int area)
     this->level = level;
 
     QString arcpath = QString("/Course%1%2-%3.sarc").arg(world < 10 ? "/" : "/dlc/").arg(world).arg(level);
-    qDebug(arcpath.toStdString().c_str());
     archive = new SarcFilesystem(game->fs->openFile(arcpath));
     this->area = area;
 
@@ -555,7 +555,6 @@ void Level::save()
         header->write8(entr->getUnk1());
         header->write8(entr->getUnk2());
         for (int i = 0; i < 2; i++) header->write8(0);
-        qDebug() << "Entrance" << entr->getid() << "-> Zone" << getNextZoneID(entr);
     }
 
     // Block 7: Sprites
@@ -672,6 +671,69 @@ void Level::save()
     header->close();
     delete header;
 
+}
+
+int Level::addArea()
+{
+    int newArea = getAreaCount()+1;
+
+    if (newArea > 4)
+        return -1;
+
+    QFile new_course(QCoreApplication::applicationDirPath() + "/coinkiller_data/blank_course.bin");
+
+    if(!new_course.open(QIODevice::ReadOnly))
+        return -2;
+
+    new_course.seek(0);
+    char* data = new char[new_course.size()];
+    new_course.read(data, new_course.size());
+    new_course.close();
+
+
+    FileBase* newCourseFile = new MemoryFile(archive, new_course.size());
+    newCourseFile->setIdPath(QString("course/course%1.bin").arg(newArea));
+    newCourseFile->open();
+    newCourseFile->seek(0);
+    newCourseFile->writeData((quint8*)data, new_course.size());
+    delete[] data;
+    newCourseFile->save();
+    newCourseFile->close();
+
+    return newArea;
+}
+
+int Level::removeArea(int area)
+{
+    int areaCount = getAreaCount();
+
+    if (areaCount <= 1  || !hasArea(area))
+        return -1;
+
+    archive->deleteFile(QString("course/course%1.bin").arg(area));
+    archive->deleteFile(QString("course/course%1_bgdatL1.bin").arg(area));
+    archive->deleteFile(QString("course/course%1_bgdatL2.bin").arg(area));
+
+    for (int i = area+1; i < areaCount+1; i++)
+    {
+        archive->renameFile(QString("course/course%1.bin").arg(i), QString("course%1.bin").arg(i-1));
+        archive->renameFile(QString("course/course%1_bgdatL1.bin").arg(i), QString("course%1_bgdatL1.bin").arg(i-1));
+        archive->renameFile(QString("course/course%1_bgdatL2.bin").arg(i), QString("course%1_bgdatL2.bin").arg(i-1));
+    }
+
+    if (area < areaCount) return area;
+    else return area-1;
+}
+
+int Level::getAreaCount()
+{
+    int areaCount = 0;
+    for (;;)
+    {
+        if (!archive->fileExists(QString("course/course%1.bin").arg(areaCount+1))) break;
+        areaCount++;
+    }
+    return areaCount;
 }
 
 quint8 Level::getNextZoneID(Object* obj)

@@ -40,7 +40,6 @@ MemoryFile::MemoryFile(FilesystemBase *fs, quint32 size)
 
 MemoryFile::~MemoryFile()
 {
-    qDebug("MemoryFile destructor");
     delete[] data;
 }
 
