@@ -43,7 +43,7 @@ public:
     bool clickDetection(int xcheck, int ycheck);
     bool clickDetection(QRect rect);
 
-    virtual QString toString() const;
+    virtual QString toString(int xOffset, int yOffset) const;
     // First Number:
     // -1: Invalid
     // 0: BgdatObject
@@ -72,7 +72,7 @@ public:
     bool isResizable() const { return true; }
     int getid() const;
     int getLayer() const;
-    QString toString() const;
+    QString toString(int xOffset, int yOffset) const;
 protected:
     int id;
     int layer;
@@ -93,7 +93,7 @@ public:
     quint8 getByte(int id) const;
     quint8 getNybble(int id) const;
     void setRect();
-    QString toString() const;
+    QString toString(int xOffset, int yOffset) const;
     int getNybbleData(int startNybble, int endNybble);
     void setNybbleData(int data, int startNybble, int endNybble);
 protected:
@@ -110,7 +110,7 @@ public:
     Entrance(int x, int y, qint16 cameraX, qint16 cameraY, quint8 id, quint8 destArea, quint8 destEntr, quint8 entrType, quint8 settings, quint8 unk1, quint8 unk2);
     int getType() const { return 2; }
     bool isResizable() const { return false; }
-    QString toString() const;
+    QString toString(int xOffset, int yOffset) const;
     quint8 getid() const { return id; }
     quint8 getDestArea() const { return destArea; }
     quint8 getDestEntr() const { return destEntr; }
@@ -234,24 +234,27 @@ public:
     bool isResizable() const { return true; }
     int getid() const;
     void setId(quint8 id) { this->id = id; }
-    QString toString() const;
+    QString toString(int xOffset, int yOffset) const;
 protected:
     int id;
 };
 
 
 // Path Node
+class Path;
 class PathNode: public Object
 {
 public:
     PathNode() {}
-    PathNode(int x, int y, float speed, float accel, float unk1);
+    PathNode(int x, int y, float speed, float accel, float unk1, Path *parentPath);
     int getType() const { return 5; }
     bool isResizable() const { return false; }
     float getSpeed() const { return speed; }
     float getAccel() const { return accel; }
     float getUnk1() const { return unk1; }
+    Path* getParentPath() const { return parentPath; }
 protected:
+    Path* parentPath;
     float speed;
     float accel;
     float unk1;
@@ -264,28 +267,31 @@ class Path
 public:
     Path() {}
     Path(quint16 id, quint16 unk1);
-    void insertNode(PathNode &node);
+    void insertNode(PathNode *node);
     //void removeNodeAt(int id);
     quint16 getid() const { return id; }
     quint16 getUnk1() const { return unk1; }
     int getNumberOfNodes() const { return nodes.size(); }
-    QList<PathNode> getNodes() const;
-    PathNode& getNodeReference(int id);
+    QList<PathNode*> getNodes() const;
 protected:
     quint16 id;
     quint16 unk1;
-    QList<PathNode> nodes;
+    QList<PathNode*> nodes;
 };
 
 
 // Progress Path Node
+class ProgressPath;
 class ProgressPathNode: public Object
 {
 public:
     ProgressPathNode() {}
-    ProgressPathNode(int x, int y);
+    ProgressPathNode(int x, int y, ProgressPath* parentPath);
     int getType() const { return 6; }
     bool isResizable() const { return false; }
+    ProgressPath* getParentPath() const { return parentPath; }
+private:
+    ProgressPath* parentPath;
 };
 
 
@@ -295,17 +301,16 @@ class ProgressPath
 public:
     ProgressPath() {}
     ProgressPath(quint16 id, quint8 alternatePathFlag);
-    void insertNode(ProgressPathNode &node);
+    void insertNode(ProgressPathNode *node);
     //void removeNodeAt(int id);
     quint16 getid() const { return id; }
     quint8 getAlternatePathFlag() const { return alternatePathFlag; }
     int getNumberOfNodes() const { return nodes.size(); }
-    QList<ProgressPathNode> getNodes() const;
-    ProgressPathNode& getNodeReference(int id);
+    QList<ProgressPathNode*> getNodes() const;
 protected:
     quint16 id;
     quint8 alternatePathFlag;
-    QList<ProgressPathNode> nodes;
+    QList<ProgressPathNode*> nodes;
 };
 
 #endif // OBJECTS_H

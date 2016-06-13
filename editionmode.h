@@ -20,6 +20,9 @@ public:
     virtual void render(QPainter*) {}
 
     virtual void deleteSelection() {}
+    virtual void copy() {}
+    virtual void cut() {}
+    virtual void paste(int, int, int, int) {}
 
     Qt::CursorShape getActualCursor() { return actualCursor; }
 
@@ -50,6 +53,9 @@ public:
     void render(QPainter *painter);
 
     void deleteSelection();
+    void copy();
+    void cut();
+    void paste(int currX, int currY, int currW, int currH);
 
     void setDrawType(int drawType) { this->drawType = drawType; }
     void setObject(int selObject, int selTileset) { this->selObject = selObject; this->selTileset = selTileset; }

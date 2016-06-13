@@ -77,7 +77,7 @@ bool Object::clickDetection(QRect rect)
     return rect.intersects(QRect(x+offsetx,y+offsety,width,height));
 }
 
-QString Object::toString() const { return QString("-1"); }
+QString Object::toString(int, int) const { return QString(""); }
 
 // BgdatObject
 BgdatObject::BgdatObject(int x, int y, int width, int height, int id, int layer)
@@ -95,7 +95,7 @@ int BgdatObject::getid() const { return id; }
 int BgdatObject::getLayer() const { return layer; }
 
 // Format: 0:ID:Layer:X:Y:Width:Height
-QString BgdatObject::toString() const { return QString("0:%1:%2:%3:%4:%5:%6").arg(id).arg(layer).arg(x).arg(y).arg(width).arg(height); }
+QString BgdatObject::toString(int xOffset, int yOffset) const { return QString("0:%1:%2:%3:%4:%5:%6").arg(id).arg(layer).arg(x+xOffset).arg(y+yOffset).arg(width).arg(height); }
 
 
 // Sprite
@@ -629,8 +629,13 @@ void Sprite::setNybbleData(int data, int startNybble, int endNybble)
     }
 }
 
-// Format: 1:ID:X:Y:SD0:SD1:SD2:SD3:SD4:SD5:SD6:SD7
-QString Sprite::toString() const { return QString("1:%1:%2:%3:%4:%5:%6:%7:%8:%9:%10:%11").arg(id).arg(x).arg(y).arg(spriteData[0]).arg(spriteData[1]).arg(spriteData[2]).arg(spriteData[3]).arg(spriteData[4]).arg(spriteData[5]).arg(spriteData[6]).arg(spriteData[7]); }
+// Format: 1:ID:X:Y:SD0:SD1:...:SD11
+QString Sprite::toString(int xOffset, int yOffset) const
+{
+    QString str("1:%1:%2:%3");
+    for (int i=0; i<12; i++) str.append(QString(":%1").arg(spriteData[i]));
+    return str.arg(id).arg(x+xOffset).arg(y+yOffset);
+}
 
 
 // Entrance
@@ -649,8 +654,8 @@ Entrance::Entrance(int x, int y, qint16 cameraX, qint16 cameraY, quint8 id, quin
     this->unk2 = unk2;
 }
 
-// Format: 2:ID:Type:X:Y:DestArea:DestEntr:CamX:CamY:Type
-QString Entrance::toString() const { return QString("2:%1:%2:%3:%4:%5:%6:%7:%8:%9").arg(id).arg(x).arg(y).arg(destArea).arg(destEntr).arg(cameraX).arg(cameraY).arg(entrType); }
+// Format: 2:ID:Type:X:Y:DestArea:DestEntr:CamX:CamY:Settings
+QString Entrance::toString(int xOffset, int yOffset) const { return QString("2:%1:%2:%3:%4:%5:%6:%7:%8:%9").arg(id).arg(entrType).arg(x+xOffset).arg(y+yOffset).arg(destArea).arg(destEntr).arg(cameraX).arg(cameraY).arg(settings); }
 
 // Zone
 Zone::Zone(int x, int y, int width, int height, quint8 id, quint8 progPathId, quint8 musicId, quint8 multiplayerTracking, quint16 unk1)
@@ -710,7 +715,7 @@ int Location::getType() const { return 4; }
 int Location::getid() const { return id; }
 
 // Format: 4:ID:X:Y:Width:Height
-QString Location::toString() const { return QString("4:%1:%2:%3:%4:%5").arg(id).arg(x).arg(y).arg(width).arg(height); }
+QString Location::toString(int xOffset, int yOffset) const { return QString("4:%1:%2:%3:%4:%5").arg(id).arg(x+xOffset).arg(y+yOffset).arg(width).arg(height); }
 
 
 // Path
@@ -720,23 +725,22 @@ Path::Path(quint16 id, quint16 unk1)
     this->unk1 = unk1;
 }
 
-void Path::insertNode(PathNode &node)
+void Path::insertNode(PathNode* node)
 {
     nodes.append(node);
 }
 
-QList<PathNode> Path::getNodes() const { return nodes; }
-PathNode& Path::getNodeReference(int id) { return nodes[id]; }
-
+QList<PathNode*> Path::getNodes() const { return nodes; }
 
 // Path Node
-PathNode::PathNode(int x, int y, float speed, float accel, float unk1)
+PathNode::PathNode(int x, int y, float speed, float accel, float unk1, Path* parentPath)
 {
     this->x = x;
     this->y = y;
     this->speed = speed;
     this->accel = accel;
     this->unk1 = unk1;
+    this->parentPath = parentPath;
 }
 
 
@@ -747,17 +751,17 @@ ProgressPath::ProgressPath(quint16 id, quint8 alternatePathFlag)
     this->alternatePathFlag = alternatePathFlag;
 }
 
-void ProgressPath::insertNode(ProgressPathNode &node)
+void ProgressPath::insertNode(ProgressPathNode* node)
 {
     nodes.append(node);
 }
 
-QList<ProgressPathNode> ProgressPath::getNodes() const { return nodes; }
-ProgressPathNode& ProgressPath::getNodeReference(int id) { return nodes[id]; }
+QList<ProgressPathNode*> ProgressPath::getNodes() const { return nodes; }
 
 // Progress Path Node
-ProgressPathNode::ProgressPathNode(int x, int y)
+ProgressPathNode::ProgressPathNode(int x, int y, ProgressPath *parentPath)
 {
     this->x = x;
     this->y = y;
+    this->parentPath = parentPath;
 }

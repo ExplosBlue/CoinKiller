@@ -129,7 +129,7 @@ void LevelView::paintEvent(QPaintEvent* evt)
         sprRend.render(&painter);
     }
 
-    // Render Entrences
+    // Render Entrances
     for (int i = 0; i < level->entrances.size(); i++)
     {
         const Entrance* entr = level->entrances.at(i);
@@ -146,12 +146,12 @@ void LevelView::paintEvent(QPaintEvent* evt)
     // Render Paths
     for (int i = 0; i < level->paths.size(); i++)
     {
-        const Path& path = level->paths.at(i);
-        QList<PathNode> nodes  = path.getNodes();
+        const Path* path = level->paths.at(i);
+        QList<PathNode*> nodes  = path->getNodes();
 
         for (int j = 0; j < nodes.size() - 1; j++)
         {
-            QLine pathLine(QPoint(nodes[j].getx()+10, nodes[j].gety()+10), QPoint(nodes[j+1].getx()+10, nodes[j+1].gety()+10));
+            QLine pathLine(QPoint(nodes[j]->getx()+10, nodes[j]->gety()+10), QPoint(nodes[j+1]->getx()+10, nodes[j+1]->gety()+10));
 
             if (!drawrect.intersects(QRect(pathLine.x1(), pathLine.y1(), pathLine.x2()-pathLine.x1(), pathLine.y2()-pathLine.y1())))
                 continue;
@@ -164,7 +164,7 @@ void LevelView::paintEvent(QPaintEvent* evt)
 
         for (int j = 0; j < nodes.size(); j++)
         {
-            QRect pathrect(nodes[j].getx(), nodes[j].gety(), 20, 20);
+            QRect pathrect(nodes[j]->getx(), nodes[j]->gety(), 20, 20);
 
             if (!drawrect.intersects(pathrect))
                 continue;
@@ -177,7 +177,7 @@ void LevelView::paintEvent(QPaintEvent* evt)
             painter.fillPath(painterPath, color);
             painter.drawPath(painterPath);
 
-            QString pathText = QString("%1-%2").arg(path.getid()).arg(j+1);
+            QString pathText = QString("%1-%2").arg(path->getid()).arg(j+1);
             painter.setFont(QFont("Arial", 7, QFont::Normal));
             painter.drawText(pathrect, pathText, Qt::AlignHCenter | Qt::AlignVCenter);
         }
@@ -186,12 +186,12 @@ void LevelView::paintEvent(QPaintEvent* evt)
     // Render Progress Paths
     for (int i = 0; i < level->progressPaths.size(); i++)
     {
-        const ProgressPath& pPath = level->progressPaths.at(i);
-        QList<ProgressPathNode> nodes  = pPath.getNodes();
+        const ProgressPath* pPath = level->progressPaths.at(i);
+        QList<ProgressPathNode*> nodes  = pPath->getNodes();
 
         for (int j = 0; j < nodes.size() - 1; j++)
         {
-            QLine ppathLine(QPoint(nodes[j].getx()+10, nodes[j].gety()+10), QPoint(nodes[j+1].getx()+10, nodes[j+1].gety()+10));
+            QLine ppathLine(QPoint(nodes[j]->getx()+10, nodes[j]->gety()+10), QPoint(nodes[j+1]->getx()+10, nodes[j+1]->gety()+10));
 
             if (!drawrect.intersects(QRect(ppathLine.x1(), ppathLine.y1(), ppathLine.x2()-ppathLine.x1(), ppathLine.y2()-ppathLine.y1())))
                 continue;
@@ -204,7 +204,7 @@ void LevelView::paintEvent(QPaintEvent* evt)
 
         for (int j = 0; j < nodes.size(); j++)
         {
-            QRect ppathrect(nodes[j].getx(), nodes[j].gety(), 20, 20);
+            QRect ppathrect(nodes[j]->getx(), nodes[j]->gety(), 20, 20);
 
             if (!drawrect.intersects(ppathrect))
                 continue;
@@ -217,7 +217,7 @@ void LevelView::paintEvent(QPaintEvent* evt)
             painter.fillPath(path, color);
             painter.drawPath(path);
 
-            QString pPathText = QString("%1-%2").arg(pPath.getid()).arg(j+1);
+            QString pPathText = QString("%1-%2").arg(pPath->getid()).arg(j+1);
             painter.setFont(QFont("Arial", 7, QFont::Normal));
             painter.drawText(ppathrect, pPathText, Qt::AlignHCenter | Qt::AlignVCenter);
         }
@@ -355,82 +355,24 @@ void LevelView::saveLevel()
 
 void LevelView::copy()
 {
-    /*if (selObjects.size() == 0) return;
-
-    QString clipboardText("CoinKillerClip");
-    for (int i = 0; i < selObjects.size(); i++)
-    {
-        clipboardText += "|";
-        clipboardText += selObjects[i]->toString();
-    }
-    clipboardText += "|";
-
-    QApplication::clipboard()->setText(clipboardText);*/
+    editionModePtr()->copy();
 }
 
 void LevelView::paste()
 {
-    /*QString clipboardText(QApplication::clipboard()->text());
-    if (clipboardText.left(14) != "CoinKillerClip") return;
+    int x = (-pos().x())/zoom;
+    int y = (-pos().y())/zoom;
+    int w = visibleRegion().boundingRect().width()/zoom;
+    int h = visibleRegion().boundingRect().height()/zoom;
 
-    selObjects.clear();
-
-    QStringList segments = clipboardText.split("|", QString::SkipEmptyParts);
-
-    for (int i = 1; i < segments.size(); i++)
-    {
-        QStringList partsTemp = segments[i].split(":", QString::SkipEmptyParts);
-        QList<int> parts;
-
-        foreach (QString str, partsTemp)
-            parts.append(str.toInt());
-
-        // BgdatObjects
-        if (parts[0] == 0)
-        {
-            BgdatObject* obj = new BgdatObject(parts[3], parts[4], parts[5], parts[6], parts[1], parts[2]);
-            level->objects[obj->getLayer()].append(obj);
-            selObjects.append(obj);
-        }
-
-        // Locations
-        else if (parts[0] == 1)
-        {
-            Sprite* spr = new Sprite(parts[2], parts[3], parts[1]);
-
-            for (int j = 0; j < 8; j++)
-               spr->setByte(j, parts[j + 4]);
-            spr->setRect();
-
-            level->sprites.append(spr);
-        }
-
-        // Entrances
-        else if (parts[0] == 2)
-        {
-            Entrance* entr = new Entrance(parts[3], parts[4], parts[7], parts[8], parts[1], parts[5], parts[6], parts[9]);
-            level->entrances.append(entr);
-            selObjects.append(entr);
-        }
-
-        // Locations
-        else if (parts[0] == 4)
-        {
-            Location* loc = new Location(parts[2], parts[3], parts[4], parts[5], parts[1]);
-            level->locations.append(loc);
-            selObjects.append(loc);
-        }
-
-        // Still needing Zones/Paths/ProgPaths
-    }*/
-
+    editionModePtr()->paste(x, y, w, h);
     update();
 }
 
 void LevelView::cut()
 {
-    copy();
-    deleteSel();
+    editionModePtr()->cut();
+    update();
 }
 
 void LevelView::deleteSel()

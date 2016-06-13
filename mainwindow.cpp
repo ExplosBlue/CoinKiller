@@ -41,10 +41,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
     QCoreApplication::setOrganizationName("Blarg City");
     QCoreApplication::setApplicationName("CoinKiller");
-
-
-    // DEFAULT LEVEL NAMES
-    //defaultLevelNames["1-1"] = "1-1";
 }
 
 MainWindow::~MainWindow()

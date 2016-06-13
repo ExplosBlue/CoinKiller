@@ -49,10 +49,8 @@ public:
     QList<Entrance*> entrances;
     QList<Location*> locations;
     QList<Zone*> zones;
-
-    // TODO: Move these to QLists of Pointers
-    QList<Path> paths;
-    QList<ProgressPath> progressPaths;
+    QList<Path*> paths;
+    QList<ProgressPath*> progressPaths;
 
     void getName(QString& name)
     {

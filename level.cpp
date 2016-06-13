@@ -240,10 +240,10 @@ Level::Level(Game *game, QString path, int area)
         for (quint16 i = 0; i < nodeCount; i++)
         {
             header->seek(blockOffsets[14] + i*20 + nodeOffset*20);
-            PathNode* pathN = new PathNode(to20(header->read16()), to20(header->read16()), header->read32(), header->read32(), header->read32());
-            path->insertNode(*pathN);
+            PathNode* pathN = new PathNode(to20(header->read16()), to20(header->read16()), header->read32(), header->read32(), header->read32(), path);
+            path->insertNode(pathN);
         }
-        paths.append(*path);
+        paths.append(path);
     }
 
     // Block: 15/16 Progress Paths
@@ -261,10 +261,10 @@ Level::Level(Game *game, QString path, int area)
         for (int i = 0; i < nodeCount; i++)
         {
             header->seek(blockOffsets[16] + i*20 + nodeOffset*20);
-            ProgressPathNode* pPathN = new ProgressPathNode(to20(header->read16()), to20(header->read16()));
-            pPath->insertNode(*pPathN);
+            ProgressPathNode* pPathN = new ProgressPathNode(to20(header->read16()), to20(header->read16()), pPath);
+            pPath->insertNode(pPathN);
         }
-        progressPaths.append(*pPath);
+        progressPaths.append(pPath);
     }
 
     header->close();
@@ -435,9 +435,9 @@ void Level::save()
     blockSizes[13] = headersize-blockOffsets[13];
 
     blockOffsets[14] = headersize;                   // Block 14: Path Nodes
-    foreach (Path p, paths)
+    foreach (Path* p, paths)
     {
-        headersize += p.getNumberOfNodes()*20;
+        headersize += p->getNumberOfNodes()*20;
     }
     blockSizes[14] = headersize-blockOffsets[14];
 
@@ -446,9 +446,9 @@ void Level::save()
     blockSizes[15] = headersize-blockOffsets[15];
 
     blockOffsets[16] = headersize;                   // Block 14: Progress Path Nodes
-    foreach (ProgressPath p, progressPaths)
+    foreach (ProgressPath* p, progressPaths)
     {
-        headersize += p.getNumberOfNodes()*20;
+        headersize += p->getNumberOfNodes()*20;
     }
     blockSizes[16] = headersize-blockOffsets[16];
 
@@ -619,23 +619,23 @@ void Level::save()
     quint16 actualNodeCount1 = 0;
     for (int i = 0; i < paths.size(); i++)
     {
-        Path p = paths[i];
+        Path* p = paths[i];
         header->seek(blockOffsets[13] + i*12);
-        header->write8(p.getid());
+        header->write8(p->getid());
         header->write8(0);
         header->write16(actualNodeCount1);
-        header->write16(p.getNumberOfNodes());
-        header->write16(p.getUnk1());
+        header->write16(p->getNumberOfNodes());
+        header->write16(p->getUnk1());
         header->write32(0);
 
-        foreach (PathNode pNode, p.getNodes())
+        foreach (PathNode* pNode, p->getNodes())
         {
             header->seek(blockOffsets[14] + actualNodeCount1*20);
-            header->write16(to16(pNode.getx()));
-            header->write16(to16(pNode.gety()));
-            header->write32(pNode.getSpeed());
-            header->write32(pNode.getAccel());
-            header->write32(pNode.getUnk1());
+            header->write16(to16(pNode->getx()));
+            header->write16(to16(pNode->gety()));
+            header->write32(pNode->getSpeed());
+            header->write32(pNode->getAccel());
+            header->write32(pNode->getUnk1());
             header->write32(0);
             actualNodeCount1++;
         }
@@ -645,20 +645,20 @@ void Level::save()
     quint16 actualNodeCount2 = 0;
     for (int i = 0; i < progressPaths.size(); i++)
     {
-        ProgressPath p = progressPaths[i];
+        ProgressPath* p = progressPaths[i];
         header->seek(blockOffsets[15] + i*12);
-        header->write16(p.getid());
+        header->write16(p->getid());
         header->write16(actualNodeCount2);
-        header->write16(p.getNumberOfNodes());
+        header->write16(p->getNumberOfNodes());
         for (int j = 0; j < 3; j++) header->write8(0);
-        header->write8(p.getAlternatePathFlag());
+        header->write8(p->getAlternatePathFlag());
         header->write16(0);
 
-        foreach (ProgressPathNode pNode, p.getNodes())
+        foreach (ProgressPathNode* pNode, p->getNodes())
         {
             header->seek(blockOffsets[16] + actualNodeCount2*20);
-            header->write16(to16(pNode.getx()));
-            header->write16(to16(pNode.gety()));
+            header->write16(to16(pNode->getx()));
+            header->write16(to16(pNode->gety()));
             for (int j = 0; j < 16; j++) header->write8(0);
             actualNodeCount2++;
         }

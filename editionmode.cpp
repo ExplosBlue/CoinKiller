@@ -2,6 +2,10 @@
 #include "unitsconvert.h"
 #include "is.h"
 
+#include <QApplication>
+#include <QClipboard>
+#include <QDebug>
+
 ObjectsEditonMode::ObjectsEditonMode(Level *level)
 {
     this->level = level;
@@ -478,6 +482,104 @@ void ObjectsEditonMode::deleteSelection()
     mouseAct = act;
     checkEmits();
     updateEditors();
+}
+
+void ObjectsEditonMode::copy()
+{
+    if (selectedObjects.size() == 0)
+        return;
+
+    int minX = 0x7FFFFFFF;
+    int maxX = 0;
+    int minY = 0x7FFFFFFF;
+    int maxY = 0;
+
+    foreach (Object* obj, selectedObjects)
+    {
+        if (obj->toString(0,0) == "")
+            continue;
+
+        if (obj->getx()+obj->getOffsetX() < minX) minX = obj->getx()+obj->getOffsetX();
+        if (obj->gety()+obj->getOffsetY() < minY) minY = obj->gety()+obj->getOffsetY();
+        if (obj->getx()+obj->getOffsetX()+obj->getwidth() > maxX) maxX = obj->getx()+obj->getOffsetX()+obj->getwidth();
+        if (obj->gety()+obj->getOffsetY()+obj->getheight() > maxY) maxY = obj->gety()+obj->getOffsetY()+obj->getheight();
+    }
+
+    QString clipboardText = QString("CoinKillerClip|%1:%2").arg(maxX-minX).arg(maxY-minY);
+
+    foreach (Object* obj, selectedObjects)
+    {
+        QString nextText = obj->toString(-minX, -minY);
+        if (nextText != "") clipboardText.append("|" + nextText);
+    }
+
+    QApplication::clipboard()->setText(clipboardText);
+}
+
+void ObjectsEditonMode::cut()
+{
+    copy();
+    deleteSelection();
+}
+
+void ObjectsEditonMode::paste(int currX, int currY, int currW, int currH)
+{
+    QStringList sections = QApplication::clipboard()->text().split('|');
+
+    if (sections.size() < 2)
+        return;
+
+    if (sections[0] != "CoinKillerClip")
+        return;
+
+    QStringList pasteSizes = sections[1].split(':');
+    int pOffsetX = qMax(toNext20(currX + currW/2 - pasteSizes[0].toInt()/2), 0);
+    int pOffsetY = qMax(toNext20(currY + currH/2 - pasteSizes[1].toInt()/2), 0);
+
+    selectedObjects.clear();
+
+    for (int i = 2; i < sections.size(); i++)
+    {
+        QStringList params = sections[i].split(':');
+
+        switch (params[0].toInt())
+        {
+            case 0: // BG dat
+            {
+                BgdatObject* newObj = new BgdatObject(params[3].toInt()+pOffsetX, params[4].toInt()+pOffsetY, params[5].toInt(), params[6].toInt(), params[1].toInt(), params[2].toInt());
+                level->objects[newObj->getLayer()].append(newObj);
+                selectedObjects.append(newObj);
+                break;
+            }
+            case 1: // Sprite
+            {
+                Sprite* newSpr = new Sprite(params[2].toInt()+pOffsetX, params[3].toInt()+pOffsetY, params[1].toInt());
+                for (int i=0; i<12; i++) newSpr->setByte(i, params[i+4].toUInt());
+                newSpr->setRect();
+                level->sprites.append(newSpr);
+                selectedObjects.append(newSpr);
+                break;
+            }
+            case 2: // Entrance
+            {
+                Entrance* newEntr = new Entrance(params[3].toInt()+pOffsetX, params[4].toInt()+pOffsetY, params[7].toInt(), params[8].toInt(), params[1].toInt(), params[5].toInt(), params[6].toInt(), params[2].toInt(), params[9].toInt(), 0, 0);
+                level->entrances.append(newEntr);
+                selectedObjects.append(newEntr);
+                break;
+            }
+            case 4: // Location
+            {
+                Location* newLoc = new Location(params[2].toInt()+pOffsetX, params[3].toInt()+pOffsetY, params[4].toInt(), params[5].toInt(), params[1].toInt());
+                level->locations.append(newLoc);
+                selectedObjects.append(newLoc);
+                break;
+            }
+            default: { break; }
+        }
+    }
+
+    emit updateEditors();
+    checkEmits();
 }
 
 void ObjectsEditonMode::checkEmits()
