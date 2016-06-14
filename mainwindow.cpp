@@ -21,6 +21,7 @@
 #include <QCoreApplication>
 #include <QFileDialog>
 #include <QSettings>
+#include <QDesktopWidget>
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
@@ -35,9 +36,10 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
+    checkForMissingFiles();
+
     ui->setupUi(this);
     setWindowTitle("CoinKiller");
-
 
     QCoreApplication::setOrganizationName("Blarg City");
     QCoreApplication::setApplicationName("CoinKiller");
@@ -106,4 +108,36 @@ void MainWindow::on_tilesetView_doubleClicked(const QModelIndex &index)
     QString data = index.data(Qt::UserRole+1).toString();
     TilesetEditorWindow* tsEditor = new TilesetEditorWindow(this, new Tileset(game, data));
     tsEditor->show();
+}
+
+void MainWindow::checkForMissingFiles()
+{
+    QStringList requiredFiles;
+
+    requiredFiles
+    << "blank_course.bin"
+    << "entrancetypes.txt"
+    << "levelnames.xml"
+    << "musicids.txt"
+    << "spritecategories.xml"
+    << "spritedata.xml"
+    << "tilebehaviors.xml"
+    << "tilesetnames.txt";
+
+    QString basePath = QCoreApplication::applicationDirPath();
+    QString missingFiles;
+    for (int i=0; i<requiredFiles.size(); i++)
+    {
+        if (!QFile(basePath + "/coinkiller_data/" + requiredFiles[i]).exists())
+        {
+            missingFiles.append(QString("/coinkiller_data/%1\n").arg(requiredFiles[i]));
+        }
+    }
+    if (!missingFiles.isEmpty())
+    {
+        QString infoText("There are files missing which are required for CoinKiller to work properly:\n%1\nPlease redownload your copy of the editor.");
+        QMessageBox message(QMessageBox::Information, "CoinKiller", infoText.arg(missingFiles), QMessageBox::Ok, QDesktopWidget().screen());
+        message.exec();
+        QTimer::singleShot(0, this, SLOT(close()));
+    }
 }

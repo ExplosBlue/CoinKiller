@@ -829,14 +829,56 @@ void Level::move(QList<Object*> objs, int deltax, int deltay)
         obj->increasePosition(deltax, deltay);
     }
 }
-void Level::raise(BgdatObject* obj)
+void Level::raise(Object* obj)
 {
-    objects[obj->getLayer()].move(objects[obj->getLayer()].indexOf(obj), objects[obj->getLayer()].size()-1);
+    if (is<BgdatObject*>(obj))
+    {
+        BgdatObject* bgdat = dynamic_cast<BgdatObject*>(obj);
+        objects[bgdat->getLayer()].move(objects[bgdat->getLayer()].indexOf(bgdat), objects[bgdat->getLayer()].size()-1);
+    }
+    else if (is<Sprite*>(obj))
+    {
+        Sprite* spr = dynamic_cast<Sprite*>(obj);
+        sprites.move(sprites.indexOf(spr), sprites.size()-1);
+    }
 }
 
-void Level::lower(BgdatObject* obj)
+void Level::lower(Object *obj)
 {
-    objects[obj->getLayer()].move(objects[obj->getLayer()].indexOf(obj), 0);
+    if (is<BgdatObject*>(obj))
+    {
+        BgdatObject* bgdat = dynamic_cast<BgdatObject*>(obj);
+        objects[bgdat->getLayer()].move(objects[bgdat->getLayer()].indexOf(bgdat), 0);
+    }
+    else if (is<Sprite*>(obj))
+    {
+        Sprite* spr = dynamic_cast<Sprite*>(obj);
+        sprites.move(sprites.indexOf(spr), 0);
+    }
+}
+
+void Level::raiseLayer(BgdatObject *obj)
+{
+    int currLayer = obj->getLayer();
+
+    if (currLayer < 1)
+        return;
+
+    objects[currLayer].removeOne(obj);
+    objects[currLayer-1].append(obj);
+    obj->setLayer(currLayer-1);
+}
+
+void Level::lowerLayer(BgdatObject *obj)
+{
+    int currLayer = obj->getLayer();
+
+    if (currLayer > 0)
+        return;
+
+    objects[currLayer].removeOne(obj);
+    objects[currLayer+1].append(obj);
+    obj->setLayer(currLayer+1);
 }
 
 Entrance* Level::newEntrance(int x, int y)

@@ -582,6 +582,38 @@ void ObjectsEditonMode::paste(int currX, int currY, int currW, int currH)
     checkEmits();
 }
 
+void ObjectsEditonMode::raise()
+{
+    foreach (Object* obj, selectedObjects)
+    {
+        level->raise(obj);
+    }
+}
+
+void ObjectsEditonMode::lower()
+{
+    foreach (Object* obj, selectedObjects)
+    {
+        level->lower(obj);
+    }
+}
+
+void ObjectsEditonMode::raiseLayer()
+{
+    foreach (Object* obj, selectedObjects)
+    {
+        if (is<BgdatObject*>(obj)) level->raiseLayer(dynamic_cast<BgdatObject*>(obj));
+    }
+}
+
+void ObjectsEditonMode::lowerLayer()
+{
+    foreach (Object* obj, selectedObjects)
+    {
+        if (is<BgdatObject*>(obj)) level->lowerLayer(dynamic_cast<BgdatObject*>(obj));
+    }
+}
+
 void ObjectsEditonMode::checkEmits()
 {
     if (selectedObjects.size() != 1)

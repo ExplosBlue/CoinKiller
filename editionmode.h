@@ -23,6 +23,10 @@ public:
     virtual void copy() {}
     virtual void cut() {}
     virtual void paste(int, int, int, int) {}
+    virtual void raise() {}
+    virtual void lower() {}
+    virtual void raiseLayer() {}
+    virtual void lowerLayer() {}
 
     Qt::CursorShape getActualCursor() { return actualCursor; }
 
@@ -56,6 +60,10 @@ public:
     void copy();
     void cut();
     void paste(int currX, int currY, int currW, int currH);
+    void raise();
+    void lower();
+    void raiseLayer();
+    void lowerLayer();
 
     void setDrawType(int drawType) { this->drawType = drawType; }
     void setObject(int selObject, int selTileset) { this->selObject = selObject; this->selTileset = selTileset; }

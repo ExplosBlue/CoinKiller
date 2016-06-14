@@ -130,6 +130,11 @@
    <addaction name="actionCopy"/>
    <addaction name="actionDelete"/>
    <addaction name="separator"/>
+   <addaction name="actionRaise"/>
+   <addaction name="actionLower"/>
+   <addaction name="actionRaiseLayer"/>
+   <addaction name="actionLowerLayer"/>
+   <addaction name="separator"/>
    <addaction name="actionZoom_In"/>
    <addaction name="actionZoom_100"/>
    <addaction name="actionZoom_Out"/>
@@ -317,6 +322,26 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+Alt+D</string>
+   </property>
+  </action>
+  <action name="actionRaise">
+   <property name="text">
+    <string>Raise to Top</string>
+   </property>
+  </action>
+  <action name="actionLower">
+   <property name="text">
+    <string>Lower to Bottom</string>
+   </property>
+  </action>
+  <action name="actionRaiseLayer">
+   <property name="text">
+    <string>Raise Layer</string>
+   </property>
+  </action>
+  <action name="actionLowerLayer">
+   <property name="text">
+    <string>Lower Layer</string>
    </property>
   </action>
  </widget>

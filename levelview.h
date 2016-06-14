@@ -42,6 +42,10 @@ public:
     void paste();
     void cut();
     void deleteSel();
+    void raise();
+    void lower();
+    void raiseLayer();
+    void lowerLayer();
 
     EditionMode* editionModePtr() { return mode; }
     ObjectsEditonMode* objEditionModePtr() { return objectEditionMode; }

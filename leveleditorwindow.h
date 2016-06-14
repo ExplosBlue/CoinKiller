@@ -90,6 +90,14 @@ private slots:
 
     void on_actionDeleteCurrentArea_triggered();
 
+    void on_actionRaise_triggered();
+
+    void on_actionLower_triggered();
+
+    void on_actionRaiseLayer_triggered();
+
+    void on_actionLowerLayer_triggered();
+
 private:
     Ui::LevelEditorWindow *ui;
 

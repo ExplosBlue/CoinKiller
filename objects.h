@@ -73,6 +73,7 @@ public:
     int getid() const;
     int getLayer() const;
     QString toString(int xOffset, int yOffset) const;
+    void setLayer(int layer) { this->layer = layer; }
 protected:
     int id;
     int layer;

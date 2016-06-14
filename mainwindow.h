@@ -51,8 +51,7 @@ private:
 
     Game* game;
 
-
-    QHash<QString,QString> defaultLevelNames;
+    void checkForMissingFiles();
 };
 
 #endif // MAINWINDOW_H

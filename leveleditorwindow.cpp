@@ -62,6 +62,10 @@ LevelEditorWindow::LevelEditorWindow(QWidget *parent, Game *game, QString path) 
     ui->actionCut->setIcon((QIcon(basePath + "cut.png")));
     ui->actionCopy->setIcon((QIcon(basePath + "copy.png")));
     ui->actionDelete->setIcon(QIcon(basePath + "delete.png"));
+    ui->actionRaise->setIcon(QIcon(basePath + "raise.png"));
+    ui->actionLower->setIcon(QIcon(basePath + "lower.png"));
+    ui->actionRaiseLayer->setIcon(QIcon(basePath + "layer_up.png"));
+    ui->actionLowerLayer->setIcon(QIcon(basePath + "layer_down.png"));
     ui->actionFullscreen->setIcon(QIcon(basePath + "expand.png"));
     ui->actionGrid->setIcon(QIcon(basePath + "grid.png"));
     ui->actionAddArea->setIcon(QIcon(basePath + "add.png"));
@@ -212,6 +216,26 @@ void LevelEditorWindow::on_actionCut_triggered()
 void LevelEditorWindow::on_actionDelete_triggered()
 {
     levelView->deleteSel();
+}
+
+void LevelEditorWindow::on_actionRaise_triggered()
+{
+    levelView->raise();
+}
+
+void LevelEditorWindow::on_actionLower_triggered()
+{
+    levelView->lower();
+}
+
+void LevelEditorWindow::on_actionRaiseLayer_triggered()
+{
+    levelView->raiseLayer();
+}
+
+void LevelEditorWindow::on_actionLowerLayer_triggered()
+{
+    levelView->lowerLayer();
 }
 
 void LevelEditorWindow::on_actionFullscreen_toggled(bool toggle)

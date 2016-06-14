@@ -369,6 +369,30 @@ void LevelView::paste()
     update();
 }
 
+void LevelView::raise()
+{
+    objEditionModePtr()->raise();
+    update();
+}
+
+void LevelView::lower()
+{
+    objEditionModePtr()->lower();
+    update();
+}
+
+void LevelView::raiseLayer()
+{
+    objEditionModePtr()->raiseLayer();
+    update();
+}
+
+void LevelView::lowerLayer()
+{
+    objEditionModePtr()->lowerLayer();
+    update();
+}
+
 void LevelView::cut()
 {
     editionModePtr()->cut();
