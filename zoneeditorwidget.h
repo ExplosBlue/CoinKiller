@@ -1,7 +1,7 @@
 #ifndef ZONEEDITORWIDGET_H
 #define ZONEEDITORWIDGET_H
 
-#include "levelarea.h"
+#include "objects.h"
 
 #include <QWidget>
 #include <QListWidget>

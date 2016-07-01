@@ -1,7 +1,7 @@
 #ifndef ENTRANCEEDITOR_H
 #define ENTRANCEEDITOR_H
 
-#include "levelarea.h"
+#include "objects.h"
 
 #include <QWidget>
 #include <QComboBox>

@@ -43,12 +43,7 @@ SOURCES += main.cpp\
     locationeditorwidget.cpp \
     levelmanager.cpp \
     patheditorwidget.cpp \
-    progresspatheditorwidget.cpp \
-    entranceeditorwidget.cpp \
-    locationeditorwidget.cpp \
-    patheditorwidget.cpp \
-    progresspatheditorwidget.cpp \
-    zoneeditorwidget.cpp
+    progresspatheditorwidget.cpp
 
 HEADERS  += mainwindow.h \
     filesystembase.h \
@@ -80,15 +75,10 @@ HEADERS  += mainwindow.h \
     spriteeditorwidget.h \
     areaeditorwidget.h \
     zoneeditorwidget.h \
-    locationeditorwidget.h \
     levelmanager.h \
     patheditorwidget.h \
     progresspatheditorwidget.h \
-    entranceeditorwidget.h \
-    locationeditorwidget.h \
-    patheditorwidget.h \
-    progresspatheditorwidget.h \
-    zoneeditorwidget.h
+    locationeditorwidget.h
 
 FORMS    += mainwindow.ui \
     leveleditorwindow.ui \
