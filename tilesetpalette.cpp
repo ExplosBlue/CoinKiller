@@ -72,6 +72,7 @@ void TilesetPalette::loadTileset(int tilesetNbr)
     if (!level->tilesets[tilesetNbr])
     {
         objectLists[tilesetNbr]->setEnabled(false);
+        objectLists[tilesetNbr]->setModel(new QStandardItemModel());
         return;
     }
     objectLists[tilesetNbr]->setEnabled(true);

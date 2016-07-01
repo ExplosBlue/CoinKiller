@@ -7,5 +7,12 @@ Will be licensed under the GPL or someshit.
 
 # TODO
 
- * everything!
+ * ctpk import/renaming
+ * easy level creation (like this: https://www.youtube.com/watch?v=WgeOjOD2p0o)
+ * more sprite images/visual representations
+ * open .cia and .3ds files
+ * ASM tools
+ * undo/redo
+ * copy/paste for (progress-) paths
+ * fix some crashes related to copy pasting
  

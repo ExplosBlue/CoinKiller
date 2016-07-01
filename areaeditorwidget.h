@@ -9,22 +9,22 @@
 #include <QCheckBox>
 #include <QComboBox>
 #include <QMap>
-#include <QTreeWidget>
+#include <QTreeView>
 
-class TilesetChooser : public QTreeWidget
+class TilesetChooser : public QTabWidget
 {
     Q_OBJECT
 public:
-    TilesetChooser(Level* level, int tsNbr, Game *game, QMap<QString, QString>* names);
-private:
-    Level* level;
-    Game* game;
-    int tsNbr;
-private slots:
-    void handleTilesetChange(QTreeWidgetItem* item, int);
+    TilesetChooser(Level* level, Game* game);
 signals:
     void updateLevelEditor();
     void relaodTilesetPicker();
+private slots:
+    void handleTilesetChange(QModelIndex index);
+private:
+    QTreeView* tilesetTrees[4];
+    Game* game;
+    Level* level;
 };
 
 class AreaEditorWidget : public QWidget
@@ -46,6 +46,7 @@ private:
     QCheckBox* toadhouseFlag;
     QComboBox* specialLevelFlag1;
     QComboBox* specialLevelFlag2;
+    TilesetChooser* tsChooser;
 
     QMap<int, QString> specialLevelFlags1;
     QMap<int, QString> specialLevelFlags2;

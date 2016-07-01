@@ -19,6 +19,7 @@ public:
 
     QStandardItemModel* getCourseModel();
     QStandardItemModel* getTilesetModel();
+    QStandardItemModel* getTilesetModel(int id, bool includeNoneItem = false);
 
     FilesystemBase* fs;
 

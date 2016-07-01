@@ -58,30 +58,11 @@ AreaEditorWidget::AreaEditorWidget(Level* level, Game *game)
 
     layout->addWidget(new HorLine(), 6, 0, 1, 2);
 
-    layout->addWidget(new QLabel("Tilesets:"), 7, 0, 1, 2);
-    QTabWidget* tabWidget = new QTabWidget();
-    layout->addWidget(tabWidget, 8, 0, 1, 2);
+    tsChooser = new TilesetChooser(level, game);
+    connect(tsChooser, SIGNAL(updateLevelEditor()), this, SLOT(passUpdateLevelView()));
+    connect(tsChooser, SIGNAL(relaodTilesetPicker()), this, SLOT(passRelaodTilesetPicker()));
+    layout->addWidget(tsChooser, 8, 0, 1, 2);
 
-    QMap<QString, QString> tsNames;
-    QFile file(QCoreApplication::applicationDirPath() + "/coinkiller_data/tilesetnames.txt");
-    if(file.open(QIODevice::ReadOnly))
-    {
-        QTextStream in(&file);
-        while(!in.atEnd())
-        {
-            QStringList nameStrings = in.readLine().split(":");
-            tsNames.insert(nameStrings[0], nameStrings[1]);
-        }
-        file.close();
-
-        for (int i = 0; i < 4; i++)
-        {
-            TilesetChooser* tsChooser = new TilesetChooser(level, i, game, &tsNames);
-            connect(tsChooser, SIGNAL(updateLevelEditor()), this, SLOT(passUpdateLevelView()));
-            connect(tsChooser, SIGNAL(relaodTilesetPicker()), this, SLOT(passRelaodTilesetPicker()));
-            tabWidget->addTab(tsChooser, QString("%1").arg(i));
-        }
-    }
     updateInfo();
 }
 
@@ -127,45 +108,64 @@ void AreaEditorWidget::handleToadHouseFlagChanged(bool flag)
 
 }
 
-TilesetChooser::TilesetChooser(Level* level, int tsNbr, Game* game, QMap<QString, QString> *names)
+TilesetChooser::TilesetChooser(Level *level, Game *game)
 {
-    this->level = level;
     this->game = game;
-    this->tsNbr = tsNbr;
+    this->level = level;
 
-    QStringList headers;
-    headers << "Name" << "File";
-    setHeaderLabels(headers);
-
-    setRootIsDecorated(false);
-
-    QStringList tilesetFileNames;
-    game->fs->directoryContents("/Unit/", QDir::Files, tilesetFileNames);
-
-    QString prefix;
-
-    if (tsNbr == 0) prefix = "J_";
-    else if (tsNbr == 1) prefix = "M_";
-    else if (tsNbr == 2) prefix = "S1_";
-    else if (tsNbr == 3) prefix = "S2_";
-
-    foreach (QString fileName, tilesetFileNames)
+    for (int i=0; i<4; i++)
     {
-        if (!fileName.startsWith(prefix)) continue;
-        fileName.chop(5);
+        QTreeView* tab = new QTreeView(this);
+        tab->setRootIsDecorated(false);
+        tab->setSelectionBehavior (QAbstractItemView::SelectRows);
+        tab->setEditTriggers(QAbstractItemView::NoEditTriggers);
+        tab->setModel(game->getTilesetModel(i, true));
+        tab->model()->setObjectName(QString("%1").arg(i));
+        tab->setColumnWidth(0, 150);
 
-        QTreeWidgetItem *ts = new QTreeWidgetItem(this);
+        QString title;
+        if (i == 0) title = "Standard";
+        else if (i == 1) title = "Stage";
+        else if (i == 2) title = "Background";
+        else if (i == 3) title = "Interactive";
 
-        ts->setText(0, names->value(fileName, fileName.right(fileName.length() - (tsNbr/2 + 2))));
-        ts->setText(1, fileName);
+        if (!level->tilesets[i])
+            tab->selectionModel()->setCurrentIndex(tab->model()->index(0,0), QItemSelectionModel::Select | QItemSelectionModel::Rows);
+        else
+        {
+            QString tsName = level->tilesets[i]->getName();
+
+            for (int j=1; j<tab->model()->rowCount(); j++)
+            {
+                QModelIndex index = tab->model()->index(j, 1);
+                QString indexName = index.data().toString();
+
+                if (tsName == indexName)
+                {
+                    tab->selectionModel()->setCurrentIndex(index, QItemSelectionModel::Select | QItemSelectionModel::Rows);
+                    break;
+                }
+            }
+        }
+
+        connect(tab, SIGNAL(clicked(QModelIndex)), this, SLOT(handleTilesetChange(QModelIndex)));
+
+        this->addTab(tab, title);
     }
-
-    connect(this, SIGNAL(itemClicked(QTreeWidgetItem*, int)), this, SLOT(handleTilesetChange(QTreeWidgetItem*,int)));
 }
 
-void TilesetChooser::handleTilesetChange(QTreeWidgetItem* item, int)
+void TilesetChooser::handleTilesetChange(QModelIndex index)
 {
-    level->tilesets[tsNbr] = game->getTileset(item->text(1));
+    QString tsName = index.model()->data(index.model()->index(index.row(), 1)).toString();
+    int tsId = index.model()->objectName().toInt();
+
+    delete level->tilesets[tsId];
+
+    if (tsName == "")
+        level->tilesets[tsId] = NULL;
+    else
+        level->tilesets[tsId] = game->getTileset(tsName);
+
     emit updateLevelEditor();
     emit relaodTilesetPicker();
 }

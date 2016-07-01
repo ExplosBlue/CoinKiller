@@ -367,6 +367,7 @@ void LevelEditorWindow::loadArea(int id, bool closeLevel, bool init)
     ui->actionToggleLayer1->setChecked(true);
     ui->actionToggleLayer2->setChecked(true);
     levelView->setLayerMask(layerMask);
+    levelView->toggleGrid(ui->actionGrid->isChecked());
 
     zoom = 1.0;
 
