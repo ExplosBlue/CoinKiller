@@ -730,10 +730,15 @@ void Path::insertNode(PathNode* node)
     nodes.append(node);
 }
 
+void Path::removeNode(PathNode *node)
+{
+    nodes.removeOne(node);
+}
+
 QList<PathNode*> Path::getNodes() const { return nodes; }
 
 // Path Node
-PathNode::PathNode(int x, int y, float speed, float accel, float unk1, Path* parentPath)
+PathNode::PathNode(int x, int y, float speed, float accel, quint32 unk1, Path* parentPath)
 {
     this->x = x;
     this->y = y;
@@ -754,6 +759,11 @@ ProgressPath::ProgressPath(quint16 id, quint8 alternatePathFlag)
 void ProgressPath::insertNode(ProgressPathNode* node)
 {
     nodes.append(node);
+}
+
+void ProgressPath::removeNode(ProgressPathNode *node)
+{
+    nodes.removeOne(node);
 }
 
 QList<ProgressPathNode*> ProgressPath::getNodes() const { return nodes; }

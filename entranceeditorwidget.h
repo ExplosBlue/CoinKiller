@@ -1,7 +1,7 @@
 #ifndef ENTRANCEEDITOR_H
 #define ENTRANCEEDITOR_H
 
-#include "level.h"
+#include "levelarea.h"
 
 #include <QWidget>
 #include <QComboBox>
@@ -20,6 +20,7 @@ public:
 
 signals:
     void updateLevelView();
+    void selectedEntrChanged(Object* entr);
 
 private:
     QListWidget* entrancesList;

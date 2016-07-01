@@ -13,9 +13,16 @@ Tileset* Game::getTileset(QString name)
     return new Tileset(this, name);
 }
 
-Level* Game::getLevel(QString path, int area)
+LevelManager* Game::getLevelManager(QWidget* parent, QString path)
 {
-    return new Level(this, path, area);
+    path.prepend("/Course/");
+    if (!path.endsWith(".sarc"))
+        path.append(".sarc");
+
+    if (!fs->fileExists(path))
+        throw std::runtime_error("Level File does not exist.");
+
+    return new LevelManager(parent, this, path);
 }
 
 QStandardItemModel* Game::getCourseModel()

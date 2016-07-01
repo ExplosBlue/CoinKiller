@@ -3,7 +3,7 @@
 
 #include "filesystem.h"
 #include "tileset.h"
-#include "level.h"
+#include "levelmanager.h"
 
 #include <QStandardItemModel>
 #include <QtXml>
@@ -15,7 +15,7 @@ public:
 
 
     Tileset* getTileset(QString name);
-    Level* getLevel(QString path, int area);
+    LevelManager* getLevelManager(QWidget* parent, QString path);
 
     QStandardItemModel* getCourseModel();
     QStandardItemModel* getTilesetModel();

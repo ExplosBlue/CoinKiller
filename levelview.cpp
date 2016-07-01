@@ -405,3 +405,24 @@ void LevelView::deleteSel()
     setCursor(QCursor(mode->getActualCursor()));
     update();
 }
+
+void LevelView::selectObj(Object *obj)
+{
+    mode->select(obj);
+
+    int x = obj->getx()+obj->getOffsetX();
+    int y = obj->gety()+obj->getOffsetY();
+    int w = obj->getwidth();
+    int h = obj->getheight();
+    int wR = visibleRegion().boundingRect().width()/zoom;
+    int hR = visibleRegion().boundingRect().height()/zoom;
+
+    if (!QRect(visibleRegion().boundingRect().x()/zoom, visibleRegion().boundingRect().y()/zoom, wR, hR).intersects(QRect(x, y, w, h)))
+    {
+        int sX = qMax(x+w/2-wR/2, 0);
+        int sY = qMax(y+h/2-hR/2, 0);
+        emit scrollTo(sX, sY);
+    }
+
+    update();
+}

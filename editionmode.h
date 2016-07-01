@@ -28,6 +28,8 @@ public:
     virtual void raiseLayer() {}
     virtual void lowerLayer() {}
 
+    virtual void select(Object*) {}
+
     Qt::CursorShape getActualCursor() { return actualCursor; }
 
 protected:
@@ -64,6 +66,8 @@ public:
     void lower();
     void raiseLayer();
     void lowerLayer();
+
+    virtual void select(Object* obj);
 
     void setDrawType(int drawType) { this->drawType = drawType; }
     void setObject(int selObject, int selTileset) { this->selObject = selObject; this->selTileset = selTileset; }

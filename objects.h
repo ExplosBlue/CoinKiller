@@ -247,18 +247,20 @@ class PathNode: public Object
 {
 public:
     PathNode() {}
-    PathNode(int x, int y, float speed, float accel, float unk1, Path *parentPath);
+    PathNode(int x, int y, float speed, float accel, quint32 unk1, Path *parentPath);
     int getType() const { return 5; }
     bool isResizable() const { return false; }
     float getSpeed() const { return speed; }
     float getAccel() const { return accel; }
     float getUnk1() const { return unk1; }
     Path* getParentPath() const { return parentPath; }
+    void setSpeed(float speed) { this->speed = speed; }
+    void setAccel(float accel) { this->accel = accel; }
 protected:
     Path* parentPath;
     float speed;
     float accel;
-    float unk1;
+    quint32 unk1;
 };
 
 
@@ -267,13 +269,16 @@ class Path
 {
 public:
     Path() {}
+    ~Path() { foreach (PathNode* node, nodes) delete node; }
     Path(quint16 id, quint16 unk1);
     void insertNode(PathNode *node);
-    //void removeNodeAt(int id);
+    void removeNode(PathNode* node);
     quint16 getid() const { return id; }
     quint16 getUnk1() const { return unk1; }
     int getNumberOfNodes() const { return nodes.size(); }
     QList<PathNode*> getNodes() const;
+    PathNode* getNode(int id) const { return nodes[id]; }
+    void setId(int id) { this->id = id; }
 protected:
     quint16 id;
     quint16 unk1;
@@ -301,13 +306,17 @@ class ProgressPath
 {
 public:
     ProgressPath() {}
+    ~ProgressPath() { foreach (ProgressPathNode* node, nodes) delete node; }
     ProgressPath(quint16 id, quint8 alternatePathFlag);
-    void insertNode(ProgressPathNode *node);
-    //void removeNodeAt(int id);
+    void insertNode(ProgressPathNode* node);
+    void removeNode(ProgressPathNode* node);
     quint16 getid() const { return id; }
     quint8 getAlternatePathFlag() const { return alternatePathFlag; }
     int getNumberOfNodes() const { return nodes.size(); }
     QList<ProgressPathNode*> getNodes() const;
+    ProgressPathNode* getNode(int id) const { return nodes[id]; }
+    void setId(int id) { this->id = id; }
+    void setAlternatePathFlag(bool flag) { this->alternatePathFlag = flag; }
 protected:
     quint16 id;
     quint8 alternatePathFlag;

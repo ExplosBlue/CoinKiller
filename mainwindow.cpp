@@ -94,10 +94,10 @@ void MainWindow::on_levelList_doubleClicked(const QModelIndex &index)
     if (index.data(Qt::UserRole+1).isNull())
         return;
 
-    QString path = "/Course/" + index.data(Qt::UserRole+1).toString() + ".sarc";
+    QString path = index.data(Qt::UserRole+1).toString();
 
-    LevelEditorWindow* lvlEditor = new LevelEditorWindow(this, game, path);
-    lvlEditor->show();
+    LevelManager* lvlMgr = game->getLevelManager(this, path);
+    lvlMgr->openAreaEditor(1);
 }
 
 void MainWindow::on_tilesetView_doubleClicked(const QModelIndex &index)

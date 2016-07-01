@@ -51,8 +51,10 @@ public:
     ObjectsEditonMode* objEditionModePtr() { return objectEditionMode; }
 
 signals:
+    void scrollTo(int x, int y);
 
 public slots:
+    void selectObj(Object* obj);
 
 protected:
     void paintEvent(QPaintEvent *) Q_DECL_OVERRIDE;

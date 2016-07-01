@@ -27,7 +27,7 @@ class Game;
 class Level
 {
 public:
-    Level(Game* game, QString path, int area);
+    Level(Game *game, SarcFilesystem* archive, int area, QString lvlName);
     ~Level();
     void save();
 
@@ -54,14 +54,8 @@ public:
 
     void getName(QString& name)
     {
-        name = lvlPath;
+        name = QString("%1, Area %2").arg(lvlName).arg(area);
     }
-
-    int addArea();
-    int removeArea(int area);
-
-    int getAreaCount();
-    bool hasArea(int area) { return archive->fileExists(QString("course/course%1.bin").arg(area)); }
 
     void remove(QList<Object*> objs);
     void remove(Object* obj);
@@ -74,10 +68,15 @@ public:
     Entrance* newEntrance(int x, int y);
     Zone* newZone(int x, int y);
     Location* newLocation(int x, int y);
+    Path* newPath();
+    ProgressPath* newProgressPath();
+
+    int getAreaID() { return area; }
+    void setAreaID(int id) { this->area = id; }
 
 private:
     SarcFilesystem* archive;
-    QString lvlPath;
+    QString lvlName;
     int area;
 
     quint8 getNextZoneID(Object* obj);

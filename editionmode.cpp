@@ -67,6 +67,22 @@ void ObjectsEditonMode::mouseDown(int x, int y, Qt::MouseButtons buttons, Qt::Ke
             creatNewObject = true;
             selectedObjects.append(loc);
         }
+        else if (drawType == 5)
+        {
+            Path* path = level->newPath();
+            level->paths.append(path);
+            PathNode* node = new PathNode(qMax(toNext10(x-10), 0), qMax(toNext10(y-10), 0), 0, 0, 0, path);
+            path->insertNode(node);
+            selectedObjects.append(node);
+        }
+        else if (drawType == 6)
+        {
+            ProgressPath* path = level->newProgressPath();
+            level->progressPaths.append(path);
+            ProgressPathNode* node = new ProgressPathNode(qMax(toNext10(x-10), 0), qMax(toNext10(y-10), 0), path);
+            path->insertNode(node);
+            selectedObjects.append(node);
+        }
 
         checkEmits();
         emit updateEditors();
@@ -361,6 +377,8 @@ QList<Object*> ObjectsEditonMode::getObjectsAtPos(int x1, int y1, int x2, int y2
     foreach (Location* loc, level->locations) if (loc->clickDetection(area)) objects.append(loc);
     foreach (Sprite* spr, level->sprites) if (spr->clickDetection(area)) objects.append(spr);
     foreach (Entrance* entr, level->entrances) if (entr->clickDetection(area)) objects.append(entr);
+    foreach (Path* path, level->paths) foreach (PathNode* node, path->getNodes()) if (node->clickDetection(area)) objects.append(node);
+    foreach (ProgressPath* path, level->progressPaths) foreach (ProgressPathNode* node, path->getNodes()) if (node->clickDetection(area)) objects.append(node);
     foreach (Zone* zone, level->zones) if (zone->clickDetection(area)) objects.append(zone);
 
     if (firstOnly && objects.size() > 1)
@@ -369,6 +387,7 @@ QList<Object*> ObjectsEditonMode::getObjectsAtPos(int x1, int y1, int x2, int y2
         objects.clear();
         objects.append(object);
     }
+
 
     return objects;
 }
@@ -471,6 +490,12 @@ void ObjectsEditonMode::updateSelectionBounds()
         if (is<BgdatObject*>(o))
             selectionHasBGDats = true;
     }
+}
+
+void ObjectsEditonMode::select(Object *obj)
+{
+    selectedObjects.clear();
+    selectedObjects.append(obj);
 }
 
 void ObjectsEditonMode::deleteSelection()

@@ -60,6 +60,14 @@ public:
         return ret;
     }
 
+    float readFloat()
+    {
+        quint32 bin = read32();
+        float ret;
+        memcpy(&ret, &bin, 4);
+        return ret;
+    }
+
     quint32 readStringASCII(QString& ret, quint32 len) // len=0 for NULL terminated string
     {
         char temp8[64];
@@ -107,6 +115,13 @@ public:
     void write32(quint32 val)
     {
         writeData((quint8*)&val, 4);
+    }
+
+    void writeFloat(float val)
+    {
+        quint32 bin;
+        memcpy(&bin, &val, 4);
+        write32(bin);
     }
 
     void writeStringASCII(QString str, int len=0) // len=0 for NULL terminated string

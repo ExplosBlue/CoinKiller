@@ -244,6 +244,7 @@ void ZoneEditorWidget::handleZoneListIndexChange(QListWidgetItem *item)
     editZone = zones->at(zoneList->row(item));
     editingAZone = true;
     updateInfo();
+    emit selectedZoneChanged(editZone);
 }
 
 void ZoneEditorWidget::handleIDChange(int idVal)

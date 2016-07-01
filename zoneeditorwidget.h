@@ -1,7 +1,7 @@
 #ifndef ZONEEDITORWIDGET_H
 #define ZONEEDITORWIDGET_H
 
-#include "level.h"
+#include "levelarea.h"
 
 #include <QWidget>
 #include <QListWidget>
@@ -35,6 +35,7 @@ public:
 
 signals:
     void updateLevelView();
+    void selectedZoneChanged(Object* zone);
 
 private:
     QListWidget* zoneList;

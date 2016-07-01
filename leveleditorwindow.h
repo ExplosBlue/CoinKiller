@@ -20,17 +20,20 @@
 
 #include <QMainWindow>
 #include <QListView>
+#include <QComboBox>
 
 #include "filesystem.h"
 #include "levelview.h"
 #include "ctpk.h"
-#include "level.h"
+#include "levelmanager.h"
 #include "areaeditorwidget.h"
 #include "tilesetpalette.h"
 #include "spriteeditorwidget.h"
 #include "entranceeditorwidget.h"
 #include "zoneeditorwidget.h"
 #include "locationeditorwidget.h"
+#include "patheditorwidget.h"
+#include "progresspatheditorwidget.h"
 
 #include "propertygrid.h"
 
@@ -43,17 +46,17 @@ class LevelEditorWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit LevelEditorWindow(QWidget *parent, Game* game, QString path);
+    explicit LevelEditorWindow(LevelManager* lvlMgr, int initialArea = 1);
     ~LevelEditorWindow();
+    void closeEvent();
 
 public slots:
     void setObjectEdition(Object* obj);
     void deselect();
     void updateEditors();
+    void scrollTo(int x, int y);
 
 private slots:
-    void selectedAreaChanged(int area);
-
     void on_actionToggleLayer1_toggled(bool arg1);
 
     void on_actionToggleLayer2_toggled(bool arg1);
@@ -98,15 +101,17 @@ private slots:
 
     void on_actionLowerLayer_triggered();
 
+    void handleAreaIndexChange(int index);
+
+    void handleMgrUpdate();
+
 private:
     Ui::LevelEditorWindow *ui;
 
-    //SarcFilesystem* levelArchive;
+    LevelManager* lvlMgr;
     Level* level;
-    Game* game;
     Tileset* tileset;
     LevelView* levelView;
-    QComboBox* areaSelector;
 
     PropertyGrid* propGrid;
 
@@ -116,15 +121,18 @@ private:
     EntranceEditorWidget* entranceEditor;
     ZoneEditorWidget* zoneEditor;
     LocationEditorWidget* locationEditor;
+    PathEditorWidget* pathEditor;
+    ProgressPathEditorWidget* progPathEditor;
 
-    QString lvlPath;
-    int currArea;
+    QComboBox* areaSelector;
+
+    void updateAreaSelector(int index = -1);
 
     quint8 layerMask;
     float zoom;
 
-    void loadArea(int area);
-    void updateAreaSelector(int index=-1);
+    void loadArea(int id, bool closeLevel = true, bool init = false);
+    bool closeLvlOnClose = true;
 };
 
 #endif // LEVELEDITORWINDOW_H

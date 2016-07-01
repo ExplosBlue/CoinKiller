@@ -165,6 +165,7 @@ void EntranceEditorWidget::handleEntranceListIndexChanged(QListWidgetItem *item)
     editEntrance = entrances->at(entrancesList->row(item));
     editingAnEntrance = true;
     updateInfo();
+    emit selectedEntrChanged(editEntrance);
 }
 
 void EntranceEditorWidget::handleTypeChanged(int typeVal)

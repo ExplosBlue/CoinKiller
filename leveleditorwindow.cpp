@@ -19,7 +19,6 @@
 #include "ui_leveleditorwindow.h"
 
 #include "levelview.h"
-#include "game.h"
 #include "is.h"
 
 #include <QHBoxLayout>
@@ -28,27 +27,20 @@
 #include <QInputDialog>
 #include <QComboBox>
 #include <QMessageBox>
+#include <QScrollBar>
 
-LevelEditorWindow::LevelEditorWindow(QWidget *parent, Game *game, QString path) :
-    QMainWindow(parent),
+LevelEditorWindow::LevelEditorWindow(LevelManager* lvlMgr, int initialArea) :
+    QMainWindow(lvlMgr->getParent()),
     ui(new Ui::LevelEditorWindow)
 {
-    this->game = game;
-    currArea = 1;
+    this->lvlMgr = lvlMgr;
 
-    lvlPath = path;
-    level = game->getLevel(path, currArea);
-
+    this->setAttribute(Qt::WA_DeleteOnClose);
     ui->setupUi(this);
 
-    areaSelector = new QComboBox(ui->toolBar);
-    updateAreaSelector(0);
+    areaSelector = new QComboBox(this);
     ui->toolBar->insertWidget(ui->actionAddArea, areaSelector);
-    connect(areaSelector, SIGNAL(currentIndexChanged(int)), this, SLOT(selectedAreaChanged(int)));
-
-    QString title;
-    level->getName(title);
-    setWindowTitle(title + " - CoinKiller");
+    connect(areaSelector, SIGNAL(currentIndexChanged(int)), this, SLOT(handleAreaIndexChange(int)));
 
     // Load UI Icons
     QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/icons/");
@@ -71,35 +63,6 @@ LevelEditorWindow::LevelEditorWindow(QWidget *parent, Game *game, QString path) 
     ui->actionAddArea->setIcon(QIcon(basePath + "add.png"));
     ui->actionDeleteCurrentArea->setIcon(QIcon(basePath + "remove.png"));
 
-    levelView = new LevelView(this, level);
-    /*levelView->setMinimumHeight(600);
-    levelView->setMaximumWidth(800);*/
-    //QHBoxLayout* crappyshit = new QHBoxLayout(this);
-    //this->setLayout(crappyshit);
-    //this->ui->widget->setLayout(crappyshit);
-    //crappyshit->addWidget(levelView);
-    ui->levelViewArea->setWidget(levelView);
-
-
-
-    // TEST ZONE
-
-    //propGrid = new PropertyGrid(this);
-    //QHBoxLayout* crappyshit = new QHBoxLayout(ui->widget_2);
-    //ui->widget_2->setLayout(crappyshit);
-    //crappyshit->addWidget(propGrid);
-    //ui->widget_2->layout()->addWidget(propGrid);
-
-    //propGrid->verticalHeader()->hide();
-    //propGrid->horizontalHeader()->hide();
-
-    //PropertyGridModel* model = new PropertyGridModel(propGrid);
-    //propGrid->setModel(model);
-
-    // TEST ZONE END
-
-
-
     QList<int> derpshit;
     derpshit.append(350);
     derpshit.append(999999999);
@@ -109,24 +72,16 @@ LevelEditorWindow::LevelEditorWindow(QWidget *parent, Game *game, QString path) 
     ui->sidebar->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Ignored);
     ui->sidebar->setMinimumSize(350, 20);
 
-    //this->ui->splitter->setStretchFactor(0, 0); // useless
-
-    //this->ui->widget->layout()->addWidget(levelView);
-
-
-    layerMask = 0x7;
-    ui->actionToggleLayer1->setChecked(true);
-    ui->actionToggleLayer2->setChecked(true);
-
-
-    zoom = 1.0;
-
-    loadArea(currArea);
+    loadArea(initialArea, false, true);
+    updateAreaSelector(initialArea);
 }
 
 LevelEditorWindow::~LevelEditorWindow()
 {
-    delete level;
+    if (closeLvlOnClose)
+        lvlMgr->closeArea(level);
+    if (lvlMgr->getOpenedAreaCount() == 0)
+        delete lvlMgr;
     delete ui;
 }
 
@@ -293,6 +248,16 @@ void LevelEditorWindow::setObjectEdition(Object* obj)
         ui->sidebarTabWidget->setCurrentIndex(5);
         locationEditor->select(dynamic_cast<Location*>(obj));
     }
+    else if (is<PathNode*>(obj))
+    {
+        ui->sidebarTabWidget->setCurrentIndex(6);
+        pathEditor->select(dynamic_cast<PathNode*>(obj));
+    }
+    else if (is<ProgressPathNode*>(obj))
+    {
+        ui->sidebarTabWidget->setCurrentIndex(7);
+        progPathEditor->select(dynamic_cast<ProgressPathNode*>(obj));
+    }
 }
 
 void LevelEditorWindow::deselect()
@@ -301,6 +266,8 @@ void LevelEditorWindow::deselect()
     entranceEditor->deselect();
     zoneEditor->deselect();
     locationEditor->deselect();
+    pathEditor->deselect();
+    progPathEditor->deselect();
 }
 
 void LevelEditorWindow::updateEditors()
@@ -309,6 +276,8 @@ void LevelEditorWindow::updateEditors()
     entranceEditor->updateEditor();
     zoneEditor->updateEditor();
     locationEditor->updateEditor();
+    pathEditor->updateEditor();
+    progPathEditor->updateEditor();
 }
 
 void LevelEditorWindow::on_sidebarTabWidget_currentChanged(int index)
@@ -319,50 +288,92 @@ void LevelEditorWindow::on_sidebarTabWidget_currentChanged(int index)
         levelView->objEditionModePtr()->setDrawType(index-1);
 }
 
-void LevelEditorWindow::updateAreaSelector(int index)
+void LevelEditorWindow::on_actionAddArea_triggered()
 {
-    int lastIndex = areaSelector->currentIndex();
-    areaSelector->blockSignals(true);
-
-    int areaCount = level->getAreaCount();
-    QStringList areaStrings;
-    for (int i = 0; i < areaCount; i++)
-        areaStrings << QString("Area %1").arg(i+1);
-
-    QStringListModel *model = new QStringListModel();
-    model->setStringList(areaStrings);
-
-    areaSelector->setModel(model);
-    if (index == -1) areaSelector->setCurrentIndex(lastIndex);
-    else areaSelector->setCurrentIndex(index-1);
-
-    areaSelector->blockSignals(false);
-}
-
-void LevelEditorWindow::selectedAreaChanged(int area)
-{
-    area++;
-    loadArea(area);
-}
-
-void LevelEditorWindow::loadArea(int area)
-{
-    if (!level->hasArea(area))
+    if (lvlMgr->getAreaCount() >= 4)
     {
-        QString errorText("Area %1 does not exist!");
-        QMessageBox::critical(this, "CoinKiller", errorText.arg(area), QMessageBox::Ok, 0);
+        QMessageBox::information(this, "CoinKiller", "Due to limitations there can only be a maximum of 4 areas in a level.", QMessageBox::Ok);
         return;
     }
 
-    level = game->getLevel(lvlPath, area);
+    int seekArea = lvlMgr->addArea(level->getAreaID());
+    loadArea(seekArea);
+    updateAreaSelector(seekArea);
+}
+
+void LevelEditorWindow::on_actionDeleteCurrentArea_triggered()
+{
+    if (lvlMgr->getAreaCount() <= 1)
+    {
+        QMessageBox::information(this, "CoinKiller", "This area cannot be deleted because there has to be at least one area in a level.", QMessageBox::Ok);
+        return;
+    }
+
+    QMessageBox warning;
+    warning.setWindowTitle("CoinKiller");
+    warning.setText("Are you sure you want to delete this area?\n\nThe level will automatically save afterwards and therefore the deletion of this area cannot be undone afterwards.");
+    warning.setStandardButtons(QMessageBox::Yes);
+    warning.addButton(QMessageBox::No);
+    warning.setDefaultButton(QMessageBox::No);
+    warning.setIcon(QMessageBox::Warning);
+
+    if (warning.exec() == QMessageBox::No)
+        return;
+
+    int seekArea = lvlMgr->removeArea(level);
+
+    if (!lvlMgr->hasArea(seekArea))
+    {
+        closeLvlOnClose = false;
+        close();
+        return;
+    }
+
+    loadArea(seekArea, false);
+    updateAreaSelector(seekArea);
+}
+
+void LevelEditorWindow::loadArea(int id, bool closeLevel, bool init)
+{
+    if (!lvlMgr->hasArea(id))
+    {
+        QMessageBox::information(this, "CoinKiller", QString("The Area %1 is not existing.").arg(id));
+        return;
+    }
+
+    if (closeLevel)
+        lvlMgr->closeArea(level);
+
+    if (!init)
+    {
+        delete levelView;
+
+        for(int i = ui->sidebarTabWidget->count() - 1; i >= 0; i--)
+        {
+            QWidget* deleteWidget = ui->sidebarTabWidget->widget(i);
+            ui->sidebarTabWidget->removeTab(i);
+            delete deleteWidget;
+        }
+    }
+
+    level = lvlMgr->openArea(id);
 
     levelView = new LevelView(this, level);
+    ui->levelViewArea->setWidget(levelView);
     levelView->setMinimumSize(4096*20, 4096*20);
     levelView->setMaximumSize(4096*20, 4096*20);
+
+    layerMask = 0x7;
+    ui->actionToggleLayer1->setChecked(true);
+    ui->actionToggleLayer2->setChecked(true);
     levelView->setLayerMask(layerMask);
 
+    zoom = 1.0;
+
+    QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/icons/");
+
     // Setup Area Editor
-    areaEditor = new AreaEditorWidget(level, game);
+    areaEditor = new AreaEditorWidget(level, lvlMgr->getGame());
     connect(areaEditor, SIGNAL(updateLevelView()), levelView, SLOT(update()));
 
     // Setup Tileset Picker
@@ -377,79 +388,102 @@ void LevelEditorWindow::loadArea(int area)
     // Setup Entrance Editor
     entranceEditor = new EntranceEditorWidget(&level->entrances);
     connect(entranceEditor, SIGNAL(updateLevelView()), levelView, SLOT(update()));
+    connect(entranceEditor, SIGNAL(selectedEntrChanged(Object*)), levelView, SLOT(selectObj(Object*)));
 
     // Setup Zone Editor
     zoneEditor = new ZoneEditorWidget(&level->zones);
     connect(zoneEditor, SIGNAL(updateLevelView()), levelView, SLOT(update()));
+    connect(zoneEditor, SIGNAL(selectedZoneChanged(Object*)), levelView, SLOT(selectObj(Object*)));
 
     // Setup Location Editor
     locationEditor = new LocationEditorWidget(&level->locations);
     connect(locationEditor, SIGNAL(updateLevelView()), levelView, SLOT(update()));
+    connect(locationEditor, SIGNAL(selectedLocChanged(Object*)), levelView, SLOT(selectObj(Object*)));
 
+    // Setup Path Editor
+    pathEditor = new PathEditorWidget(&level->paths);
+    connect(pathEditor, SIGNAL(updateLevelView()), levelView, SLOT(update()));
+    connect(pathEditor, SIGNAL(selectedPathChanged(Object*)), levelView, SLOT(selectObj(Object*)));
+
+    // Setup Progress Path Editor
+    progPathEditor = new ProgressPathEditorWidget(&level->progressPaths);
+    connect(progPathEditor, SIGNAL(updateLevelView()), levelView, SLOT(update()));
+    connect(progPathEditor, SIGNAL(selectedProgPathChanged(Object*)), levelView, SLOT(selectObj(Object*)));
+
+    connect(levelView, SIGNAL(scrollTo(int,int)), this, SLOT(scrollTo(int,int)));
     connect(levelView->editionModePtr(), SIGNAL(selectdObjectChanged(Object*)), this, SLOT(setObjectEdition(Object*)));
     connect(levelView->editionModePtr(), SIGNAL(deselected()), this, SLOT(deselect()));
     connect(levelView->editionModePtr(), SIGNAL(updateEditors()), this, SLOT(updateEditors()));
 
-    ui->levelViewArea->setWidget(levelView);
 
-    for(int i = ui->sidebarTabWidget->count() - 1; i >= 0; i--)
-        ui->sidebarTabWidget->removeTab(i);
-
-    QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/icons/");
     ui->sidebarTabWidget->addTab(areaEditor, QIcon(basePath + "settings.png"), "");
     ui->sidebarTabWidget->addTab(tilesetPalette, QIcon(basePath + "filled_box"), "");
     ui->sidebarTabWidget->addTab(spriteEditor, QIcon(basePath + "goomba.png"), "");
     ui->sidebarTabWidget->addTab(entranceEditor, QIcon(basePath + "entrance.png"), "");
     ui->sidebarTabWidget->addTab(zoneEditor, QIcon(basePath + "zone.png"), "");
     ui->sidebarTabWidget->addTab(locationEditor, QIcon(basePath + "location.png"), "");
-
-    levelView->toggleGrid(ui->actionGrid->isChecked());
-    levelView->setZoom(zoom);
-
-    updateAreaSelector(area);
+    ui->sidebarTabWidget->addTab(pathEditor, QIcon(basePath + "path.png"), "");
+    ui->sidebarTabWidget->addTab(progPathEditor, QIcon(basePath + "progress_path.png"), "");
 }
 
-void LevelEditorWindow::on_actionAddArea_triggered()
+void LevelEditorWindow::updateAreaSelector(int index)
 {
-    if (level->getAreaCount() >= 4)
-    {
-        QMessageBox::information(this, "CoinKiller", "Due to limitations a Level can only contain 4 areas!", QMessageBox::Ok);
-        return;
-    }
+    ui->actionAddArea->setEnabled(lvlMgr->getAreaCount() < 4);
+    ui->actionDeleteCurrentArea->setEnabled(lvlMgr->getAreaCount() > 1);
 
-    int newArea = level->addArea();
+    int lastIndex = areaSelector->currentIndex();
 
-    if (newArea > 0)
-        loadArea(newArea);
+    areaSelector->blockSignals(true);
+
+    int areaCount = lvlMgr->getAreaCount();
+    QStringList areaStrings;
+    for (int i = 0; i < areaCount; i++)
+       areaStrings << QString("Area %1").arg(i+1);
+
+    QStringListModel *model = new QStringListModel();
+        model->setStringList(areaStrings);
+
+    areaSelector->setModel(model);
+    if (index == -1) areaSelector->setCurrentIndex(lastIndex);
+    else areaSelector->setCurrentIndex(index-1);
+
+    areaSelector->blockSignals(false);
+
+    QString title;
+    level->getName(title);
+    setWindowTitle("CoinKiller - Editing: " + title);
 }
 
-void LevelEditorWindow::on_actionDeleteCurrentArea_triggered()
+void LevelEditorWindow::handleAreaIndexChange(int index)
 {
-    if (level->getAreaCount() <= 1)
+    index++;
+
+    if (lvlMgr->areaIsOpen(index))
     {
-        QMessageBox::information(this, "CoinKiller", "You cannot delete this area since there has to be at least one area in the level!", QMessageBox::Ok);
-        return;
-    }
-    if (!QFile(QCoreApplication::applicationDirPath()+"/coinkiller_data/blank_course.bin").exists())
-    {
-        QMessageBox::information(this, "CoinKiller", "The blank course file \"/coinkiller_data/blank_course.bin\" is missing!", QMessageBox::Ok);
+        updateAreaSelector(level->getAreaID());
+        QMessageBox::information(this, "CoinKiller", QString("Area %1 cannot be opened because it is already opened in anoter editor window.").arg(index), QMessageBox::Ok);
         return;
     }
 
-    QMessageBox warning(this);
-    warning.setWindowTitle("CoinKiller");
-    warning.setText("Are you sure you want to delete this area?\n\nThe level will automatically save afterwards and therefore you will not be able to undo this step!");
-    warning.setIcon(QMessageBox::Warning);
-    warning.setStandardButtons(QMessageBox::Yes);
-    warning.addButton(QMessageBox::No);
-    warning.setDefaultButton(QMessageBox::No);
-    if (warning.exec() != QMessageBox::Yes)
-        return;
+    if (QApplication::queryKeyboardModifiers() &= Qt::ControlModifier)
+    {
+        updateAreaSelector(level->getAreaID());
+        lvlMgr->openAreaEditor(index);
+    }
+    else
+    {
+        loadArea(index);
+        updateAreaSelector();
+    }
+}
 
-    int area = level->removeArea(areaSelector->currentIndex()+1);
+void LevelEditorWindow::handleMgrUpdate()
+{
+    updateAreaSelector(level->getAreaID());
+}
 
-    if (area < 1)
-        return;
-
-    loadArea(area);
+void LevelEditorWindow::scrollTo(int x, int y)
+{
+    ui->levelViewArea->horizontalScrollBar()->setValue(x);
+    ui->levelViewArea->verticalScrollBar()->setValue(y);
 }

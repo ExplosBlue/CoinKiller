@@ -24,12 +24,12 @@
 #include <QFile>
 #include <limits>
 
-Level::Level(Game *game, QString path, int area)
-{
+Level::Level(Game *game, SarcFilesystem* archive, int area, QString lvlName)
+{    
     this->game = game;
 
-    archive = new SarcFilesystem(game->fs->openFile(path));
-    lvlPath = path;
+    this->archive = archive;
+    this->lvlName = lvlName;
     this->area = area;
 
 
@@ -240,7 +240,7 @@ Level::Level(Game *game, QString path, int area)
         for (quint16 i = 0; i < nodeCount; i++)
         {
             header->seek(blockOffsets[14] + i*20 + nodeOffset*20);
-            PathNode* pathN = new PathNode(to20(header->read16()), to20(header->read16()), header->read32(), header->read32(), header->read32(), path);
+            PathNode* pathN = new PathNode(to20(header->read16()), to20(header->read16()), header->readFloat(), header->readFloat(), header->read32(), path);
             path->insertNode(pathN);
         }
         paths.append(path);
@@ -318,8 +318,6 @@ Level::~Level()
 
     for (int l = 0; l < locations.size(); l++)
         delete locations[l];
-
-    delete archive;
 }
 
 void Level::save()
@@ -633,8 +631,8 @@ void Level::save()
             header->seek(blockOffsets[14] + actualNodeCount1*20);
             header->write16(to16(pNode->getx()));
             header->write16(to16(pNode->gety()));
-            header->write32(pNode->getSpeed());
-            header->write32(pNode->getAccel());
+            header->writeFloat(pNode->getSpeed());
+            header->writeFloat(pNode->getAccel());
             header->write32(pNode->getUnk1());
             header->write32(0);
             actualNodeCount1++;
@@ -670,68 +668,7 @@ void Level::save()
 
 }
 
-int Level::addArea()
-{
-    int newArea = getAreaCount()+1;
 
-    if (newArea > 4)
-        return -1;
-
-    QFile new_course(QCoreApplication::applicationDirPath() + "/coinkiller_data/blank_course.bin");
-
-    if(!new_course.open(QIODevice::ReadOnly))
-        return -2;
-
-    new_course.seek(0);
-    char* data = new char[new_course.size()];
-    new_course.read(data, new_course.size());
-    new_course.close();
-
-
-    FileBase* newCourseFile = new MemoryFile(archive, new_course.size());
-    newCourseFile->setIdPath(QString("course/course%1.bin").arg(newArea));
-    newCourseFile->open();
-    newCourseFile->seek(0);
-    newCourseFile->writeData((quint8*)data, new_course.size());
-    delete[] data;
-    newCourseFile->save();
-    newCourseFile->close();
-
-    return newArea;
-}
-
-int Level::removeArea(int area)
-{
-    int areaCount = getAreaCount();
-
-    if (areaCount <= 1  || !hasArea(area))
-        return -1;
-
-    archive->deleteFile(QString("course/course%1.bin").arg(area));
-    archive->deleteFile(QString("course/course%1_bgdatL1.bin").arg(area));
-    archive->deleteFile(QString("course/course%1_bgdatL2.bin").arg(area));
-
-    for (int i = area+1; i < areaCount+1; i++)
-    {
-        archive->renameFile(QString("course/course%1.bin").arg(i), QString("course%1.bin").arg(i-1));
-        archive->renameFile(QString("course/course%1_bgdatL1.bin").arg(i), QString("course%1_bgdatL1.bin").arg(i-1));
-        archive->renameFile(QString("course/course%1_bgdatL2.bin").arg(i), QString("course%1_bgdatL2.bin").arg(i-1));
-    }
-
-    if (area < areaCount) return area;
-    else return area-1;
-}
-
-int Level::getAreaCount()
-{
-    int areaCount = 0;
-    for (;;)
-    {
-        if (!archive->fileExists(QString("course/course%1.bin").arg(areaCount+1))) break;
-        areaCount++;
-    }
-    return areaCount;
-}
 
 quint8 Level::getNextZoneID(Object* obj)
 {
@@ -765,39 +702,60 @@ void Level::remove(QList<Object*> objs)
 void Level::remove(Object* obj)
 {
     // Only if the object is removed from the corresponding list, delete it.
-    bool check = false;
-
     if (is<BgdatObject*>(obj))
     {
         BgdatObject* bgdatobj = dynamic_cast<BgdatObject*>(obj);
         objects[bgdatobj->getLayer()].removeOne(bgdatobj);
-        check = true;
+        delete obj;
     }
     else if (is<Sprite*>(obj))
     {
         sprites.removeOne(dynamic_cast<Sprite*>(obj));
-        check = true;
+        delete obj;
     }
     else if (is<Entrance*>(obj))
     {
         entrances.removeOne(dynamic_cast<Entrance*>(obj));
-        check = true;
+        delete obj;
     }
     else if (is<Zone*>(obj))
     {
         zones.removeOne(dynamic_cast<Zone*>(obj));
-        check = true;
+        delete obj;
     }
     else if (is<Location*>(obj))
     {
         locations.removeOne(dynamic_cast<Location*>(obj));
-        check = true;
-    }
-
-    if (check)
         delete obj;
-    else
-        qDebug() << "Unhandled Object Remove";
+    }
+    else if (is<PathNode*>(obj))
+    {
+        PathNode* node = dynamic_cast<PathNode*>(obj);
+        Path* path = node->getParentPath();
+
+        path->removeNode(node);
+        delete obj;
+
+        if (path->getNumberOfNodes() <= 0)
+        {
+            paths.removeOne(path);
+            delete path;
+        }
+    }
+    else if (is<ProgressPathNode*>(obj))
+    {
+        ProgressPathNode* node = dynamic_cast<ProgressPathNode*>(obj);
+        ProgressPath* path = node->getParentPath();
+
+        path->removeNode(node);
+        delete obj;
+
+        if (path->getNumberOfNodes() <= 0)
+        {
+            progressPaths.removeOne(path);
+            delete path;
+        }
+    }
 }
 
 void Level::move(QList<Object*> objs, int deltax, int deltay)
@@ -942,4 +900,40 @@ Location* Level::newLocation(int x, int y)
         }
     }
     return new Location(toNext16Compatible(x), toNext16Compatible(y), 4, 4, id);
+}
+
+Path* Level::newPath()
+{
+    quint8 id = 0;
+    for(;; id++)
+    {
+        bool check = false;
+        foreach (Path* path, paths)
+            if (path->getid() == id) check = true;
+        if (!check) break;
+        else if (id == 255)
+        {
+            id = 0;
+            break;
+        }
+    }
+    return new Path(id, 0);
+}
+
+ProgressPath* Level::newProgressPath()
+{
+    quint8 id = 0;
+    for(;; id++)
+    {
+        bool check = false;
+        foreach (ProgressPath* path, progressPaths)
+            if (path->getid() == id) check = true;
+        if (!check) break;
+        else if (id == 255)
+        {
+            id = 0;
+            break;
+        }
+    }
+    return new ProgressPath(id, 0);
 }

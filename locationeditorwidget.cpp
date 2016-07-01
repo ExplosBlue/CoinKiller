@@ -92,4 +92,5 @@ void LocationEditorWidget::handleLocationListIndexChange(QListWidgetItem *item)
     editLocation = locations->at(locationList->row(item));
     editingALocation = true;
     updateInfo();
+    emit selectedLocChanged(editLocation);
 }
