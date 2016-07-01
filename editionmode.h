@@ -83,9 +83,17 @@ private:
         ResizeEnd
     };
 
+    enum pathNodeAdd
+    {
+        AddNone,
+        AddBefore,
+        AddAfter
+    };
+
     struct mouseAction
     {
         bool drag = false;
+        pathNodeAdd pAdd = AddNone;
         resizeType vert = ResizeNone;
         resizeType hor = ResizeNone;
     };
@@ -131,6 +139,8 @@ private:
     int yDeltaL;
 
     void checkEmits();
+
+    void drawPlus(QPainter* painter, int x, int y);
 };
 
 #endif // EDITIONMODE_H

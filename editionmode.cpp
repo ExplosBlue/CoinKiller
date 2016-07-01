@@ -93,7 +93,37 @@ void ObjectsEditonMode::mouseDown(int x, int y, Qt::MouseButtons buttons, Qt::Ke
     {
         mouseAct = getActionAtPos(x, y);
 
-        if (!mouseAct.drag || (mouseAct.hor == ResizeNone && mouseAct.vert == ResizeNone))
+        if (mouseAct.pAdd != AddNone)
+        {
+            Object* oldNode = selectedObjects[0];
+            selectedObjects.clear();
+
+            if (is<PathNode*>(oldNode))
+            {
+                PathNode* oldPNode = dynamic_cast<PathNode*>(oldNode);
+                Path* parentPath = oldPNode->getParentPath();
+                PathNode* newNode = new PathNode(toNext10(x-10), toNext10(y-10), 0, 0, 0, parentPath);
+                if (mouseAct.pAdd == AddBefore)
+                    parentPath->insertNode(newNode, parentPath->getIndexOfNode(oldPNode));
+                else
+                    parentPath->insertNode(newNode, parentPath->getIndexOfNode(oldPNode)+1);
+                selectedObjects.append(newNode);
+            }
+            else
+            {
+                ProgressPathNode* oldPNode = dynamic_cast<ProgressPathNode*>(oldNode);
+                ProgressPath* parentPath = oldPNode->getParentPath();
+
+                ProgressPathNode* newNode = new ProgressPathNode(toNext10(x-10), toNext10(y-10), parentPath);
+                if (mouseAct.pAdd == AddBefore)
+                    parentPath->insertNode(newNode, parentPath->getIndexOfNode(oldPNode));
+                else
+                    parentPath->insertNode(newNode, parentPath->getIndexOfNode(oldPNode)+1);
+                selectedObjects.append(newNode);
+            }
+        }
+
+        else if (!mouseAct.drag || (mouseAct.hor == ResizeNone && mouseAct.vert == ResizeNone))
         {
             QList<Object*> tempSelObjects = selectedObjects;
             bool shift = false;
@@ -339,6 +369,33 @@ void ObjectsEditonMode::render(QPainter *painter)
         }
     }
 
+    if (selectedObjects.count() == 1)
+    {
+        Object* node = selectedObjects[0];
+
+        if (is<PathNode*>(node) || is<ProgressPathNode*>(node))
+        {
+            painter->setPen(QPen(Qt::black));
+
+            QPainterPath path1;
+            path1.moveTo(node->getx(), node->gety());
+            path1.quadTo(QPoint(node->getx()-14, node->gety()), QPoint(node->getx()-20, node->gety()+10));
+            path1.quadTo(QPoint(node->getx()-14, node->gety()+20), QPoint(node->getx(), node->gety()+20));
+            painter->fillPath(path1, QBrush(QColor(100, 100, 100, 175)));
+            painter->drawPath(path1);
+
+            QPainterPath path2;
+            path2.moveTo(node->getx()+20, node->gety());
+            path2.quadTo(QPoint(node->getx()+34, node->gety()), QPoint(node->getx()+40, node->gety()+10));
+            path2.quadTo(QPoint(node->getx()+34, node->gety()+20), QPoint(node->getx()+20, node->gety()+20));
+            painter->fillPath(path2, QBrush(QColor(100, 100, 100, 175)));
+            painter->drawPath(path2);
+
+            drawPlus(painter, node->getx()-18, node->gety());
+            drawPlus(painter, node->getx()+18, node->gety());
+        }
+    }
+
     if (selectionMode)
     {
         QRect selArea(qMin(dx, lx), qMin(dy, ly), qAbs(lx-dx), qAbs(ly-dy));
@@ -346,6 +403,16 @@ void ObjectsEditonMode::render(QPainter *painter)
         painter->fillRect(selArea, QColor(160,222,255,50));
         painter->drawRect(selArea);
     }
+}
+
+void ObjectsEditonMode::drawPlus(QPainter *painter, int x, int y)
+{
+    QPainterPath path1;
+    path1.addRoundedRect(x+9, y+4, 2, 12 , 2.0, 2.0);
+    painter->fillPath(path1, Qt::white);
+    QPainterPath path2;
+    path2.addRoundedRect(x+4, y+9, 12, 2 , 2.0, 2.0);
+    painter->fillPath(path2, Qt::white);
 }
 
 void ObjectsEditonMode::drawResizeKnob(int x, int y, QPainter *painter)
@@ -395,6 +462,22 @@ QList<Object*> ObjectsEditonMode::getObjectsAtPos(int x1, int y1, int x2, int y2
 ObjectsEditonMode::mouseAction ObjectsEditonMode::getActionAtPos(int x, int y)
 {
     mouseAction act;
+
+    if (selectedObjects.size() == 1)
+    {
+        Object* node = selectedObjects[0];
+
+        if (is<PathNode*>(node) || is<ProgressPathNode*>(node))
+        {
+            if (QRect(node->getx()-20, node->gety(), 20, 20).contains(x, y))
+                act.pAdd = AddBefore;
+            else if (QRect(node->getx()+20, node->gety(), 20, 20).contains(x, y))
+                act.pAdd = AddAfter;
+
+            if (act.pAdd != AddNone)
+                return act;
+        }
+    }
 
     for (int i = selectedObjects.size()-1; i >= 0; i--)
     {

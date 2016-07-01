@@ -725,9 +725,12 @@ Path::Path(quint16 id, quint16 unk1)
     this->unk1 = unk1;
 }
 
-void Path::insertNode(PathNode* node)
+void Path::insertNode(PathNode* node, int index)
 {
-    nodes.append(node);
+    if (index == -1)
+        nodes.append(node);
+    else
+        nodes.insert(index, node);
 }
 
 void Path::removeNode(PathNode *node)
@@ -756,9 +759,12 @@ ProgressPath::ProgressPath(quint16 id, quint8 alternatePathFlag)
     this->alternatePathFlag = alternatePathFlag;
 }
 
-void ProgressPath::insertNode(ProgressPathNode* node)
+void ProgressPath::insertNode(ProgressPathNode* node, int index)
 {
-    nodes.append(node);
+    if (index == -1)
+        nodes.append(node);
+    else
+        nodes.insert(index, node);
 }
 
 void ProgressPath::removeNode(ProgressPathNode *node)

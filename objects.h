@@ -271,13 +271,14 @@ public:
     Path() {}
     ~Path() { foreach (PathNode* node, nodes) delete node; }
     Path(quint16 id, quint16 unk1);
-    void insertNode(PathNode *node);
+    void insertNode(PathNode* node, int index = -1);
     void removeNode(PathNode* node);
     quint16 getid() const { return id; }
     quint16 getUnk1() const { return unk1; }
     int getNumberOfNodes() const { return nodes.size(); }
     QList<PathNode*> getNodes() const;
     PathNode* getNode(int id) const { return nodes[id]; }
+    int getIndexOfNode(PathNode* node) { return nodes.indexOf(node); }
     void setId(int id) { this->id = id; }
 protected:
     quint16 id;
@@ -308,13 +309,14 @@ public:
     ProgressPath() {}
     ~ProgressPath() { foreach (ProgressPathNode* node, nodes) delete node; }
     ProgressPath(quint16 id, quint8 alternatePathFlag);
-    void insertNode(ProgressPathNode* node);
+    void insertNode(ProgressPathNode* node, int index = -1);
     void removeNode(ProgressPathNode* node);
     quint16 getid() const { return id; }
     quint8 getAlternatePathFlag() const { return alternatePathFlag; }
     int getNumberOfNodes() const { return nodes.size(); }
     QList<ProgressPathNode*> getNodes() const;
     ProgressPathNode* getNode(int id) const { return nodes[id]; }
+    int getIndexOfNode(ProgressPathNode* node) { return nodes.indexOf(node); }
     void setId(int id) { this->id = id; }
     void setAlternatePathFlag(bool flag) { this->alternatePathFlag = flag; }
 protected:
