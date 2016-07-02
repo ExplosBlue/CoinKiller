@@ -19,7 +19,6 @@ public:
 
     Field() {}
     QString title;
-    QString notes;
     QString comment;
     fieldType type;
     int startNybble;
@@ -34,12 +33,14 @@ public:
     SpriteDefinition(QDomElement spriteElement);
     QString getName() const { return name; }
     int getID() const { return id; }
+    QString getNotes() const { return notes; }
     Field* getFieldPtr(int id) { return &fields[id]; }
     int getFieldCount() { return fields.size(); }
 
 private:
     QString name;
     int id;
+    QString notes;
     QList<Field> fields;
 };
 

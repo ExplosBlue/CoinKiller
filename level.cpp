@@ -566,7 +566,7 @@ void Level::save()
         header->write8(spr->getByte(11));
         for (int i = 0; i < 4; i++) header->write8(0);
     }
-    header->write16(0xFFFF);
+    header->write32(0xFFFFFFFF);
 
     // Block 8: Sprites Used
     header->seek(blockOffsets[8]);

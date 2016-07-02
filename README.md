@@ -12,6 +12,8 @@ Will be licensed under the GPL or someshit.
  * more sprite images/visual representations
  * open .cia and .3ds files
  * ASM tools
+ * ask for saving
+ * help page
  * undo/redo
  * copy/paste for (progress-) paths
  * fix some crashes related to copy pasting

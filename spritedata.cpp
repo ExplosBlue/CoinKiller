@@ -82,13 +82,13 @@ SpriteDefinition::SpriteDefinition(QDomElement spriteElement)
 {
     id = spriteElement.attribute("id", "999").toInt();
     name = spriteElement.attribute("name", "Invalid Name");
+    notes = spriteElement.attribute("notes", "");
 
     QDomElement fieldElement = spriteElement.firstChild().toElement();
     while (!fieldElement.isNull())
     {
         Field field;
         field.title = fieldElement.attribute("title", "INVALID TITLE");
-        field.notes = fieldElement.attribute("notes", "");
         field.comment = fieldElement.attribute("comment", "");
 
         QString nybbleStr = fieldElement.attribute("nybble");

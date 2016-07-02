@@ -1,4 +1,5 @@
 #include "spriteeditorwidget.h"
+#include "unitsconvert.h"
 
 #include <QGridLayout>
 #include <QLabel>
@@ -150,7 +151,11 @@ void SpriteDataEditorWidget::select(Sprite *sprite)
     setHidden(false);
 
     updateRawSpriteData();
-    spriteName->setText(QString("<b>%1 (%2)</b>").arg(spriteData->getSpriteDefPtr(sprite->getid())->getName()).arg(sprite->getid()));
+
+    SpriteDefinition* def = spriteData->getSpriteDefPtr(sprite->getid());
+
+    spriteName->setText(QString("<b>%1 (%2)</b>").arg(def->getName()).arg(sprite->getid()));
+    spriteName->setToolTip(def->getNotes());
 
     for (int i = 0; i < spriteData->getSpriteDefPtr(sprite->getid())->getFieldCount(); i++)
     {
@@ -229,6 +234,7 @@ SpriteValueFieldWidget::SpriteValueFieldWidget(Sprite *sprite, Field *field)
 {
     this->sprite = sprite;
     this->field = field;
+    this->setToolTip(field->comment);
     setRange(0, (1 << ((field->endNybble - field->startNybble + 1) * 4)) - 1);
 
     updateValue();
@@ -255,6 +261,7 @@ SpriteCheckboxFieldWidget::SpriteCheckboxFieldWidget(Sprite *sprite, Field *fiel
 {
     this->sprite = sprite;
     this->field = field;
+    this->setToolTip(field->comment);
     setText(field->title);
 
     updateValue();
@@ -281,6 +288,7 @@ SpriteListFieldWidget::SpriteListFieldWidget(Sprite *sprite, Field *field)
 {
     this->sprite = sprite;
     this->field = field;
+    this->setToolTip(field->comment);
 
     addItems(field->listEntries.values());
 
