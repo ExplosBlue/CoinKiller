@@ -137,8 +137,8 @@ void Sprite::setRect()
         offsety = 19;
         break;
     case 22: // Special Exit Controller
-        width = getNybble(7) * 20;
-        height = getNybble(4) * 20;
+        width = qMax(getNybble(7) * 20, 20);
+        height = qMax(getNybble(4) * 20, 20);
         break;
     case 29: // Bob-omb
         width = 29;
