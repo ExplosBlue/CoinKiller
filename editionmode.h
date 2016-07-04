@@ -112,6 +112,9 @@ private:
     bool creatNewObject = false;
     Object* newObject;
 
+    // Only to prevent resizing when cloning
+    bool clone = false;
+
     int drawType = -1;
     // -1: Invalid
     //  0: BGDat
@@ -130,9 +133,12 @@ private:
     mouseAction getActionAtPos(int x, int y);
     Qt::CursorShape getCursorAtPos(int x, int y);
 
+    QList<Object*> cloneObjects(QList<Object*> objects);
+
     void updateSelectionBounds();
 
-    void drawResizeKnob(int x, int y, QPainter *painter);
+    // Sorts the selection, so you things end up with correct z-coordinates
+    void sortSelection();
 
     // Last Deltas. Needed to prevent wiggling of dragging objects
     int xDeltaL;
@@ -140,6 +146,7 @@ private:
 
     void checkEmits();
 
+    void drawResizeKnob(int x, int y, QPainter *painter);
     void drawPlus(QPainter* painter, int x, int y);
 };
 

@@ -713,15 +713,37 @@ quint8 Level::getNextZoneID(Object* obj)
     return zoneID;
 }
 
+void Level::add(QList<Object *> objs)
+{
+    foreach (Object* obj, objs)
+        add(obj);
+}
+
+void Level::add(Object *obj)
+{
+    if (is<BgdatObject*>(obj))
+    {
+        BgdatObject* bgdatobj = dynamic_cast<BgdatObject*>(obj);
+        objects[bgdatobj->getLayer()].append(bgdatobj);
+    }
+    else if (is<Sprite*>(obj))
+        sprites.append(dynamic_cast<Sprite*>(obj));
+    else if (is<Entrance*>(obj))
+        entrances.append(dynamic_cast<Entrance*>(obj));
+    else if (is<Zone*>(obj))
+        zones.append(dynamic_cast<Zone*>(obj));
+    else if (is<Location*>(obj))
+        locations.append(dynamic_cast<Location*>(obj));
+}
+
 void Level::remove(QList<Object*> objs)
 {
-    for (int i = 0; i < objs.size(); i++)
-        remove(objs[i]);
+    foreach (Object* obj, objs)
+        remove(obj);
 }
 
 void Level::remove(Object* obj)
 {
-    // Only if the object is removed from the corresponding list, delete it.
     if (is<BgdatObject*>(obj))
     {
         BgdatObject* bgdatobj = dynamic_cast<BgdatObject*>(obj);

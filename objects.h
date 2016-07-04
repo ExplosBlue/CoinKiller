@@ -67,6 +67,7 @@ class BgdatObject: public Object
 {
 public:
     BgdatObject() {}
+    BgdatObject(BgdatObject* obj);
     BgdatObject(int x, int y, int width, int height, int id, int layer);
     int getType() const;
     bool isResizable() const { return true; }
@@ -85,6 +86,7 @@ class Sprite: public Object
 {
 public:
     Sprite() {}
+    Sprite(Sprite* spr);
     Sprite(int x, int y, int id);
     int getType() const;
     bool isResizable() const { return false; }
@@ -108,6 +110,7 @@ class Entrance: public Object
 {
 public:
     Entrance() {}
+    Entrance(Entrance* entr);
     Entrance(int x, int y, qint16 cameraX, qint16 cameraY, quint8 id, quint8 destArea, quint8 destEntr, quint8 entrType, quint8 settings, quint8 unk1, quint8 unk2);
     int getType() const { return 2; }
     bool isResizable() const { return false; }
@@ -170,6 +173,7 @@ class Zone: public Object
 {
 public:
     Zone() {}
+    Zone(Zone* zone);
     Zone(int x, int y, int width, int height, quint8 id, quint8 progPathId, quint8 musicId, quint8 multiplayerTracking, quint16 unk1);
     bool clickDetection(int xcheck, int ycheck);
     bool clickDetection(QRect rect);
@@ -230,6 +234,7 @@ class Location: public Object
 {
 public:
     Location() {}
+    Location(Location* loc);
     Location(int x, int y, int width, int height, int id);
     int getType() const;
     bool isResizable() const { return true; }
@@ -247,6 +252,7 @@ class PathNode: public Object
 {
 public:
     PathNode() {}
+    PathNode(PathNode* node, Path* parentPath);
     PathNode(int x, int y, float speed, float accel, quint32 unk1, Path *parentPath);
     int getType() const { return 5; }
     bool isResizable() const { return false; }
@@ -269,6 +275,7 @@ class Path
 {
 public:
     Path() {}
+    Path(Path* path);
     ~Path() { foreach (PathNode* node, nodes) delete node; }
     Path(quint16 id, quint16 unk1);
     void insertNode(PathNode* node, int index = -1);
@@ -293,6 +300,7 @@ class ProgressPathNode: public Object
 {
 public:
     ProgressPathNode() {}
+    ProgressPathNode(ProgressPathNode* node, ProgressPath* parentPath);
     ProgressPathNode(int x, int y, ProgressPath* parentPath);
     int getType() const { return 6; }
     bool isResizable() const { return false; }
@@ -307,6 +315,7 @@ class ProgressPath
 {
 public:
     ProgressPath() {}
+    ProgressPath(ProgressPath* path);
     ~ProgressPath() { foreach (ProgressPathNode* node, nodes) delete node; }
     ProgressPath(quint16 id, quint8 alternatePathFlag);
     void insertNode(ProgressPathNode* node, int index = -1);

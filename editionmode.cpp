@@ -130,7 +130,7 @@ void ObjectsEditonMode::mouseDown(int x, int y, Qt::MouseButtons buttons, Qt::Ke
 
             if (modifiers != Qt::ShiftModifier)
                 selectedObjects = getObjectsAtPos(dx, dy, dx, dy, true);
-            else
+            else if (modifiers != Qt::ControlModifier)
             {
                 shift = true;
                 QList<Object*> newObjList = getObjectsAtPos(dx, dy, dx, dy, true);
@@ -152,12 +152,21 @@ void ObjectsEditonMode::mouseDown(int x, int y, Qt::MouseButtons buttons, Qt::Ke
             {
                 selectionMode = true;
             }
+            else if (modifiers == Qt::ControlModifier)
+            {
+                sortSelection();
+                selectedObjects = cloneObjects(selectedObjects);
+                level->add(selectedObjects);
+                emit updateEditors();
+                clone = true;
+            }
 
             checkEmits();
         }
 
         mouseAct = getActionAtPos(x, y);
-        actualCursor = getCursorAtPos(x, y);
+        if (!clone) actualCursor = getCursorAtPos(x, y);
+        else actualCursor = Qt::SizeAllCursor;
         updateSelectionBounds();
     }
 }
@@ -206,7 +215,7 @@ void ObjectsEditonMode::mouseDrag(int x, int y, Qt::KeyboardModifiers modifieres
         updateSelectionBounds();
 
         // Drag
-        if (mouseAct.hor == ResizeNone && mouseAct.vert == ResizeNone)
+        if (((mouseAct.hor == ResizeNone && mouseAct.vert == ResizeNone) || clone) && mouseAct.drag)
         {
             int xDelta = x-lx;
             int yDelta = y-ly;
@@ -344,6 +353,7 @@ void ObjectsEditonMode::mouseUp(int x, int y)
     if (selectionMode) checkEmits();
     selectionMode = false;
     creatNewObject = false;
+    clone = false;
 }
 
 void ObjectsEditonMode::render(QPainter *painter)
@@ -457,6 +467,20 @@ QList<Object*> ObjectsEditonMode::getObjectsAtPos(int x1, int y1, int x2, int y2
 
 
     return objects;
+}
+
+QList<Object*> ObjectsEditonMode::cloneObjects(QList<Object *> objects)
+{
+    QList<Object*> newObjects;
+    foreach (Object* o, objects)
+    {
+        if (is<BgdatObject*>(o)) newObjects.append(new BgdatObject(dynamic_cast<BgdatObject*>(o)));
+        if (is<Sprite*>(o)) newObjects.append(new Sprite(dynamic_cast<Sprite*>(o)));
+        if (is<Entrance*>(o)) newObjects.append(new Entrance(dynamic_cast<Entrance*>(o)));
+        if (is<Location*>(o)) newObjects.append(new Location(dynamic_cast<Location*>(o)));
+        if (is<Zone*>(o)) newObjects.append(new Zone(dynamic_cast<Zone*>(o)));
+    }
+    return newObjects;
 }
 
 ObjectsEditonMode::mouseAction ObjectsEditonMode::getActionAtPos(int x, int y)
@@ -573,6 +597,19 @@ void ObjectsEditonMode::updateSelectionBounds()
         if (is<BgdatObject*>(o))
             selectionHasBGDats = true;
     }
+}
+
+void ObjectsEditonMode::sortSelection()
+{
+    QList<Object*> sortedObjects;
+
+    for (int i=0; i<2; i++) foreach (BgdatObject* bgdat, level->objects[i]) if (selectedObjects.contains(bgdat)) sortedObjects.append(bgdat);
+    foreach (Sprite* spr, level->sprites) if (selectedObjects.contains(spr)) sortedObjects.append(spr);
+    foreach (Entrance* entr, level->entrances) if (selectedObjects.contains(entr)) sortedObjects.append(entr);
+    foreach (Location* loc, level->locations) if (selectedObjects.contains(loc)) sortedObjects.append(loc);
+    foreach (Zone* zone, level->zones) if (selectedObjects.contains(zone)) sortedObjects.append(zone);
+
+    selectedObjects = sortedObjects;
 }
 
 void ObjectsEditonMode::select(Object *obj)
@@ -692,6 +729,7 @@ void ObjectsEditonMode::paste(int currX, int currY, int currW, int currH)
 
 void ObjectsEditonMode::raise()
 {
+    sortSelection();
     foreach (Object* obj, selectedObjects)
     {
         level->raise(obj);
@@ -700,6 +738,7 @@ void ObjectsEditonMode::raise()
 
 void ObjectsEditonMode::lower()
 {
+    sortSelection();
     foreach (Object* obj, selectedObjects)
     {
         level->lower(obj);
@@ -708,6 +747,7 @@ void ObjectsEditonMode::lower()
 
 void ObjectsEditonMode::raiseLayer()
 {
+    sortSelection();
     foreach (Object* obj, selectedObjects)
     {
         if (is<BgdatObject*>(obj)) level->raiseLayer(dynamic_cast<BgdatObject*>(obj));
@@ -716,6 +756,7 @@ void ObjectsEditonMode::raiseLayer()
 
 void ObjectsEditonMode::lowerLayer()
 {
+    sortSelection();
     foreach (Object* obj, selectedObjects)
     {
         if (is<BgdatObject*>(obj)) level->lowerLayer(dynamic_cast<BgdatObject*>(obj));

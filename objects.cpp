@@ -66,7 +66,6 @@ void Object::increaseSize(int deltax, int deltay, int snap)
     }
 }
 
-
 bool Object::clickDetection(int xcheck, int ycheck)
 {
     return QRect(x+offsetx,y+offsety,width,height).contains(xcheck, ycheck);
@@ -79,6 +78,7 @@ bool Object::clickDetection(QRect rect)
 
 QString Object::toString(int, int) const { return QString(""); }
 
+
 // BgdatObject
 BgdatObject::BgdatObject(int x, int y, int width, int height, int id, int layer)
 {
@@ -88,6 +88,17 @@ BgdatObject::BgdatObject(int x, int y, int width, int height, int id, int layer)
     this->height = height;
     this->id = id;
     this->layer = layer;
+}
+
+BgdatObject::BgdatObject(BgdatObject *obj)
+{
+    x = obj->getx();
+    y = obj->gety();
+    width = obj->getwidth();
+    height = obj->getheight();
+    id = obj->getid();
+    layer = obj->getLayer();
+
 }
 
 int BgdatObject::getType() const { return 0; }
@@ -104,6 +115,15 @@ Sprite::Sprite(int x, int y, int id)
     this->x = x;
     this->y = y;
     this->id = id;
+}
+
+Sprite::Sprite(Sprite *spr)
+{
+    x = spr->getx();
+    y = spr->gety();
+    id = spr->getid();
+    for (int i = 0; i < 12; i++) spriteData[i] = spr->getByte(i);
+    setRect();
 }
 
 void Sprite::setRect()
@@ -654,8 +674,24 @@ Entrance::Entrance(int x, int y, qint16 cameraX, qint16 cameraY, quint8 id, quin
     this->unk2 = unk2;
 }
 
+Entrance::Entrance(Entrance *entr)
+{
+    x = entr->getx();
+    y = entr->gety();
+    cameraX = entr->getCameraX();
+    cameraY = entr->getCameraY();
+    id = entr->getid();
+    destArea = entr->getDestArea();
+    destEntr = entr->getDestEntr();
+    entrType = entr->getEntrType();
+    settings = entr->getSettings();
+    unk1 = entr->getUnk1();
+    unk2 = entr->getUnk2();
+}
+
 // Format: 2:ID:Type:X:Y:DestArea:DestEntr:CamX:CamY:Settings
 QString Entrance::toString(int xOffset, int yOffset) const { return QString("2:%1:%2:%3:%4:%5:%6:%7:%8:%9").arg(id).arg(entrType).arg(x+xOffset).arg(y+yOffset).arg(destArea).arg(destEntr).arg(cameraX).arg(cameraY).arg(settings); }
+
 
 // Zone
 Zone::Zone(int x, int y, int width, int height, quint8 id, quint8 progPathId, quint8 musicId, quint8 multiplayerTracking, quint16 unk1)
@@ -669,6 +705,30 @@ Zone::Zone(int x, int y, int width, int height, quint8 id, quint8 progPathId, qu
     this->musicId = musicId;
     this->multiplayerTracking = multiplayerTracking;
     this->unk1 = unk1;
+}
+
+Zone::Zone(Zone *zone)
+{
+    x = zone->getx();
+    y = zone->gety();
+    width = zone->getwidth();
+    height = zone->getheight();
+    id = zone->getid();
+    progPathId = zone->getProgPathId();
+    musicId = zone->getMusicId();
+    multiplayerTracking = zone->getMultiplayerTracking();
+    unk1 = zone->getUnk1();
+    upperBound = zone->getUpperBound();
+    lowerBound = zone->getLowerBound();
+    unkUpperBound = zone->getUnkUpperBound();
+    unkLowerBound = zone->getUnkLowerBound();
+    upScrolling = zone->getUpScrolling();
+    xScrollRate = zone->getXScrollRate();
+    yScrollRate = zone->getYScrollRate();
+    bgXPos = zone->getBgXPos();
+    bgYPos = zone->getBgYPos();
+    bgName = zone->getBgName();
+    bgUnk1 = zone->getBgUnk1();
 }
 
 bool Zone::clickDetection(int xcheck, int ycheck)
@@ -711,6 +771,15 @@ Location::Location(int x, int y, int width, int height, int id)
     this->id = id;
 }
 
+Location::Location(Location *loc)
+{
+    x = loc->getx();
+    y = loc->gety();
+    width = loc->getwidth();
+    height = loc->getheight();
+    id = loc->getid();
+}
+
 int Location::getType() const { return 4; }
 int Location::getid() const { return id; }
 
@@ -723,6 +792,14 @@ Path::Path(quint16 id, quint16 unk1)
 {
     this->id = id;
     this->unk1 = unk1;
+}
+
+Path::Path(Path *path)
+{
+    id = path->getid();
+    unk1 = path->getUnk1();
+    foreach (PathNode* node, path->getNodes())
+        nodes.append(new PathNode(node, this));
 }
 
 void Path::insertNode(PathNode* node, int index)
@@ -751,12 +828,29 @@ PathNode::PathNode(int x, int y, float speed, float accel, quint32 unk1, Path* p
     this->parentPath = parentPath;
 }
 
+PathNode::PathNode(PathNode *node, Path* parentPath)
+{
+    x = node->getx();
+    y = node->gety();
+    speed = node->getSpeed();
+    accel = node->getAccel();
+    unk1 = node->getUnk1();
+    this->parentPath = parentPath;
+}
 
 // Progress Path
 ProgressPath::ProgressPath(quint16 id, quint8 alternatePathFlag)
 {
     this->id = id;
     this->alternatePathFlag = alternatePathFlag;
+}
+
+ProgressPath::ProgressPath(ProgressPath *path)
+{
+    id = path->getid();
+    alternatePathFlag = path->getAlternatePathFlag();
+    foreach (ProgressPathNode* node, path->getNodes())
+        nodes.append(new ProgressPathNode(node, this));
 }
 
 void ProgressPath::insertNode(ProgressPathNode* node, int index)
@@ -779,5 +873,12 @@ ProgressPathNode::ProgressPathNode(int x, int y, ProgressPath *parentPath)
 {
     this->x = x;
     this->y = y;
+    this->parentPath = parentPath;
+}
+
+ProgressPathNode::ProgressPathNode(ProgressPathNode *node, ProgressPath *parentPath)
+{
+    x = node->getx();
+    y = node->gety();
     this->parentPath = parentPath;
 }

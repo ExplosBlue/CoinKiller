@@ -57,6 +57,8 @@ public:
         name = QString("%1, Area %2").arg(lvlName).arg(area);
     }
 
+    void add(QList<Object*> objs);
+    void add(Object* obj);
     void remove(QList<Object*> objs);
     void remove(Object* obj);
     void move(QList<Object*> objs, int deltax, int deltay);
