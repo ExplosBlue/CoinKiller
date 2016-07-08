@@ -1,0 +1,87 @@
+; Copyright 2015 StapleButter
+;
+; This file is part of CoinKiller.
+;
+; CoinKiller is free software: you can redistribute it and/or modify it under
+; the terms of the GNU General Public License as published by the Free
+; Software Foundation, either version 3 of the License, or (at your option)
+; any later version.
+;
+;
+; CoinKiller is distributed in the hope that it will be useful, but WITHOUT ANY
+; WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+; FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+; You should have received a copy of the GNU General Public License along
+; with CoinKiller. If not, see http://www.gnu.org/licenses/.
+
+[General]
+file=Datei
+filename=Dateiname
+help=Hilfe
+settings=Einstellungen
+edit=Bearbeiten
+save=Speichern
+copy=Kopieren
+paste=Einfügen
+cut=Ausschneiden
+delete=Löschen
+world=Welt
+level=Level
+
+[MainWindow]
+levels=Level
+tilesets=Tilesets
+loadUnpackedRomFS=Entpacktes ROMFS laden...
+selectUnpackedRomFSFolder=Ausgepacktes ROMFS auswählen...
+aboutCoinKiller=Über CoinKiller
+languages=Sprachen
+
+[LevelEditor]
+view=Ansicht
+raiseToTop=Nach oben verschieben
+lowerToBottom=Nach unten verschieben
+raiseLayer=Ebene erhöhen
+lowerLayer=Ebene absenken
+zoomIn=Vergrößern
+zoomOut=Verkleinern
+zoom100=Zoom 100%
+zoomMin=Kleinster Zoom
+zoomMax=Größter Zoom
+grid=Raster
+fullscreen=Vollbild
+layer=Ebene
+area=Gebiet
+addArea=Gebiet hinzufügen
+removeArea=Gebiet entfernen
+
+[TilesetEditor]
+tileset=Tileset
+standard=Standard
+stage=Szene
+background=Hintergrund
+interactive=Interaktiv
+behaviors=Verhalten
+object=Objekt
+objects=Objekte
+hitbox=Hitbox
+terrainType=Geländetyp
+behavior3d=3D Verhalten
+pipeColor=Röhrenfarbe
+importImage=Bild Importieren...
+exportImage=Bild Exportieren...
+deleteAllBehaviors=Alle Verhalten löschen
+deleteAllObjs=Alle Objekte löschen
+deleteAllOverlays=Alle 3D Overlays löschen
+setTilesetSlot=Tilesetslot ändern
+setBgColor=Hintergrundfarbe ändern
+showObjMarkers=Objektmarkierungen anzeigen
+hexData=Hex Daten
+selectedTile=Ausgewähltes Teil
+noneObj=Keins
+addObj=Objekt Hinzufügen
+removeObj=Objekt Löschen
+moveObjUp=Objekt nach oben verschieben
+moveObjDown=Objekt nach unten verschieben
+objSettings=Objekt Einstellungen
+tileData=Teildaten
+noneData=Keine

@@ -4,6 +4,7 @@
 #include "filesystem.h"
 #include "tileset.h"
 #include "levelmanager.h"
+#include "settingsmanager.h"
 
 #include <QStandardItemModel>
 #include <QtXml>
@@ -11,7 +12,7 @@
 class Game
 {
 public:
-    Game(FilesystemBase* fs);
+    Game(FilesystemBase* fs, SettingsManager* settingsMgr);
 
 
     Tileset* getTileset(QString name);
@@ -22,6 +23,7 @@ public:
     QStandardItemModel* getTilesetModel(int id, bool includeNoneItem = false);
 
     FilesystemBase* fs;
+    SettingsManager* settingsMgr;
 
 private:
     void loadLevelNamesCat(QStandardItem* item, QDomElement node);

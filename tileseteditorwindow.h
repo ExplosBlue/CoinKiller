@@ -9,6 +9,7 @@
 
 #include "tileset.h"
 #include "tileseteditorwidgets.h"
+#include "settingsmanager.h"
 
 
 namespace Ui {
@@ -20,7 +21,7 @@ class TilesetEditorWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit TilesetEditorWindow(QWidget *parent, Tileset *tileset);
+    explicit TilesetEditorWindow(QWidget *parent, Tileset *tileset, SettingsManager* settigs);
     ~TilesetEditorWindow();
 
 signals:
@@ -146,6 +147,10 @@ private:
     void hideVertEdits(bool toggle);
     void setRepeatSpinBox(int nbr, int value, bool block);
     void clampOBehaviorSpinBoxes();
+
+
+    SettingsManager* settings;
+    void loadTranslations();
 };
 
 #endif // TILESETEDITORWINDOW_H

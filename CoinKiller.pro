@@ -43,7 +43,8 @@ SOURCES += main.cpp\
     locationeditorwidget.cpp \
     levelmanager.cpp \
     patheditorwidget.cpp \
-    progresspatheditorwidget.cpp
+    progresspatheditorwidget.cpp \
+    settingsmanager.cpp
 
 HEADERS  += mainwindow.h \
     filesystembase.h \
@@ -78,7 +79,8 @@ HEADERS  += mainwindow.h \
     levelmanager.h \
     patheditorwidget.h \
     progresspatheditorwidget.h \
-    locationeditorwidget.h
+    locationeditorwidget.h \
+    settingsmanager.h
 
 FORMS    += mainwindow.ui \
     leveleditorwindow.ui \

@@ -1,0 +1,61 @@
+J_Kihon:Oberwelt
+J_Chika:Untergrund
+J_Setsugen:Schnee
+J_Suichu:Unterwasser
+J_Yougan:Lava
+J_Gold:Gold
+J_Kihon_Test:Oberwelt (Beta)
+M_Chika:Höhle
+M_Gake:Berge
+M_Gake_Setsugen:Verschneite Berge
+M_Jungle:Wald
+M_Kaigan:Strand
+M_Kaigan_Obake:Heimgesuchter Strand
+M_Kazan:Vulkan
+M_Kinopio_Normal:Bonus Haus Boden
+M_Koopa:Letzte Burg
+M_Nohara:Oberwelt/Grasland
+M_Nohara_BigTree:Oberwelt/Grasland mit Bäumen
+M_Nohara_Onpu:Oberwelt/Grasland mit Notenblock
+M_Nohara2:Himmel
+M_Obake:Geiseterhaus
+M_Obake_Soto:Geiseterhaus Ausgang
+M_Rainbow:Regenbogen Bonus
+M_Sabaku:Wüste
+M_Sabaku_Chika:Wüstenhöhle
+M_Setsugen:Schnee
+M_Shiro:Burg
+M_Shiro_Boss:Burg (Bosskampf)
+M_Shiro_Yogan:Burg (Lava)
+M_SkyTower:Himmel (Grasbedeckte Konstruktionen)
+M_Sora:Bonus
+M_Suichu:Unterwasser
+M_Toride:Turm
+M_Toride_Blue:Turm (Unterwasser)
+M_Toride_Red:Turm (Lava)
+M_Totempole:Totempfähle
+M_WarpZone:Kanone
+S1_Iseki:Wüsten Dekorationen (verschiedene Plattformen)
+S1_Kanaami:Gitter
+S1_Kinoko:Pilze (Blöcke, Stämme und Plattformen)
+S1_Kinoko_Snow:Verschneite Pilze (Stämme und Plattformen)
+S1_Kori:Eis
+S1_Obake_Room:Geisterhaus Dekoration
+S1_Obake_Soto:Heimgesuchter Garten
+S1_Rail_Black:Schwarze Schienen
+S1_Rail_Gray:Grey Schienen
+S1_Rail_Gray_Mae:Graue Schienen
+S1_Rail_White:Weiße Schienen
+S1_Sabaku:Wüsten Dekorationen (Steine und Kakteen)
+S1_SkyTower:Himmelskonstruktionen Dekoration
+S1_Suichu:Unterwasser Dekoration
+S1_Toride:Burgwände und Gitter
+S2_Assist:Verschiedene Dekorationsteile
+S2_Kanaami:Gitter
+S2_Kinoko_variation:Kleine und große Pilze
+S2_Obake_Room:Geiterhaus Dekoration
+S2_Obake_Soto:Heimgesuchter Garten
+S2_Rail_Black:Schwarze Schienen
+S2_Rail_Gray:Graue Schienen
+S2_Rail_White:Weiße Schienen
+S2_Sabaku:Wüsten Dekorationen (Steine und Kakteen)

@@ -21,6 +21,7 @@
 #include <QMainWindow>
 
 #include "game.h"
+#include "settingsmanager.h"
 
 namespace Ui {
 class MainWindow;
@@ -38,7 +39,7 @@ private slots:
 
     void on_actionAbout_triggered();
 
-    void on_actionLoadROM_triggered();
+    void on_actionLoadUnpackedROMFS_triggered();
 
     void on_actionDebug_test_triggered();
 
@@ -51,7 +52,10 @@ private:
 
     Game* game;
 
+    SettingsManager* settings;
+
     void checkForMissingFiles();
+    void loadTranslations();
 };
 
 #endif // MAINWINDOW_H

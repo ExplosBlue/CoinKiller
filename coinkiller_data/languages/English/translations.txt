@@ -1,0 +1,87 @@
+; Copyright 2015 StapleButter
+;
+; This file is part of CoinKiller.
+;
+; CoinKiller is free software: you can redistribute it and/or modify it under
+; the terms of the GNU General Public License as published by the Free
+; Software Foundation, either version 3 of the License, or (at your option)
+; any later version.
+;
+;
+; CoinKiller is distributed in the hope that it will be useful, but WITHOUT ANY
+; WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+; FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+; You should have received a copy of the GNU General Public License along
+; with CoinKiller. If not, see http://www.gnu.org/licenses/.
+
+[General]
+file=File
+filename=Filename
+help=Help
+settings=Settings
+edit=Edit
+save=Save
+copy=Copy
+paste=Paste
+cut=Cut
+delete=Delete
+world=World
+level=Level
+
+[MainWindow]
+levels=Levels
+tilesets=Tilesets
+loadUnpackedRomFS=Load unpacked ROMFS...
+selectUnpackedRomFSFolder=Select unpacked ROMFS Folder...
+aboutCoinKiller=About CoinKiller
+languages=Languages
+
+[LevelEditor]
+view=View
+raiseToTop=Raise to Top
+lowerToBottom=Raise to Bottom
+raiseLayer=Raise Layer
+lowerLayer=Lower Layer
+zoomIn=Zoom In
+zoomOut=Zoom Out
+zoom100=Zoom 100%
+zoomMin=Minimum Zoom
+zoomMax=Maximum Zoom
+grid=Grid
+fullscreen=Fullscreen
+layer=Layer
+area=Area
+addArea=Add Area
+removeArea=Remove Area
+
+[TilesetEditor]
+tileset=Tileset
+standard=Standard
+stage=Stage
+background=Background
+interactive=Interactive
+behaviors=Behaviors
+object=Object
+objects=Objcts
+hitbox=Hitbox
+terrainType=Terrain Type
+behavior3d=3D Behavior
+pipeColor=Pipe Color
+importImage=Import Image...
+exportImage=Export Image...
+deleteAllBehaviors=Delete all Behaviors
+deleteAllObjs=Delete all Objects
+deleteAllOverlays=Delete all 3D Overlays
+setTilesetSlot=Set Tileset Slot
+setBgColor=Set Background Color
+showObjMarkers=Show Object Markers
+hexData=Hex Data
+selectedTile=Selected Tile
+noneObj=None
+addObj=Add Object
+removeObj=Remove Object
+moveObjUp=Move Object Up
+moveObjDown=Move Object Down
+objSettings=Object Settings
+tileData=Tile Data
+noneData=None

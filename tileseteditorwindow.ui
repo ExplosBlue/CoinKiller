@@ -76,7 +76,7 @@
          </sizepolicy>
         </property>
         <property name="text">
-         <string>Selected Tile: None</string>
+         <string>&lt;Selected Tile&gt;</string>
         </property>
        </widget>
       </item>
@@ -98,7 +98,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="behaviorsTab">
        <attribute name="title">
@@ -108,9 +108,9 @@
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_2">
           <item>
-           <widget class="QLabel" name="label">
+           <widget class="QLabel" name="hexLabel">
             <property name="text">
-             <string>Hex Data:</string>
+             <string>&lt;Hex Data&gt;</string>
             </property>
            </widget>
           </item>
@@ -127,7 +127,7 @@
          </layout>
         </item>
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_7">
+         <layout class="QHBoxLayout" name="horizontalLayout_3">
           <item>
            <layout class="QVBoxLayout" name="verticalLayout">
             <item>
@@ -144,54 +144,76 @@
              </widget>
             </item>
             <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_4">
-              <item>
-               <widget class="QLabel" name="label_3">
+             <layout class="QGridLayout" name="gridLayout_2">
+              <item row="0" column="0">
+               <widget class="QLabel" name="hitboxLabel">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
                 <property name="minimumSize">
                  <size>
-                  <width>65</width>
+                  <width>0</width>
                   <height>0</height>
                  </size>
                 </property>
                 <property name="maximumSize">
                  <size>
-                  <width>65</width>
+                  <width>16777215</width>
                   <height>16777215</height>
                  </size>
                 </property>
                 <property name="text">
-                 <string>Hitbox:</string>
+                 <string>&lt;Hitbox&gt;</string>
                 </property>
                </widget>
               </item>
-              <item>
-               <widget class="QComboBox" name="hitBoxComboBox"/>
+              <item row="0" column="1">
+               <widget class="QComboBox" name="hitBoxComboBox">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+               </widget>
               </item>
-             </layout>
-            </item>
-            <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_5">
-              <item>
-               <widget class="QLabel" name="label_4">
+              <item row="1" column="0">
+               <widget class="QLabel" name="behavior3dLabel">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
                 <property name="minimumSize">
                  <size>
-                  <width>65</width>
+                  <width>0</width>
                   <height>0</height>
                  </size>
                 </property>
                 <property name="maximumSize">
                  <size>
-                  <width>65</width>
+                  <width>16777215</width>
                   <height>16777215</height>
                  </size>
                 </property>
                 <property name="text">
-                 <string>3D Behavior:</string>
+                 <string>&lt;3D Behavior&gt;</string>
                 </property>
                </widget>
               </item>
-              <item>
-               <widget class="QComboBox" name="depthComboBox"/>
+              <item row="1" column="1">
+               <widget class="QComboBox" name="depthComboBox">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+               </widget>
               </item>
              </layout>
             </item>
@@ -213,56 +235,77 @@
              </widget>
             </item>
             <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_3">
-              <item>
-               <widget class="QLabel" name="label_2">
+             <layout class="QGridLayout" name="gridLayout_3">
+              <item row="0" column="0">
+               <widget class="QLabel" name="terrainTypeLabel">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
                 <property name="minimumSize">
                  <size>
-                  <width>65</width>
+                  <width>0</width>
                   <height>0</height>
                  </size>
                 </property>
                 <property name="maximumSize">
                  <size>
-                  <width>65</width>
+                  <width>16777215</width>
                   <height>16777215</height>
                  </size>
                 </property>
                 <property name="text">
-                 <string>Terrain Type:</string>
+                 <string>&lt;Terrain Type&gt;</string>
                 </property>
                </widget>
               </item>
-              <item>
-               <widget class="QComboBox" name="terrainTypeComboBox"/>
+              <item row="0" column="1">
+               <widget class="QComboBox" name="terrainTypeComboBox">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+               </widget>
               </item>
-             </layout>
-            </item>
-            <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_6">
-              <item>
-               <widget class="QLabel" name="label_5">
+              <item row="1" column="0">
+               <widget class="QLabel" name="pipeColorLabel">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
                 <property name="minimumSize">
                  <size>
-                  <width>65</width>
+                  <width>0</width>
                   <height>0</height>
                  </size>
                 </property>
                 <property name="maximumSize">
                  <size>
-                  <width>65</width>
+                  <width>16777215</width>
                   <height>16777215</height>
                  </size>
                 </property>
                 <property name="text">
-                 <string>Pipe Color:</string>
+                 <string>&lt;Pipe Color&gt;</string>
                 </property>
                </widget>
               </item>
-              <item>
+              <item row="1" column="1">
                <widget class="QComboBox" name="pipeColorComboBox">
                 <property name="enabled">
                  <bool>true</bool>
+                </property>
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
                 </property>
                </widget>
               </item>
@@ -323,7 +366,7 @@
                </sizepolicy>
               </property>
               <property name="text">
-               <string>Add Object</string>
+               <string>&lt;Add Object&gt;</string>
               </property>
              </widget>
             </item>
@@ -336,7 +379,7 @@
                </sizepolicy>
               </property>
               <property name="text">
-               <string>Remove Object</string>
+               <string>&lt;Remove Object&gt;</string>
               </property>
              </widget>
             </item>
@@ -356,7 +399,7 @@
                </sizepolicy>
               </property>
               <property name="text">
-               <string>Move Object Down</string>
+               <string>&lt;Move Object Down&gt;</string>
               </property>
              </widget>
             </item>
@@ -369,7 +412,7 @@
                </sizepolicy>
               </property>
               <property name="text">
-               <string>Move Object Up</string>
+               <string>&lt;Move Object Up&gt;</string>
               </property>
              </widget>
             </item>
@@ -394,7 +437,7 @@
              </size>
             </property>
             <property name="title">
-             <string>Object Settings</string>
+             <string>&lt;Object Settings&gt;</string>
             </property>
             <layout class="QGridLayout" name="gridLayout">
              <item row="3" column="1">
@@ -720,7 +763,7 @@
              </sizepolicy>
             </property>
             <property name="text">
-             <string>Tile Data: None</string>
+             <string>&lt;Tile Data&gt;</string>
             </property>
            </widget>
           </item>
@@ -743,20 +786,20 @@
    </property>
    <widget class="QMenu" name="menuFile">
     <property name="title">
-     <string>File</string>
+     <string>&lt;File&gt;</string>
     </property>
     <addaction name="actionSave"/>
    </widget>
    <widget class="QMenu" name="menuSettings">
     <property name="title">
-     <string>Settings</string>
+     <string>&lt;Settings&gt;</string>
     </property>
     <addaction name="actionSetBackgroundColor"/>
     <addaction name="actionShowObjectMarkers"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
-     <string>Edit</string>
+     <string>&lt;Edit&gt;</string>
     </property>
     <addaction name="actionImportImage"/>
     <addaction name="actionExportImage"/>
@@ -772,7 +815,10 @@
   </widget>
   <action name="actionExportImage">
    <property name="text">
-    <string>Export Image...</string>
+    <string>&lt;Export Image...&gt;</string>
+   </property>
+   <property name="toolTip">
+    <string>&lt;Export Image...&gt;</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+E</string>
@@ -780,12 +826,18 @@
   </action>
   <action name="actionSetBackgroundColor">
    <property name="text">
-    <string>Set Background Color</string>
+    <string>&lt;Set Background Color&gt;</string>
+   </property>
+   <property name="toolTip">
+    <string>&lt;Set Background Color&gt;</string>
    </property>
   </action>
   <action name="actionSave">
    <property name="text">
-    <string>Save</string>
+    <string>&lt;Save&gt;</string>
+   </property>
+   <property name="toolTip">
+    <string>&lt;Save&gt;</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+S</string>
@@ -793,22 +845,34 @@
   </action>
   <action name="actionDeleteAllObjects">
    <property name="text">
-    <string>Delete all Objects</string>
+    <string>&lt;Delete all Objects&gt;</string>
+   </property>
+   <property name="toolTip">
+    <string>&lt;Delete all Objects&gt;</string>
    </property>
   </action>
   <action name="actionSetTilesetSlot">
    <property name="text">
-    <string>Set Tileset Slot</string>
+    <string>&lt;Set Tileset Slot&gt;</string>
+   </property>
+   <property name="toolTip">
+    <string>&lt;Set Tileset Slot&gt;</string>
    </property>
   </action>
   <action name="actionDeleteAll3DOverlays">
    <property name="text">
-    <string>Delete all 3D Overlays</string>
+    <string>&lt;Delete all 3D Overlays&gt;</string>
+   </property>
+   <property name="toolTip">
+    <string>&lt;Delete all 3D Overlays&gt;</string>
    </property>
   </action>
   <action name="actionImportImage">
    <property name="text">
-    <string>Import Image...</string>
+    <string>&lt;Import Image...&gt;</string>
+   </property>
+   <property name="toolTip">
+    <string>&lt;Import Image...&gt;</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+I</string>
@@ -819,15 +883,18 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Show Object Markers</string>
+    <string>&lt;Show Object Markers&gt;</string>
    </property>
    <property name="toolTip">
-    <string>Show Object Markers</string>
+    <string>&lt;Show Object Markers&gt;</string>
    </property>
   </action>
   <action name="actionDeleteAllBehaviors">
    <property name="text">
-    <string>Delete all Behaviors</string>
+    <string>&lt;Delete all Behaviors&gt;</string>
+   </property>
+   <property name="toolTip">
+    <string>&lt;Delete all Behaviors&gt;</string>
    </property>
   </action>
  </widget>

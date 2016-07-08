@@ -78,13 +78,14 @@ void TilesetPicker::mousePressEvent(QMouseEvent* evt)
 }
 
 
-ObjectEditor::ObjectEditor(Tileset *tileset, QWidget *parent) : QWidget(parent)
+ObjectEditor::ObjectEditor(Tileset *tileset, QWidget *parent, SettingsManager* settings) : QWidget(parent)
 {
     objNbr = -1;
     paintTileNbr = -1;
     selX = -1;
     selY = -1;
     this->tileset = tileset;
+    this->settings = settings;
     bgColor = Qt::white;
     showMarkers = true;
 }
@@ -109,7 +110,7 @@ void ObjectEditor::paintEvent(QPaintEvent* evt)
     {
         selX = -1;
         selY = -1;
-        emit updateSelTileLabel(QString("Tile Data: None"));
+        emit updateSelTileLabel(settings->getTranslation("TilesetEditor", "noneData"));
     }
 
     QPixmap objPix(currW, currH);
@@ -217,13 +218,13 @@ void ObjectEditor::mousePressEvent(QMouseEvent* evt)
 
             emit tilesetChanged();
         }
-        emit updateSelTileLabel(QString("Tile Data: (Repeat: 0x%1), (Tile: 0x%2), (Slot: 0x%3), (Item: 0x%4)").arg(tileset->getData(objNbr, selX, selY, 0), 1, 16).arg(tileset->getData(objNbr, selX, selY, 1), 1, 16).arg((tileset->getData(objNbr, selX, selY, 2) & 6) >> 1, 1, 16).arg((tileset->getData(objNbr, selX, selY, 2) & 120) >> 3, 1, 16));
+        emit updateSelTileLabel(QString("(Repeat: 0x%1), (Tile: 0x%2), (Slot: 0x%3), (Item: 0x%4)").arg(tileset->getData(objNbr, selX, selY, 0), 1, 16).arg(tileset->getData(objNbr, selX, selY, 1), 1, 16).arg((tileset->getData(objNbr, selX, selY, 2) & 6) >> 1, 1, 16).arg((tileset->getData(objNbr, selX, selY, 2) & 120) >> 3, 1, 16));
     }
     else
     {
         selX = -1;
         selY = -1;
-        emit updateSelTileLabel(QString("Tile Data: None"));
+        emit updateSelTileLabel(settings->getTranslation("TilesetEditor", "noneData"));
     }
 
     update();
@@ -234,7 +235,7 @@ void ObjectEditor::selectedObjectChanged(int objNbr)
     this->objNbr = objNbr;
     selX = -1;
     selY = -1;
-    emit updateSelTileLabel(QString("Tile Data: None"));
+    emit updateSelTileLabel(settings->getTranslation("TilesetEditor", "noneData"));
     update();
 }
 

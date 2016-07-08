@@ -215,7 +215,7 @@ void ObjectsEditonMode::mouseDrag(int x, int y, Qt::KeyboardModifiers modifieres
         updateSelectionBounds();
 
         // Drag
-        if (((mouseAct.hor == ResizeNone && mouseAct.vert == ResizeNone) || clone) && mouseAct.drag)
+        if ((mouseAct.hor == ResizeNone && mouseAct.vert == ResizeNone) || clone)
         {
             int xDelta = x-lx;
             int yDelta = y-ly;

@@ -20,7 +20,6 @@
 #include <QStandardItem>
 #include <QCoreApplication>
 #include <QFileDialog>
-#include <QSettings>
 #include <QDesktopWidget>
 
 #include "mainwindow.h"
@@ -43,10 +42,14 @@ MainWindow::MainWindow(QWidget *parent) :
 
     QCoreApplication::setOrganizationName("Blarg City");
     QCoreApplication::setApplicationName("CoinKiller");
+    settings = new SettingsManager(this);
+    loadTranslations();
+    settings->setupLanguageSelector(ui->languageSelector);
 }
 
 MainWindow::~MainWindow()
 {
+    delete settings;
     delete game;
     delete ui;
 }
@@ -57,23 +60,22 @@ void MainWindow::on_actionAbout_triggered()
                              "CoinKiller v1.0 -- by StapleButter\n\nhttp://kuribo64.net/ or whatever\n\nDefault Icons by Icons8\n\noh and this is free software, if you paid for it, you got scammed");
 }
 
-void MainWindow::on_actionLoadROM_triggered()
+void MainWindow::on_actionLoadUnpackedROMFS_triggered()
 {
-    QSettings settings;
     // full tile: 24x24
     // gfx: 20x20
 
-    QString basepath = settings.value("LastRomFSPath", "").toString();
+    QString basepath = settings->getLastRomFSPath();
 
-    QString dirpath = QFileDialog::getExistingDirectory(this, "Open a RomFS folder", basepath);
+    QString dirpath = QFileDialog::getExistingDirectory(this, settings->getTranslation("MainWindow", "selectUnpackedRomFSFolder"), basepath);
     if (dirpath.isNull())
         return; // whatever
 
-    settings.setValue("LastRomFSPath", dirpath);
+    settings->setLastRomFSPath(dirpath);
 
 
     FilesystemBase* fs = new ExternalFilesystem(dirpath);
-    game = new Game(fs);
+    game = new Game(fs, settings);
 
 
     ui->levelList->setModel(game->getCourseModel());
@@ -106,7 +108,7 @@ void MainWindow::on_tilesetView_doubleClicked(const QModelIndex &index)
         return;
 
     QString data = index.data(Qt::UserRole+1).toString();
-    TilesetEditorWindow* tsEditor = new TilesetEditorWindow(this, new Tileset(game, data));
+    TilesetEditorWindow* tsEditor = new TilesetEditorWindow(this, game->getTileset(data), settings);
     tsEditor->show();
 }
 
@@ -122,7 +124,8 @@ void MainWindow::checkForMissingFiles()
     << "spritecategories.xml"
     << "spritedata.xml"
     << "tilebehaviors.xml"
-    << "tilesetnames.txt";
+    << "tilesetnames.txt"
+    << "languages/English/translations.txt";
 
     QString basePath = QCoreApplication::applicationDirPath();
     QString missingFiles;
@@ -140,4 +143,16 @@ void MainWindow::checkForMissingFiles()
         message.exec();
         QTimer::singleShot(0, this, SLOT(close()));
     }
+}
+
+void MainWindow::loadTranslations()
+{
+    ui->menuFile->setTitle(settings->getTranslation("General", "file"));
+    ui->menuHelp->setTitle(settings->getTranslation("General", "help"));
+    ui->actionAbout->setText(settings->getTranslation("MainWindow", "aboutCoinKiller"));
+    ui->actionLoadUnpackedROMFS->setText(settings->getTranslation("MainWindow", "loadUnpackedRomFS"));
+    ui->tabWidget->setTabText(0, settings->getTranslation("MainWindow", "levels"));
+    ui->tabWidget->setTabText(1, settings->getTranslation("MainWindow", "tilesets"));
+    ui->tabWidget->setTabText(2, settings->getTranslation("General", "settings"));
+    ui->languagesLabel->setText(settings->getTranslation("MainWindow", "languages")+":");
 }

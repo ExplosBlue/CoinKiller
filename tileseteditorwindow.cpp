@@ -11,7 +11,7 @@
 #include <QColorDialog>
 #include <QInputDialog>
 
-TilesetEditorWindow::TilesetEditorWindow(QWidget *parent, Tileset *tileset) :
+TilesetEditorWindow::TilesetEditorWindow(QWidget *parent, Tileset *tileset, SettingsManager *settigs) :
     QMainWindow(parent),
     ui(new Ui::TilesetEditorWindow)
 {
@@ -19,10 +19,12 @@ TilesetEditorWindow::TilesetEditorWindow(QWidget *parent, Tileset *tileset) :
     this->selectedTile = -1;
     this->selectedSpecialBehavior = -1;
     this->selectedParameter = -1;
+    this->settings = settigs;
 
     ui->setupUi(this);
     ui->behaviorsTab->setEnabled(false);
     this->setWindowTitle("CoinKiller - Editing Tileset: " + tileset->getName());
+    loadTranslations();
 
     // Load UI Icons
     QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/icons/");
@@ -52,12 +54,12 @@ TilesetEditorWindow::TilesetEditorWindow(QWidget *parent, Tileset *tileset) :
 
     loadBehaviors();
     setStaticModels();
-
+    updateSelectedTile(-1);
 
     // Setup Objects Editor
     setupObjectBehaviorModel();
     ui->objectEditor->removeItem(ui->objectEditorSpacer);
-    objectEditor = new ObjectEditor(tileset, this);
+    objectEditor = new ObjectEditor(tileset, this, settigs);
     connect(this, SIGNAL(selectedObjectChanged(int)), objectEditor, SLOT(selectedObjectChanged(int)));
     connect(objectEditor, SIGNAL(updateSelTileLabel(QString)), this, SLOT(setSelTileData(QString)));
     connect(tilesetPicker, SIGNAL(selectedTileChanged(int)), objectEditor, SLOT(selectedPaintTileChanged(int)));
@@ -81,13 +83,48 @@ TilesetEditorWindow::~TilesetEditorWindow()
     delete ui;
 }
 
+void TilesetEditorWindow::loadTranslations()
+{
+    ui->menuFile->setTitle(settings->getTranslation("General", "file"));
+    ui->menuEdit->setTitle(settings->getTranslation("General", "edit"));
+    ui->menuSettings->setTitle(settings->getTranslation("General", "settings"));
+
+    ui->actionSave->setText(settings->getTranslation("General", "save"));
+    ui->actionImportImage->setText(settings->getTranslation("TilesetEditor", "importImage"));
+    ui->actionExportImage->setText(settings->getTranslation("TilesetEditor", "exportImage"));
+    ui->actionDeleteAllBehaviors->setText(settings->getTranslation("TilesetEditor", "deleteAllBehaviors"));
+    ui->actionDeleteAllObjects->setText(settings->getTranslation("TilesetEditor", "deleteAllObjs"));
+    ui->actionDeleteAll3DOverlays->setText(settings->getTranslation("TilesetEditor", "deleteAllOverlays"));
+    ui->actionSetTilesetSlot->setText(settings->getTranslation("TilesetEditor", "setTilesetSlot"));
+    ui->actionShowObjectMarkers->setText(settings->getTranslation("TilesetEditor", "showObjMarkers"));
+    ui->actionSetBackgroundColor->setText(settings->getTranslation("TilesetEditor", "setBgColor"));
+
+    ui->tabWidget->setTabText(0, settings->getTranslation("TilesetEditor", "behaviors"));
+    ui->tabWidget->setTabText(1, settings->getTranslation("TilesetEditor", "objects"));
+
+    ui->hexLabel->setText(settings->getTranslation("TilesetEditor", "hexData") + ":");
+    ui->hitboxLabel->setText(settings->getTranslation("TilesetEditor", "hitbox") + ":");
+    ui->terrainTypeLabel->setText(settings->getTranslation("TilesetEditor", "terrainType") + ":");
+    ui->behavior3dLabel->setText(settings->getTranslation("TilesetEditor", "behavior3d") + ":");
+    ui->pipeColorLabel->setText(settings->getTranslation("TilesetEditor", "pipeColor") + ":");
+
+    ui->addObjectPushButton->setText(settings->getTranslation("TilesetEditor", "addObj"));
+    ui->removeObjectButton->setText(settings->getTranslation("TilesetEditor", "removeObj"));
+    ui->moveObjectUpButton->setText(settings->getTranslation("TilesetEditor", "moveObjUp"));
+    ui->moveObjectDownButton->setText(settings->getTranslation("TilesetEditor", "moveObjDown"));
+
+    ui->objectGroupBox->setTitle(settings->getTranslation("TilesetEditor", "objSettings"));
+
+    setSelTileData(settings->getTranslation("TilesetEditor", "noneData"));
+}
+
 void TilesetEditorWindow::updateSelectedTile(int tile)
 {
     if (tile != -1)
         ui->behaviorsTab->setEnabled(true);
     else
     {
-        ui->selectedTileLabel->setText("Selected Tile: None");
+        ui->selectedTileLabel->setText(settings->getTranslation("TilesetEditor", "selectedTile") + ": " + settings->getTranslation("TilesetEditor", "noneObj"));
         ui->behaviorsTab->setEnabled(false);
         return;
     }
@@ -100,7 +137,7 @@ void TilesetEditorWindow::updateSelectedTile(int tile)
 
     tilesetPicker->setOvTile(ovTile);
 
-    QString selTileText("Selected Tile: (%1, %2)");
+    QString selTileText = settings->getTranslation("TilesetEditor", "selectedTile") + ": (%1, %2)";
 
     ui->selectedTileLabel->setText(selTileText.arg(tile%21).arg(tile/21));
 
@@ -349,7 +386,7 @@ void TilesetEditorWindow::setupObjectsModel(bool keepIndex)
         tileset->drawObject(p, tileGrid, i, 0, 0, obj->width, obj->height, 1);
         p.end();
 
-        QStandardItem *objItem = new QStandardItem(QIcon(objPixmap), QString("Object %1").arg(i));
+        QStandardItem *objItem = new QStandardItem(QIcon(objPixmap), QString("%1 %2").arg(settings->getTranslation("TilesetEditor", "object")).arg(i));
         objectsModel->appendRow(objItem);
     }
 
@@ -365,7 +402,7 @@ void TilesetEditorWindow::setupObjectsModel(bool keepIndex)
 
 void TilesetEditorWindow::setSelTileData(QString text)
 {
-    ui->selTileDataLabel->setText(text);
+    ui->selTileDataLabel->setText(settings->getTranslation("TilesetEditor", "tileData")+": "+text);
 }
 
 void TilesetEditorWindow::updateObjectEditor()

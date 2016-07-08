@@ -29,14 +29,16 @@
 #include <QMessageBox>
 #include <QScrollBar>
 
-LevelEditorWindow::LevelEditorWindow(LevelManager* lvlMgr, int initialArea) :
+LevelEditorWindow::LevelEditorWindow(LevelManager* lvlMgr, int initialArea, SettingsManager *settings) :
     QMainWindow(lvlMgr->getParent()),
     ui(new Ui::LevelEditorWindow)
 {
     this->lvlMgr = lvlMgr;
+    this->settings = settings;
 
     this->setAttribute(Qt::WA_DeleteOnClose);
     ui->setupUi(this);
+    loadTranslations();
 
     areaSelector = new QComboBox(this);
     ui->toolBar->insertWidget(ui->actionAddArea, areaSelector);
@@ -85,6 +87,72 @@ LevelEditorWindow::~LevelEditorWindow()
     delete ui;
 }
 
+void LevelEditorWindow::loadTranslations()
+{
+    ui->menuFile->setTitle(settings->getTranslation("General", "file"));
+    ui->menuEdit->setTitle(settings->getTranslation("General", "edit"));
+    ui->menuView->setTitle(settings->getTranslation("LevelEditor", "view"));
+
+    ui->actionSave->setText(settings->getTranslation("General", "save"));
+    ui->actionSave->setToolTip(settings->getTranslation("General", "save"));
+
+    ui->actionPaste->setText(settings->getTranslation("General", "paste"));
+    ui->actionPaste->setToolTip(settings->getTranslation("General", "paste"));
+
+    ui->actionCut->setText(settings->getTranslation("General", "cut"));
+    ui->actionCut->setToolTip(settings->getTranslation("General", "cut"));
+
+    ui->actionCopy->setText(settings->getTranslation("General", "copy"));
+    ui->actionCopy->setToolTip(settings->getTranslation("General", "copy"));
+
+    ui->actionDelete->setText(settings->getTranslation("General", "delete"));
+    ui->actionDelete->setToolTip(settings->getTranslation("General", "delete"));
+
+    ui->actionRaise->setText(settings->getTranslation("LevelEditor", "raiseToTop"));
+    ui->actionRaise->setToolTip(settings->getTranslation("LevelEditor", "raiseToTop"));
+
+    ui->actionLower->setText(settings->getTranslation("LevelEditor", "lowerToBottom"));
+    ui->actionLower->setToolTip(settings->getTranslation("LevelEditor", "lowerToBottom"));
+
+    ui->actionRaiseLayer->setText(settings->getTranslation("LevelEditor", "raiseLayer"));
+    ui->actionRaiseLayer->setToolTip(settings->getTranslation("LevelEditor", "raiseLayer"));
+
+    ui->actionLowerLayer->setText(settings->getTranslation("LevelEditor", "lowerLayer"));
+    ui->actionLowerLayer->setToolTip(settings->getTranslation("LevelEditor", "lowerLayer"));
+
+    ui->actionZoom_In->setText(settings->getTranslation("LevelEditor", "zoomIn"));
+    ui->actionZoom_In->setToolTip(settings->getTranslation("LevelEditor", "zoomIn"));
+
+    ui->actionZoom_Out->setText(settings->getTranslation("LevelEditor", "zoomOut"));
+    ui->actionZoom_Out->setToolTip(settings->getTranslation("LevelEditor", "zoomOut"));
+
+    ui->actionZoom_Maximum->setText(settings->getTranslation("LevelEditor", "zoomMax"));
+    ui->actionZoom_Maximum->setToolTip(settings->getTranslation("LevelEditor", "zoomMax"));
+
+    ui->actionZoom_Minimum->setText(settings->getTranslation("LevelEditor", "zoomMin"));
+    ui->actionZoom_Minimum->setToolTip(settings->getTranslation("LevelEditor", "zoomMin"));
+
+    ui->actionZoom_100->setText(settings->getTranslation("LevelEditor", "zoom100"));
+    ui->actionZoom_100->setToolTip(settings->getTranslation("LevelEditor", "zoom100"));
+
+    ui->actionFullscreen->setText(settings->getTranslation("LevelEditor", "fullscreen"));
+    ui->actionFullscreen->setToolTip(settings->getTranslation("LevelEditor", "fullscreen"));
+
+    ui->actionGrid->setText(settings->getTranslation("LevelEditor", "grid"));
+    ui->actionGrid->setToolTip(settings->getTranslation("LevelEditor", "grid"));
+
+    ui->actionAddArea->setText(settings->getTranslation("LevelEditor", "addArea"));
+    ui->actionAddArea->setToolTip(settings->getTranslation("LevelEditor", "addArea"));
+
+    ui->actionDeleteCurrentArea->setText(settings->getTranslation("LevelEditor", "removeArea"));
+    ui->actionDeleteCurrentArea->setToolTip(settings->getTranslation("LevelEditor", "removeArea"));
+
+    ui->actionToggleLayer1->setText(settings->getTranslation("LevelEditor", "layer") + " 1");
+    ui->actionToggleLayer1->setToolTip(settings->getTranslation("LevelEditor", "layer") + " 1");
+
+    ui->actionToggleLayer2->setText(settings->getTranslation("LevelEditor", "layer") + " 2");
+    ui->actionToggleLayer2->setToolTip(settings->getTranslation("LevelEditor", "layer") + " 2");
+}
 
 // Actions
 
@@ -439,7 +507,7 @@ void LevelEditorWindow::updateAreaSelector(int index)
     int areaCount = lvlMgr->getAreaCount();
     QStringList areaStrings;
     for (int i = 0; i < areaCount; i++)
-       areaStrings << QString("Area %1").arg(i+1);
+       areaStrings << QString("%1 %2").arg(settings->getTranslation("LevelEditor", "area")).arg(i+1);
 
     QStringListModel *model = new QStringListModel();
         model->setStringList(areaStrings);

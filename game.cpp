@@ -2,9 +2,10 @@
 
 #include <QHash>
 
-Game::Game(FilesystemBase* fs)
+Game::Game(FilesystemBase* fs, SettingsManager *settingsMgr)
 {
     this->fs = fs;
+    this->settingsMgr = settingsMgr;
 }
 
 
@@ -30,7 +31,7 @@ QStandardItemModel* Game::getCourseModel()
     QStandardItemModel* model = new QStandardItemModel();
 
     QDomDocument levelNames;
-    QFile f(QCoreApplication::applicationDirPath() + "/coinkiller_data/levelnames.xml");
+    QFile f(settingsMgr->getFilePath("levelnames.xml"));
     if (!f.open(QIODevice::ReadOnly))
         return model;
     levelNames.setContent(&f);
@@ -68,16 +69,17 @@ QStandardItemModel* Game::getTilesetModel()
     QStandardItemModel* model = new QStandardItemModel();
     model->setColumnCount(2);
     QStringList headers;
-    headers << "Tileset" << "Filename";
+    headers << settingsMgr->getTranslation("TilesetEditor", "tileset") << settingsMgr->getTranslation("General", "filename");
     model->setHorizontalHeaderLabels(headers);
 
-    QFile inputFile(QCoreApplication::applicationDirPath() + "/coinkiller_data/tilesetnames.txt");
+    QFile inputFile(settingsMgr->getFilePath("tilesetnames.txt"));
     if (!inputFile.open(QIODevice::ReadOnly))
         return model;
 
     QHash<QString, QString> defaultNames;
 
     QTextStream in(&inputFile);
+    in.setCodec("UTF-8");
     while (!in.atEnd())
     {
        QStringList parts = in.readLine().split(':');
@@ -86,10 +88,10 @@ QStandardItemModel* Game::getTilesetModel()
     inputFile.close();
 
 
-    QStandardItem* standardSuite = new QStandardItem(QString("Standard Suite"));
-    QStandardItem* stageSuite = new QStandardItem(QString("Stage Suite"));
-    QStandardItem* backgroundSuite = new QStandardItem(QString("Background Suite"));
-    QStandardItem* interactiveSuite = new QStandardItem(QString("Interactive Suite"));
+    QStandardItem* standardSuite = new QStandardItem(settingsMgr->getTranslation("TilesetEditor", "standard"));
+    QStandardItem* stageSuite = new QStandardItem(settingsMgr->getTranslation("TilesetEditor", "stage"));
+    QStandardItem* backgroundSuite = new QStandardItem(settingsMgr->getTranslation("TilesetEditor", "background"));
+    QStandardItem* interactiveSuite = new QStandardItem(settingsMgr->getTranslation("TilesetEditor", "interactive"));
     model->appendRow(standardSuite);
     model->appendRow(stageSuite);
     model->appendRow(backgroundSuite);

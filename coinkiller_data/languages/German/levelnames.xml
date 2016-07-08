@@ -1,0 +1,299 @@
+<?xml version="1.0"?>
+<levels>
+
+    <category name="Welt 1">
+        <level file="1-29" name="Welt 1-Regenbogen" />
+        <level file="1-1" name="Welt 1-1" />
+        <level file="1-2" name="Welt 1-2" />
+        <level file="1-3" name="Welt 1-3" />
+        <level file="1-14" name="Welt 1-Turm" />
+        <level file="1-24" name="Welt 1-Kanone" />
+        <level file="1-4" name="Welt 1-4" />
+        <level file="1-5" name="Welt 1-5" />
+        <level file="1-8" name="Welt 1-A" />
+        <level file="1-16" name="Welt 1-Burg" />
+        <level file="1-19" name="Power-Up Toad Haus 1" />
+        <level file="1-20" name="Power-Up Toad Haus 2" />
+        <level file="1-18" name="1-UP Toad Haus 1" />
+        <level file="1-21" name="1-UP Toad Haus 2" />
+        <category name="Platzhalter">
+            <level file="1-6" name="Welt 1-6 Platzhalter" />
+            <level file="1-7" name="Welt 1-7 Platzhalter" />
+            <level file="1-9" name="Welt 1-B Platzhalter" />
+            <level file="1-10" name="Welt 1-C Platzhalter" />
+            <level file="1-22" name="Toad Haus Platzhalter 1" />
+            <level file="1-23" name="Toad Haus Platzhalter 2" />
+        </category>
+    </category>
+
+    <category name="Welt 2">
+        <level file="2-29" name="Welt 2-Regenbogen" />
+        <level file="2-1" name="Welt 2-1" />
+        <level file="2-2" name="Welt 2-2" />
+        <level file="2-3" name="Welt 2-3" />
+        <level file="2-8" name="Welt 2-A" />
+        <level file="2-14" name="Welt 2-Turm" />
+        <level file="2-12" name="Welt 2-Geisterhaus" />
+        <level file="2-4" name="Welt 2-4" />
+        <level file="2-5" name="Welt 2-5" />
+        <level file="2-9" name="Welt 2-B" />
+        <level file="2-16" name="Welt 2-Burg" />
+        <level file="2-18" name="Power-Up Toad Haus 1" />
+        <level file="2-20" name="Power-Up Toad Haus 2" />
+        <level file="2-19" name="1-UP Toad Haus" />
+        <level file="2-21" name="Stern Toad Haus" />
+        <category name="Platzhalter">
+            <level file="2-6" name="Welt 2-6 Platzhalter" />
+            <level file="2-7" name="Welt 2-7 Platzhalter" />
+            <level file="2-10" name="Welt 2-C Platzhalter" />
+            <level file="2-24" name="Welt 2-Kanone Platzhalter" />
+            <level file="2-22" name="Toad Haus Platzhalter 1" />
+            <level file="2-23" name="Toad Haus Platzhalter 2" />
+        </category>
+    </category>
+
+    <category name="Welt Pilz">
+        <level file="7-29" name="Welt Pilz-Regenbogen" />
+        <level file="7-1" name="Welt Pilz-1" />
+        <level file="7-2" name="Welt Pilz-2" />
+        <level file="7-12" name="Welt Pilz-Geisterhaus" />
+        <level file="7-8" name="Welt Pilz-A" />
+        <level file="7-3" name="Welt Pilz-3" />
+        <level file="7-24" name="Welt Pilz-Kanone" />
+        <level file="7-9" name="Welt Pilz-B" />
+        <level file="7-16" name="Welt Pilz-Burg" />
+        <level file="7-19" name="Power-Up Toad Haus" />
+        <level file="7-18" name="1-UP Toad Haus" />
+        <level file="7-20" name="Stern Toad Haus" />
+        <category name="Platzhalter">
+            <level file="7-6" name="Welt Pilz-6 Platzhalter" />
+            <level file="7-7" name="Welt Pilz-7 Platzhalter" />
+            <level file="7-10" name="Welt Pilz-C Platzhalter" />
+            <level file="7-14" name="Welt Pilz-Turm Platzhalter" />
+            <level file="7-21" name="Toad Haus Platzhalter 1" />
+            <level file="7-22" name="Toad Haus Platzhalter 2" />
+            <level file="7-23" name="Toad Haus Platzhalter 3" />
+        </category>
+    </category>
+
+    <category name="Welt 3">
+        <level file="3-29" name="Welt 3-Regenbogen" />
+        <level file="3-1" name="Welt 3-1" />
+        <level file="3-2" name="Welt 3-2" />
+        <level file="3-3" name="Welt 3-3" />
+        <level file="3-8" name="Welt 3-A" />
+        <level file="3-14" name="Welt 3-Turm" />
+        <level file="3-24" name="Welt 3-Kanone" />
+        <level file="3-4" name="Welt 3-4" />
+        <level file="3-12" name="Welt 3-Geisterhaus" />
+        <level file="3-5" name="Welt 3-5" />
+        <level file="3-9" name="Welt 3-B" />
+        <level file="3-16" name="Welt 3-Burg" />
+        <level file="3-18" name="Power-Up Toad Haus 1" />
+        <level file="3-19" name="Power-Up Toad Haus 2" />
+        <level file="3-20" name="Stern Toad Haus 1" />
+        <level file="3-21" name="Stern Toad Haus 2" />
+        <category name="Platzhalter">
+            <level file="3-6" name="Welt 3-6 Platzhalter" />
+            <level file="3-7" name="Welt 3-7 Platzhalter" />
+            <level file="3-10" name="Welt 3-C Platzhalter" />
+            <level file="3-22" name="Toad Haus Platzhalter 1" />
+            <level file="3-23" name="Toad Haus Platzhalter 2" />
+        </category>
+    </category>
+
+    <category name="Welt 4">
+        <level file="4-29" name="Welt 4-Regenbogen" />
+        <level file="4-1" name="Welt 4-1" />
+        <level file="4-12" name="Welt 4-Geisterhaus" />
+        <level file="4-2" name="Welt 4-2" />
+        <level file="4-8" name="Welt 4-A" />
+        <level file="4-14" name="Welt 4-Turm" />
+        <level file="4-3" name="Welt 4-3" />
+        <level file="4-4" name="Welt 4-4" />
+        <level file="4-10" name="Welt 4-C" />
+        <level file="4-5" name="Welt 4-5" />
+        <level file="4-9" name="Welt 4-B" />
+        <level file="4-16" name="Welt 4-Burg" />
+        <level file="4-18" name="1-UP Toad Haus 1" />
+        <level file="4-20" name="1-UP Toad Haus 2" />
+        <level file="4-19" name="Power-Up Toad Haus 1" />
+        <level file="4-22" name="Power-Up Toad Haus 2" />
+        <level file="4-21" name="Stern Toad Haus" />
+        <category name="Platzhalter">
+            <level file="4-24" name="Welt 4-Kanone Platzhalter" />
+            <level file="4-6" name="Welt 4-6 Platzhalter" />
+            <level file="4-7" name="Welt 4-7 Platzhalter" />
+            <level file="4-23" name="Toad Haus Platzhalter" />
+        </category>
+    </category>
+
+    <category name="Welt Blume">
+        <level file="8-29" name="Welt Blume-Regenbogen" />
+        <level file="8-1" name="Welt Blume-1" />
+        <level file="8-8" name="Welt Blume-A" />
+        <level file="8-24" name="Welt Blume-Kanone" />
+        <level file="8-12" name="Welt Blume-Geisterhaus" />
+        <level file="8-2" name="Welt Blume-2" />
+        <level file="8-3" name="Welt Blume-3" />
+        <level file="8-9" name="Welt Blume-B" />
+        <level file="8-16" name="Welt Blume-Burg" />
+        <level file="8-18" name="Power-Up Toad Haus 1" />
+        <level file="8-19" name="Power-Up Toad Haus 2" />
+        <level file="8-20" name="1-UP Toad Haus" />
+        <category name="Platzhalter">
+            <level file="8-5" name="Welt Blume-5 Platzhalter" />
+            <level file="8-6" name="Welt Blume-6 Platzhalter" />
+            <level file="8-7" name="Welt Blume-7 Platzhalter" />
+            <level file="8-10" name="Welt Blume-C Platzhalter" />
+            <level file="8-14" name="Welt Blume-Turm Platzhalter" />
+            <level file="8-21" name="Toad Haus Platzhalter 1" />
+            <level file="8-22" name="Toad Haus Platzhalter 2" />
+            <level file="8-23" name="Toad Haus Platzhalter 3" />
+        </category>
+    </category>
+
+    <category name="Welt 5">
+        <level file="5-29" name="Welt 5-Regenbogen" />
+        <level file="5-1" name="Welt 5-1" />
+        <level file="5-2" name="Welt 5-2" />
+        <level file="5-12" name="Welt 5-Geisterhaus" />
+        <level file="5-3" name="Welt 5-3" />
+        <level file="5-14" name="Welt 5-Turm" />
+        <level file="5-4" name="Welt 5-4" />
+        <level file="5-8" name="Welt 5-A" />
+        <level file="5-5" name="Welt 5-5" />
+        <level file="5-6" name="Welt 5-6" />
+        <level file="5-16" name="Welt 5-Burg" />
+        <level file="5-18" name="Power-Up Toad Haus 1" />
+        <level file="5-19" name="Power-Up Toad Haus 2" />
+        <level file="5-20" name="1-UP Toad Haus 1" />
+        <level file="5-21" name="1-UP Toad Haus 2" />
+        <category name="Platzhalter">
+            <level file="5-7" name="Welt 5-7 Platzhalter" />
+            <level file="5-10" name="Welt 5-C Platzhalter" />
+            <level file="5-24" name="Welt 5-Kanone Platzhalter" />
+            <level file="5-23" name="Toad Haus Platzhalter" />
+        </category>
+    </category>
+
+    <category name="Welt 6">
+        <level file="6-29" name="Welt 6-Regenbogen" />
+        <level file="6-1" name="Welt 6-1" />
+        <level file="6-12" name="Welt 6-Geisterhaus" />
+        <level file="6-2" name="Welt 6-2" />
+        <level file="6-9" name="Welt 6-B" />
+        <level file="6-3" name="Welt 6-3" />
+        <level file="6-8" name="Welt 6-A" />
+        <level file="6-14" name="Welt 6-Turm" />
+        <level file="6-4" name="Welt 6-4" />
+        <level file="6-5" name="Welt 6-5" />
+        <level file="6-16" name="Welt 6-Burg" />
+        <level file="6-18" name="Power-Up Toad Haus" />
+        <level file="6-20" name="1-UP Toad Haus 1" />
+        <level file="6-21" name="1-UP Toad Haus 2" />
+        <level file="6-19" name="Stern Toad Haus" />
+        <category name="Platzhalter">
+            <level file="6-6" name="Welt 6-6 Platzhalter" />
+            <level file="6-7" name="Welt 6-7 Platzhalter" />
+            <level file="6-24" name="Welt 6-Kanone Platzhalter" />
+            <level file="6-22" name="Toad Haus Platzhalter 1" />
+            <level file="6-23" name="Toad Haus Platzhalter 2" />
+            </category>
+    </category>
+
+    <category name="Welt Stern">
+        <level file="9-29" name="Welt Stern-Regenbogen" />
+        <level file="9-1" name="Welt Stern-1" />
+        <level file="9-2" name="Welt Stern-2" />
+        <level file="9-3" name="Welt Stern-3" />
+        <level file="9-4" name="Welt Stern-4" />
+        <level file="9-5" name="Welt Stern-5" />
+        <level file="9-6" name="Welt Stern-6" />
+        <level file="9-7" name="Welt Stern-7" />
+        <level file="9-16" name="Welt Stern-Burg" />
+        <level file="9-18" name="Stern Toad Haus" />
+    </category>
+
+    <category name="Andere">
+        <level file="6-27" name="Credits" />
+    </category>
+
+    <category name="Herunterladbare Inhalte (DLCs)">
+
+        <category name="Goldgier">
+            <level file="dlc/10-1" name="Level 1" />
+            <level file="dlc/10-2" name="Level 2" />
+            <level file="dlc/10-3" name="Level 3" />
+        </category>
+
+        <category name="Münzparcours A">
+            <level file="dlc/11-1" name="Level 1" />
+            <level file="dlc/11-2" name="Level 2" />
+            <level file="dlc/11-3" name="Level 3" />
+        </category>
+
+        <category name="Nervenkitzel">
+            <level file="dlc/12-1" name="Level 1" />
+            <level file="dlc/12-2" name="Level 2" />
+            <level file="dlc/12-3" name="Level 3" />
+        </category>
+
+        <category name="Goldpilzsaison">
+            <level file="dlc/13-1" name="Level 1" />
+            <level file="dlc/13-2" name="Level 2" />
+            <level file="dlc/13-3" name="Level 3" />
+        </category>
+
+        <category name="Münzparcours B">
+            <level file="dlc/14-1" name="Level 1" />
+            <level file="dlc/14-2" name="Level 2" />
+            <level file="dlc/14-3" name="Level 3" />
+        </category>
+
+        <category name="Goldene Nostalgie">
+            <level file="dlc/15-1" name="Level 1" />
+            <level file="dlc/15-2" name="Level 2" />
+            <level file="dlc/15-3" name="Level 3" />
+        </category>
+
+        <category name="Münzparcours C">
+            <level file="dlc/16-1" name="Level 1" />
+            <level file="dlc/16-2" name="Level 2" />
+            <level file="dlc/16-3" name="Level 3" />
+        </category>
+
+        <category name="Plattformpanik">
+            <level file="dlc/17-1" name="Level 1" />
+            <level file="dlc/17-2" name="Level 2" />
+            <level file="dlc/17-3" name="Level 3" />
+        </category>
+
+        <category name="Knifflige Krise">
+            <level file="dlc/18-1" name="Level 1" />
+            <level file="dlc/18-2" name="Level 2" />
+            <level file="dlc/18-3" name="Level 3" />
+        </category>
+
+        <category name="Hals- & Beinbruch">
+            <level file="dlc/19-1" name="Level 1" />
+            <level file="dlc/19-2" name="Level 2" />
+            <level file="dlc/19-3" name="Level 3" />
+        </category>
+
+    </category>
+
+    <category name="Unused">
+        <level file="1-12" name="Welt 1-Burg (Beta)" />
+        <level file="5-9" name="Welt Blume-B (Beta)" />
+        <level file="5-22" name="Welt 5-Extra Life Toad Haus (Unused)" />
+        <level file="6-10" name="Welt 6-Burg (Beta 1)" />
+        <level file="9-10" name="Welt 6-Burg (Beta 2)" />
+        <level file="7-4" name="Welt Stern-5 (Beta)" />
+        <level file="9-8" name="Welt Stern-6 (Beta)" />
+        <level file="9-9" name="Welt Stern-7 (Beta)" />
+        <level file="7-5" name="Beta Ice Level" />
+        <level file="8-4" name="Beta Underwater Level" />
+    </category>
+
+</levels>

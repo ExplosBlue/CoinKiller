@@ -34,6 +34,7 @@
 #include "locationeditorwidget.h"
 #include "patheditorwidget.h"
 #include "progresspatheditorwidget.h"
+#include "settingsmanager.h"
 
 #include "propertygrid.h"
 
@@ -46,7 +47,7 @@ class LevelEditorWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit LevelEditorWindow(LevelManager* lvlMgr, int initialArea = 1);
+    explicit LevelEditorWindow(LevelManager* lvlMgr, int initialArea, SettingsManager* settings);
     ~LevelEditorWindow();
     void closeEvent();
 
@@ -109,6 +110,9 @@ private:
     Ui::LevelEditorWindow *ui;
 
     LevelManager* lvlMgr;
+    SettingsManager* settings;
+    void loadTranslations();
+
     Level* level;
     Tileset* tileset;
     LevelView* levelView;

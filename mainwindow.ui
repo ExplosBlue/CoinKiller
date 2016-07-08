@@ -34,7 +34,7 @@
       </property>
       <widget class="QWidget" name="tab_levels">
        <attribute name="title">
-        <string>Levels</string>
+        <string>&lt;Levels&gt;</string>
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_2">
         <property name="leftMargin">
@@ -69,7 +69,7 @@
       </widget>
       <widget class="QWidget" name="tab_tilesets">
        <attribute name="title">
-        <string>Tilesets</string>
+        <string>&lt;Tilesets&gt;</string>
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_3">
         <property name="leftMargin">
@@ -96,6 +96,27 @@
         </item>
        </layout>
       </widget>
+      <widget class="QWidget" name="tab_settings">
+       <attribute name="title">
+        <string>&lt;Settings&gt;</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_5">
+        <item>
+         <layout class="QVBoxLayout" name="verticalLayout_4">
+          <item>
+           <widget class="QLabel" name="languagesLabel">
+            <property name="text">
+             <string>&lt;Languages&gt;</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QListWidget" name="languageSelector"/>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
      </widget>
     </item>
    </layout>
@@ -111,14 +132,14 @@
    </property>
    <widget class="QMenu" name="menuFile">
     <property name="title">
-     <string>File</string>
+     <string>&lt;File&gt;</string>
     </property>
-    <addaction name="actionLoadROM"/>
+    <addaction name="actionLoadUnpackedROMFS"/>
     <addaction name="actionDebug_test"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
-     <string>Help</string>
+     <string>&lt;Help&gt;</string>
     </property>
     <addaction name="actionAbout"/>
    </widget>
@@ -134,14 +155,14 @@
    </attribute>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
-  <action name="actionLoadROM">
+  <action name="actionLoadUnpackedROMFS">
    <property name="text">
-    <string>Load ROM (.3ds / .cia)</string>
+    <string>&lt;Load unpacked ROMFS&gt;</string>
    </property>
   </action>
   <action name="actionAbout">
    <property name="text">
-    <string>About CoinKiller</string>
+    <string>&lt;About CoinKiller&gt;</string>
    </property>
   </action>
   <action name="actionDebug_test">

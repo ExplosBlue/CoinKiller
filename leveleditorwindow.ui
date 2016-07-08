@@ -79,13 +79,13 @@
    </property>
    <widget class="QMenu" name="menuFile">
     <property name="title">
-     <string>File</string>
+     <string>&lt;File&gt;</string>
     </property>
     <addaction name="actionSave"/>
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
-     <string>View</string>
+     <string>&lt;View&gt;</string>
     </property>
     <addaction name="actionToggleLayer1"/>
     <addaction name="actionToggleLayer2"/>
@@ -101,12 +101,17 @@
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
-     <string>Edit</string>
+     <string>&lt;Edit&gt;</string>
     </property>
     <addaction name="actionPaste"/>
     <addaction name="actionCut"/>
     <addaction name="actionCopy"/>
     <addaction name="actionDelete"/>
+    <addaction name="separator"/>
+    <addaction name="actionRaise"/>
+    <addaction name="actionLower"/>
+    <addaction name="actionRaiseLayer"/>
+    <addaction name="actionLowerLayer"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -153,10 +158,10 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Layer 1</string>
+    <string>&lt;Layer 1&gt;</string>
    </property>
    <property name="toolTip">
-    <string>they say you don't get a layer 0 here</string>
+    <string>&lt;Layer 1&gt;</string>
    </property>
   </action>
   <action name="actionToggleLayer2">
@@ -164,18 +169,18 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Layer 2</string>
+    <string>&lt;Layer 2&gt;</string>
    </property>
    <property name="toolTip">
-    <string>maybe someday you will... who knows</string>
+    <string>&lt;Layer 2&gt;</string>
    </property>
   </action>
   <action name="actionZoom_In">
    <property name="text">
-    <string>Zoom In</string>
+    <string>&lt;Zoom In&gt;</string>
    </property>
    <property name="toolTip">
-    <string>Zoom In</string>
+    <string>&lt;Zoom In&gt;</string>
    </property>
    <property name="shortcut">
     <string>Ctrl++</string>
@@ -183,10 +188,10 @@
   </action>
   <action name="actionZoom_Out">
    <property name="text">
-    <string>Zoom Out</string>
+    <string>&lt;Zoom Out&gt;</string>
    </property>
    <property name="toolTip">
-    <string>Zoom Out</string>
+    <string>&lt;Zoom Out&gt;</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+-</string>
@@ -194,10 +199,10 @@
   </action>
   <action name="actionZoom_100">
    <property name="text">
-    <string>Zoom 100%</string>
+    <string>&lt;Zoom 100%&gt;</string>
    </property>
    <property name="toolTip">
-    <string>Zoom 100%</string>
+    <string>&lt;Zoom 100%&gt;</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+0</string>
@@ -205,10 +210,10 @@
   </action>
   <action name="actionZoom_Maximum">
    <property name="text">
-    <string>Maximum Zoom</string>
+    <string>&lt;Maximum Zoom&gt;</string>
    </property>
    <property name="toolTip">
-    <string>Maximum Zoom</string>
+    <string>&lt;Maximum Zoom&gt;</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+PgDown</string>
@@ -216,10 +221,10 @@
   </action>
   <action name="actionZoom_Minimum">
    <property name="text">
-    <string>Minimum Zoom</string>
+    <string>&lt;Minimum Zoom&gt;</string>
    </property>
    <property name="toolTip">
-    <string>Minimum Zoom</string>
+    <string>&lt;Minimum Zoom&gt;</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+PgUp</string>
@@ -227,10 +232,10 @@
   </action>
   <action name="actionSave">
    <property name="text">
-    <string>Save</string>
+    <string>&lt;Save&gt;</string>
    </property>
    <property name="toolTip">
-    <string>Save</string>
+    <string>&lt;Save&gt;</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+S</string>
@@ -238,10 +243,10 @@
   </action>
   <action name="actionPaste">
    <property name="text">
-    <string>Paste</string>
+    <string>&lt;Paste&gt;</string>
    </property>
    <property name="toolTip">
-    <string>Paste</string>
+    <string>&lt;Paste&gt;</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+V</string>
@@ -249,10 +254,10 @@
   </action>
   <action name="actionCut">
    <property name="text">
-    <string>Cut</string>
+    <string>&lt;Cut&gt;</string>
    </property>
    <property name="toolTip">
-    <string>Cut</string>
+    <string>&lt;Cut&gt;</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+X</string>
@@ -260,10 +265,10 @@
   </action>
   <action name="actionCopy">
    <property name="text">
-    <string>Copy</string>
+    <string>&lt;Copy&gt;</string>
    </property>
    <property name="toolTip">
-    <string>Copy</string>
+    <string>&lt;Copy&gt;</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+C</string>
@@ -271,10 +276,10 @@
   </action>
   <action name="actionDelete">
    <property name="text">
-    <string>Delete</string>
+    <string>&lt;Delete&gt;</string>
    </property>
    <property name="toolTip">
-    <string>Delete</string>
+    <string>&lt;Delete&gt;</string>
    </property>
    <property name="shortcut">
     <string>Del</string>
@@ -285,10 +290,10 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Fullscreen</string>
+    <string>&lt;Fullscreen&gt;</string>
    </property>
    <property name="toolTip">
-    <string>Fullscreen</string>
+    <string>&lt;Fullscreen&gt;</string>
    </property>
    <property name="shortcut">
     <string>F11</string>
@@ -299,10 +304,10 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Grid</string>
+    <string>&lt;Grid&gt;</string>
    </property>
    <property name="toolTip">
-    <string>Grid</string>
+    <string>&lt;Grid&gt;</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+G</string>
@@ -310,7 +315,7 @@
   </action>
   <action name="actionAddArea">
    <property name="text">
-    <string>Add Area</string>
+    <string>&lt;Add Area&gt;</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Alt+N</string>
@@ -318,7 +323,10 @@
   </action>
   <action name="actionDeleteCurrentArea">
    <property name="text">
-    <string>Delete Current Area</string>
+    <string>&lt;Delete Current Area&gt;</string>
+   </property>
+   <property name="toolTip">
+    <string>&lt;Delete Current Area&gt;</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Alt+D</string>
@@ -326,22 +334,34 @@
   </action>
   <action name="actionRaise">
    <property name="text">
-    <string>Raise to Top</string>
+    <string>&lt;Raise to Top&gt;</string>
+   </property>
+   <property name="toolTip">
+    <string>&lt;Raise to Top&gt;</string>
    </property>
   </action>
   <action name="actionLower">
    <property name="text">
-    <string>Lower to Bottom</string>
+    <string>&lt;Lower to Bottom&gt;</string>
+   </property>
+   <property name="toolTip">
+    <string>&lt;Lower to Bottom&gt;</string>
    </property>
   </action>
   <action name="actionRaiseLayer">
    <property name="text">
-    <string>Raise Layer</string>
+    <string>&lt;Raise Layer&gt;</string>
+   </property>
+   <property name="toolTip">
+    <string>&lt;Raise Layer&gt;</string>
    </property>
   </action>
   <action name="actionLowerLayer">
    <property name="text">
-    <string>Lower Layer</string>
+    <string>&lt;Lower Layer&gt;</string>
+   </property>
+   <property name="toolTip">
+    <string>&lt;Lower Layer&gt;</string>
    </property>
   </action>
  </widget>
