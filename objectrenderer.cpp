@@ -127,6 +127,9 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr)
     case 117: // Banzi Bill Launcher
         ret = new NormalImageRenderer(spr, basePath + "banzai_bill_launcher.png");
         break;
+    case 119: // Banzai Bill
+        ret = new BanzaiBillRenderer(spr);
+        break;
     case 124: // Mushroom Platform
         ret = new MushroomPlatformRenderer(spr, basePath + "mushroom_platform/");
         break;
@@ -400,7 +403,6 @@ void FloatingBoxRenderer::render(QPainter *painter)
     img->render(painter);
 }
 
-
 // Sprite 115: Bullet Bill Launcher
 BulletBillLauncherRenderer::BulletBillLauncherRenderer(const Sprite *spr)
 {
@@ -423,6 +425,20 @@ void BulletBillLauncherRenderer::render(QPainter *painter)
     }
 }
 
+//Sprite 119: Banzai Bill
+BanzaiBillRenderer::BanzaiBillRenderer(const Sprite *spr)
+{
+    QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/");
+
+    if (spr->getNybble(5) == 1) img = new NormalImageRenderer(spr, basePath + "banzai_bill_left.png");
+    //default to right
+    else img = new NormalImageRenderer(spr, basePath + "banzai_bill_right.png");
+}
+
+void BanzaiBillRenderer::render(QPainter *painter)
+{
+    img->render(painter);
+}
 
 // Sprite 135: Goomba
 GoombaRenderer::GoombaRenderer(const Sprite *spr)
@@ -457,7 +473,6 @@ void GoombaTowerRenderer::render(QPainter *painter)
     for(int i = 0; i < middle.size(); i++) middle[i]->render(painter);
     bottom->render(painter);
 }
-
 
 // Sprite 165: Koopa Troopa
 KoopaTroopaRenderer::KoopaTroopaRenderer(const Sprite *spr)

@@ -85,7 +85,6 @@ protected:
     const Object *obj;
     NormalImageRenderer *img;
 };
-
 // Sprite 115: Bullet Bill Launcher
 class BulletBillLauncherRenderer: public SpriteRenderer
 {
@@ -94,6 +93,17 @@ public:
     void render(QPainter *painter);
 protected:
     const Sprite *spr;
+};
+
+//Sprite 119: Banzai Bill
+class BanzaiBillRenderer: public ObjectRenderer
+{
+public:
+    BanzaiBillRenderer(const Sprite *spr);
+    void render(QPainter *painter);
+protected:
+    const Object *obj;
+    NormalImageRenderer *img;
 };
 
 // Sprite 124: Mushroom Platform
@@ -108,7 +118,7 @@ protected:
 };
 
 // Sprite 135: Goomba
-class GoombaRenderer: public SpriteRenderer
+class GoombaRenderer : public SpriteRenderer
 {
 public:
     GoombaRenderer(const Sprite *spr);
@@ -118,7 +128,7 @@ protected:
 };
 
 // Sprite 139: Goomba Tower
-class GoombaTowerRenderer: public ObjectRenderer
+class GoombaTowerRenderer : public ObjectRenderer
 {
 public:
     GoombaTowerRenderer(const Sprite *spr);

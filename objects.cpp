@@ -313,6 +313,14 @@ void Sprite::setRect()
         height = 103;
         offsety = -3;
         break;
+     case 119: // Banzai Bill
+    {
+        width = 110;
+        height = 82;
+        offsety = -24;
+        offsetx = -48;
+        break;
+    }
     case 124: // Mushroom Platform
         width = getNybble(6)*20 + 68;
         height = 20;
