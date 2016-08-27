@@ -26,6 +26,15 @@ SpriteData::SpriteData()
     xmlSpriteViews.setContent(&f2);
     f2.close();
 
+    // Add "All (Sorted by Number)" View
+    spriteView allView;
+    allView.name = "All (Sorted by Number)";
+    foreach (SpriteDefinition sprDef, spriteDefs)
+    {
+        allView.simpleSprites.append(sprDef.getID());
+    }
+    spriteViews.append(allView);
+
     QDomNodeList views = xmlSpriteViews.documentElement().elementsByTagName("view");
     for (int v = 0; v < views.size(); v++)
     {
@@ -66,16 +75,7 @@ SpriteData::SpriteData()
         }
 
         spriteViews.append(view);
-    }
-
-    // Add "All (Sorted by Number)" View
-    spriteView allView;
-    allView.name = "All (Sorted by Number)";
-    foreach (SpriteDefinition sprDef, spriteDefs)
-    {
-        allView.simpleSprites.append(sprDef.getID());
-    }
-    spriteViews.append(allView);
+    } 
 }
 
 SpriteDefinition::SpriteDefinition(QDomElement spriteElement)

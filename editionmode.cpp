@@ -465,8 +465,6 @@ QList<Object*> ObjectsEditonMode::getObjectsAtPos(int x1, int y1, int x2, int y2
             adjustX += drawrect.x()-zone->getx();
         if (zone->gety() < drawrect.y())
             adjustY += drawrect.y()-zone->gety();
-
-        qDebug() << adjustX << adjustY;
         if (zone->clickDetection(area.adjusted(-adjustX,-adjustY,0,0)))
             objects.append(zone);
     }
