@@ -49,15 +49,19 @@ void Game::loadLevelNamesCat(QStandardItem* item, QDomElement node)
     {
         if (element.tagName() == "level")
         {
-            QStandardItem* subItem = new QStandardItem(element.attribute("name"));
-            subItem->setData(element.attribute("file"));
-            item->appendRow(subItem);
+            if (fs->fileExists("/Course/" + element.attribute("file") + ".sarc"))
+            {
+                QStandardItem* subItem = new QStandardItem(element.attribute("name"));
+                subItem->setData(element.attribute("file"));
+                item->appendRow(subItem);
+            }
         }
         else if (element.tagName() == "category")
         {
             QStandardItem* subItem = new QStandardItem(element.attribute("name"));
             loadLevelNamesCat(subItem, element);
-            item->appendRow(subItem);
+            if (subItem->rowCount() != 0)
+                item->appendRow(subItem);
         }
 
         element = element.nextSibling().toElement();

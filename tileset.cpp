@@ -389,9 +389,14 @@ void Tileset::drawRow(QPainter& painter, TileGrid& grid, ObjectDef& def, ObjectR
 
 void Tileset::drawObject(QPainter& painter, TileGrid& grid, int num, int x, int y, int w, int h, float zoom)
 {
-    if (num >= objectDefs.size()) // TODO handle properly
+    if (num >= objectDefs.size())
     {
-        qDebug("!! BAD OBJ NUMBER %d\n", num);
+        QString warningImg(QCoreApplication::applicationDirPath() + "/coinkiller_data/tileoverrides/error.png");
+
+        for (int xx = 0; xx < w; xx++)
+            for (int yy = 0; yy < h; yy++)
+                painter.drawPixmap(QRect((x+xx)*20, (y+yy)*20, 20, 20), QPixmap(warningImg));
+
         return;
     }
 
