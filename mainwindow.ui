@@ -113,6 +113,13 @@
           <item>
            <widget class="QListWidget" name="languageSelector"/>
           </item>
+          <item>
+           <widget class="QPushButton" name="updateSpriteData">
+            <property name="text">
+             <string>&lt;UpdateSpritedata&gt;</string>
+            </property>
+           </widget>
+          </item>
          </layout>
         </item>
        </layout>

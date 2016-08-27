@@ -5,7 +5,8 @@
 #-------------------------------------------------
 
 QT       += core gui\
-            xml
+            xml\
+            network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -44,7 +45,8 @@ SOURCES += main.cpp\
     levelmanager.cpp \
     patheditorwidget.cpp \
     progresspatheditorwidget.cpp \
-    settingsmanager.cpp
+    settingsmanager.cpp \
+    filedownloader.cpp
 
 HEADERS  += mainwindow.h \
     filesystembase.h \
@@ -80,7 +82,8 @@ HEADERS  += mainwindow.h \
     patheditorwidget.h \
     progresspatheditorwidget.h \
     locationeditorwidget.h \
-    settingsmanager.h
+    settingsmanager.h \
+    filedownloader.h
 
 FORMS    += mainwindow.ui \
     leveleditorwindow.ui \

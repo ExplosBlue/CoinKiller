@@ -23,7 +23,7 @@ Sora_TotempoleB:Totems (Sky, Yellow)
 Kaigan:Beach
 Kaigan_Naname:Beach (higher)
 Jungle:Jungle
-Junke_Kaigan:Jungle Beach
+Jungle_Kaigan:Jungle Beach
 Suichu:Underwater
 Setsugen:Snow
 Sora_KinokoSnow:Snow Mushrooms (Sky)

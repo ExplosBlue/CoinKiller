@@ -77,7 +77,7 @@ void SettingsManager::loadTranslations(QString languageName)
         {
             QStringList fields = line.split('=');
             if (fields.size() == 2)
-                actualCat->insert(fields[0], fields[1]);
+                actualCat->insert(fields[0], fields[1].replace("\\n", "\n"));
         }
     }
 

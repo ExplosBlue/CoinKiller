@@ -35,6 +35,11 @@ loadUnpackedRomFS=Load unpacked ROMFS...
 selectUnpackedRomFSFolder=Select unpacked ROMFS Folder...
 aboutCoinKiller=About CoinKiller
 languages=Languages
+updateSDat=Update Spritedata
+sDatWarning=All changes you made to your spritedata.xml will be overwritten!\n\nDo you want to proceed?
+sDatSuccess=Your Spritedata was updated successfully!
+sDatErrorNetwork=Updating the Spritedata failed:\n\nConnection to kuribo64.net failed!
+sDatErrorFile=Updating the Spritedata failed:\n\nCould not open spritedata.xml for writing!
 
 [LevelEditor]
 view=View

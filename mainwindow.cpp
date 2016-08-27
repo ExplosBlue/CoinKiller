@@ -21,6 +21,10 @@
 #include <QCoreApplication>
 #include <QFileDialog>
 #include <QDesktopWidget>
+#include <QByteArray>
+#include <QNetworkAccessManager>
+#include <QNetworkRequest>
+#include <QNetworkReply>
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
@@ -168,4 +172,42 @@ void MainWindow::loadTranslations()
     ui->tabWidget->setTabText(1, settings->getTranslation("MainWindow", "tilesets"));
     ui->tabWidget->setTabText(2, settings->getTranslation("General", "settings"));
     ui->languagesLabel->setText(settings->getTranslation("MainWindow", "languages")+":");
+    ui->updateSpriteData->setText(settings->getTranslation("MainWindow", "updateSDat"));
+}
+
+void MainWindow::on_updateSpriteData_clicked()
+{
+    QMessageBox::StandardButton reply;
+    reply = QMessageBox::warning(this, "CoinKiller", settings->getTranslation("MainWindow", "sDatWarning"), QMessageBox::Yes|QMessageBox::No);
+    if (reply == QMessageBox::No)
+        return;
+
+    QUrl sdUrl("http://kuribo64.net/nsmb2/spritexml2.php");
+    sdDownloader = new FileDownloader(sdUrl, this);
+
+    connect(sdDownloader, SIGNAL(downloaded(QNetworkReply::NetworkError)), this, SLOT(sdDownload_finished(QNetworkReply::NetworkError)));
+
+    this->setEnabled(false);
+}
+
+void MainWindow::sdDownload_finished(QNetworkReply::NetworkError error)
+{
+    if (error == QNetworkReply::NoError)
+    {
+        QFile file(QCoreApplication::applicationDirPath() + "/coinkiller_data/spritedata.xml");
+        if (file.open(QIODevice::WriteOnly))
+        {
+            file.write(sdDownloader->downloadedData());
+            file.close();
+            QMessageBox::information(this, "CoinKiller", settings->getTranslation("MainWindow", "sDatSuccess"), QMessageBox::Ok);
+        }
+        else
+        {
+            QMessageBox::information(this, "CoinKiller", settings->getTranslation("MainWindow", "sDatErrorFile"), QMessageBox::Ok);
+        }
+    }
+    else
+        QMessageBox::information(this, "CoinKiller", settings->getTranslation("MainWindow", "sDatErrorNetwork"), QMessageBox::Ok);
+
+    this->setEnabled(true);
 }

@@ -22,6 +22,7 @@
 
 #include "game.h"
 #include "settingsmanager.h"
+#include "filedownloader.h"
 
 namespace Ui {
 class MainWindow;
@@ -36,6 +37,8 @@ public:
     ~MainWindow();
 
 private slots:
+    
+    void sdDownload_finished(QNetworkReply::NetworkError error);
 
     void on_actionAbout_triggered();
 
@@ -47,12 +50,16 @@ private slots:
 
     void on_tilesetView_doubleClicked(const QModelIndex &index);
 
+    void on_updateSpriteData_clicked();
+
 private:
     Ui::MainWindow *ui;
 
     Game* game;
 
     SettingsManager* settings;
+
+    FileDownloader* sdDownloader;
 
     bool startupClose = false;
     bool checkForMissingFiles();
