@@ -52,6 +52,16 @@ protected:
 
 // Special Sprite Renderers
 
+// Sprite 22: Special Exit Controller
+class SpecialExitControllerRenderer: public SpriteRenderer
+{
+public:
+    SpecialExitControllerRenderer(const Sprite *spr);
+    void render(QPainter *painter);
+protected:
+    const Sprite *spr;
+};
+
 // Sprite 97: End of Level Flag
 class GoalRenderer: public ObjectRenderer
 {

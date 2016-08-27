@@ -18,7 +18,6 @@
 #include "leveleditorwindow.h"
 #include "ui_leveleditorwindow.h"
 
-#include "levelview.h"
 #include "is.h"
 
 #include <QHBoxLayout>
@@ -415,6 +414,7 @@ void LevelEditorWindow::loadArea(int id, bool closeLevel, bool init)
     if (!init)
     {
         delete levelView;
+        delete miniMap;
 
         for(int i = ui->sidebarTabWidget->count() - 1; i >= 0; i--)
         {
@@ -493,6 +493,13 @@ void LevelEditorWindow::loadArea(int id, bool closeLevel, bool init)
     ui->sidebarTabWidget->addTab(locationEditor, QIcon(basePath + "location.png"), "");
     ui->sidebarTabWidget->addTab(pathEditor, QIcon(basePath + "path.png"), "");
     ui->sidebarTabWidget->addTab(progPathEditor, QIcon(basePath + "progress_path.png"), "");
+
+
+    miniMap = new LevelMiniMap(this, level);
+    connect(levelView, SIGNAL(updateMinimap(QRect)), miniMap, SLOT(update_(QRect)));
+    connect(levelView, SIGNAL(updateMinimapBounds()), miniMap, SLOT(updateBounds()));
+    connect(miniMap, SIGNAL(scrollTo(int,int)), this, SLOT(scrollTo(int,int)));
+    ui->miniMap->setWidget(miniMap);
 }
 
 void LevelEditorWindow::updateAreaSelector(int index)
@@ -553,6 +560,8 @@ void LevelEditorWindow::handleMgrUpdate()
 
 void LevelEditorWindow::scrollTo(int x, int y)
 {
+    qMax(0, x);
+    qMax(0, y);
     ui->levelViewArea->horizontalScrollBar()->setValue(x);
     ui->levelViewArea->verticalScrollBar()->setValue(y);
 }

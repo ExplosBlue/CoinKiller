@@ -312,6 +312,8 @@ void LevelView::paintEvent(QPaintEvent* evt)
 
         painter.setRenderHint(QPainter::Antialiasing);
     }
+
+    emit updateMinimap(drawrect);
 }
 
 
@@ -330,6 +332,8 @@ void LevelView::mousePressEvent(QMouseEvent* evt)
         setCursor(QCursor(mode->getActualCursor()));
     }
     update();
+
+    emit updateMinimapBounds();
 }
 
 
@@ -357,6 +361,8 @@ void LevelView::mouseMoveEvent(QMouseEvent* evt)
     }
     setCursor(QCursor(mode->getActualCursor()));
     update();
+
+    emit updateMinimapBounds();
 }
 
 void LevelView::mouseReleaseEvent(QMouseEvent *evt)
@@ -390,6 +396,7 @@ void LevelView::paste()
 
     editionModePtr()->paste(x, y, w, h);
     update();
+    emit updateMinimapBounds();
 }
 
 void LevelView::raise()
@@ -420,6 +427,7 @@ void LevelView::cut()
 {
     editionModePtr()->cut();
     update();
+    emit updateMinimapBounds();
 }
 
 void LevelView::deleteSel()
@@ -427,6 +435,7 @@ void LevelView::deleteSel()
     mode->deleteSelection();
     setCursor(QCursor(mode->getActualCursor()));
     update();
+    emit updateMinimapBounds();
 }
 
 void LevelView::selectObj(Object *obj)

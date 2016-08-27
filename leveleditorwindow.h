@@ -24,6 +24,7 @@
 
 #include "filesystem.h"
 #include "levelview.h"
+#include "levelminimap.h"
 #include "ctpk.h"
 #include "levelmanager.h"
 #include "areaeditorwidget.h"
@@ -116,6 +117,7 @@ private:
     Level* level;
     Tileset* tileset;
     LevelView* levelView;
+    LevelMiniMap* miniMap;
 
     PropertyGrid* propGrid;
 

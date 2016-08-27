@@ -52,6 +52,8 @@ public:
 
 signals:
     void scrollTo(int x, int y);
+    void updateMinimap(QRect drawrect);
+    void updateMinimapBounds();
 
 public slots:
     void selectObj(Object* obj);

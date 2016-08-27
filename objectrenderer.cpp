@@ -28,6 +28,9 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr)
     case 21: // Note Block
         ret = new NormalImageRenderer(spr, basePath + "note_block.png");
         break;
+    case 22: // Special Exit Controller
+        ret = new SpecialExitControllerRenderer(spr);
+        break;
     case 27: // POW Block
         ret = new NormalImageRenderer(spr, basePath + "pow_block.png");
         break;
@@ -357,6 +360,22 @@ void RoundedRectRenderer::render(QPainter *painter)
     painter->drawText(rect, text, align);
 }
 
+// Sprite 22: Special Exit Controller
+SpecialExitControllerRenderer::SpecialExitControllerRenderer(const Sprite *spr)
+{
+    this->spr = spr;
+}
+
+void SpecialExitControllerRenderer::render(QPainter *painter)
+{
+    QRect sprRect(spr->getx(), spr->gety(), spr->getwidth(), spr->getheight());
+    painter->fillRect(sprRect, QColor(0,255,0,30));
+    painter->setPen(Qt::green);
+    painter->drawRect(sprRect);
+    painter->setPen(Qt::black);
+    painter->setFont(QFont("Arial", 8, QFont::Normal));
+    painter->drawText(sprRect.adjusted(2,2,15,0), "Warp");
+}
 
 // Sprite 97: End of Level Flag
 GoalRenderer::GoalRenderer(const Sprite *spr)

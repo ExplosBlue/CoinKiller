@@ -36,15 +36,38 @@
        <enum>Qt::Horizontal</enum>
       </property>
       <widget class="QWidget" name="sidebar" native="true">
-       <layout class="QHBoxLayout" name="horizontalLayout_6">
-        <property name="bottomMargin">
-         <number>0</number>
-        </property>
+       <layout class="QVBoxLayout" name="verticalLayout_2">
         <item>
-         <widget class="QTabWidget" name="sidebarTabWidget">
-          <property name="currentIndex">
-           <number>-1</number>
+         <widget class="QSplitter" name="splitter_2">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
           </property>
+          <widget class="QTabWidget" name="sidebarTabWidget">
+           <property name="currentIndex">
+            <number>-1</number>
+           </property>
+          </widget>
+          <widget class="QScrollArea" name="miniMap">
+           <property name="verticalScrollBarPolicy">
+            <enum>Qt::ScrollBarAlwaysOff</enum>
+           </property>
+           <property name="horizontalScrollBarPolicy">
+            <enum>Qt::ScrollBarAlwaysOff</enum>
+           </property>
+           <property name="widgetResizable">
+            <bool>true</bool>
+           </property>
+           <widget class="QWidget" name="scrollAreaWidgetContents_3">
+            <property name="geometry">
+             <rect>
+              <x>0</x>
+              <y>0</y>
+              <width>861</width>
+              <height>281</height>
+             </rect>
+            </property>
+           </widget>
+          </widget>
          </widget>
         </item>
        </layout>

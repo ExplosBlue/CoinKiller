@@ -46,7 +46,8 @@ SOURCES += main.cpp\
     patheditorwidget.cpp \
     progresspatheditorwidget.cpp \
     settingsmanager.cpp \
-    filedownloader.cpp
+    filedownloader.cpp \
+    levelminimap.cpp
 
 HEADERS  += mainwindow.h \
     filesystembase.h \
@@ -83,7 +84,8 @@ HEADERS  += mainwindow.h \
     progresspatheditorwidget.h \
     locationeditorwidget.h \
     settingsmanager.h \
-    filedownloader.h
+    filedownloader.h \
+    levelminimap.h
 
 FORMS    += mainwindow.ui \
     leveleditorwindow.ui \
