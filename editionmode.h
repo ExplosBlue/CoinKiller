@@ -12,8 +12,8 @@ public:
     EditionMode() {}
     virtual ~EditionMode() {}
 
-    virtual void mouseDown(int, int, Qt::MouseButtons, Qt::KeyboardModifiers) {}
-    virtual void mouseDrag(int, int, Qt::KeyboardModifiers) {}
+    virtual void mouseDown(int, int, Qt::MouseButtons, Qt::KeyboardModifiers, QRect) {}
+    virtual void mouseDrag(int, int, Qt::KeyboardModifiers, QRect) {}
     virtual void mouseMove(int, int) {}
     virtual void mouseUp(int, int) {}
 
@@ -51,8 +51,8 @@ public:
     ObjectsEditonMode(Level *level);
     ~ObjectsEditonMode() {}
 
-    void mouseDown(int x, int y, Qt::MouseButtons buttons, Qt::KeyboardModifiers modifiers);
-    void mouseDrag(int x, int y, Qt::KeyboardModifiers modifieres);
+    void mouseDown(int x, int y, Qt::MouseButtons buttons, Qt::KeyboardModifiers modifiers, QRect drawrect);
+    void mouseDrag(int x, int y, Qt::KeyboardModifiers modifieres, QRect drawrect);
     void mouseMove(int x, int y);
     void mouseUp(int x, int y);
 
@@ -129,7 +129,7 @@ private:
     int selLayer = 0;
     int selSprite = -1;
 
-    QList<Object*> getObjectsAtPos(int x1, int y1, int x2, int y2, bool firstOnly);
+    QList<Object*> getObjectsAtPos(int x1, int y1, int x2, int y2, bool firstOnly, QRect drawrect);
     mouseAction getActionAtPos(int x, int y);
     Qt::CursorShape getCursorAtPos(int x, int y);
 

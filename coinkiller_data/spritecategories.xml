@@ -10,7 +10,7 @@
 			<attach sprite="232-233"/> <!-- Spiny -->
 			<attach sprite="33, 31, 32, 34"/> <!-- Bros -->
 			<attach sprite="183, 167, 182, 181"/> <!-- Pipe Piranha Plants -->
-			<attach sprite="171, 168, 170, 171"/> <!-- Pipe Fire Piranha Plants -->
+			<attach sprite="169, 168, 170, 171"/> <!-- Pipe Fire Piranha Plants -->
 			<attach sprite="175-178"/> <!-- Gounded Piranha Plants -->
 			<attach sprite="115-119"/> <!-- Bills -->
 			<attach sprite="68"/> <!-- Enemy Generator for Pipe -->

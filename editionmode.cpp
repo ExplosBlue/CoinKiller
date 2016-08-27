@@ -12,7 +12,7 @@ ObjectsEditonMode::ObjectsEditonMode(Level *level)
     selectionMode = false;
 }
 
-void ObjectsEditonMode::mouseDown(int x, int y, Qt::MouseButtons buttons, Qt::KeyboardModifiers modifiers)
+void ObjectsEditonMode::mouseDown(int x, int y, Qt::MouseButtons buttons, Qt::KeyboardModifiers modifiers, QRect drawrect)
 {
     dx = x;
     dy = y;
@@ -129,11 +129,11 @@ void ObjectsEditonMode::mouseDown(int x, int y, Qt::MouseButtons buttons, Qt::Ke
             bool shift = false;
 
             if (modifiers != Qt::ShiftModifier)
-                selectedObjects = getObjectsAtPos(dx, dy, dx, dy, true);
+                selectedObjects = getObjectsAtPos(dx, dy, dx, dy, true, drawrect);
             else if (modifiers != Qt::ControlModifier)
             {
                 shift = true;
-                QList<Object*> newObjList = getObjectsAtPos(dx, dy, dx, dy, true);
+                QList<Object*> newObjList = getObjectsAtPos(dx, dy, dx, dy, true, drawrect);
                 if (newObjList.size() == 1)
                 {
                     if(!selectedObjects.contains(newObjList[0]))
@@ -171,7 +171,7 @@ void ObjectsEditonMode::mouseDown(int x, int y, Qt::MouseButtons buttons, Qt::Ke
     }
 }
 
-void ObjectsEditonMode::mouseDrag(int x, int y, Qt::KeyboardModifiers modifieres)
+void ObjectsEditonMode::mouseDrag(int x, int y, Qt::KeyboardModifiers modifieres, QRect drawrect)
 {
     if (creatNewObject)
     {
@@ -208,7 +208,7 @@ void ObjectsEditonMode::mouseDrag(int x, int y, Qt::KeyboardModifiers modifieres
         lx = x;
         ly = y;
         selectedObjects.clear();
-        selectedObjects = getObjectsAtPos(lx, ly, dx, dy, false);
+        selectedObjects = getObjectsAtPos(lx, ly, dx, dy, false, drawrect);
     }
     else
     {
@@ -430,7 +430,7 @@ void ObjectsEditonMode::drawResizeKnob(int x, int y, QPainter *painter)
     painter->fillRect(x-2, y-2, 4, 4, QBrush(Qt::white));
 }
 
-QList<Object*> ObjectsEditonMode::getObjectsAtPos(int x1, int y1, int x2, int y2, bool firstOnly)
+QList<Object*> ObjectsEditonMode::getObjectsAtPos(int x1, int y1, int x2, int y2, bool firstOnly, QRect drawrect)
 {
     QList<Object*> objects;
 
@@ -456,7 +456,20 @@ QList<Object*> ObjectsEditonMode::getObjectsAtPos(int x1, int y1, int x2, int y2
     foreach (Entrance* entr, level->entrances) if (entr->clickDetection(area)) objects.append(entr);
     foreach (Path* path, level->paths) foreach (PathNode* node, path->getNodes()) if (node->clickDetection(area)) objects.append(node);
     foreach (ProgressPath* path, level->progressPaths) foreach (ProgressPathNode* node, path->getNodes()) if (node->clickDetection(area)) objects.append(node);
-    foreach (Zone* zone, level->zones) if (zone->clickDetection(area)) objects.append(zone);
+
+    foreach (Zone* zone, level->zones)
+    {
+        int adjustX = 0;
+        int adjustY = 0;
+        if (zone->getx() < drawrect.x())
+            adjustX += drawrect.x()-zone->getx();
+        if (zone->gety() < drawrect.y())
+            adjustY += drawrect.y()-zone->gety();
+
+        qDebug() << adjustX << adjustY;
+        if (zone->clickDetection(area.adjusted(-adjustX,-adjustY,0,0)))
+            objects.append(zone);
+    }
 
     if (firstOnly && objects.size() > 1)
     {

@@ -202,6 +202,9 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr)
     case 195: // Big Cheep Cheep
         ret = new NormalImageRenderer(spr, basePath + "big_cheep_cheep.png");
         break;
+    case 200: // Spiny Cheep Cheep
+        ret = new NormalImageRenderer(spr, basePath + "spiny_cheep_cheep.png");
+        break;
     case 205: // Red Ring
         ret = new NormalImageRenderer(spr, basePath + "red_ring.png");
         break;
@@ -237,6 +240,12 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr)
         break;
     case 240: // Urchin
         ret = new UrchinRenderer(spr);
+        break;
+    case 244: // Chain Chomp
+        ret = new ChainChompRenderer(spr);
+        break;
+    case 251: // Treasure Chest
+        ret = new NormalImageRenderer(spr, basePath + "treasure_chest.png");
         break;
     case 255: // Bowser Head Statue
         ret = new NormalImageRenderer(spr, basePath + "bowser_head_statue.png");
@@ -276,6 +285,9 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr)
         break;
     case 287: // Toad House Door
         ret = new NormalImageRenderer(spr, basePath + "door_toadhouse.png");
+        break;
+    case 289: // Bouncy Mushroom Platform - Castle
+        ret = new NormalImageRenderer(spr, basePath + "bouncy_mushroom_castle.png");
         break;
     case 293: // Punching Glove
         ret = new NormalImageRenderer(spr, basePath + "punching_glove.png");
@@ -571,6 +583,20 @@ void UrchinRenderer::render(QPainter *painter)
     else painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), QPixmap(basePath + "urchin_big.png"));
 }
 
+
+// Sprite 244: Chain Chomp
+ChainChompRenderer::ChainChompRenderer(const Sprite *spr)
+{
+    this->spr = spr;
+}
+
+void ChainChompRenderer::render(QPainter *painter)
+{
+    QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/");
+
+    if (spr->getNybble(5)%2 == 0) painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), QPixmap(basePath + "chain_chomp_3.png"));
+    else painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), QPixmap(basePath + "chain_chomp_1.png"));
+}
 
 // Sprites 267/275/276: Long ? Blocks
 LongQBlockRenderer::LongQBlockRenderer(const Sprite *spr, QString filename)

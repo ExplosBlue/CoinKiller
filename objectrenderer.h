@@ -185,6 +185,16 @@ protected:
     const Sprite *spr;
 };
 
+// Sprite 244: Chain Chomp
+class ChainChompRenderer: public SpriteRenderer
+{
+public:
+    ChainChompRenderer(const Sprite *spr);
+    void render(QPainter *painter);
+protected:
+    const Sprite *spr;
+};
+
 // Sprites 267/275/276: Long ? Blocks
 class LongQBlockRenderer: public SpriteRenderer
 {

@@ -239,7 +239,15 @@ void LevelView::paintEvent(QPaintEvent* evt)
 
         QString zoneText = QString("Zone %1").arg(zone->getid());
         painter.setFont(QFont("Arial", 8, QFont::Normal));
-        painter.drawText(zonerect.adjusted(3,3,0,0), zoneText);
+
+        int adjustX = 3;
+        int adjustY = 3;
+        if (zonerect.x() < drawrect.x())
+            adjustX += drawrect.x()-zonerect.x();
+        if (zonerect.y() < drawrect.y())
+            adjustY += drawrect.y()-zonerect.y();
+
+        painter.drawText(zonerect.adjusted(adjustX,adjustY,100,20), zoneText);
     }
 
     // Render Selection
@@ -318,7 +326,7 @@ void LevelView::mousePressEvent(QMouseEvent* evt)
     if (mode != NULL)
     {
         if (evt->buttons() == Qt::LeftButton || evt->buttons() == Qt::RightButton)
-            mode->mouseDown(evt->x()/zoom, evt->y()/zoom, evt->buttons(), evt->modifiers());
+            mode->mouseDown(evt->x()/zoom, evt->y()/zoom, evt->buttons(), evt->modifiers(), drawrect);
         setCursor(QCursor(mode->getActualCursor()));
     }
     update();
@@ -342,7 +350,7 @@ void LevelView::mouseMoveEvent(QMouseEvent* evt)
 
         if (evt->buttons() == Qt::LeftButton || evt->buttons() == Qt::RightButton)
         {
-            mode->mouseDrag(x, y, evt->modifiers());
+            mode->mouseDrag(x, y, evt->modifiers(), drawrect);
         }
         else
             mode->mouseMove(x, y);

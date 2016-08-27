@@ -442,6 +442,11 @@ void Sprite::setRect()
         height = 56;
         offsety = -5;
         break;
+    case 200: // Spiny Cheep Cheep
+        width = 20;
+        height = 26;
+        offsety = -6;
+        break;
     case 205: // Red Ring
         width = 39;
         height = 56;
@@ -521,6 +526,17 @@ void Sprite::setRect()
             offsety = -4;
         }
         break;
+    case 244: // Chain Chomp
+        width = 63;
+        height = 63;
+        offsetx = -41;
+        break;
+    case 251: // Treasure Chest
+        width = 48;
+        height = 32;
+        offsetx = -14;
+        offsety = -12;
+        break;
     case 255: // Bowser Head Statue
         width = 40;
         height = 42;
@@ -578,6 +594,12 @@ void Sprite::setRect()
         width = 40;
         height = 60;
         break;
+    case 289: // Bouncy Mushroom Platform - Castle
+        width = 98;
+        height = 35;
+        offsetx = -49;
+        offsety = 15;
+        break;
     case 293: // Punching Glove
         width = 32;
         height = 35;
@@ -592,7 +614,7 @@ void Sprite::setRect()
         width = 25;
         height = 39;
         offsetx = -1;
-        offsety = -16;
+        offsety = -19;
         break;
     case 302: // Moon Coin
         width = 40;

@@ -1606,7 +1606,7 @@
   <sprite id="244" name="Chain Chomp" notes="Actor: 0x044&#13;&#10;Place the sprite two blocks above where you want the bottom of the pole to be.">
     <list nybble="6" title="Pole Length" comment="Repeats after 1. _Needs further testing_.">
       <entry value="0">Three</entry>
-      <entry value="1">Two</entry>
+      <entry value="1">One</entry>
     </list>
   </sprite>
   <sprite id="245" name="Wendy O. Koopa"/>
