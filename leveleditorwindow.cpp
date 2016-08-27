@@ -460,7 +460,7 @@ void LevelEditorWindow::loadArea(int id, bool closeLevel, bool init)
     connect(entranceEditor, SIGNAL(selectedEntrChanged(Object*)), levelView, SLOT(selectObj(Object*)));
 
     // Setup Zone Editor
-    zoneEditor = new ZoneEditorWidget(&level->zones);
+    zoneEditor = new ZoneEditorWidget(&level->zones, settings);
     connect(zoneEditor, SIGNAL(updateLevelView()), levelView, SLOT(update()));
     connect(zoneEditor, SIGNAL(selectedZoneChanged(Object*)), levelView, SLOT(selectObj(Object*)));
 

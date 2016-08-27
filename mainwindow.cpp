@@ -35,9 +35,17 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
-    checkForMissingFiles();
+    startupClose = checkForMissingFiles();
 
     ui->setupUi(this);
+
+    if (startupClose)
+    {
+        QTimer::singleShot(0, this, SLOT(close()));
+        this->move(0, -10000);
+        return;
+    }
+
     setWindowTitle("CoinKiller");
 
     QCoreApplication::setOrganizationName("Blarg City");
@@ -49,15 +57,18 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
-    delete settings;
-    delete game;
+    if (!startupClose)
+    {
+        delete settings;
+        delete game;
+    }
     delete ui;
 }
 
 void MainWindow::on_actionAbout_triggered()
 {
     QMessageBox::information(this, "About that thing you're using",
-                             "CoinKiller v1.0 -- by StapleButter\n\nhttp://kuribo64.net/ or whatever\n\nDefault Icons by Icons8\n\noh and this is free software, if you paid for it, you got scammed");
+                             "CoinKiller v1.0 -- by StapleButter and Mariomaster\n\nhttp://kuribo64.net/ or whatever\n\nDefault Icons by Icons8\n\noh and this is free software, if you paid for it, you got scammed");
 }
 
 void MainWindow::on_actionLoadUnpackedROMFS_triggered()
@@ -112,7 +123,7 @@ void MainWindow::on_tilesetView_doubleClicked(const QModelIndex &index)
     tsEditor->show();
 }
 
-void MainWindow::checkForMissingFiles()
+bool MainWindow::checkForMissingFiles()
 {
     QStringList requiredFiles;
 
@@ -141,8 +152,10 @@ void MainWindow::checkForMissingFiles()
         QString infoText("There are files missing which are required for CoinKiller to work properly:\n%1\nPlease redownload your copy of the editor.");
         QMessageBox message(QMessageBox::Information, "CoinKiller", infoText.arg(missingFiles), QMessageBox::Ok, QDesktopWidget().screen());
         message.exec();
-        QTimer::singleShot(0, this, SLOT(close()));
+        return true;
     }
+
+    return false;
 }
 
 void MainWindow::loadTranslations()

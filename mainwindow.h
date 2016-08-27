@@ -54,7 +54,8 @@ private:
 
     SettingsManager* settings;
 
-    void checkForMissingFiles();
+    bool startupClose = false;
+    bool checkForMissingFiles();
     void loadTranslations();
 };
 

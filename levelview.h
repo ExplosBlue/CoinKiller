@@ -69,6 +69,9 @@ private:
     QRect drawrect;
     float zoom;
 
+    int dragX;
+    int dragY;
+
     ObjectsEditonMode* objectEditionMode;
     EditionMode* mode;
 

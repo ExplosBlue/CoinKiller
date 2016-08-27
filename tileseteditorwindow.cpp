@@ -44,6 +44,7 @@ TilesetEditorWindow::TilesetEditorWindow(QWidget *parent, Tileset *tileset, Sett
     ui->tilesetPicker->setWidget(tilesetPicker);
     tilesetPicker->setMinimumSize(440, 440);
     tilesetPicker->setMaximumSize(440, 440);
+    tilesetPicker->setBGColor(settigs->getColor("tspColor"));
 
     connect(tilesetPicker, SIGNAL(selectedTileChanged(int)), this, SLOT(updateSelectedTile(int)));
     connect(tilesetPicker, SIGNAL(selectedOvTileChanged(int)), this, SLOT(updateSelectedOvTile(int)));
@@ -1066,11 +1067,12 @@ void TilesetEditorWindow::on_actionImportImage_triggered()
 
 void TilesetEditorWindow::on_actionSetBackgroundColor_triggered()
 {
-    QColor bgColor = QColorDialog::getColor(Qt::white, this, "Select Background Color",  QColorDialog::DontUseNativeDialog);
+    QColor bgColor = QColorDialog::getColor(settings->getColor("tspColor", Qt::white), this, "Select Background Color",  QColorDialog::DontUseNativeDialog);
     if(bgColor.isValid())
     {
         tilesetPicker->setBGColor(bgColor);
         objectEditor->setBGColor(bgColor);
+        settings->setColor("tspColor", bgColor);
     }
 }
 

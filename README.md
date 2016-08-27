@@ -8,7 +8,7 @@ Will be licensed under the GPL or someshit.
 # TODO (short term aka do before release)
 
  * ctpk import/renaming
- * translations
+ * translations - kinda done
  * help page
  * ask for saving
  * more sprite images/visual representations

@@ -308,18 +308,33 @@ void LevelView::paintEvent(QPaintEvent* evt)
 
 
 void LevelView::mousePressEvent(QMouseEvent* evt)
-{    
+{
+    if (evt->buttons() & Qt::MiddleButton)
+    {
+        dragX = evt->x();
+        dragY = evt->y();
+    }
+
     if (mode != NULL)
     {
-        mode->mouseDown(evt->x()/zoom, evt->y()/zoom, evt->buttons(), evt->modifiers());
+        if (evt->buttons() == Qt::LeftButton || evt->buttons() == Qt::RightButton)
+            mode->mouseDown(evt->x()/zoom, evt->y()/zoom, evt->buttons(), evt->modifiers());
+        setCursor(QCursor(mode->getActualCursor()));
     }
-    setCursor(QCursor(mode->getActualCursor()));
     update();
 }
 
 
 void LevelView::mouseMoveEvent(QMouseEvent* evt)
 {    
+    if (evt->buttons() & Qt::MiddleButton)
+    {
+        int x = evt->x();
+        int y = evt->y();
+
+        emit scrollTo(visibleRegion().boundingRect().x() - x + dragX, visibleRegion().boundingRect().y() - y + dragY);
+    }
+
     if (mode != NULL)
     {
         int x = evt->x()/zoom;

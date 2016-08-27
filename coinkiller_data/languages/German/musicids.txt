@@ -1,0 +1,27 @@
+0:Keine
+1:Oberwelt
+2:Untergrund/Höhle
+3:Unterwasser
+4:Pilze/Athletisch
+5:Wüste
+6:Schnee
+7:Lava
+8:Lava Höhle
+9:Strand
+10:Wald
+11:Geisterhaus
+12:Turm
+13:Burg
+14:Bonus Gebiet
+15:Turm Endgegner
+16:Burg Endgegner
+17:Raum vor Bowser
+18:Bowser
+19:Regenbogen Level
+20:Kanone
+21:Power-Up Toad Haus
+22:1-Up Toad Haus
+23:Stern Toad Haus
+24:Credits
+25:Spezial Regenbogen Level
+26:Bonus Gebiet (Unterwasser)

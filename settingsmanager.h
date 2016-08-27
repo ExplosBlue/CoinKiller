@@ -39,6 +39,12 @@ public:
     QString getLastRomFSPath() { return settings.value("LastRomFSPath", "").toString(); }
     void setLastRomFSPath(QString dirpath) { settings.setValue("LastRomFSPath", dirpath); }
 
+    QVariant get(const QString &key, const QVariant &defaultValue = QVariant());
+    void set(const QString &key, const QVariant &value);
+
+    QColor getColor(const QString &key, const QColor &defaultColor = Qt::white);
+    void setColor(const QString &key, const QColor &color);
+
 private slots:
     void setLanguage(QString language);
 

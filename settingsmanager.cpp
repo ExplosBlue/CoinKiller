@@ -144,3 +144,23 @@ void SettingsManager::setLanguage(QString language)
     settings.setValue("Language", language);
     QMessageBox::information(parentWidget, "CoinKiller", QString("The Language has been changed to %1.\n\nPlease restart CoinKiller for the changes to take effect.").arg(language));
 }
+
+QVariant SettingsManager::get(const QString &key, const QVariant &defaultValue)
+{
+    return settings.value(key, defaultValue);
+}
+
+void SettingsManager::set(const QString &key, const QVariant &value)
+{
+    settings.setValue(key, value);
+}
+
+QColor SettingsManager::getColor(const QString &key, const QColor &defaultColor)
+{
+   return QColor::fromRgba(settings.value(key, defaultColor.rgba()).toUInt());
+}
+
+void SettingsManager::setColor(const QString &key, const QColor &color)
+{
+    settings.setValue(key, color.rgba());
+}

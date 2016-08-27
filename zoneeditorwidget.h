@@ -2,6 +2,7 @@
 #define ZONEEDITORWIDGET_H
 
 #include "objects.h"
+#include "settingsmanager.h"
 
 #include <QWidget>
 #include <QListWidget>
@@ -28,7 +29,7 @@ class ZoneEditorWidget : public QWidget
 {
     Q_OBJECT
 public:
-    ZoneEditorWidget(QList<Zone*> *zones);
+    ZoneEditorWidget(QList<Zone*> *zones, SettingsManager *settings);
     void deselect();
     void select(Zone* zone);
     void updateEditor();
@@ -76,6 +77,8 @@ private:
 
     bool editingAZone = false;
     bool handleChanges = true;
+
+    SettingsManager* settings;
 
 private slots:
     void handleZoneListIndexChange(QListWidgetItem* item);
