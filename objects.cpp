@@ -250,6 +250,30 @@ void Sprite::setRect()
         offsetx = -18;
         offsety = -21;
         break;
+    case 94: // Flipper (One way gate)
+       if (getNybble(5) == 1 || getNybble(5) == 0) //Left Down + Right Down
+       {
+            width = 20;
+            height = 66;
+            offsety = -45;
+       }
+       else if (getNybble(5) == 2 || getNybble(5) == 3) //Right Up + Left Up
+       {
+            width = 20;
+            height = 66;
+       }
+       else if (getNybble(5) == 4 || getNybble(5) == 5) //Up Left + Down Left
+       {
+            width = 62;
+            height = 20;
+       }
+       else //Up Right + Down Right
+       {
+            width = 62;
+            height = 20;
+            offsetx = -42;
+       }
+        break;
     case 95: // Blooper
         width = 28;
         height = 36;
