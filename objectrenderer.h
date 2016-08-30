@@ -62,6 +62,17 @@ protected:
     const Sprite *spr;
 };
 
+// Sprite 94: Flipper (One way gate)
+class FlipperRenderer: public ObjectRenderer
+{
+public:
+    FlipperRenderer(const Sprite *spr);
+    void render(QPainter *painter);
+protected:
+    const Object *obj;
+    NormalImageRenderer *img;
+};
+
 // Sprite 97: End of Level Flag
 class GoalRenderer: public ObjectRenderer
 {

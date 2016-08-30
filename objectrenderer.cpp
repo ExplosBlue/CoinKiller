@@ -94,6 +94,9 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr)
     case 92: // Grinder
         ret = new NormalImageRenderer(spr, basePath + "grinder.png");
         break;
+    case 94: // Flipper (One way gate)
+        ret = new FlipperRenderer(spr);
+        break;
     case 93: // Scuttlebug
         ret = new NormalImageRenderer(spr, basePath + "scuttlebug.png");
         break;
@@ -375,6 +378,21 @@ void SpecialExitControllerRenderer::render(QPainter *painter)
     painter->setPen(Qt::black);
     painter->setFont(QFont("Arial", 8, QFont::Normal));
     painter->drawText(sprRect.adjusted(2,2,15,0), "Warp");
+}
+
+// Sprite 94: Flipper (One Way Gate)
+FlipperRenderer::FlipperRenderer(const Sprite *spr)
+{
+    QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/");
+
+    if (spr->getNybble(5) == 1) img = new NormalImageRenderer(spr, basePath + "Flipper_Left_Down.png");
+    else if (spr->getNybble(5) == 2) img = new NormalImageRenderer(spr, basePath + "Flipper_Right_Up.png");
+    else if (spr->getNybble(5) == 3) img = new NormalImageRenderer(spr, basePath + "Flipper_Left_Up.png");
+    else if (spr->getNybble(5) == 4) img = new NormalImageRenderer(spr, basePath + "Flipper_Up_Left.png");
+    else if (spr->getNybble(5) == 5) img = new NormalImageRenderer(spr, basePath + "Flipper_Down_Left.png");
+    else if (spr->getNybble(5) == 6) img = new NormalImageRenderer(spr, basePath + "Flipper_Up_Right.png");
+    else if (spr->getNybble(5) == 7) img = new NormalImageRenderer(spr, basePath + "Flipper_Down_Right.png");
+    else img = new NormalImageRenderer(spr, basePath + "Flipper_Right_Down.png");
 }
 
 // Sprite 97: End of Level Flag
