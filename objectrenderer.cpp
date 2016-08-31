@@ -160,6 +160,9 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr)
     case 143: // Conveyor Belt Switch
         ret = new NormalImageRenderer(spr, basePath + "conveyor_belt_switch.png");
         break;
+    case 148: //Move While On Lift
+        ret = new NormalImageRenderer(spr, basePath + "move_while_on_lift.png");
+        break;
     case 150: // Seesaw Lift
         ret = new NormalImageRenderer(spr, basePath + "seesaw_lift.png");
         break;
@@ -235,6 +238,12 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr)
     case 225: // P Switch
         ret = new SwitchRenderer(spr, basePath + "p_switch.png");
         break;
+    case 228: // Boo
+        ret = new NormalImageRenderer(spr, basePath + "boo.png");
+        break;
+    case 229: // Big Boo
+        ret = new NormalImageRenderer(spr, basePath + "big_boo.png");
+        break
     case 234: // Spiked Ball
         ret = new NormalImageRenderer(spr, basePath + "spiked_ball.png");
         break;
