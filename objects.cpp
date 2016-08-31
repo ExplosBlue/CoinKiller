@@ -389,6 +389,12 @@ void Sprite::setRect()
         offsetx = -4;
         offsety = -21;
         break;
+    case 148: //move While On Lift
+        width = 249;
+        height = 34;
+        offsetx = -6;
+        offsety = -6;
+        break;
     case 150: // Seesaw Lift
         width = 280;
         height = 20;
@@ -515,6 +521,18 @@ void Sprite::setRect()
         height = 24;
         offsetx = -1;
         if (getNybble(5) != 1) offsety = -4;
+        break;
+    case 228: // Boo
+        width = 27;
+        height = 26;
+        offsetx = -4;
+        offsety = -4;
+        break;
+    case 229: //Big Boo
+        width = 86;
+        height = 80;
+        offsetx = 5;
+        offsety = 40;
         break;
     case 234: // Spiked Ball
         width = 38;
