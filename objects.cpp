@@ -523,16 +523,16 @@ void Sprite::setRect()
         if (getNybble(5) != 1) offsety = -4;
         break;
     case 228: // Boo
-        width = 31;
-        height = 30;
-        offsetx = -4;
-        offsety = -6;
+        width = 45;
+        height = 44;
+        offsetx = -12;
+        offsety = 5;
         break;
     case 229: //Big Boo
-        width = 95;
-        height = 94;
-        offsetx = 13;
-        offsety = 32;
+        width = 132;
+        height = 132;
+        offsetx = -16;
+        offsety = 15;
         break;
     case 234: // Spiked Ball
         width = 38;
