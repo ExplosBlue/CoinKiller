@@ -32,6 +32,7 @@ public:
     virtual bool save(FileBase* file)=0;
     virtual bool deleteFile(QString path)=0;
     virtual bool renameFile(QString path, QString newName)=0;
+    virtual bool renameDir(QString patn, QString newName)=0;
 };
 
 

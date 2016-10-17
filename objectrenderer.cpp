@@ -395,6 +395,11 @@ FlipperRenderer::FlipperRenderer(const Sprite *spr)
     else img = new NormalImageRenderer(spr, basePath + "Flipper_Right_Down.png");
 }
 
+void FlipperRenderer::render(QPainter *painter)
+{
+    img->render(painter);
+}
+
 // Sprite 97: End of Level Flag
 GoalRenderer::GoalRenderer(const Sprite *spr)
 {

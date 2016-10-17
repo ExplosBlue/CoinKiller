@@ -33,6 +33,7 @@
 
 #include "leveleditorwindow.h"
 #include "tileseteditorwindow.h"
+#include "sarcexplorerwindow.h"
 #include "sillytest.h" // REMOVE ME!!
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -173,6 +174,8 @@ void MainWindow::loadTranslations()
     ui->tabWidget->setTabText(2, settings->getTranslation("General", "settings"));
     ui->languagesLabel->setText(settings->getTranslation("MainWindow", "languages")+":");
     ui->updateSpriteData->setText(settings->getTranslation("MainWindow", "updateSDat"));
+    ui->tabWidget->setTabText(3, settings->getTranslation("General", "tools"));
+    ui->openSarcExplorerBtn->setText(settings->getTranslation("SarcExplorer", "sarcExplorer"));
 }
 
 void MainWindow::on_updateSpriteData_clicked()
@@ -210,4 +213,15 @@ void MainWindow::sdDownload_finished(QNetworkReply::NetworkError error)
         QMessageBox::information(this, "CoinKiller", settings->getTranslation("MainWindow", "sDatErrorNetwork"), QMessageBox::Ok);
 
     this->setEnabled(true);
+}
+
+void MainWindow::on_openSarcExplorerBtn_clicked()
+{
+    QString sarcFilePath = QFileDialog::getOpenFileName(this, settings->getTranslation("SarcExplorer", "selectArchive"), settings->getLastRomFSPath(), settings->getTranslation("SarcExplorer", "sarcArchives") + " (*.sarc)");
+
+    if (sarcFilePath.isEmpty() || sarcFilePath.isEmpty())
+        return;
+
+    SarcExplorerWindow* sarcExplorer = new SarcExplorerWindow(this, sarcFilePath, settings);
+    sarcExplorer->show();
 }

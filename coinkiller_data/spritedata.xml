@@ -769,7 +769,7 @@
     <value nybble="8" title="Unknown Value 8" comment="Checkbox?"/>
     <value nybble="12" title="Unknown Value 12" comment="..."/>
   </sprite>
-  <sprite id="123" name="Bouncy Mushroom Platform" notes="Previously appeared in the original NSMB.">
+  <sprite id="123" name="Bouncy Mushroom" notes="Previously appeared in the original NSMB.">
     <checkbox nybble="5" title="Only Solid from Top"/>
     <value nybble="6" title="Unknown Value 6" comment="No visual change with n 5 and n 16 on 0."/>
     <checkbox nybble="16" title="Longer Platform" comment="todo: Give detail on sizes."/>
@@ -901,9 +901,21 @@
     </list>
     <checkbox nybble="10" title="Spins Clockwise"/>
   </sprite>
-  <sprite id="148" name="Move-while-on Lift">
-    <value nybble="8" title="Unknown Value 8" comment="Always 2..."/>
-    <value nybble="16" title="Unknown Value 16" comment="Always 2..."/>
+  <sprite id="148" name="Boat Raft Platform" notes="Only moves right.">
+    <list nybble="8" title="Movement">
+      <entry value="0">Moves Back When Not On It</entry>
+      <entry value="1">Continuously Moves Once On It</entry>
+      <entry value="2">Stops When Not On It</entry>
+    </list>
+    <list nybble="18" title="Speed">
+      <entry value="0">Slowest</entry>
+      <entry value="2">Slower</entry>
+      <entry value="4">Slow</entry>
+      <entry value="6">Medium</entry>
+      <entry value="8">Fast</entry>
+      <entry value="10">Faster</entry>
+      <entry value="12">Fastest</entry>
+    </list>
   </sprite>
   <sprite id="149" name="Changeable-direction Lift" notes="It is still at first, it starts moving when landed on. After that it reverses direction when landed on. Values 15 and 4 for Unknown Values 5 and 6 make the platform move up and down. Values 2 and 6 make it move upright-downright.">
     <value nybble="1-2" title="Flag"/>
@@ -1199,7 +1211,7 @@
       <entry value="1">Top</entry>
       <entry value="2">Bottom</entry>
     </list>
-    <list nybble="12" title="Unknown Value 12" comment="Maybe Move related"/>
+    <value nybble="12" title="Unknown Value 12" comment="Maybe Move related"/>
     <value nybble="14" title="Height" comment="Value+1"/>
     <value nybble="16" title="Width" comment="Value+1"/>
   </sprite>
@@ -1496,12 +1508,12 @@
       <entry value="0">Left</entry>
       <entry value="1">Right</entry>
     </list>
-    <list nybble="6" title="Speed" comment="Speeds go in order from slow to fast.">
-      <entry value="0">No Movement</entry>
-      <entry value="1">Speed 1</entry>
-      <entry value="2">Speed 2</entry>
-      <entry value="3">Speed 3</entry>
-      <entry value="4">Speed 4</entry>
+    <list nybble="6" title="Speed" comment="Gotta Go Fast!">
+      <entry value="0">Does Not Move</entry>
+      <entry value="1">Slow</entry>
+      <entry value="2">Medium</entry>
+      <entry value="3">Fast</entry>
+      <entry value="4">Super Fast</entry>
     </list>
     <checkbox nybble="7" title="Maintain Momentum" comment="Spiked Ball keeps it's momentum when it hits other objects."/>
     <list nybble="14" title="Behaviour" comment="Behaviours loop after value 3">
@@ -1518,12 +1530,12 @@
       <entry value="0">Left</entry>
       <entry value="1">Right</entry>
     </list>
-    <list nybble="6" title="Speed" comment="Speeds go in order from slow to fast.">
-      <entry value="0">No movement</entry>
-      <entry value="1">Speed 1</entry>
-      <entry value="2">Speed 2</entry>
-      <entry value="3">Speed 3</entry>
-      <entry value="4">Speed 4</entry>
+    <list nybble="6" title="Speed" comment="Gotta Go Fast!">
+      <entry value="0">Does Not Move</entry>
+      <entry value="1">Slow</entry>
+      <entry value="2">Medium</entry>
+      <entry value="3">Fast</entry>
+      <entry value="4">Super Fast</entry>
     </list>
     <checkbox nybble="7" title="Maintain Momentum" comment="Spiked Ball keeps it's momentum when it hits other objects."/>
     <value nybble="9" title="Unknown Value 9" comment="Checkbox?"/>
@@ -1542,12 +1554,12 @@
       <entry value="0">Left</entry>
       <entry value="1">Right</entry>
     </list>
-    <list nybble="6" title="Speeds" comment="Speeds go in order from slow to fast.">
-      <entry value="0">No movement</entry>
-      <entry value="1">Speed 1</entry>
-      <entry value="2">Speed 2</entry>
-      <entry value="3">Speed 3</entry>
-      <entry value="4">Speed 4</entry>
+    <list nybble="6" title="Speeds" comment="Gotta Go Fast!">
+      <entry value="0">Does Not Move</entry>
+      <entry value="1">Slow</entry>
+      <entry value="2">Medium</entry>
+      <entry value="3">Fast</entry>
+      <entry value="4">Super Fast</entry>
     </list>
     <checkbox nybble="7" title="Maintain Momentum" comment="Spiked Ball keeps it's momentum when it hits other objects."/>
     <value nybble="12" title="Unknown Value 12" comment="Always 1..."/>
@@ -1753,18 +1765,19 @@
   </sprite>
   <sprite id="269" name="Gold Ship" notes="Existing In-Game Sprite Data:&#13;&#10;Incomplete">
     <value nybble="12" title="Path Controller ID" comment="Use this to link this sprite to 188."/>
+    <value nybble="1" title="Unknown value 22" comment="Set to 1 at start of stage, And 2 at mid point?"/>
   </sprite>
   <sprite id="270" name="Icy Spiked Ball" notes="Icy version of a regular Spike Ball">
     <list nybble="5" title="Direction" comment="Sets the starting direction.">
       <entry value="0">Left</entry>
       <entry value="1">Right</entry>
     </list>
-    <list nybble="6" title="Speed" comment="Speeds go in order from slow to fast.">
-      <entry value="0">No movement</entry>
-      <entry value="1">Speed 1</entry>
-      <entry value="2">Speed 2</entry>
-      <entry value="3">Speed 3</entry>
-      <entry value="4">Speed 4</entry>
+    <list nybble="6" title="Speed" comment="Gotta Go Fast!">
+      <entry value="0">Does Not Move</entry>
+      <entry value="1">Slow</entry>
+      <entry value="2">Medium</entry>
+      <entry value="3">Fast</entry>
+      <entry value="4">Super Fast</entry>
     </list>
   </sprite>
   <sprite id="271" name="Big Icy Spiked Ball" notes="Likely to have identical sprite data to normal Big Spike Ball">
@@ -1869,7 +1882,7 @@
   <sprite id="286" name="Chandelier Lift - Big"/>
   <sprite id="287" name="Door - Toad House" notes="Existing In-Game Sprite Data: Incomplete"/>
   <sprite id="288" name="Resources Loader - Mega Mario"/>
-  <sprite id="289" name="Bouncy Mushroom Platform - Castle">
+  <sprite id="289" name="Bouncy Mushroom - Castle">
     <checkbox nybble="16" title="Longer Platform" comment="todo: Give detail on sizes."/>
   </sprite>
   <sprite id="290" name="Path-controlled Climbable Fence (small)">
@@ -1898,7 +1911,7 @@
     <value nybble="8" title="Speed?" comment="..."/>
     <value nybble="9" title="Move when on?" comment="Checkbox with mask 2?"/>
   </sprite>
-  <sprite id="298" name="&quot;Applause-kun&quot;">
+  <sprite id="298" name="Resources Loader - Applause Coin" notes="Needed for the applause coin to work, place at the start of the level.">
     <value nybble="12" title="Unknown Value 12" comment="Always 1..."/>
   </sprite>
   <sprite id="299" name="Rectangle Lift - Lemmy Battle"/>
