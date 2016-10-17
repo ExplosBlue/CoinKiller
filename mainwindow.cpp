@@ -182,12 +182,12 @@ void MainWindow::on_updateSpriteData_clicked()
     if (reply == QMessageBox::No)
         return;
 
+    this->setEnabled(false);
+
     QUrl sdUrl("http://kuribo64.net/nsmb2/spritexml2.php");
     sdDownloader = new FileDownloader(sdUrl, this);
 
     connect(sdDownloader, SIGNAL(downloaded(QNetworkReply::NetworkError)), this, SLOT(sdDownload_finished(QNetworkReply::NetworkError)));
-
-    this->setEnabled(false);
 }
 
 void MainWindow::sdDownload_finished(QNetworkReply::NetworkError error)

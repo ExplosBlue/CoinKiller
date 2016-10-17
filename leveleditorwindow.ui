@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>957</width>
-    <height>622</height>
+    <width>1541</width>
+    <height>700</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -62,8 +62,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>861</width>
-              <height>281</height>
+              <width>1445</width>
+              <height>86</height>
              </rect>
             </property>
            </widget>
@@ -82,7 +82,7 @@
           <x>0</x>
           <y>0</y>
           <width>69</width>
-          <height>556</height>
+          <height>634</height>
          </rect>
         </property>
        </widget>
@@ -96,7 +96,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>957</width>
+     <width>1541</width>
      <height>21</height>
     </rect>
    </property>
@@ -135,6 +135,7 @@
     <addaction name="actionLower"/>
     <addaction name="actionRaiseLayer"/>
     <addaction name="actionLowerLayer"/>
+    <addaction name="separator"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -142,6 +143,9 @@
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <widget class="QToolBar" name="toolBar">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
    <property name="windowTitle">
     <string>toolBar</string>
    </property>
@@ -175,6 +179,7 @@
    <addaction name="separator"/>
    <addaction name="actionAddArea"/>
    <addaction name="actionDeleteCurrentArea"/>
+   <addaction name="separator"/>
   </widget>
   <action name="actionToggleLayer1">
    <property name="checkable">

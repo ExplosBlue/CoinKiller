@@ -34,7 +34,6 @@ SOURCES += main.cpp\
     objectrenderer.cpp \
     tileseteditorwindow.cpp \
     tileseteditorwidgets.cpp \
-    editionmode.cpp \
     spritedata.cpp \
     tilesetpalette.cpp \
     entranceeditorwidget.cpp \
@@ -47,7 +46,8 @@ SOURCES += main.cpp\
     progresspatheditorwidget.cpp \
     settingsmanager.cpp \
     filedownloader.cpp \
-    levelminimap.cpp
+    levelminimap.cpp \
+    objectseditionmode.cpp
 
 HEADERS  += mainwindow.h \
     filesystembase.h \
@@ -85,7 +85,8 @@ HEADERS  += mainwindow.h \
     locationeditorwidget.h \
     settingsmanager.h \
     filedownloader.h \
-    levelminimap.h
+    levelminimap.h \
+    objectseditionmode.h
 
 FORMS    += mainwindow.ui \
     leveleditorwindow.ui \

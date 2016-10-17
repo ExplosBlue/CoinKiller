@@ -25,7 +25,7 @@
 #include "filesystem.h"
 #include "level.h"
 #include "tileset.h"
-#include "editionmode.h"
+#include "objectseditionmode.h"
 
 class LevelView : public QWidget
 {
@@ -47,6 +47,8 @@ public:
     void raiseLayer();
     void lowerLayer();
 
+    void setEditonMode(EditMode newMode, bool init = false);
+
     EditionMode* editionModePtr() { return mode; }
     ObjectsEditonMode* objEditionModePtr() { return objectEditionMode; }
 
@@ -64,6 +66,7 @@ protected:
     void mouseReleaseEvent(QMouseEvent *) Q_DECL_OVERRIDE;
     void mouseMoveEvent(QMouseEvent *) Q_DECL_OVERRIDE;
     void moveEvent(QMoveEvent *) Q_DECL_OVERRIDE;
+    void keyPressEvent(QKeyEvent *) Q_DECL_OVERRIDE;
 
 private:
     Level* level;

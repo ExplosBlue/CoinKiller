@@ -72,6 +72,8 @@ public:
     int getType() const;
     bool isResizable() const { return true; }
     int getid() const;
+    void setTsID(int tsID);
+    void setObjID(int objID);
     int getLayer() const;
     QString toString(int xOffset, int yOffset) const;
     void setLayer(int layer) { this->layer = layer; }
@@ -91,6 +93,7 @@ public:
     int getType() const;
     bool isResizable() const { return false; }
     int getid() const;
+    void setid(int id) { this->id = id; this->setRect(); }
     void setByte(int id, quint8 nbr);
     void setNybble(int id, quint8 nbr);
     quint8 getByte(int id) const;

@@ -1,4 +1,4 @@
-#include "editionmode.h"
+#include "objectseditionmode.h"
 #include "unitsconvert.h"
 #include "is.h"
 
@@ -415,6 +415,11 @@ void ObjectsEditonMode::render(QPainter *painter)
     }
 }
 
+void ObjectsEditonMode::deactivate()
+{
+    selectedObjects.clear();
+}
+
 void ObjectsEditonMode::drawPlus(QPainter *painter, int x, int y)
 {
     QPainterPath path1;
@@ -781,3 +786,38 @@ void ObjectsEditonMode::checkEmits()
     else
         emit selectdObjectChanged(selectedObjects[0]);
 }
+
+void ObjectsEditonMode::setObject(int selObject, int selTileset)
+{
+    this->selObject = selObject;
+    this->selTileset = selTileset;
+
+    foreach (Object* o, selectedObjects)
+    {
+        if(is<BgdatObject*>(o))
+        {
+            BgdatObject* obj = dynamic_cast<BgdatObject*>(o);
+            obj->setObjID(selObject);
+            obj->setTsID(selTileset);
+        }
+    }
+
+    emit updateLevelView();
+}
+
+void ObjectsEditonMode::setSprite(int selSprite)
+{
+    this->selSprite = selSprite;
+
+    foreach (Object* o, selectedObjects)
+    {
+        if(is<Sprite*>(o))
+        {
+            Sprite* spr = dynamic_cast<Sprite*>(o);
+            spr->setid(selSprite);
+        }
+    }
+
+    emit updateLevelView();
+}
+
