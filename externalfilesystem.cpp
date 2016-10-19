@@ -77,3 +77,11 @@ bool ExternalFilesystem::renameFile(QString path, QString newName)
     if (!file.exists()) return false;
     return file.rename(newName);
 }
+
+bool ExternalFilesystem::renameDir(QString path, QString newName)
+{
+    QDir dir(basepath + path);
+    if (!dir.exists()) return false;
+    QString newPath = dir.path() + "/" + newName;   // Is this working? Dunno. TODO: test this
+    return dir.rename(path, newPath);
+}

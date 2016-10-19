@@ -38,8 +38,8 @@ LevelView::LevelView(QWidget *parent, Level* level) : QWidget(parent)
     layerMask = 0x7; // failsafe
 
     setMouseTracking(true);
-    objectEditionMode = new ObjectsEditonMode(level);
-    mode = objectEditionMode;
+
+    setEditonMode(EditMode_ObjectsMode, true);
 
     zoom = 1;
     grid = false;
@@ -47,6 +47,7 @@ LevelView::LevelView(QWidget *parent, Level* level) : QWidget(parent)
 
 LevelView::~LevelView()
 {
+    mode->deactivate();
     delete objectEditionMode;
 }
 
@@ -250,8 +251,8 @@ void LevelView::paintEvent(QPaintEvent* evt)
         painter.drawText(zonerect.adjusted(adjustX,adjustY,100,20), zoneText);
     }
 
-    // Render Selection
-    objectEditionMode->render(&painter);
+    // Render Edition Mode Stuff
+    mode->render(&painter);
 
     // Render Grid
     if (grid)
@@ -319,6 +320,8 @@ void LevelView::paintEvent(QPaintEvent* evt)
 
 void LevelView::mousePressEvent(QMouseEvent* evt)
 {
+    setFocus();
+
     if (evt->buttons() & Qt::MiddleButton)
     {
         dragX = evt->x();
@@ -375,6 +378,11 @@ void LevelView::mouseReleaseEvent(QMouseEvent *evt)
 void LevelView::moveEvent(QMoveEvent *)
 {
     update();
+}
+
+void LevelView::keyPressEvent(QKeyEvent* evt)
+{
+    mode->keyPress(evt);
 }
 
 void LevelView::saveLevel()
@@ -456,5 +464,27 @@ void LevelView::selectObj(Object *obj)
         emit scrollTo(sX, sY);
     }
 
+    update();
+}
+
+void LevelView::setEditonMode(EditMode newMode, bool init)
+{
+    if (init)
+    {
+        objectEditionMode = new ObjectsEditonMode(level);
+        connect(objectEditionMode, SIGNAL(updateLevelView()), this, SLOT(update()));
+    }
+    else
+        mode->deactivate();
+
+    switch (newMode)
+    {
+        case EditMode_ObjectsMode:
+        default:
+            mode = objectEditionMode;
+            break;
+    }
+
+    mode->activate();
     update();
 }

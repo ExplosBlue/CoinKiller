@@ -19,6 +19,7 @@ file=File
 filename=Filename
 help=Help
 settings=Settings
+tools=Tools
 edit=Edit
 save=Save
 copy=Copy
@@ -67,7 +68,7 @@ background=Background
 interactive=Interactive
 behaviors=Behaviors
 object=Object
-objects=Objcts
+objects=Objects
 hitbox=Hitbox
 terrainType=Terrain Type
 behavior3d=3D Behavior
@@ -90,3 +91,8 @@ moveObjDown=Move Object Down
 objSettings=Object Settings
 tileData=Tile Data
 noneData=None
+
+[SarcExplorer]
+sarcExplorer=Sarc Explorer
+sarcArchives=Sarc Archives
+selectArchive=Select an Sarc Archive

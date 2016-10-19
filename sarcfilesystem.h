@@ -35,7 +35,7 @@ public:
     bool save(FileBase* file);
     bool deleteFile(QString path);
     bool renameFile(QString path, QString newName);
-
+    bool renameDir(QString path, QString newName);
 
 private:
     FileBase* sarc;

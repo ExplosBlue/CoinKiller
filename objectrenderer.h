@@ -63,13 +63,12 @@ protected:
 };
 
 // Sprite 94: Flipper (One way gate)
-class FlipperRenderer: public ObjectRenderer
+class FlipperRenderer: public SpriteRenderer
 {
 public:
     FlipperRenderer(const Sprite *spr);
     void render(QPainter *painter);
 protected:
-    const Object *obj;
     NormalImageRenderer *img;
 };
 

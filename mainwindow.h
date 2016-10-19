@@ -52,6 +52,8 @@ private slots:
 
     void on_updateSpriteData_clicked();
 
+    void on_openSarcExplorerBtn_clicked();
+
 private:
     Ui::MainWindow *ui;
 

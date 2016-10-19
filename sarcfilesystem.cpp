@@ -78,15 +78,14 @@ bool SarcFilesystem::directoryExists(QString path)
     if (path[0] == '/')
         path.remove(0,1);
 
+    if (!path.endsWith("/"))
+        path.append("/");
+
     for (int i = 0; i < files.size(); i++)
     {
         QString thispath = files.keys()[i];
-        if (thispath.size() <= path.size())
-            continue;
 
-        QString thispathbase = thispath;
-        thispathbase.truncate(path.size());
-        if (thispathbase == path)
+        if (thispath.startsWith(path))
             return true;
     }
 
@@ -98,30 +97,27 @@ void SarcFilesystem::directoryContents(QString path, QDir::Filter filter, QList<
     if (path[0] == '/')
         path.remove(0,1);
 
+    if (path != "" && !path.endsWith("/"))
+        path.append("/");
+
     out.clear();
 
     for (int i = 0; i < files.size(); i++)
     {
         QString thispath = files.keys()[i];
-        if (thispath.size() <= path.size())
-            continue;
 
-        QString thispathbase = thispath;
-        thispathbase.truncate(path.size());
-        if (thispathbase == path)
+        if (thispath.startsWith(path))
         {
-            QString pathindir = thispath;
-            if (path.size())
-                pathindir.remove(0, path.size()+1);
+            thispath.remove(0, path.length());
 
-            int slashidx = pathindir.indexOf('/');
-            bool isdir = slashidx != -1;
+            int slashidx = thispath.indexOf('/');
+            bool isdir = (slashidx != -1);
+
             if ((isdir && (filter & QDir::Dirs)) || ((!isdir) && (filter & QDir::Files)))
             {
-                if (isdir) pathindir.truncate(slashidx);
-
-                if (!out.contains(pathindir))
-                    out.append(pathindir);
+                if (isdir) thispath = thispath.left(slashidx);
+                if (!out.contains(thispath))
+                    out.append(thispath);
             }
         }
     }
@@ -469,6 +465,42 @@ bool SarcFilesystem::renameFile(QString path, QString newName)
 
     files.remove(path);
     files.insert(thisfile->name, thisfile);
+
+    repack();
+
+    return true;
+}
+
+bool SarcFilesystem::renameDir(QString path, QString newPath)
+{
+    if (path[0] == '/')
+        path.remove(0,1);
+
+    if (path.endsWith("/"))
+        path.chop(1);
+
+    if (newPath[0] == '/')
+        newPath.remove(0,1);
+
+    if (newPath.endsWith("/"))
+        newPath.chop(1);
+
+    foreach (InternalSarcFile* thisfile, files.values())
+    {
+        if (thisfile == NULL)
+            throw std::logic_error("thisfile is NULL, shouldn't happen");
+
+        if (thisfile->name.startsWith(path + "/"))
+        {
+            QString oldName = thisfile->name;
+            files.remove(oldName);
+
+            QString newName = oldName.replace(path, newPath);
+            thisfile->name = newName;
+
+            files.insert(thisfile->name, thisfile);
+        }
+    }
 
     repack();
 

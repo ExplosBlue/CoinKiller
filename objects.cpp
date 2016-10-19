@@ -105,6 +105,16 @@ int BgdatObject::getType() const { return 0; }
 int BgdatObject::getid() const { return id; }
 int BgdatObject::getLayer() const { return layer; }
 
+void BgdatObject::setTsID(int tsID)
+{
+    id = (id & 0xFFF) | (tsID << 12);
+}
+
+void BgdatObject::setObjID(int objID)
+{
+    id = (id & 0xF000) | objID;
+}
+
 // Format: 0:ID:Layer:X:Y:Width:Height
 QString BgdatObject::toString(int xOffset, int yOffset) const { return QString("0:%1:%2:%3:%4:%5:%6").arg(id).arg(layer).arg(x+xOffset).arg(y+yOffset).arg(width).arg(height); }
 

@@ -19,6 +19,7 @@ file=Datei
 filename=Dateiname
 help=Hilfe
 settings=Einstellungen
+tools=Tools
 edit=Bearbeiten
 save=Speichern
 copy=Kopieren
@@ -90,3 +91,8 @@ moveObjDown=Objekt nach unten verschieben
 objSettings=Objekt Einstellungen
 tileData=Teildaten
 noneData=Keine
+
+[SarcExplorer]
+sarcExplorer=Sarc Explorer
+sarcArchives=Sarc Archive
+selectArchive=Sarc Archiv auswählen
