@@ -135,7 +135,7 @@ SpriteDataEditorWidget::SpriteDataEditorWidget(SpriteData *spriteData)
     layout->addWidget(spriteName, 0, 0, 1, 2);
 
     rawSpriteData = new QLineEdit();
-    rawSpriteData->setInputMask("HH HH HH HH HH HH HH HH HH HH HH HH");
+    rawSpriteData->setInputMask("HHHH HHHH HHHH HHHH HHHH HHHH");
     layout->addWidget(new QLabel("Raw Sprite Data:"), 1, 0, 1, 1, Qt::AlignRight);
     layout->addWidget(rawSpriteData, 1, 1);
     connect(rawSpriteData, SIGNAL(textEdited(QString)), this, SLOT(handleRawSpriteDataChange(QString)));
@@ -174,6 +174,7 @@ void SpriteDataEditorWidget::select(Sprite *sprite)
             layout->addWidget(fieldWidget, i+2, 1);
             listFieldWidgets.append(fieldWidget);
             connect(fieldWidget, SIGNAL(updateHex()), this, SLOT(updateRawSpriteData()));
+            connect(fieldWidget, SIGNAL(updateFields()), this, SLOT(updateFields()));
         }
         else if (field->type == Field::Checkbox)
         {
@@ -181,6 +182,7 @@ void SpriteDataEditorWidget::select(Sprite *sprite)
             layout->addWidget(fieldWidget, i+2, 1);
             checkboxFieldWidgets.append(fieldWidget);
             connect(fieldWidget, SIGNAL(updateHex()), this, SLOT(updateRawSpriteData()));
+            connect(fieldWidget, SIGNAL(updateFields()), this, SLOT(updateFields()));
         }
         else if (field->type == Field::Value)
         {
@@ -188,6 +190,7 @@ void SpriteDataEditorWidget::select(Sprite *sprite)
             layout->addWidget(fieldWidget, i+2, 1);
             valueFieldWidgets.append(fieldWidget);
             connect(fieldWidget, SIGNAL(updateHex()), this, SLOT(updateRawSpriteData()));
+            connect(fieldWidget, SIGNAL(updateFields()), this, SLOT(updateFields()));
         }
     }
 }
@@ -203,6 +206,13 @@ void SpriteDataEditorWidget::deselect()
     foreach (SpriteCheckboxFieldWidget* field, checkboxFieldWidgets) { layout->removeWidget(field); delete field; } checkboxFieldWidgets.clear();
 }
 
+void SpriteDataEditorWidget::updateFields()
+{
+    foreach (SpriteValueFieldWidget* field, valueFieldWidgets) field->updateValue();
+    foreach (SpriteListFieldWidget* field, listFieldWidgets) field->updateValue();
+    foreach (SpriteCheckboxFieldWidget* field, checkboxFieldWidgets) field->updateValue();
+}
+
 void SpriteDataEditorWidget::updateRawSpriteData()
 {
     QString rawSpriteDataStr;
@@ -213,16 +223,14 @@ void SpriteDataEditorWidget::updateRawSpriteData()
 
 void SpriteDataEditorWidget::handleRawSpriteDataChange(QString text)
 {
-    QStringList bytes = text.split(" ");
+    QString bytes = text.remove(" ");
 
     for (int i = 0; i < 12; i++)
-        editSprite->setByte(i, (quint8)bytes[i].toUInt(0, 16));
+        editSprite->setByte(i, (quint8)bytes.mid(i*2, 2).toUInt(0, 16));
 
     editSprite->setRect();
 
-    foreach (SpriteValueFieldWidget* field, valueFieldWidgets) field->updateValue();
-    foreach (SpriteListFieldWidget* field, listFieldWidgets) field->updateValue();
-    foreach (SpriteCheckboxFieldWidget* field, checkboxFieldWidgets) field->updateValue();
+    updateFields();
 
     emit updateLevelView();
 }
@@ -254,6 +262,7 @@ void SpriteValueFieldWidget::handleValueChange(int value)
     sprite->setNybbleData(value, field->startNybble, field->endNybble);
     sprite->setRect();
     emit updateHex();
+    emit updateFields();
 }
 
 
@@ -271,16 +280,20 @@ SpriteCheckboxFieldWidget::SpriteCheckboxFieldWidget(Sprite *sprite, Field *fiel
 void SpriteCheckboxFieldWidget::updateValue()
 {
     handleValueChanges = false;
-    setChecked(sprite->getNybbleData(field->startNybble, field->endNybble) == 1);
+    setChecked((sprite->getNybbleData(field->startNybble, field->endNybble) & field->mask) == field->mask);
     handleValueChanges = true;
 }
 
 void SpriteCheckboxFieldWidget::handleValueChange(bool checked)
 {
     if (!handleValueChanges) return;
-    sprite->setNybbleData(checked, field->startNybble, field->endNybble);
+
+    quint8 newData = sprite->getNybbleData(field->startNybble, field->endNybble) & (~field->mask);
+    if (checked) newData |= field->mask;
+    sprite->setNybbleData((int)newData, field->startNybble, field->endNybble);
     sprite->setRect();
     emit updateHex();
+    emit updateFields();
 }
 
 
@@ -310,4 +323,5 @@ void SpriteListFieldWidget::handleIndexChange(QString text)
     sprite->setNybbleData(field->listEntries.key(text, 0), field->startNybble, field->endNybble);
     sprite->setRect();
     emit updateHex();
+    emit updateFields();
 }

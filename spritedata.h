@@ -25,6 +25,7 @@ public:
     int endNybble;
 
     QMap<int, QString> listEntries;
+    quint8 mask;
 };
 
 class SpriteDefinition
