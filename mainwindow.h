@@ -54,6 +54,12 @@ private slots:
 
     void on_openSarcExplorerBtn_clicked();
 
+    void on_addTilesetBtn_clicked();
+
+    void on_removeTilesetBtn_clicked();
+
+    void on_tilesetView_clicked(const QModelIndex &index);
+
 private:
     Ui::MainWindow *ui;
 
@@ -63,6 +69,7 @@ private:
 
     FileDownloader* sdDownloader;
 
+    void setGameLoaded(bool loaded);
     bool startupClose = false;
     bool checkForMissingFiles();
     void loadTranslations();

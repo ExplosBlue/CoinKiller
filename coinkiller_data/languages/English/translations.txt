@@ -26,12 +26,18 @@ copy=Copy
 paste=Paste
 cut=Cut
 delete=Delete
+ok=OK
+cancel=Cancel
 world=World
 level=Level
 
 [MainWindow]
 levels=Levels
 tilesets=Tilesets
+addTileset=Add Tileset
+removeTileset=Remove Tileset
+blankTilesetMissing=You cannot create new tilesets without the tileset tamplate.
+tilesetExists=A tileset with that name already exists.
 loadUnpackedRomFS=Load unpacked ROMFS...
 selectUnpackedRomFSFolder=Select unpacked ROMFS Folder...
 aboutCoinKiller=About CoinKiller

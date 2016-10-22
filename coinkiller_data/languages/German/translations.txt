@@ -26,12 +26,18 @@ copy=Kopieren
 paste=Einfügen
 cut=Ausschneiden
 delete=Löschen
+ok=OK
+cancel=Abbrechen
 world=Welt
 level=Level
 
 [MainWindow]
 levels=Level
 tilesets=Tilesets
+addTileset=Tileset hinzufügen
+removeTileset=Tileset entfernen
+tilesetExists=Ein Tileset mit diesem Namen existiert bereits.
+blankTilesetMissing=Es können keine neuen Tilesets ohne die Tileset-Vorlage erstellt wereden
 loadUnpackedRomFS=Entpacktes ROMFS laden...
 selectUnpackedRomFSFolder=Ausgepacktes ROMFS auswählen...
 aboutCoinKiller=Über CoinKiller

@@ -35,6 +35,8 @@ public:
     bool renameFile(QString path, QString newName);
     bool renameDir(QString path, QString newName);
 
+    bool copyFile(QString path, QString newPath);
+
 private:
     QString basepath;
 };

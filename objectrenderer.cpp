@@ -243,7 +243,7 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr)
         break;
     case 229: // Big Boo
         ret = new NormalImageRenderer(spr, basePath + "big_boo.png");
-        break
+        break;
     case 234: // Spiked Ball
         ret = new NormalImageRenderer(spr, basePath + "spiked_ball.png");
         break;
