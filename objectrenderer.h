@@ -63,7 +63,7 @@ protected:
     const Sprite *spr;
     Tileset *tileset;
 private:
-    int tileIds [12] = { 27, 20, 15, 24, 23, 23, 19, 42, 100, 94, 105, 131 };
+    int tileIds [12] = { 27, 20, 15, 24, 23, 23, 19, 41, 101, 94, 105, 131 };
 };
 
 // Sprite 22: Special Exit Controller
