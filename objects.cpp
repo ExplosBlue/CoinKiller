@@ -160,6 +160,10 @@ void Sprite::setRect()
         offsetx = -18;
         offsety = 3;
         break;
+    case 18: // Tile God
+        width = qMax(getNybble(15) * 20, 20);
+        height = qMax(getNybble(13) * 20, 20);
+        break;
     case 19: // Desert Crater
         width = 65;
         height = 18;

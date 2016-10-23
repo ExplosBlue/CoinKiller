@@ -126,7 +126,7 @@ void LevelView::paintEvent(QPaintEvent* evt)
         if (!drawrect.intersects(sprRect))
             continue;
 
-        SpriteRenderer sprRend(spr);
+        SpriteRenderer sprRend(spr, level->tilesets);
         sprRend.render(&painter);
     }
 

@@ -2,6 +2,7 @@
 #define OBJECTRENDERER_H
 
 #include "objects.h"
+#include "tileset.h"
 
 #include <QPainter>
 
@@ -18,7 +19,7 @@ class SpriteRenderer: public ObjectRenderer
 {
 public:
     SpriteRenderer() {}
-    SpriteRenderer(const Sprite *spr);
+    SpriteRenderer(const Sprite *spr, Tileset *tilesets[]);
     void render(QPainter *painter);
 protected:
     const Sprite *spr;
@@ -51,6 +52,19 @@ protected:
 
 
 // Special Sprite Renderers
+
+// Sprite 18: Tile God
+class TileGodRenderer: public SpriteRenderer
+{
+public:
+    TileGodRenderer(const Sprite *spr, Tileset *tileset);
+    void render(QPainter *painter);
+protected:
+    const Sprite *spr;
+    Tileset *tileset;
+private:
+    int tileIds [12] = { 27, 20, 15, 24, 23, 23, 19, 42, 100, 94, 105, 131 };
+};
 
 // Sprite 22: Special Exit Controller
 class SpecialExitControllerRenderer: public SpriteRenderer

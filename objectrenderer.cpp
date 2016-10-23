@@ -3,7 +3,7 @@
 
 #include <QPainter>
 
-SpriteRenderer::SpriteRenderer(const Sprite *spr)
+SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
 {
     this->spr = spr;
 
@@ -18,6 +18,9 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr)
         break;
     case 9: // Whomp
         ret = new NormalImageRenderer(spr, basePath + "whomp.png");
+        break;
+    case 18: // Tile God
+        ret = new TileGodRenderer(spr, tilesets[0]);
         break;
     case 19: // Desert Crater
         ret = new NormalImageRenderer(spr, basePath + "desert_crater.png");
@@ -370,6 +373,59 @@ void RoundedRectRenderer::render(QPainter *painter)
 
     painter->setFont(QFont("Arial", 7, QFont::Normal));
     painter->drawText(rect, text, align);
+}
+
+// Sprite 18: Tile God
+TileGodRenderer::TileGodRenderer(const Sprite *spr, Tileset *tileset)
+{
+    this->spr = spr;
+    this->tileset = tileset;
+}
+
+void TileGodRenderer::render(QPainter *painter)
+{
+    QRect sprrect(spr->getx(), spr->gety(), spr->getwidth(), spr->getheight());
+
+    if ((spr->getNybble(7) % 2) == 0)
+    {
+        QBrush b(Qt::BDiagPattern);
+        b.setColor(QColor(25, 25, 25));
+
+        painter->fillRect(sprrect, b);
+
+        painter->setPen(QPen(Qt::black));
+    }
+
+    else
+    {
+        if (tileset == NULL)
+            painter->fillRect(sprrect, QColor(200, 0, 0, 120));
+        else
+        {
+            QPixmap pix(spr->getwidth(), spr->getheight());
+            pix.fill(QColor(0,0,0,0));
+            QPainter tempPainter(&pix);
+
+            TileGrid tileGrid;
+            tileGrid[0xFFFFFFFF] = 1;
+
+            tempPainter.setOpacity(0.5);
+
+            int tileId = tileIds[0];
+
+            if (spr->getNybble(6) < 12)
+                tileId = tileIds[spr->getNybble(6)];
+
+
+            for (int x = 0; x < spr->getwidth()/20; x++)
+                for (int y = 0; y < spr->getheight()/20; y++)
+                    tileset->drawTile(tempPainter, tileGrid, tileId, x, y, 1, 0);
+
+            painter->drawPixmap(spr->getx(), spr->gety(), spr->getwidth(), spr->getheight(), pix);
+        }
+    }
+
+    painter->drawRect(sprrect);
 }
 
 // Sprite 22: Special Exit Controller
