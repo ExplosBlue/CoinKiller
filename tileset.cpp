@@ -30,7 +30,7 @@ Tileset::Tileset(Game *game, QString name)
 
     texImage = texture->getTexture(0);
 
-    if (name == "J_Kihon" || name == "J_Chika" || name == "J_Gold" || name == "J_Setsugen" || name == "J_Suichu" || name == "J_Yougan")
+    if (name.startsWith("J_"))
         drawOverrides = true;
 
     // parse the object def
