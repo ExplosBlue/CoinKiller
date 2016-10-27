@@ -164,6 +164,28 @@ protected:
     NormalImageRenderer *bottom;
 };
 
+// Sprite 147: 3 Plat Rickshaw
+class ThreePlatRickRenderer: public ObjectRenderer
+{
+public:
+    ThreePlatRickRenderer(const Sprite *spr);
+    void render(QPainter *painter);
+protected:
+    const Object *obj;
+    NormalImageRenderer *img;
+};
+
+// Sprite 154: 4 Plat Rickshaw
+class FourPlatRickRenderer: public ObjectRenderer
+{
+public:
+    FourPlatRickRenderer(const Sprite *spr);
+    void render(QPainter *painter);
+protected:
+    const Object *obj;
+    NormalImageRenderer *img;
+};
+
 // Sprite 165: Koopa Troopa
 class KoopaTroopaRenderer: public ObjectRenderer
 {
@@ -248,6 +270,17 @@ public:
     void render(QPainter *painter);
 protected:
     const Sprite *spr;
+};
+
+// Sprite 134: Ruins Plat Rickshaw
+class RuinsRickRenderer: public ObjectRenderer
+{
+public:
+    RuinsRickRenderer(const Sprite *spr);
+    void render(QPainter *painter);
+protected:
+    const Object *obj;
+    NormalImageRenderer *img;
 };
 
 class EntranceRenderer : public ObjectRenderer

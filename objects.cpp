@@ -403,6 +403,22 @@ void Sprite::setRect()
         offsetx = -4;
         offsety = -21;
         break;
+    case 147: // 3 plat rickshaw
+        if (getNybble(5) != 1)
+        {
+            width = 128;
+            height = 89;
+            offsetx = -60;
+            offsety = -60;
+        }
+        else
+        {
+            width = 182;
+            height = 121;
+            offsetx = -90;
+            offsety = -80;
+        }
+        break;
     case 148: //move While On Lift
         width = 249;
         height = 34;
@@ -413,6 +429,22 @@ void Sprite::setRect()
         width = 280;
         height = 20;
         offsetx= 20;
+        break;
+    case 154: // 4 plat rickshaw
+        if (getNybble(5) == 1)
+        {
+            width = 116;
+            height = 90;
+            offsetx = -48;
+            offsety = -34;
+        }
+        else
+        {
+            width = 174;
+            height = 130;
+            offsetx = -40;
+            offsety = -54;
+        }
         break;
     case 165: // Koopa Troopa
         width = 27;
@@ -426,10 +458,66 @@ void Sprite::setRect()
         offsetx = 5;
         offsety = 40;
         break;
+    case 172: // Pipe Bone Piranha Plant - Up
+        width = 30;
+        height = 34;
+        offsetx = 5;
+        offsety = -35;
+        break;
+    case 173: // Pipe Bone Piranha Plant - Left
+        width = 34;
+        height = 30;
+        offsetx = -35;
+        offsety = 5;
+        break;
+    case 174: // Pipe Bone Piranha Plant - Right
+        width = 34;
+        height = 30;
+        offsetx = 40;
+        offsety = 5;
+        break;
     case 175: // Grounded Piranha Plant
         width = 54;
         height = 33;
         offsetx = -8;
+        break;
+    case 176: // Big Grounded Piranha plant
+        if (getNybble(5) != 1)
+        {
+            width = 110;
+            height = 65;
+            offsetx = -25;
+            offsety = 16;
+        }
+        else
+        {
+            width = 110;
+            height = 65;
+            offsetx = -25;
+            offsety = 60;
+        }
+        break;
+    case 179: // Grounded Bone Piranha Plant
+        width = 53;
+        height = 33;
+        offsetx = -8;
+        offsety = 8;
+        break;
+    case 180: // Big Grounded Bone Piranha plant
+        if (getNybble(5) != 1)
+        {
+            width = 110;
+            height = 68;
+            offsetx = -25;
+            offsety = 14;
+        }
+        else
+        {
+            width = 110;
+            height = 68;
+            offsetx = -25;
+            offsety = 58;
+        }
         break;
     case 181: // Pipe Piranha Plant - Left
         width = 37;
@@ -675,6 +763,22 @@ void Sprite::setRect()
     case 302: // Moon Coin
         width = 40;
         height = 40;
+        break;
+    case 314: // Ruins rickshaw
+        if (getNybble(5) != 1)
+        {
+            width = 128;
+            height = 89;
+            offsetx = -60;
+            offsety = -60;
+        }
+        else
+        {
+            width = 166;
+            height = 110;
+            offsetx = -90;
+            offsety = -80;
+        }
         break;
     case 322: // Big Grinder
         width = 86;

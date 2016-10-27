@@ -163,11 +163,17 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
     case 143: // Conveyor Belt Switch
         ret = new NormalImageRenderer(spr, basePath + "conveyor_belt_switch.png");
         break;
+    case 147: // 3 Plat rickshaw
+        ret = new ThreePlatRickRenderer(spr);
+        break;
     case 148: //Move While On Lift
         ret = new NormalImageRenderer(spr, basePath + "move_while_on_lift.png");
         break;
     case 150: // Seesaw Lift
         ret = new NormalImageRenderer(spr, basePath + "seesaw_lift.png");
+        break;
+    case 154: // 3 Plat rickshaw
+        ret = new FourPlatRickRenderer(spr);
         break;
     case 158: // Buzzy Beetle
         ret = new NormalImageRenderer(spr, basePath + "buzzy_beetle.png");
@@ -178,8 +184,26 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
     case 167: // Pipe Piranha Plant - Down
         ret = new NormalImageRenderer(spr, basePath + "piranha_pipe_down.png");
         break;
+    case 172: // Pipe bone Piranha Plant - Up
+        ret = new NormalImageRenderer(spr, basePath + "bone_piranha_pipe_up.png");
+        break;
+    case 173: // Pipe Bone Piranha Plant - Left
+        ret = new NormalImageRenderer(spr, basePath + "bone_piranha_pipe_left.png");
+        break;
+    case 174: // Pipe Bone Piranha Plant - Right
+        ret = new NormalImageRenderer(spr, basePath + "bone_piranha_pipe_right.png");
+        break;
     case 175: // Grounded Piranha Plant
         ret = new NormalImageRenderer(spr, basePath + "piranha_plant.png");
+        break;
+    case 176: // Big Grounded Pirahna Plant
+        ret = new SwitchRenderer(spr, basePath + "big_piranha_plant.png");
+        break;
+    case 179: // Grounded Bone Piranha Plant
+        ret = new NormalImageRenderer(spr, basePath + "bone_piranha_plant.png");
+        break;
+    case 180: // Big Grounded Bone Pirahna Plant
+        ret = new SwitchRenderer(spr, basePath + "big_bone_piranha_plant.png");
         break;
     case 181: // Pipe Piranha Plant - Left
         ret = new NormalImageRenderer(spr, basePath + "piranha_pipe_left.png");
@@ -319,12 +343,16 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
     case 302: // Moon Coin
         ret = new NormalImageRenderer(spr, basePath + "moon_coin.png");
         break;
+    case 314: // Ruins Rickshaw
+        ret = new RuinsRickRenderer(spr);
+        break;
     case 322: // Big Grinder
         ret = new NormalImageRenderer(spr, basePath + "big_grinder.png");
         break;
     default:
         ret = new RoundedRectRenderer(spr, QString("%1").arg(spr->getid()), QColor(0,90,150,150));
         break;
+
     }
 }
 
@@ -577,6 +605,33 @@ void GoombaTowerRenderer::render(QPainter *painter)
     bottom->render(painter);
 }
 
+// Sprite 147: 3 Plat Rickshaw
+ThreePlatRickRenderer::ThreePlatRickRenderer(const Sprite *spr)
+{
+    QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/");
+
+    if (spr->getNybble(5) == 1) img = new NormalImageRenderer(spr, basePath + "3Plat_Rickshaw_Big.png");
+    else img = new NormalImageRenderer(spr, basePath + "3Plat_Rickshaw.png");
+}
+
+void ThreePlatRickRenderer::render(QPainter *painter)
+{
+    img->render(painter);
+}
+
+// Sprite 154: 4 Plat Rickshaw
+FourPlatRickRenderer::FourPlatRickRenderer(const Sprite *spr)
+{
+    QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/");
+
+    if (spr->getNybble(5) == 1) img = new NormalImageRenderer(spr, basePath + "4Plat_Rickshaw.png");
+    else img = new NormalImageRenderer(spr, basePath + "4Plat_Rickshaw_Big.png");
+}
+
+void FourPlatRickRenderer::render(QPainter *painter)
+{
+    img->render(painter);
+}
 
 // Sprite 165: Koopa Troopa
 KoopaTroopaRenderer::KoopaTroopaRenderer(const Sprite *spr)
@@ -592,8 +647,7 @@ void KoopaTroopaRenderer::render(QPainter *painter)
     img->render(painter);
 }
 
-
-// Sprite 221/223/225: Switches
+// Sprite 176/180/221/223/225: Switches/Grounded Piranha plants
 SwitchRenderer::SwitchRenderer(const Sprite *spr, QString filename)
 {
     this->filename = filename;
@@ -752,6 +806,19 @@ void ClockRenderer::render(QPainter *painter)
     else painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), QPixmap(basePath + "clock_10.png"));
 }
 
+// Sprite 134: 3 Plat Rickshaw ruins
+RuinsRickRenderer::RuinsRickRenderer(const Sprite *spr)
+{
+    QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/");
+
+    if (spr->getNybble(5) == 1) img = new NormalImageRenderer(spr, basePath + "3Plat_Rickshaw_Ruins_Big.png");
+    else img = new NormalImageRenderer(spr, basePath + "3Plat_Rickshaw_Ruins.png");
+}
+
+void RuinsRickRenderer::render(QPainter *painter)
+{
+    img->render(painter);
+}
 
 // Entrance Renderer
 EntranceRenderer::EntranceRenderer(const Entrance *entrance)
