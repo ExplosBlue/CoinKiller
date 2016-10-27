@@ -3,7 +3,7 @@
 
 #include <QPainter>
 
-SpriteRenderer::SpriteRenderer(const Sprite *spr)
+SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
 {
     this->spr = spr;
 
@@ -18,6 +18,9 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr)
         break;
     case 9: // Whomp
         ret = new NormalImageRenderer(spr, basePath + "whomp.png");
+        break;
+    case 18: // Tile God
+        ret = new TileGodRenderer(spr, tilesets[0]);
         break;
     case 19: // Desert Crater
         ret = new NormalImageRenderer(spr, basePath + "desert_crater.png");
@@ -160,11 +163,17 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr)
     case 143: // Conveyor Belt Switch
         ret = new NormalImageRenderer(spr, basePath + "conveyor_belt_switch.png");
         break;
+    case 147: // 3 Plat rickshaw
+        ret = new ThreePlatRickRenderer(spr);
+        break;
     case 148: //Move While On Lift
         ret = new NormalImageRenderer(spr, basePath + "move_while_on_lift.png");
         break;
     case 150: // Seesaw Lift
         ret = new NormalImageRenderer(spr, basePath + "seesaw_lift.png");
+        break;
+    case 154: // 3 Plat rickshaw
+        ret = new FourPlatRickRenderer(spr);
         break;
     case 158: // Buzzy Beetle
         ret = new NormalImageRenderer(spr, basePath + "buzzy_beetle.png");
@@ -175,8 +184,26 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr)
     case 167: // Pipe Piranha Plant - Down
         ret = new NormalImageRenderer(spr, basePath + "piranha_pipe_down.png");
         break;
+    case 172: // Pipe bone Piranha Plant - Up
+        ret = new NormalImageRenderer(spr, basePath + "bone_piranha_pipe_up.png");
+        break;
+    case 173: // Pipe Bone Piranha Plant - Left
+        ret = new NormalImageRenderer(spr, basePath + "bone_piranha_pipe_left.png");
+        break;
+    case 174: // Pipe Bone Piranha Plant - Right
+        ret = new NormalImageRenderer(spr, basePath + "bone_piranha_pipe_right.png");
+        break;
     case 175: // Grounded Piranha Plant
         ret = new NormalImageRenderer(spr, basePath + "piranha_plant.png");
+        break;
+    case 176: // Big Grounded Pirahna Plant
+        ret = new SwitchRenderer(spr, basePath + "big_piranha_plant.png");
+        break;
+    case 179: // Grounded Bone Piranha Plant
+        ret = new NormalImageRenderer(spr, basePath + "bone_piranha_plant.png");
+        break;
+    case 180: // Big Grounded Bone Pirahna Plant
+        ret = new SwitchRenderer(spr, basePath + "big_bone_piranha_plant.png");
         break;
     case 181: // Pipe Piranha Plant - Left
         ret = new NormalImageRenderer(spr, basePath + "piranha_pipe_left.png");
@@ -243,7 +270,7 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr)
         break;
     case 229: // Big Boo
         ret = new NormalImageRenderer(spr, basePath + "big_boo.png");
-        break
+        break;
     case 234: // Spiked Ball
         ret = new NormalImageRenderer(spr, basePath + "spiked_ball.png");
         break;
@@ -316,12 +343,16 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr)
     case 302: // Moon Coin
         ret = new NormalImageRenderer(spr, basePath + "moon_coin.png");
         break;
+    case 314: // Ruins Rickshaw
+        ret = new RuinsRickRenderer(spr);
+        break;
     case 322: // Big Grinder
         ret = new NormalImageRenderer(spr, basePath + "big_grinder.png");
         break;
     default:
         ret = new RoundedRectRenderer(spr, QString("%1").arg(spr->getid()), QColor(0,90,150,150));
         break;
+
     }
 }
 
@@ -370,6 +401,59 @@ void RoundedRectRenderer::render(QPainter *painter)
 
     painter->setFont(QFont("Arial", 7, QFont::Normal));
     painter->drawText(rect, text, align);
+}
+
+// Sprite 18: Tile God
+TileGodRenderer::TileGodRenderer(const Sprite *spr, Tileset *tileset)
+{
+    this->spr = spr;
+    this->tileset = tileset;
+}
+
+void TileGodRenderer::render(QPainter *painter)
+{
+    QRect sprrect(spr->getx(), spr->gety(), spr->getwidth(), spr->getheight());
+
+    if ((spr->getNybble(7) % 2) == 0)
+    {
+        QBrush b(Qt::BDiagPattern);
+        b.setColor(QColor(25, 25, 25));
+
+        painter->fillRect(sprrect, b);
+
+        painter->setPen(QPen(Qt::black));
+    }
+
+    else
+    {
+        if (tileset == NULL)
+            painter->fillRect(sprrect, QColor(200, 0, 0, 120));
+        else
+        {
+            QPixmap pix(spr->getwidth(), spr->getheight());
+            pix.fill(QColor(0,0,0,0));
+            QPainter tempPainter(&pix);
+
+            TileGrid tileGrid;
+            tileGrid[0xFFFFFFFF] = 1;
+
+            tempPainter.setOpacity(0.5);
+
+            int tileId = tileIds[0];
+
+            if (spr->getNybble(6) < 12)
+                tileId = tileIds[spr->getNybble(6)];
+
+
+            for (int x = 0; x < spr->getwidth()/20; x++)
+                for (int y = 0; y < spr->getheight()/20; y++)
+                    tileset->drawTile(tempPainter, tileGrid, tileId, x, y, 1, 0);
+
+            painter->drawPixmap(spr->getx(), spr->gety(), spr->getwidth(), spr->getheight(), pix);
+        }
+    }
+
+    painter->drawRect(sprrect);
 }
 
 // Sprite 22: Special Exit Controller
@@ -521,6 +605,33 @@ void GoombaTowerRenderer::render(QPainter *painter)
     bottom->render(painter);
 }
 
+// Sprite 147: 3 Plat Rickshaw
+ThreePlatRickRenderer::ThreePlatRickRenderer(const Sprite *spr)
+{
+    QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/");
+
+    if (spr->getNybble(5) == 1) img = new NormalImageRenderer(spr, basePath + "3Plat_Rickshaw_Big.png");
+    else img = new NormalImageRenderer(spr, basePath + "3Plat_Rickshaw.png");
+}
+
+void ThreePlatRickRenderer::render(QPainter *painter)
+{
+    img->render(painter);
+}
+
+// Sprite 154: 4 Plat Rickshaw
+FourPlatRickRenderer::FourPlatRickRenderer(const Sprite *spr)
+{
+    QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/");
+
+    if (spr->getNybble(5) == 1) img = new NormalImageRenderer(spr, basePath + "4Plat_Rickshaw.png");
+    else img = new NormalImageRenderer(spr, basePath + "4Plat_Rickshaw_Big.png");
+}
+
+void FourPlatRickRenderer::render(QPainter *painter)
+{
+    img->render(painter);
+}
 
 // Sprite 165: Koopa Troopa
 KoopaTroopaRenderer::KoopaTroopaRenderer(const Sprite *spr)
@@ -536,8 +647,7 @@ void KoopaTroopaRenderer::render(QPainter *painter)
     img->render(painter);
 }
 
-
-// Sprite 221/223/225: Switches
+// Sprite 176/180/221/223/225: Switches/Grounded Piranha plants
 SwitchRenderer::SwitchRenderer(const Sprite *spr, QString filename)
 {
     this->filename = filename;
@@ -696,6 +806,19 @@ void ClockRenderer::render(QPainter *painter)
     else painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), QPixmap(basePath + "clock_10.png"));
 }
 
+// Sprite 134: 3 Plat Rickshaw ruins
+RuinsRickRenderer::RuinsRickRenderer(const Sprite *spr)
+{
+    QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/");
+
+    if (spr->getNybble(5) == 1) img = new NormalImageRenderer(spr, basePath + "3Plat_Rickshaw_Ruins_Big.png");
+    else img = new NormalImageRenderer(spr, basePath + "3Plat_Rickshaw_Ruins.png");
+}
+
+void RuinsRickRenderer::render(QPainter *painter)
+{
+    img->render(painter);
+}
 
 // Entrance Renderer
 EntranceRenderer::EntranceRenderer(const Entrance *entrance)

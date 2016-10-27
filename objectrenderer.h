@@ -2,6 +2,7 @@
 #define OBJECTRENDERER_H
 
 #include "objects.h"
+#include "tileset.h"
 
 #include <QPainter>
 
@@ -18,7 +19,7 @@ class SpriteRenderer: public ObjectRenderer
 {
 public:
     SpriteRenderer() {}
-    SpriteRenderer(const Sprite *spr);
+    SpriteRenderer(const Sprite *spr, Tileset *tilesets[]);
     void render(QPainter *painter);
 protected:
     const Sprite *spr;
@@ -51,6 +52,19 @@ protected:
 
 
 // Special Sprite Renderers
+
+// Sprite 18: Tile God
+class TileGodRenderer: public SpriteRenderer
+{
+public:
+    TileGodRenderer(const Sprite *spr, Tileset *tileset);
+    void render(QPainter *painter);
+protected:
+    const Sprite *spr;
+    Tileset *tileset;
+private:
+    int tileIds [12] = { 27, 20, 15, 24, 23, 23, 19, 41, 101, 94, 105, 131 };
+};
 
 // Sprite 22: Special Exit Controller
 class SpecialExitControllerRenderer: public SpriteRenderer
@@ -150,6 +164,28 @@ protected:
     NormalImageRenderer *bottom;
 };
 
+// Sprite 147: 3 Plat Rickshaw
+class ThreePlatRickRenderer: public ObjectRenderer
+{
+public:
+    ThreePlatRickRenderer(const Sprite *spr);
+    void render(QPainter *painter);
+protected:
+    const Object *obj;
+    NormalImageRenderer *img;
+};
+
+// Sprite 154: 4 Plat Rickshaw
+class FourPlatRickRenderer: public ObjectRenderer
+{
+public:
+    FourPlatRickRenderer(const Sprite *spr);
+    void render(QPainter *painter);
+protected:
+    const Object *obj;
+    NormalImageRenderer *img;
+};
+
 // Sprite 165: Koopa Troopa
 class KoopaTroopaRenderer: public ObjectRenderer
 {
@@ -234,6 +270,17 @@ public:
     void render(QPainter *painter);
 protected:
     const Sprite *spr;
+};
+
+// Sprite 134: Ruins Plat Rickshaw
+class RuinsRickRenderer: public ObjectRenderer
+{
+public:
+    RuinsRickRenderer(const Sprite *spr);
+    void render(QPainter *painter);
+protected:
+    const Object *obj;
+    NormalImageRenderer *img;
 };
 
 class EntranceRenderer : public ObjectRenderer
