@@ -125,7 +125,7 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
         ret = new NormalImageRenderer(spr, basePath + "dry_bones.png");
         break;
     case 111: // Giant Dry Bones
-        ret = new NormalImageRenderer(spr, basePath + "sgiant_dry_bones.png");
+        ret = new NormalImageRenderer(spr, basePath + "giant_dry_bones.png");
         break;
     case 114: // Floating Box
         ret = new FloatingBoxRenderer(spr);
