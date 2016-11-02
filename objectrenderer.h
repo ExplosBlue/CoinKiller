@@ -151,7 +151,7 @@ protected:
     const Sprite *spr;
 };
 
-// Sprite 136: Goomba
+// Sprite 136: Bone Goomba
 class BoneGoombaRenderer: public SpriteRenderer
 {
 public:
