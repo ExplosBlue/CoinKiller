@@ -369,10 +369,20 @@ void Sprite::setRect()
         offsety = -4;
         break;
     case 136: // Bone Goomba
-        width = 22;
-        height = 24;
-        offsetx = -2;
-        offsety = -4;
+        if (getNybble(14) != 1)
+        {
+            width = 22;
+            height = 24;
+            offsetx = -2;
+            offsety = -4;
+        }
+        else
+        {
+            width = 24;
+            height = 28;
+            offsetx = -2;
+            offsety = -8;
+        }
         break;
     case 137: // Micro Goomba
         width = 11;

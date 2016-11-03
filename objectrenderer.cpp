@@ -146,7 +146,7 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
         ret = new GoombaRenderer(spr);
         break;
     case 136: // Bone Goomba
-        ret = new NormalImageRenderer(spr, basePath + "bone_goomba.png");
+        ret = new BoneGoombaRenderer(spr);
         break;
     case 137: // Micro Goomba
         ret = new NormalImageRenderer(spr, basePath + "micro_goomba.png");
@@ -583,6 +583,20 @@ void GoombaRenderer::render(QPainter *painter)
 
     if (spr->getNybble(14) % 2 == 0) painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), QPixmap(basePath + "goomba.png"));
     else painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), QPixmap(basePath + "goomba_blue.png"));
+}
+
+// Sprite 136: Bone Goomba
+BoneGoombaRenderer::BoneGoombaRenderer(const Sprite *spr)
+{
+    this->spr = spr;
+}
+
+void BoneGoombaRenderer::render(QPainter *painter)
+{
+    QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/");
+
+    if (spr->getNybble(14) % 2 == 0) painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), QPixmap(basePath + "bone_goomba.png"));
+    else painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), QPixmap(basePath + "bone_goomba_alt.png"));
 }
 
 

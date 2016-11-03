@@ -151,6 +151,16 @@ protected:
     const Sprite *spr;
 };
 
+// Sprite 136: Bone Goomba
+class BoneGoombaRenderer: public SpriteRenderer
+{
+public:
+    BoneGoombaRenderer(const Sprite *spr);
+    void render(QPainter *painter);
+protected:
+    const Sprite *spr;
+};
+
 // Sprite 139: Goomba Tower
 class GoombaTowerRenderer: public ObjectRenderer
 {
