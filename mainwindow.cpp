@@ -290,10 +290,26 @@ void MainWindow::on_tilesetView_clicked(const QModelIndex &index)
     ui->removeTilesetBtn->setEnabled(index.data(Qt::UserRole+1).toString() != "");
 }
 
+int nightMode = 0;
+
 void MainWindow::on_nightModeBtn_clicked()
 {
-    QFile styleSheet(QCoreApplication::applicationDirPath() + "/coinkiller_data/NightMode.qss");
-    styleSheet.open(QFile::ReadOnly);
-    QString nightSheet = QLatin1String(styleSheet.readAll());
-    setStyleSheet(nightSheet);
+    if (nightMode == 1)
+    {
+        QFile styleSheet(QCoreApplication::applicationDirPath() + "/coinkiller_data/LightMode.qss");
+        styleSheet.open(QFile::ReadOnly);
+        QString lightSheet = QLatin1String(styleSheet.readAll());
+        setStyleSheet(lightSheet);
+        nightMode = 0;
+    }
+    else
+    {
+        QFile styleSheet(QCoreApplication::applicationDirPath() + "/coinkiller_data/NightMode.qss");
+        styleSheet.open(QFile::ReadOnly);
+        QString nightSheet = QLatin1String(styleSheet.readAll());
+        setStyleSheet(nightSheet);
+        nightMode = 1;
+    }
+
+
 }
