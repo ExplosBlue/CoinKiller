@@ -34,6 +34,7 @@
 #include "leveleditorwindow.h"
 #include "tileseteditorwindow.h"
 #include "sarcexplorerwindow.h"
+#include "newtilesetdialog.h"
 #include "sillytest.h" // REMOVE ME!!
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -58,6 +59,7 @@ MainWindow::MainWindow(QWidget *parent) :
     settings = new SettingsManager(this);
     loadTranslations();
     settings->setupLanguageSelector(ui->languageSelector);
+    setGameLoaded(false);
 }
 
 MainWindow::~MainWindow()
@@ -68,6 +70,11 @@ MainWindow::~MainWindow()
         delete game;
     }
     delete ui;
+}
+
+void MainWindow::setGameLoaded(bool loaded)
+{
+    ui->tab_tilesets->setEnabled(loaded);
 }
 
 void MainWindow::on_actionAbout_triggered()
@@ -93,6 +100,7 @@ void MainWindow::on_actionLoadUnpackedROMFS_triggered()
     FilesystemBase* fs = new ExternalFilesystem(dirpath);
     game = new Game(fs, settings);
 
+    setGameLoaded(true);
 
     ui->levelList->setModel(game->getCourseModel());
 
@@ -171,11 +179,14 @@ void MainWindow::loadTranslations()
     ui->actionLoadUnpackedROMFS->setText(settings->getTranslation("MainWindow", "loadUnpackedRomFS"));
     ui->tabWidget->setTabText(0, settings->getTranslation("MainWindow", "levels"));
     ui->tabWidget->setTabText(1, settings->getTranslation("MainWindow", "tilesets"));
+    ui->addTilesetBtn->setText(settings->getTranslation("MainWindow", "addTileset"));
+    ui->removeTilesetBtn->setText(settings->getTranslation("MainWindow", "removeTileset"));
     ui->tabWidget->setTabText(2, settings->getTranslation("General", "settings"));
     ui->languagesLabel->setText(settings->getTranslation("MainWindow", "languages")+":");
     ui->updateSpriteData->setText(settings->getTranslation("MainWindow", "updateSDat"));
     ui->tabWidget->setTabText(3, settings->getTranslation("General", "tools"));
     ui->openSarcExplorerBtn->setText(settings->getTranslation("SarcExplorer", "sarcExplorer"));
+    ui->nightModeBtn->setText(settings->getTranslation("MainWindow", "NightMode"));
 }
 
 void MainWindow::on_updateSpriteData_clicked()
@@ -224,4 +235,65 @@ void MainWindow::on_openSarcExplorerBtn_clicked()
 
     SarcExplorerWindow* sarcExplorer = new SarcExplorerWindow(this, sarcFilePath, settings);
     sarcExplorer->show();
+}
+
+void MainWindow::on_addTilesetBtn_clicked()
+{
+    QFile blankTs(QCoreApplication::applicationDirPath() + "/coinkiller_data/blank_tileset.sarc");
+    if (!blankTs.exists())
+    {
+        QMessageBox::information(this, "CoinKiller", game->settingsMgr->getTranslation("MainWindow", "blankTilesetMissing") + " (/coinkiller_data/blank_tileset.sarc).", QMessageBox::StandardButton::Ok);
+        return;
+    }
+
+    NewTilesetDialog ntd(this, game->settingsMgr);
+    int result = ntd.exec();
+
+    if (result != QDialog::Accepted)
+        return;
+
+    if (game->fs->fileExists("/Unit/" + ntd.getName() + ".sarc"))
+    {
+        QMessageBox::information(this, "CoinKiller", game->settingsMgr->getTranslation("MainWindow", "tilesetExists"), QMessageBox::StandardButton::Ok);
+        return;
+    }
+
+    blankTs.copy(game->settingsMgr->getLastRomFSPath() + "/Unit/" + ntd.getName() + ".sarc");
+
+    SarcFilesystem sarc(game->fs->openFile("/Unit/" + ntd.getName() + ".sarc"));
+    sarc.renameFile("BG_chk/d_bgchk_REPLACE.bin", "d_bgchk_" + ntd.getName() + ".bin");
+    sarc.renameFile("BG_tex/REPLACE.ctpk", ntd.getName() + ".ctpk");
+    sarc.renameFile("BG_unt/REPLACE.bin", ntd.getName() + ".bin");
+    sarc.renameFile("BG_unt/REPLACE_add.bin", ntd.getName() + "_add.bin");
+    sarc.renameFile("BG_unt/REPLACE_hd.bin", ntd.getName() + "_hd.bin");
+
+    Tileset ts(game, ntd.getName());
+    ts.setSlot(ntd.getSlot());
+    ts.save();
+
+    ui->tilesetView->setModel(game->getTilesetModel());
+}
+
+void MainWindow::on_removeTilesetBtn_clicked()
+{
+    if (ui->tilesetView->selectionModel()->selectedIndexes().length() == 0 || ui->tilesetView->selectionModel()->selectedIndexes().at(0).data(Qt::UserRole+1).toString() == "")
+        return;
+
+    QString selTsName =ui->tilesetView->selectionModel()->selectedIndexes().at(0).data(Qt::UserRole+1).toString();
+
+    game->fs->deleteFile("/Unit/" + selTsName + ".sarc");
+    ui->tilesetView->setModel(game->getTilesetModel());
+}
+
+void MainWindow::on_tilesetView_clicked(const QModelIndex &index)
+{
+    ui->removeTilesetBtn->setEnabled(index.data(Qt::UserRole+1).toString() != "");
+}
+
+void MainWindow::on_nightModeBtn_clicked()
+{
+    QFile styleSheet(QCoreApplication::applicationDirPath() + "/coinkiller_data/NightMode.qss");
+    styleSheet.open(QFile::ReadOnly);
+    QString nightSheet = QLatin1String(styleSheet.readAll());
+    setStyleSheet(nightSheet);
 }
