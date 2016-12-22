@@ -397,6 +397,14 @@ QTabBar::tab:!selected:hover
     background-color: QLinearGradient(x1:0, y1:0, x2:0, y2:1, stop:1 #212121, stop:0.4 #343434, stop:0.2 #343434, stop:0.1 #0055ff);
 }
 
+QToolBar
+{
+	color: #b1b1b1;
+	background-color: #323232;
+	border: 1px solid #323232;
+}
+
+
 QRadioButton::indicator:checked, QRadioButton::indicator:unchecked{
     color: #b1b1b1;
     background-color: #323232;
