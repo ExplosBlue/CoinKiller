@@ -310,6 +310,4 @@ void MainWindow::on_nightModeBtn_clicked()
         setStyleSheet(nightSheet);
         nightMode = 1;
     }
-
-
 }

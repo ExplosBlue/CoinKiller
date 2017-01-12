@@ -164,6 +164,11 @@ public:
         return idPath;
     }
 
+    int& getOpenCount()
+    {
+        return openCount;
+    }
+
 
 protected:
     FilesystemBase* parent;

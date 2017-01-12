@@ -301,6 +301,13 @@
   </sprite>
   <sprite id="53" name="Rotation Controller - Swaying" notes="Actor: 0x020">
     <value nybble="1-2" title="Flag"/>
+    <value nybble="7" title="unknown 7"/>
+    <value nybble="8" title="unknown 8"/>
+    <value nybble="17" title="unknown 17"/>
+    <value nybble="18" title="unknown 18"/>
+    <value nybble="19" title="unknown 19"/>
+    <value nybble="21" title="unknown 21"/>
+    <value nybble="22" title="Rotation ID"/>
   </sprite>
   <sprite id="54" name="Rotation Controller - Spinning" notes="Actor: 0x01e">
     <value nybble="1-2" title="Triggering Flag"/>
@@ -519,8 +526,8 @@
   </sprite>
   <sprite id="85" name="Flag Controller - Uses Locations (&quot;IF&quot;)">
     <value nybble="5" title="Unknown 5" comment="Used as 1 in 2-5 (for an instance used for detecting chain chomp and player location)"/>
-    <value nybble="1-2" title="Target Flag ID" comment="_Tested_."/>
-    <list nybble="7" title="Required Player Form" comment="_Tested_.">
+    <value nybble="1-2" title="Target Flag ID" comment="The flag that will activate when the player/enemy is in the location."/>
+    <list nybble="7" title="Required Player Form" comment="The item/power-up state that the player needs to be in to activate the event.">
       <entry value="0">No Requirement</entry>
       <entry value="1">Small</entry>
       <entry value="2">Super</entry>
@@ -528,7 +535,7 @@
       <entry value="4">Not White Tanooki or Gold or Mini</entry>
       <entry value="5">Tanooki,F</entry>
     </list>
-    <list nybble="8" title="Required Player Movement" comment="_Tested_. 5 is unused, but used in NSMBU.">
+    <list nybble="8" title="Required Player Movement" comment="5 is unused, but used in NSMBU.">
       <entry value="0">No Requirement</entry>
       <entry value="1">Standing</entry>
       <entry value="2">In the air</entry>
@@ -537,8 +544,10 @@
       <entry value="7">On Horizontal Climbable Rope</entry>
       <entry value="8">On Swinging Rope or Swinging Vine</entry>
     </list>
-    <value nybble="9-10" title="Enemy Watch Location ID" comment="_Tested_. If you set it to 255, the actor will ignore this. This is based on enemy location like in NSMBW, not enemy alive-ness like in NSMB and NSMBU/NSLU"/>
-    <value nybble="11-12" title="Player Watch Location ID" comment="_Tested_. If you set it to 255, the actor will ignore this."/>
+    <value nybble="9-10" title="Enemy Watch Location ID" comment="The enemy has to be in this location. If this needs to be ignored, check the designated checkbox."/>
+    <value nybble="11-12" title="Player Watch Location ID" comment="The player has to be in this location. If this needs to be ignored, check the designated checkbox."/>
+    <checkbox nybble="9-10" title="Ignore Enemy Location" mask="255" comment="When checked, it will ignore the enemy's location."/>
+    <checkbox nybble="11-12" title="Ignore Player Location" mask="255" comment="When checked, it will ignore the player's location."/>
   </sprite>
   <sprite id="86" name="Flag Controller - Zone Enter">
     <value nybble="1-2" title="Target Flag ID"/>
@@ -546,6 +555,8 @@
   <sprite id="87" name="Flag Controller - Multi-Chainer (If X, do Y THROUGH Z)">
     <value nybble="1-2" title="End Flag (Target)" comment="The activator will trigger all Flags from the start Flag ID to this Flag ID (including this one). The Value entered here must be larger than the Value entered for &amp;#39;Start Flag ID&amp;#39;"/>
     <value nybble="3-4" title="Start Flag (Triggering)" comment="The activator will start running when this Flag ID is triggered."/>
+    <value nybble="11-12" title="Unknown Value 11-12" comment="Most likely delay per event."/>
+    <checkbox nybble="5" title="Unknown Checkbox 5"/>
   </sprite>
   <sprite id="88" name="Flag Controller - Onscreen" notes="It activates when it enters the screen.">
     <value nybble="1-2" title="Target Flag ID"/>
@@ -613,27 +624,24 @@
     <value nybble="6" title="Unknown Value 6" comment="..."/>
     <value nybble="16" title="Unknown Value 16" comment="..."/>
   </sprite>
-  <sprite id="100" name="Rotation-controlled ? Block" notes="move to contents setting:&#13;&#10;0 = Nothing&#13;&#10;1 = Coin&#13;&#10;2 = Mushroom if small &amp; Fire Flower if big&#13;&#10;3 = Same as 0?&#13;&#10;4 = Mushroom if small &amp; Super Leaf if big&#13;&#10;5 = Gold Flower&#13;&#10;6 = Mini Mushroom&#13;&#10;7 = Super Star&#13;&#10;8 = Super Star if invincible&#13;&#10;9 = same as 0?&#13;&#10;10 = 10 coins&#13;&#10;11 = 1-Up Mushroom&#13;&#10;12 = same as 0?&#13;&#10;13 = Trampoline&#13;&#10;14 = Same as 1?&#13;&#10;15 = Same as 0?">
+  <sprite id="100" name="Rotation-controlled ? Block">
     <value nybble="1-2" title="Flag" comment="_Needs further testing_."/>
-    <list nybble="14" title="Contents">
+    <list nybble="14" title="Contents" comment="3, 9, 12 and 15 are all empty blocks">
       <entry value="0">Nothing</entry>
-      <entry value="1">Coin (as small Mario at least)</entry>
+      <entry value="1">Coin</entry>
       <entry value="2">Fire Flower</entry>
-      <entry value="3">Unused</entry>
-      <entry value="4">Unknown</entry>
+      <entry value="4">Tanooki Leaf</entry>
       <entry value="5">Gold Flower</entry>
-      <entry value="6">???</entry>
-      <entry value="7">???</entry>
-      <entry value="8">???</entry>
-      <entry value="9">???</entry>
-      <entry value="10">(UNUSED)</entry>
-      <entry value="11">(UNUSED)</entry>
-      <entry value="12">(UNUSED)</entry>
-      <entry value="13">(UNUSED)</entry>
-      <entry value="14">(UNUSED)</entry>
-      <entry value="15">???</entry>
+      <entry value="6">Mini Mushroom</entry>
+      <entry value="7">Star</entry>
+      <entry value="8">Star if invincible</entry>
+      <entry value="10">Multi Coin Block</entry>
+      <entry value="11">1-UP</entry>
+      <entry value="13">Springboard</entry>
+      <entry value="14">Mushroom if small</entry>
     </list>
     <value nybble="21-22" title="Rotation ID"/>
+    <value nybble="12" title="Unknown Value 12"/>
   </sprite>
   <sprite id="101" name="Movement-controlled ? Block">
     <value nybble="5" title="Unknown Value 5" comment="..."/>
@@ -937,12 +945,21 @@
   </sprite>
   <sprite id="152" name="Path-controlled Lift - Peepa">
     <value nybble="5" title="Path ID"/>
-    <value nybble="6" title="Unknown Value 6"/>
-    <value nybble="7" title="Unknown Value 7" comment="Checkbox?"/>
-    <value nybble="8" title="Unknown Value 8" comment="Checkbox?"/>
+    <value nybble="6" title="Platform Length" comment="Length of the platform."/>
+    <checkbox nybble="7" title="Unknown Checkbox 7"/>
+    <checkbox nybble="8" title="Unknown Checkbox 8"/>
     <value nybble="12" title="Unknown Value 12"/>
     <value nybble="15" title="Unknown Value 15" comment="Always 3."/>
     <value nybble="16" title="Unknown Value 16" comment="Checkbox?"/>
+    <list nybble="17" title="At the end" comment="The behavior of the platform after it hits the last node. (* starts at the top, goes down, and disappears.)">
+      <entry value="0">Falls</entry>
+      <entry value="1">Loops</entry>
+      <entry value="2">Falls</entry>
+      <entry value="3">Starts on top*</entry>
+      <entry value="4">Disappears</entry>
+    </list>
+    <value nybble="18" title="Unknown Value 18"/>
+    <value nybble="19" title="Unknown Value 19"/>
   </sprite>
   <sprite id="153" name="Lift Spawner" notes="Existing In-Game Sprite Data: Incomplete.">
     <value nybble="5" title="Spawn distance or speed related"/>
@@ -1283,7 +1300,25 @@
     </list>
   </sprite>
   <sprite id="203" name="Rotation-controlled Brick Block - Rotation Type/s Unknown">
-    <value nybble="21-22" title="ID"/>
+    <value nybble="21-22" title="Movement ID"/>
+    <list nybble="14" title="Contents">
+      <entry value="0">Nothing</entry>
+      <entry value="1">Coin (as small Mario)</entry>
+      <entry value="2">Fire Flower</entry>
+      <entry value="3">Unused</entry>
+      <entry value="4">Unknown</entry>
+      <entry value="5">Gold Flower</entry>
+      <entry value="6">???</entry>
+      <entry value="7">???</entry>
+      <entry value="8">???</entry>
+      <entry value="9">???</entry>
+      <entry value="10">(UNUSED)</entry>
+      <entry value="11">(UNUSED)</entry>
+      <entry value="12">(UNUSED)</entry>
+      <entry value="13">(UNUSED)</entry>
+      <entry value="14">(UNUSED)</entry>
+      <entry value="15">???</entry>
+    </list>
   </sprite>
   <sprite id="204" name="Movement-controlled Brick Block">
     <value nybble="21-22" title="Movement ID" comment="Checkbox?"/>

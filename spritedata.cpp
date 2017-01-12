@@ -105,7 +105,14 @@ SpriteDefinition::SpriteDefinition(QDomElement spriteElement)
         }
 
         if (fieldElement.tagName() == "value") field.type = Field::Value;
-        else if (fieldElement.tagName() == "checkbox") field.type = Field::Checkbox;
+
+        else if (fieldElement.tagName() == "checkbox")
+        {
+            field.type = Field::Checkbox;
+            quint32 mask = fieldElement.attribute("mask", "1").toUInt();
+            if (mask > 255) mask = 1;
+            field.mask = mask;
+        }
 
         else if (fieldElement.tagName() == "list")
         {

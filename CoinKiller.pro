@@ -48,7 +48,8 @@ SOURCES += main.cpp\
     filedownloader.cpp \
     levelminimap.cpp \
     objectseditionmode.cpp \
-    sarcexplorerwindow.cpp
+    sarcexplorerwindow.cpp \
+    newtilesetdialog.cpp
 
 HEADERS  += mainwindow.h \
     filesystembase.h \
@@ -88,11 +89,13 @@ HEADERS  += mainwindow.h \
     filedownloader.h \
     levelminimap.h \
     objectseditionmode.h \
-    sarcexplorerwindow.h
+    sarcexplorerwindow.h \
+    newtilesetdialog.h
 
 FORMS    += mainwindow.ui \
     leveleditorwindow.ui \
     tileseteditorwindow.ui \
-    sarcexplorerwindow.ui
+    sarcexplorerwindow.ui \
+    newtilesetdialog.ui
 
 CONFIG += c++11

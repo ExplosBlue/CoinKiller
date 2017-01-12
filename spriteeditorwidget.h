@@ -24,6 +24,7 @@ private slots:
     void handleValueChange(int value);
 signals:
     void updateHex();
+    void updateFields();
 private:
     Sprite* sprite;
     Field* field;
@@ -40,6 +41,7 @@ private slots:
     void handleValueChange(bool checked);
 signals:
     void updateHex();
+    void updateFields();
 private:
     Sprite* sprite;
     Field* field;
@@ -56,6 +58,7 @@ private slots:
     void handleIndexChange(QString text);
 signals:
     void updateHex();
+    void updateFields();
 private:
     Sprite* sprite;
     Field* field;
@@ -74,6 +77,7 @@ public:
 private slots:
     void handleRawSpriteDataChange(QString text);
     void updateRawSpriteData();
+    void updateFields();
 
 signals:
     void updateLevelView();

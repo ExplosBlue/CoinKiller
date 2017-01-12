@@ -50,12 +50,13 @@ public:
     void setEditonMode(EditMode newMode, bool init = false);
 
     EditionMode* editionModePtr() { return mode; }
-    ObjectsEditonMode* objEditionModePtr() { return objectEditionMode; }
+    ObjectsEditonMode* objEditionModePtr() { return objectEditionMode; }    
 
 signals:
     void scrollTo(int x, int y);
     void updateMinimap(QRect drawrect);
     void updateMinimapBounds();
+    void updateCtrlabel(QString text);
 
 public slots:
     void selectObj(Object* obj);
