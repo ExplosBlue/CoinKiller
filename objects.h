@@ -134,7 +134,7 @@ public:
     void setCameraX(qint16 cameraX) { this->cameraX = cameraX; }
     void setCameraY(qint16 cameraY) { this->cameraY = cameraY; }
     void setSettings(quint8 settings) { this->settings = settings; }
-    void setSettingsBit(bool value, int bit) { settings ^= (-value ^ settings) & (1 << bit); }
+    void setSettingsBit(bool value, int bit) { settings ^= (-(int)value ^ settings) & (1 << bit); }
 protected:
     qint16 cameraX;
     qint16 cameraY;

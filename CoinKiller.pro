@@ -30,7 +30,6 @@ SOURCES += main.cpp\
     game.cpp \
     objects.cpp \
     unitsconvert.cpp \
-    propertygrid.cpp \
     objectrenderer.cpp \
     tileseteditorwindow.cpp \
     tileseteditorwidgets.cpp \
@@ -69,7 +68,6 @@ HEADERS  += mainwindow.h \
     game.h \
     objects.h \
     unitsconvert.h \
-    propertygrid.h \
     objectrenderer.h \
     tileseteditorwindow.h \
     tileseteditorwidgets.h \

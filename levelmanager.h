@@ -29,7 +29,7 @@ public:
     Game* getGame();
 
 signals:
-    updateLevelEditors();
+    void updateLevelEditors();
 
 private:
     SarcFilesystem* archive;

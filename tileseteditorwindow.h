@@ -28,7 +28,7 @@ signals:
     void selectedObjectChanged(int objNbr);
 
 public slots:
-    void updateSelectedTile(int tile);
+    void updateSelectedTile(int tileTL, int tileBR);
     void updateSelectedOvTile(int ovTile);
     void setSelTileData(QString text);
     void updateObjectEditor();
@@ -118,10 +118,13 @@ private:
 
     Tileset* tileset;
 
-    int selectedTile;
+    int selectedTileTL;
+    int selectedTileBR;
 
     int selectedSpecialBehavior;
     int selectedParameter;
+
+    void setBehaviorByte(int byte, quint8 value);
 
     QList<specialBehavior> specialBehaviors;
     QList<parameter> hitboxes;

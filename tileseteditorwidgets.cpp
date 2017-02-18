@@ -7,8 +7,10 @@
 
 TilesetPicker::TilesetPicker(QWidget *parent) : QWidget(parent)
 {
-    this->selectedTile = -1;
+    this->selectedTileTL = -1;
+    this->selectedTileBR = -1;
     this->selectedOvTile = -1;
+    this->selectDrag = false;
     tilesetImage = new QImage(420, 420, QImage::Format_RGBA8888);
     bgColor = Qt::white;
 }
@@ -31,10 +33,12 @@ void TilesetPicker::paintEvent(QPaintEvent* evt)
         }
     }
 
-    if (selectedTile != -1)
-        painter.fillRect(QRect(selectedTile%21*21, selectedTile/21*21, 20, 20), QBrush(QColor(160,222,255,150), Qt::SolidPattern));
+    if (selectedTileTL != -1 || selectedTileBR != -1)
+        for (int i = selectedTileTL; i <= selectedTileBR; i++)
+            if (i % 21 >= selectedTileTL % 21  && i % 21 <= selectedTileBR % 21)
+                painter.fillRect(QRect(i%21*21, i/21*21, 20, 20), QBrush(QColor(160,222,255,150), Qt::SolidPattern));
 
-    if (selectedOvTile != -1)
+    if (selectedOvTile != -1 && selectedTileTL == selectedTileBR)
         painter.fillRect(QRect(selectedOvTile%21*21, selectedOvTile/21*21, 20, 20), QBrush(QColor(255,40,0,150), Qt::SolidPattern));
 }
 
@@ -53,14 +57,17 @@ void TilesetPicker::mousePressEvent(QMouseEvent* evt)
                 return;
             }
 
-            selectedTile = tempSelTile;
+            selectedTileTL = tempSelTile;
+            selectedTileBR = tempSelTile;
+            initSelectTile = tempSelTile;
+            selectDrag = true;
 
-            emit selectedTileChanged(selectedTile);
+            emit selectedTileChanged(selectedTileTL, selectedTileBR);
 
             update();
         }
     }
-    else if (evt->button() == Qt::RightButton && selectedTile != -1)
+    else if (evt->button() == Qt::RightButton && selectedTileTL != -1 && selectedTileBR == selectedTileTL)
     {
         if (evt->modifiers() == Qt::ControlModifier)
         {
@@ -77,11 +84,56 @@ void TilesetPicker::mousePressEvent(QMouseEvent* evt)
     }
 }
 
+void TilesetPicker::mouseReleaseEvent(QMouseEvent* evt)
+{
+    if (evt->button() == Qt::LeftButton)
+    {
+        selectDrag = false;
+    }
+}
+
+void TilesetPicker::mouseMoveEvent(QMouseEvent* evt)
+{
+    if (!selectDrag)
+        return;
+
+    if (!this->rect().contains(evt->pos()))
+        return;
+
+    if (evt->x() % 21 == 20 || evt->x() % 21 == 20)
+        return;
+
+    int tempSelTile = evt->x() / 21 + evt->y() / 21 * 21;
+
+    int currX = tempSelTile % 21;
+    int currY = tempSelTile / 21;
+
+    int initX = initSelectTile % 21;
+    int initY = initSelectTile / 21;
+
+    int tmpSelectedTileTL = qMin(initX, currX) + qMin(initY, currY) * 21;
+    int tmpSelectedTileBR = qMax(initX, currX) + qMax(initY, currY) * 21;
+
+    if (tmpSelectedTileBR > 0xFF)
+    {
+        QToolTip::showText(evt->globalPos(), "You can only select the first 256 tiles due to limitations", this, rect(), 2000);
+        // TODO: Somehow this disappears after releasing the mouse button
+        return;
+    }
+
+    selectedTileTL = tmpSelectedTileTL;
+    selectedTileBR = tmpSelectedTileBR;
+
+    emit selectedTileChanged(selectedTileTL, selectedTileBR);
+
+    repaint();
+}
 
 ObjectEditor::ObjectEditor(Tileset *tileset, QWidget *parent, SettingsManager* settings) : QWidget(parent)
 {
     objNbr = -1;
-    paintTileNbr = -1;
+    paintTileNbrTL = -1;
+    paintTileNbrBR = -1;
     selX = -1;
     selY = -1;
     this->tileset = tileset;
@@ -210,10 +262,33 @@ void ObjectEditor::mousePressEvent(QMouseEvent* evt)
                 tileset->setData(objNbr, selX, selY, 1, 0x00);
                 tileset->setData(objNbr, selX, selY, 2, 0x00);
             }
-            else if (paintTileNbr != -1)
+            else if (paintTileNbrTL != -1)
             {
-                tileset->setData(objNbr, selX, selY, 1, paintTileNbr);
-                tileset->setData(objNbr, selX, selY, 2, tileset->getSlot() << 1);
+                for (int i = paintTileNbrTL; i <= paintTileNbrBR; i++)
+                {
+                    int iX = i % 21;
+                    int iY = i / 21;
+
+                    if (iX < paintTileNbrTL % 21 || iX > paintTileNbrBR % 21)
+                        continue;
+
+                    if (iY < paintTileNbrTL / 21 || iY > paintTileNbrBR / 21)
+                        continue;
+
+                    int sX = iX - paintTileNbrTL % 21;
+                    int sY = iY - paintTileNbrTL / 21;
+
+                    if (selX + sX > tileset->getObjectDef(objNbr)->width-1)
+                        continue;
+
+                    if (selY + sY > tileset->getObjectDef(objNbr)->height-1)
+                        continue;
+
+
+
+                    tileset->setData(objNbr, selX + sX, selY + sY, 1, i);
+                    tileset->setData(objNbr, selX + sX, selY + sY, 2, tileset->getSlot() << 1);
+                }
             }
 
             emit tilesetChanged();
@@ -239,7 +314,8 @@ void ObjectEditor::selectedObjectChanged(int objNbr)
     update();
 }
 
-void ObjectEditor::selectedPaintTileChanged(int paintTileNbr)
+void ObjectEditor::selectedPaintTileChanged(int tileTL, int tileBR)
 {
-    this->paintTileNbr = paintTileNbr;
+    this->paintTileNbrTL = tileTL;
+    this->paintTileNbrBR = tileBR;
 }
