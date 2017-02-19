@@ -156,7 +156,10 @@ Level::Level(Game *game, SarcFilesystem* archive, int area, QString lvlName)
         quint16 id = header->read16();
         if (id == 0xFFFF) break;
 
-        Sprite* spr = new Sprite(to20(header->read16()), to20(header->read16()), id);
+        qint32 x = to20(header->read16());
+        qint32 y = to20(header->read16());
+
+        Sprite* spr = new Sprite(x, y, id);
 
         for (int i=0; i<10; i++) spr->setByte(i, header->read8());
         header->skip(2);
@@ -217,7 +220,13 @@ Level::Level(Game *game, SarcFilesystem* archive, int area, QString lvlName)
     header->seek(blockOffsets[10]);
     for (int l = 0; l < (int)(blockSizes[10]/12); l++)
     {
-        Location* loc = new Location(to20(header->read16()), to20(header->read16()), to20(header->read16()), to20(header->read16()), header->read8());
+        qint32 x = to20(header->read16());
+        qint32 y = to20(header->read16());
+        qint32 w = to20(header->read16());
+        qint32 h = to20(header->read16());
+        qint32 id = header->read8();
+
+        Location* loc = new Location(x, y, w, h, id);
         locations.append(loc);
 
         header->skip(3);
@@ -240,7 +249,14 @@ Level::Level(Game *game, SarcFilesystem* archive, int area, QString lvlName)
         for (quint16 i = 0; i < nodeCount; i++)
         {
             header->seek(blockOffsets[14] + i*20 + nodeOffset*20);
-            PathNode* pathN = new PathNode(to20(header->read16()), to20(header->read16()), header->readFloat(), header->readFloat(), header->read32(), path);
+
+            qint32 x = to20(header->read16());
+            qint32 y = to20(header->read16());
+            float speed = header->readFloat();
+            float accel = header->readFloat();
+            float unk = header->readFloat();
+
+            PathNode* pathN = new PathNode(x, y, speed, accel, unk, path);
             path->insertNode(pathN);
         }
         paths.append(path);
@@ -261,7 +277,11 @@ Level::Level(Game *game, SarcFilesystem* archive, int area, QString lvlName)
         for (int i = 0; i < nodeCount; i++)
         {
             header->seek(blockOffsets[16] + i*20 + nodeOffset*20);
-            ProgressPathNode* pPathN = new ProgressPathNode(to20(header->read16()), to20(header->read16()), pPath);
+
+            qint32 x = to20(header->read16());
+            qint32 y = to20(header->read16());
+
+            ProgressPathNode* pPathN = new ProgressPathNode(x, y, pPath);
             pPath->insertNode(pPathN);
         }
         progressPaths.append(pPath);
@@ -286,7 +306,15 @@ Level::Level(Game *game, SarcFilesystem* archive, int area, QString lvlName)
             quint16 id = bgdat->read16();
             if (id == 0xFFFF) break;
 
-            BgdatObject* obj = new BgdatObject(bgdat->read16()*20, bgdat->read16()*20, bgdat->read16()*20, bgdat->read16()*20, id, l);
+            qint32 x = bgdat->read16()*20;
+            qint32 y = bgdat->read16()*20;
+            qint32 w = bgdat->read16()*20;
+            qint32 h = bgdat->read16()*20;
+
+            BgdatObject* obj = new BgdatObject(x, y, w, h, id, l);
+
+            qDebug() << obj->getx() << obj->gety() << obj->getwidth() << obj->getheight() << sizeof(int);
+
             objects[l].append(obj);
 
             bgdat->skip(6);
