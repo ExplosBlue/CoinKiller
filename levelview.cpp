@@ -465,6 +465,12 @@ void LevelView::cut()
     emit updateMinimapBounds();
 }
 
+void LevelView::selectAll()
+{
+    editionModePtr()->selectAll();
+    update();
+}
+
 void LevelView::deleteSel()
 {
     mode->deleteSelection();

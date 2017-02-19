@@ -26,6 +26,7 @@ copy=Copy
 paste=Paste
 cut=Cut
 delete=Delete
+selectAll=Select All
 ok=OK
 cancel=Cancel
 world=World

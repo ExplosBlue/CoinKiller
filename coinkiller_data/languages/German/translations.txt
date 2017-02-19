@@ -26,6 +26,7 @@ copy=Kopieren
 paste=Einfügen
 cut=Ausschneiden
 delete=Löschen
+selectAll=Alles auswählen
 ok=OK
 cancel=Abbrechen
 world=Welt

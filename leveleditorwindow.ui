@@ -130,6 +130,7 @@
     <addaction name="actionCut"/>
     <addaction name="actionCopy"/>
     <addaction name="actionDelete"/>
+    <addaction name="actionSelectAll"/>
     <addaction name="separator"/>
     <addaction name="actionRaise"/>
     <addaction name="actionLower"/>
@@ -405,6 +406,17 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+L</string>
+   </property>
+  </action>
+  <action name="actionSelectAll">
+   <property name="text">
+    <string>&lt;SelectAll&gt;</string>
+   </property>
+   <property name="toolTip">
+    <string>&lt;SelectAll&gt;</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+A</string>
    </property>
   </action>
  </widget>

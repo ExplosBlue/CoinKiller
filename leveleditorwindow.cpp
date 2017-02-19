@@ -55,6 +55,7 @@ LevelEditorWindow::LevelEditorWindow(LevelManager* lvlMgr, int initialArea, Sett
     ui->actionCut->setIcon((QIcon(basePath + "cut.png")));
     ui->actionCopy->setIcon((QIcon(basePath + "copy.png")));
     ui->actionDelete->setIcon(QIcon(basePath + "delete.png"));
+    ui->actionSelectAll->setIcon(QIcon(basePath + "select_all.png"));
     ui->actionRaise->setIcon(QIcon(basePath + "raise.png"));
     ui->actionLower->setIcon(QIcon(basePath + "lower.png"));
     ui->actionRaiseLayer->setIcon(QIcon(basePath + "layer_up.png"));
@@ -104,6 +105,9 @@ void LevelEditorWindow::loadTranslations()
 
     ui->actionCut->setText(settings->getTranslation("General", "cut"));
     ui->actionCut->setToolTip(settings->getTranslation("General", "cut"));
+
+    ui->actionSelectAll->setText(settings->getTranslation("General", "selectAll"));
+    ui->actionSelectAll->setToolTip(settings->getTranslation("General", "selectAll"));
 
     ui->actionCopy->setText(settings->getTranslation("General", "copy"));
     ui->actionCopy->setToolTip(settings->getTranslation("General", "copy"));
@@ -245,6 +249,11 @@ void LevelEditorWindow::on_actionCut_triggered()
 void LevelEditorWindow::on_actionDelete_triggered()
 {
     levelView->deleteSel();
+}
+
+void LevelEditorWindow::on_actionSelectAll_triggered()
+{
+    levelView->selectAll();
 }
 
 void LevelEditorWindow::on_actionRaise_triggered()

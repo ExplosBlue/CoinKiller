@@ -107,6 +107,8 @@ private slots:
 
     void handleMgrUpdate();
 
+    void on_actionSelectAll_triggered();
+
 private:
     Ui::LevelEditorWindow *ui;
 

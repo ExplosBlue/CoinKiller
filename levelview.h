@@ -42,6 +42,7 @@ public:
     void copy();
     void paste();
     void cut();
+    void selectAll();
     void deleteSel();
     void raise();
     void lower();
