@@ -12,7 +12,7 @@ public:
     ObjectRenderer() {}
     ObjectRenderer(Object *) {}
     virtual ~ObjectRenderer() {}
-    virtual void render(QPainter *) {}
+    virtual void render(QPainter *, QRect *drawrect) {}
 };
 
 class SpriteRenderer: public ObjectRenderer
@@ -20,9 +20,22 @@ class SpriteRenderer: public ObjectRenderer
 public:
     SpriteRenderer() {}
     SpriteRenderer(const Sprite *spr, Tileset *tilesets[]);
-    void render(QPainter *painter);
+    void render(QPainter *painter, QRect *drawrect);
 protected:
     const Sprite *spr;
+    ObjectRenderer *ret;
+};
+
+class LiquidRenderer: public ObjectRenderer
+{
+public:
+    LiquidRenderer() {}
+    LiquidRenderer(const Sprite *liquid, const Zone *zone);
+    void render(QPainter *painter, QRect *drawrect);
+protected:
+    const Sprite *liquid;
+    const Zone *zone;
+    QString filename;
     ObjectRenderer *ret;
 };
 
@@ -31,7 +44,7 @@ class NormalImageRenderer: public ObjectRenderer
 public:
     NormalImageRenderer(const Object *obj, QString filename);
     NormalImageRenderer(QRect rect, QString filename);
-    void render(QPainter *painter);
+    void render(QPainter *painter, QRect *drawrect);
 protected:
     QRect rect;
     QString filename;
@@ -42,7 +55,7 @@ class RoundedRectRenderer: public ObjectRenderer
 public:
     RoundedRectRenderer();
     RoundedRectRenderer(const Object *obj, QString text, QColor color, QTextOption align = Qt::AlignHCenter | Qt::AlignVCenter);
-    void render(QPainter *painter);
+    void render(QPainter *painter, QRect *drawrect);
 protected:
     const Object *obj;
     QString text;
@@ -58,7 +71,7 @@ class TileGodRenderer: public SpriteRenderer
 {
 public:
     TileGodRenderer(const Sprite *spr, Tileset *tileset);
-    void render(QPainter *painter);
+    void render(QPainter *painter, QRect *drawrect);
 protected:
     const Sprite *spr;
     Tileset *tileset;
@@ -71,7 +84,7 @@ class SpecialExitControllerRenderer: public SpriteRenderer
 {
 public:
     SpecialExitControllerRenderer(const Sprite *spr);
-    void render(QPainter *painter);
+    void render(QPainter *painter, QRect *drawrect);
 protected:
     const Sprite *spr;
 };
@@ -81,7 +94,7 @@ class FlipperRenderer: public SpriteRenderer
 {
 public:
     FlipperRenderer(const Sprite *spr);
-    void render(QPainter *painter);
+    void render(QPainter *painter, QRect *drawrect);
 protected:
     NormalImageRenderer *img;
 };
@@ -91,7 +104,7 @@ class GoalRenderer: public ObjectRenderer
 {
 public:
     GoalRenderer(const Sprite *spr);
-    void render(QPainter *painter);
+    void render(QPainter *painter, QRect *drawrect);
 protected:
     const Object *obj;
     NormalImageRenderer *pole;
@@ -103,7 +116,7 @@ class SignboardRenderer: public ObjectRenderer
 {
 public:
     SignboardRenderer(const Sprite *spr);
-    void render(QPainter *painter);
+    void render(QPainter *painter, QRect *drawrect);
 protected:
     const Object *obj;
     NormalImageRenderer *img;
@@ -114,7 +127,7 @@ class FloatingBoxRenderer: public ObjectRenderer
 {
 public:
     FloatingBoxRenderer(const Sprite *spr);
-    void render(QPainter *painter);
+    void render(QPainter *painter, QRect *drawrect);
 protected:
     const Object *obj;
     NormalImageRenderer *img;
@@ -125,7 +138,7 @@ class BulletBillLauncherRenderer: public SpriteRenderer
 {
 public:
     BulletBillLauncherRenderer(const Sprite *spr);
-    void render(QPainter *painter);
+    void render(QPainter *painter, QRect *drawrect);
 protected:
     const Sprite *spr;
 };
@@ -135,7 +148,7 @@ class MushroomPlatformRenderer: public ObjectRenderer
 {
 public:
     MushroomPlatformRenderer(const Sprite *spr, QString basePath);
-    void render(QPainter *painter);
+    void render(QPainter *painter, QRect *drawrect);
 protected:
     const Sprite *spr;
     QString basePath;
@@ -146,7 +159,7 @@ class GoombaRenderer: public SpriteRenderer
 {
 public:
     GoombaRenderer(const Sprite *spr);
-    void render(QPainter *painter);
+    void render(QPainter *painter, QRect *drawrect);
 protected:
     const Sprite *spr;
 };
@@ -156,7 +169,7 @@ class BoneGoombaRenderer: public SpriteRenderer
 {
 public:
     BoneGoombaRenderer(const Sprite *spr);
-    void render(QPainter *painter);
+    void render(QPainter *painter, QRect *drawrect);
 protected:
     const Sprite *spr;
 };
@@ -166,7 +179,7 @@ class GoombaTowerRenderer: public ObjectRenderer
 {
 public:
     GoombaTowerRenderer(const Sprite *spr);
-    void render(QPainter *painter);
+    void render(QPainter *painter, QRect *drawrect);
 protected:
     const Object *obj;
     NormalImageRenderer *top;
@@ -179,7 +192,7 @@ class ThreePlatRickRenderer: public ObjectRenderer
 {
 public:
     ThreePlatRickRenderer(const Sprite *spr);
-    void render(QPainter *painter);
+    void render(QPainter *painter, QRect *drawrect);
 protected:
     const Object *obj;
     NormalImageRenderer *img;
@@ -190,7 +203,7 @@ class FourPlatRickRenderer: public ObjectRenderer
 {
 public:
     FourPlatRickRenderer(const Sprite *spr);
-    void render(QPainter *painter);
+    void render(QPainter *painter, QRect *drawrect);
 protected:
     const Object *obj;
     NormalImageRenderer *img;
@@ -201,7 +214,7 @@ class KoopaTroopaRenderer: public ObjectRenderer
 {
 public:
     KoopaTroopaRenderer(const Sprite *spr);
-    void render(QPainter *painter);
+    void render(QPainter *painter, QRect *drawrect);
 protected:
     const Object *obj;
     NormalImageRenderer *img;
@@ -212,7 +225,7 @@ class RecLiftRenderer: public SpriteRenderer
 {
 public:
     RecLiftRenderer(const Sprite *spr, QString path);
-    void render(QPainter *painter);
+    void render(QPainter *painter, QRect *drawrect);
 protected:
     const Sprite *spr;
     QString path;
@@ -224,7 +237,7 @@ class BobOmbCannonRenderer: public SpriteRenderer
 {
 public:
     BobOmbCannonRenderer(const Sprite *spr);
-    void render(QPainter *painter);
+    void render(QPainter *painter, QRect *drawrect);
 protected:
     const Sprite *spr;
 };
@@ -234,7 +247,7 @@ class SwitchRenderer: public ObjectRenderer
 {
 public:
     SwitchRenderer(const Sprite *spr, QString filename);
-    void render(QPainter *painter);
+    void render(QPainter *painter, QRect *drawrect);
 protected:
     const Object *obj;
     QString filename;
@@ -246,7 +259,7 @@ class UrchinRenderer: public SpriteRenderer
 {
 public:
     UrchinRenderer(const Sprite *spr);
-    void render(QPainter *painter);
+    void render(QPainter *painter, QRect *drawrect);
 protected:
     const Sprite *spr;
 };
@@ -256,7 +269,7 @@ class ChainChompRenderer: public SpriteRenderer
 {
 public:
     ChainChompRenderer(const Sprite *spr);
-    void render(QPainter *painter);
+    void render(QPainter *painter, QRect *drawrect);
 protected:
     const Sprite *spr;
 };
@@ -266,7 +279,7 @@ class LongQBlockRenderer: public SpriteRenderer
 {
 public:
     LongQBlockRenderer(const Sprite *spr, QString filename);
-    void render(QPainter *painter);
+    void render(QPainter *painter, QRect *drawrect);
 protected:
     const Sprite *spr;
     NormalImageRenderer* block;
@@ -277,7 +290,7 @@ class ClockRenderer: public SpriteRenderer
 {
 public:
     ClockRenderer(const Sprite *spr);
-    void render(QPainter *painter);
+    void render(QPainter *painter, QRect *drawrect);
 protected:
     const Sprite *spr;
 };
@@ -287,7 +300,7 @@ class RuinsRickRenderer: public ObjectRenderer
 {
 public:
     RuinsRickRenderer(const Sprite *spr);
-    void render(QPainter *painter);
+    void render(QPainter *painter, QRect *drawrect);
 protected:
     const Object *obj;
     NormalImageRenderer *img;
@@ -297,11 +310,10 @@ class EntranceRenderer : public ObjectRenderer
 {
 public:
     EntranceRenderer(const Entrance *entrance);
-    void render(QPainter *painter);
+    void render(QPainter *painter, QRect *drawrect);
 private:
     RoundedRectRenderer *rect;
     const Entrance* entr;
 };
-
 
 #endif // OBJECTRENDERER_H
