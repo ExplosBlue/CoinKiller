@@ -356,11 +356,10 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
     }
 }
 
-void SpriteRenderer::render(QPainter *painter)
+void SpriteRenderer::render(QPainter *painter, QRect *drawrect)
 {
-    ret->render(painter);
+    ret->render(painter, drawrect);
 }
-
 
 NormalImageRenderer::NormalImageRenderer(const Object *obj, QString filename)
 {
@@ -374,7 +373,7 @@ NormalImageRenderer::NormalImageRenderer(QRect rect, QString filename)
     this->filename = filename;
 }
 
-void NormalImageRenderer::render(QPainter *painter)
+void NormalImageRenderer::render(QPainter *painter, QRect *drawrect)
 {
     painter->drawPixmap(rect, QPixmap(filename));
 }
@@ -388,7 +387,7 @@ RoundedRectRenderer::RoundedRectRenderer(const Object *obj, QString text, QColor
     this->align = align;
 }
 
-void RoundedRectRenderer::render(QPainter *painter)
+void RoundedRectRenderer::render(QPainter *painter, QRect *drawrect)
 {
     QRect rect(obj->getx()+obj->getOffsetX(), obj->gety()+obj->getOffsetY(), obj->getwidth(), obj->getheight());
 
@@ -403,6 +402,9 @@ void RoundedRectRenderer::render(QPainter *painter)
     painter->drawText(rect, text, align);
 }
 
+
+// Sprite Renderers
+
 // Sprite 18: Tile God
 TileGodRenderer::TileGodRenderer(const Sprite *spr, Tileset *tileset)
 {
@@ -410,7 +412,7 @@ TileGodRenderer::TileGodRenderer(const Sprite *spr, Tileset *tileset)
     this->tileset = tileset;
 }
 
-void TileGodRenderer::render(QPainter *painter)
+void TileGodRenderer::render(QPainter *painter, QRect *drawrect)
 {
     QRect sprrect(spr->getx(), spr->gety(), spr->getwidth(), spr->getheight());
 
@@ -462,7 +464,7 @@ SpecialExitControllerRenderer::SpecialExitControllerRenderer(const Sprite *spr)
     this->spr = spr;
 }
 
-void SpecialExitControllerRenderer::render(QPainter *painter)
+void SpecialExitControllerRenderer::render(QPainter *painter, QRect *drawrect)
 {
     QRect sprRect(spr->getx(), spr->gety(), spr->getwidth(), spr->getheight());
     painter->fillRect(sprRect, QColor(0,255,0,30));
@@ -488,9 +490,9 @@ FlipperRenderer::FlipperRenderer(const Sprite *spr)
     else img = new NormalImageRenderer(spr, basePath + "Flipper_Right_Down.png");
 }
 
-void FlipperRenderer::render(QPainter *painter)
+void FlipperRenderer::render(QPainter *painter, QRect *drawrect)
 {
-    img->render(painter);
+    img->render(painter, drawrect);
 }
 
 // Sprite 97: End of Level Flag
@@ -510,10 +512,10 @@ GoalRenderer::GoalRenderer(const Sprite *spr)
     }
 }
 
-void GoalRenderer::render(QPainter *painter)
+void GoalRenderer::render(QPainter *painter, QRect *drawrect)
 {
-    pole->render(painter);
-    fort->render(painter);
+    pole->render(painter, drawrect);
+    fort->render(painter, drawrect);
 }
 
 
@@ -527,9 +529,9 @@ SignboardRenderer::SignboardRenderer(const Sprite *spr)
     else img = new NormalImageRenderer(spr, basePath + signboardPath.arg(7));
 }
 
-void SignboardRenderer::render(QPainter *painter)
+void SignboardRenderer::render(QPainter *painter, QRect *drawrect)
 {
-    img->render(painter);
+    img->render(painter, drawrect);
 }
 
 
@@ -542,9 +544,9 @@ FloatingBoxRenderer::FloatingBoxRenderer(const Sprite *spr)
     else img = new NormalImageRenderer(spr, basePath + "floating_box_small.png");
 }
 
-void FloatingBoxRenderer::render(QPainter *painter)
+void FloatingBoxRenderer::render(QPainter *painter, QRect *drawrect)
 {
-    img->render(painter);
+    img->render(painter, drawrect);
 }
 
 
@@ -554,7 +556,7 @@ BulletBillLauncherRenderer::BulletBillLauncherRenderer(const Sprite *spr)
     this->spr = spr;
 }
 
-void BulletBillLauncherRenderer::render(QPainter *painter)
+void BulletBillLauncherRenderer::render(QPainter *painter, QRect *drawrect)
 {
     QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/");
 
@@ -577,7 +579,7 @@ GoombaRenderer::GoombaRenderer(const Sprite *spr)
     this->spr = spr;
 }
 
-void GoombaRenderer::render(QPainter *painter)
+void GoombaRenderer::render(QPainter *painter, QRect *drawrect)
 {
     QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/");
 
@@ -591,7 +593,7 @@ BoneGoombaRenderer::BoneGoombaRenderer(const Sprite *spr)
     this->spr = spr;
 }
 
-void BoneGoombaRenderer::render(QPainter *painter)
+void BoneGoombaRenderer::render(QPainter *painter, QRect *drawrect)
 {
     QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/");
 
@@ -612,11 +614,11 @@ GoombaTowerRenderer::GoombaTowerRenderer(const Sprite *spr)
     for (int i = 0; i < spr->getNybble(5)-2; i++) middle.append(new NormalImageRenderer(QRect(spr->getx(), spr->gety()+spr->getOffsetY()+25+i*21, spr->getwidth(), 21), basePath + "goomba_tower_middle.png"));
 }
 
-void GoombaTowerRenderer::render(QPainter *painter)
+void GoombaTowerRenderer::render(QPainter *painter, QRect *drawrect)
 {
-    top->render(painter);
-    for(int i = 0; i < middle.size(); i++) middle[i]->render(painter);
-    bottom->render(painter);
+    top->render(painter, drawrect);
+    for(int i = 0; i < middle.size(); i++) middle[i]->render(painter, drawrect);
+    bottom->render(painter, drawrect);
 }
 
 // Sprite 147: 3 Plat Rickshaw
@@ -628,9 +630,9 @@ ThreePlatRickRenderer::ThreePlatRickRenderer(const Sprite *spr)
     else img = new NormalImageRenderer(spr, basePath + "3Plat_Rickshaw.png");
 }
 
-void ThreePlatRickRenderer::render(QPainter *painter)
+void ThreePlatRickRenderer::render(QPainter *painter, QRect *drawrect)
 {
-    img->render(painter);
+    img->render(painter, drawrect);
 }
 
 // Sprite 154: 4 Plat Rickshaw
@@ -642,9 +644,9 @@ FourPlatRickRenderer::FourPlatRickRenderer(const Sprite *spr)
     else img = new NormalImageRenderer(spr, basePath + "4Plat_Rickshaw_Big.png");
 }
 
-void FourPlatRickRenderer::render(QPainter *painter)
+void FourPlatRickRenderer::render(QPainter *painter, QRect *drawrect)
 {
-    img->render(painter);
+    img->render(painter, drawrect);
 }
 
 // Sprite 165: Koopa Troopa
@@ -656,9 +658,9 @@ KoopaTroopaRenderer::KoopaTroopaRenderer(const Sprite *spr)
     else img = new NormalImageRenderer(spr, basePath + "koopa_troopa_green.png");
 }
 
-void KoopaTroopaRenderer::render(QPainter *painter)
+void KoopaTroopaRenderer::render(QPainter *painter, QRect *drawrect)
 {
-    img->render(painter);
+    img->render(painter, drawrect);
 }
 
 // Sprite 176/180/221/223/225: Switches/Grounded Piranha plants
@@ -670,9 +672,9 @@ SwitchRenderer::SwitchRenderer(const Sprite *spr, QString filename)
     img = new NormalImageRenderer(spr, filename);
 }
 
-void SwitchRenderer::render(QPainter *painter)
+void SwitchRenderer::render(QPainter *painter, QRect *drawrect)
 {
-    img->render(painter);
+    img->render(painter, drawrect);
 }
 
 
@@ -684,7 +686,7 @@ RecLiftRenderer::RecLiftRenderer(const Sprite *spr, QString path)
     if (spr->getid() == 192) sideOffset = 3;
 }
 
-void RecLiftRenderer::render(QPainter *painter)
+void RecLiftRenderer::render(QPainter *painter, QRect *drawrect)
 {
     int blockWidth = spr->getNybble(15) > 0 ? spr->getNybble(15)*20 : 20;
     int blockHeight = spr->getNybble(13) > 0 ? spr->getNybble(13)*20 : 20;
@@ -720,7 +722,7 @@ MushroomPlatformRenderer::MushroomPlatformRenderer(const Sprite *spr, QString ba
     this->basePath = basePath;
 }
 
-void MushroomPlatformRenderer::render(QPainter *painter)
+void MushroomPlatformRenderer::render(QPainter *painter, QRect *drawrect)
 {
     painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX(), spr->gety(), 24, 20), QPixmap(basePath + "l.png"));
     painter->drawPixmap(QRect(spr->getx()-spr->getOffsetX()-24, spr->gety(), 24, 20), QPixmap(basePath + "r.png"));
@@ -735,7 +737,7 @@ BobOmbCannonRenderer::BobOmbCannonRenderer(const Sprite *spr)
     this->spr = spr;
 }
 
-void BobOmbCannonRenderer::render(QPainter *painter)
+void BobOmbCannonRenderer::render(QPainter *painter, QRect *drawrect)
 {
     QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/");
 
@@ -750,7 +752,7 @@ UrchinRenderer::UrchinRenderer(const Sprite *spr)
     this->spr = spr;
 }
 
-void UrchinRenderer::render(QPainter *painter)
+void UrchinRenderer::render(QPainter *painter, QRect *drawrect)
 {
     QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/");
 
@@ -765,7 +767,7 @@ ChainChompRenderer::ChainChompRenderer(const Sprite *spr)
     this->spr = spr;
 }
 
-void ChainChompRenderer::render(QPainter *painter)
+void ChainChompRenderer::render(QPainter *painter, QRect *drawrect)
 {
     QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/");
 
@@ -780,9 +782,9 @@ LongQBlockRenderer::LongQBlockRenderer(const Sprite *spr, QString filename)
     block = new NormalImageRenderer(spr, filename);
 }
 
-void LongQBlockRenderer::render(QPainter *painter)
+void LongQBlockRenderer::render(QPainter *painter, QRect *drawrect)
 {
-    block->render(painter);
+    block->render(painter, drawrect);
 
     QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/tileoverlays/");
     QString overlay;
@@ -812,7 +814,7 @@ ClockRenderer::ClockRenderer(const Sprite *spr)
     this->spr = spr;
 }
 
-void ClockRenderer::render(QPainter *painter)
+void ClockRenderer::render(QPainter *painter, QRect *drawrect)
 {
     QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/");
 
@@ -829,9 +831,9 @@ RuinsRickRenderer::RuinsRickRenderer(const Sprite *spr)
     else img = new NormalImageRenderer(spr, basePath + "3Plat_Rickshaw_Ruins.png");
 }
 
-void RuinsRickRenderer::render(QPainter *painter)
+void RuinsRickRenderer::render(QPainter *painter, QRect *drawrect)
 {
-    img->render(painter);
+    img->render(painter, drawrect);
 }
 
 // Entrance Renderer
@@ -842,9 +844,9 @@ EntranceRenderer::EntranceRenderer(const Entrance *entrance)
     this->rect = new RoundedRectRenderer(entrance, "", QColor(255,0,0,150));
 }
 
-void EntranceRenderer::render(QPainter *painter)
+void EntranceRenderer::render(QPainter *painter, QRect *drawrect)
 {
-    rect->render(painter);
+    rect->render(painter, drawrect);
     QRect textRect(entr->getx()+2, entr->gety()+1, 16, 20);
     QRect imgRect(entr->getx(), entr->gety(), 20, 20);
 
@@ -913,4 +915,55 @@ void EntranceRenderer::render(QPainter *painter)
 
     painter->setFont(QFont("Arial", 7, QFont::Normal));
     painter->drawText(textRect, QString("%1").arg(entr->getid()), Qt::AlignLeft | Qt::AlignTop);
+}
+
+
+// Liquid Renderer
+
+LiquidRenderer::LiquidRenderer(const Sprite *liquid, const Zone *zone)
+{
+    this->liquid = liquid;
+    this->zone = zone;
+
+    if (liquid->getid() == 12)
+        filename = "lava";
+    else if (liquid->getid() == 13)
+        filename = "poison";
+    else
+        filename = "water";
+}
+
+void LiquidRenderer::render(QPainter *painter, QRect *drawrect)
+{
+    QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/");
+
+    QPixmap top = QPixmap(basePath + filename + "_top.png");
+    QPixmap base = QPixmap(basePath + filename + ".png");
+
+    int currY = liquid->gety() - 20;
+
+    for (int x = zone->getx(); x < zone->getx() + zone->getwidth(); x += top.width())
+    {
+        QRect rect = QRect(x, currY, qMin(zone->getx() + zone->getwidth() - x, top.width()), qMin(zone->gety() + zone->getheight() - currY, top.height()));
+
+        if (!drawrect->intersects(rect))
+            continue;
+
+        painter->drawPixmap(rect, top, QRect(0, 0, rect.right()-rect.left(), rect.bottom()-rect.top()));
+    }
+
+    currY += top.height();
+
+    for (currY; currY < zone->gety() + zone->getheight(); currY += base.height())
+    {
+        for (int x = zone->getx(); x < zone->getx() + zone->getwidth(); x += base.width())
+        {
+            QRect rect = QRect(x, currY, qMin(zone->getx() + zone->getwidth() - x, base.width()), qMin(zone->gety() + zone->getheight() - currY, base.height()));
+
+            if (!drawrect->intersects(rect))
+                continue;
+
+            painter->drawPixmap(rect, base, QRect(0, 0, rect.right()-rect.left(), rect.bottom()-rect.top()));
+        }
+    }
 }

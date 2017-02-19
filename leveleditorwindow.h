@@ -37,8 +37,6 @@
 #include "progresspatheditorwidget.h"
 #include "settingsmanager.h"
 
-#include "propertygrid.h"
-
 namespace Ui {
 class LevelEditorWindow;
 }
@@ -118,8 +116,6 @@ private:
     Tileset* tileset;
     LevelView* levelView;
     LevelMiniMap* miniMap;
-
-    PropertyGrid* propGrid;
 
     AreaEditorWidget* areaEditor;
     TilesetPalette* tilesetPalette;

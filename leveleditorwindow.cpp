@@ -175,7 +175,7 @@ void LevelEditorWindow::on_actionZoom_In_triggered()
 {
     if (zoom < 4)
     {
-        if (zoom < 1) zoom += 0.1;
+        if (zoom < 1) zoom += 0.1f;
         else zoom += 0.25;
         levelView->setZoom(zoom);
 
@@ -187,7 +187,7 @@ void LevelEditorWindow::on_actionZoom_Out_triggered()
 {
     if (zoom > 0.3)
     {
-        if (zoom <= 1.5) zoom -= 0.1;
+        if (zoom <= 1.5) zoom -= 0.1f;
         else zoom -= 0.25;
         levelView->setZoom(zoom);
         update();
@@ -210,7 +210,7 @@ void LevelEditorWindow::on_actionZoom_Maximum_triggered()
 
 void LevelEditorWindow::on_actionZoom_Minimum_triggered()
 {
-    zoom = 0.3;
+    zoom = 0.3f;
     levelView->setZoom(zoom);
     update();
 }

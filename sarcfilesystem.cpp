@@ -211,7 +211,7 @@ bool SarcFilesystem::save(FileBase *file)
     newSarcSize = align(newSarcSize, dataAlign);
     quint32 newDataOffset = newSarcSize;
 
-    quint32 oldOffsets[numFiles];
+    quint32* oldOffsets =  new quint32[numFiles];
 
     for (int i = 0; i < sortedFiles.size(); i++)  // data
     {
@@ -297,6 +297,7 @@ bool SarcFilesystem::save(FileBase *file)
         sarc->writeData(oldSarc+oldOffsets[i], ifile->size);
     }
 
+    delete[] oldOffsets;
     delete[] oldSarc;
 
     file->close();
@@ -344,7 +345,7 @@ void SarcFilesystem::repack()
     newSarcSize = align(newSarcSize, dataAlign);
     quint32 newDataOffset = newSarcSize;
 
-    quint32 oldOffsets[numFiles];
+    quint32* oldOffsets =  new quint32[numFiles];
 
     for (int i = 0; i < sortedFiles.size(); i++)  // data
     {
@@ -417,6 +418,7 @@ void SarcFilesystem::repack()
         sarc->writeData(oldSarc+oldOffsets[i], ifile->size);
     }
 
+    delete[] oldOffsets;
     delete[] oldSarc;
 
     sarc->save();

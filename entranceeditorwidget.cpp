@@ -155,7 +155,7 @@ void EntranceEditorWidget::updateInfo()
     camXOffset->setValue(editEntrance->getCameraX());
     camYOffset->setValue(editEntrance->getCameraY());
     enterable->setChecked((editEntrance->getSettings() & 128) >> 7 == false);
-    returnToWM->setChecked((editEntrance->getSettings() & 16) >> 4 == true);
+    returnToWM->setChecked((editEntrance->getSettings() & 16) >> 4 == 1);
     handleChanges = true;
 }
 

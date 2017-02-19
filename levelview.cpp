@@ -116,6 +116,29 @@ void LevelView::paintEvent(QPaintEvent* evt)
         painter.drawText(locrect.adjusted(5,5,0,0), locText);
     }
 
+    // Render Liquids
+    for (int i = 0; i < level->zones.size(); i++)
+    {
+        const Zone* zone = level->zones.at(i);
+
+        QRect zonerect(zone->getx(), zone->gety(), zone->getwidth(), zone->getheight());
+
+        if (!drawrect.intersects(zonerect))
+            continue;
+
+        foreach (Sprite* s, level->sprites)
+        {
+            if (s->getid() != 12 && s->getid() != 13 && s->getid() != 15)
+                continue;
+
+            if (zonerect.contains(s->getx(), s->gety(), false))
+            {
+                LiquidRenderer liquidRend(s, zone);
+                liquidRend.render(&painter, &drawrect);
+            }
+        }
+    }
+
     // Render Sprites
     for (int i = 0; i < level->sprites.size(); i++)
     {
@@ -127,7 +150,7 @@ void LevelView::paintEvent(QPaintEvent* evt)
             continue;
 
         SpriteRenderer sprRend(spr, level->tilesets);
-        sprRend.render(&painter);
+        sprRend.render(&painter, &drawrect);
     }
 
     // Render Entrances
@@ -141,7 +164,7 @@ void LevelView::paintEvent(QPaintEvent* evt)
             continue;
 
         EntranceRenderer entrRend(entr);
-        entrRend.render(&painter);
+        entrRend.render(&painter, &drawrect);
     }
 
     // Render Paths
@@ -233,28 +256,6 @@ void LevelView::paintEvent(QPaintEvent* evt)
 
         if (!drawrect.intersects(zonerect))
             continue;
-
-        // Render liquids (Might render them before sprites)
-        foreach (Sprite* s, level->sprites)
-        {
-            if (s->getid() != 12 && s->getid() != 13 && s->getid() != 15)
-                continue;
-
-            QColor liquidColor; // Might draw the actual texture in the future TODO
-
-            if (s->getid() == 12)
-                liquidColor = QColor(255, 60, 0, 100);
-            else if (s->getid() == 13)
-                liquidColor = QColor(255, 0, 190, 100);
-            else
-                liquidColor = QColor(0, 160, 255, 100);
-
-            if (zonerect.contains(s->getx(), s->gety(), false))
-            {
-                QRect liquidRect(QPoint(zone->getx(), s->gety()), QPoint(zone->getx() + zone->getwidth(), zone->gety() + zone->getheight()));
-                painter.fillRect(liquidRect, liquidColor);
-            }
-        }
 
         painter.setPen(QColor(255,255,255));
 

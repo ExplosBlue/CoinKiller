@@ -20,7 +20,7 @@ public:
     void setOvTile(int ovTile) { this->selectedOvTile = ovTile; update();}
 
 signals:
-    void selectedTileChanged(int tile);
+    void selectedTileChanged(int tileTL, int tileBR);
     void selectedOvTileChanged(int ovTile);
 
 public slots:
@@ -28,12 +28,18 @@ public slots:
 protected:
     void paintEvent(QPaintEvent *) Q_DECL_OVERRIDE;
     void mousePressEvent(QMouseEvent *) Q_DECL_OVERRIDE;
+    void mouseReleaseEvent(QMouseEvent *) Q_DECL_OVERRIDE;
+    void mouseMoveEvent(QMouseEvent *) Q_DECL_OVERRIDE;
 
 private:
     QImage *tilesetImage;
     QColor bgColor;
-    int selectedTile;
+    int selectedTileTL;
+    int selectedTileBR;
     int selectedOvTile;
+
+    bool selectDrag;
+    int initSelectTile;
 };
 
 
@@ -52,7 +58,7 @@ signals:
 
 public slots:
     void selectedObjectChanged(int objNbr);
-    void selectedPaintTileChanged(int tileNbr);
+    void selectedPaintTileChanged(int tileTL, int tileBR);
 
 protected:
     void paintEvent(QPaintEvent *) Q_DECL_OVERRIDE;
@@ -68,7 +74,8 @@ private:
 
     int currX, currY, currW, currH;
     int selX, selY;
-    int paintTileNbr;
+    int paintTileNbrTL;
+    int paintTileNbrBR;
 };
 
 #endif // TILESETEDITORWIDGETS_H
