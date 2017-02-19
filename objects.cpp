@@ -30,13 +30,13 @@ Object::Object()
     offsety = 0;
 }
 
-void Object::setPosition(int x, int y)
+void Object::setPosition(qint32 x, qint32 y)
 {
     this->x = x;
     this->y = y;
 }
 
-void Object::increasePosition(int deltax, int deltay, int snap)
+void Object::increasePosition(qint32 deltax, qint32 deltay, qint32 snap)
 {
     this->x += deltax;
     this->y += deltay;
@@ -48,13 +48,13 @@ void Object::increasePosition(int deltax, int deltay, int snap)
     }
 }
 
-void Object::resize(int width, int height)
+void Object::resize(qint32 width, qint32 height)
 {
     this->width = width;
     this->height = height;
 }
 
-void Object::increaseSize(int deltax, int deltay, int snap)
+void Object::increaseSize(qint32 deltax, qint32 deltay, qint32 snap)
 {
     this->width += deltax;
     this->height += deltay;
@@ -66,7 +66,7 @@ void Object::increaseSize(int deltax, int deltay, int snap)
     }
 }
 
-bool Object::clickDetection(int xcheck, int ycheck)
+bool Object::clickDetection(qint32 xcheck, qint32 ycheck)
 {
     return QRect(x+offsetx,y+offsety,width,height).contains(xcheck, ycheck);
 }
@@ -76,11 +76,11 @@ bool Object::clickDetection(QRect rect)
     return rect.intersects(QRect(x+offsetx,y+offsety,width,height));
 }
 
-QString Object::toString(int, int) const { return QString(""); }
+QString Object::toString(qint32, qint32) const { return QString(""); }
 
 
 // BgdatObject
-BgdatObject::BgdatObject(int x, int y, int width, int height, int id, int layer)
+BgdatObject::BgdatObject(qint32 x, qint32 y, qint32 width, qint32 height, qint32 id, qint32 layer)
 {
     this->x = x;
     this->y = y;
@@ -101,26 +101,26 @@ BgdatObject::BgdatObject(BgdatObject *obj)
 
 }
 
-int BgdatObject::getType() const { return 0; }
-int BgdatObject::getid() const { return id; }
-int BgdatObject::getLayer() const { return layer; }
+qint32 BgdatObject::getType() const { return 0; }
+qint32 BgdatObject::getid() const { return id; }
+qint32 BgdatObject::getLayer() const { return layer; }
 
-void BgdatObject::setTsID(int tsID)
+void BgdatObject::setTsID(qint32 tsID)
 {
     id = (id & 0xFFF) | (tsID << 12);
 }
 
-void BgdatObject::setObjID(int objID)
+void BgdatObject::setObjID(qint32 objID)
 {
     id = (id & 0xF000) | objID;
 }
 
 // Format: 0:ID:Layer:X:Y:Width:Height
-QString BgdatObject::toString(int xOffset, int yOffset) const { return QString("0:%1:%2:%3:%4:%5:%6").arg(id).arg(layer).arg(x+xOffset).arg(y+yOffset).arg(width).arg(height); }
+QString BgdatObject::toString(qint32 xOffset, qint32 yOffset) const { return QString("0:%1:%2:%3:%4:%5:%6").arg(id).arg(layer).arg(x+xOffset).arg(y+yOffset).arg(width).arg(height); }
 
 
 // Sprite
-Sprite::Sprite(int x, int y, int id)
+Sprite::Sprite(qint32 x, qint32 y, qint32 id)
 {
     this->x = x;
     this->y = y;
@@ -132,7 +132,7 @@ Sprite::Sprite(Sprite *spr)
     x = spr->getx();
     y = spr->gety();
     id = spr->getid();
-    for (int i = 0; i < 12; i++) spriteData[i] = spr->getByte(i);
+    for (qint32 i = 0; i < 12; i++) spriteData[i] = spr->getByte(i);
     setRect();
 }
 
@@ -804,37 +804,37 @@ void Sprite::setRect()
     }
 }
 
-int Sprite::getType() const { return 1; }
-int Sprite::getid() const { return id; }
+qint32 Sprite::getType() const { return 1; }
+qint32 Sprite::getid() const { return id; }
 
-quint8 Sprite::getByte(int id) const { return spriteData[id]; }
-void Sprite::setByte(int id, quint8 nbr) { spriteData[id] = nbr; }
+quint8 Sprite::getByte(qint32 id) const { return spriteData[id]; }
+void Sprite::setByte(qint32 id, quint8 nbr) { spriteData[id] = nbr; }
 
-quint8 Sprite::getNybble(int id) const
+quint8 Sprite::getNybble(qint32 id) const
 {
     if (id%2 == 0) return spriteData[id/2] >> 4;
     else return spriteData[id/2] & 0xF;
 }
 
-void Sprite::setNybble(int id, quint8 nbr)
+void Sprite::setNybble(qint32 id, quint8 nbr)
 {
     if (id%2 == 0) spriteData[id/2] = ((spriteData[id/2] & 0xF) | nbr << 4);
     else spriteData[id/2] = ((spriteData[id/2] & 0xF0) | nbr);
 }
 
-int Sprite::getNybbleData(int startNybble, int endNybble)
+qint32 Sprite::getNybbleData(qint32 startNybble, qint32 endNybble)
 {
-    int data = 0;
+    qint32 data = 0;
 
-    for (int i = startNybble; i <= endNybble; i++)
+    for (qint32 i = startNybble; i <= endNybble; i++)
         data = data << 4 | getNybble(i);
 
     return data;
 }
 
-void Sprite::setNybbleData(int data, int startNybble, int endNybble)
+void Sprite::setNybbleData(qint32 data, qint32 startNybble, qint32 endNybble)
 {
-    for (int i = endNybble; i >= startNybble; i--)
+    for (qint32 i = endNybble; i >= startNybble; i--)
     {
         setNybble(i, (quint8)(data & 0xF));
         data = data >> 4;
@@ -842,16 +842,16 @@ void Sprite::setNybbleData(int data, int startNybble, int endNybble)
 }
 
 // Format: 1:ID:X:Y:SD0:SD1:...:SD11
-QString Sprite::toString(int xOffset, int yOffset) const
+QString Sprite::toString(qint32 xOffset, qint32 yOffset) const
 {
     QString str("1:%1:%2:%3");
-    for (int i=0; i<12; i++) str.append(QString(":%1").arg(spriteData[i]));
+    for (qint32 i=0; i<12; i++) str.append(QString(":%1").arg(spriteData[i]));
     return str.arg(id).arg(x+xOffset).arg(y+yOffset);
 }
 
 
 // Entrance
-Entrance::Entrance(int x, int y, qint16 cameraX, qint16 cameraY, quint8 id, quint8 destArea, quint8 destEntr, quint8 entrType, quint8 settings, quint8 unk1, quint8 unk2)
+Entrance::Entrance(qint32 x, qint32 y, qint16 cameraX, qint16 cameraY, quint8 id, quint8 destArea, quint8 destEntr, quint8 entrType, quint8 settings, quint8 unk1, quint8 unk2)
 {
     this->x = x;
     this->y = y;
@@ -882,11 +882,11 @@ Entrance::Entrance(Entrance *entr)
 }
 
 // Format: 2:ID:Type:X:Y:DestArea:DestEntr:CamX:CamY:Settings
-QString Entrance::toString(int xOffset, int yOffset) const { return QString("2:%1:%2:%3:%4:%5:%6:%7:%8:%9").arg(id).arg(entrType).arg(x+xOffset).arg(y+yOffset).arg(destArea).arg(destEntr).arg(cameraX).arg(cameraY).arg(settings); }
+QString Entrance::toString(qint32 xOffset, qint32 yOffset) const { return QString("2:%1:%2:%3:%4:%5:%6:%7:%8:%9").arg(id).arg(entrType).arg(x+xOffset).arg(y+yOffset).arg(destArea).arg(destEntr).arg(cameraX).arg(cameraY).arg(settings); }
 
 
 // Zone
-Zone::Zone(int x, int y, int width, int height, quint8 id, quint8 progPathId, quint8 musicId, quint8 multiplayerTracking, quint16 unk1)
+Zone::Zone(qint32 x, qint32 y, qint32 width, qint32 height, quint8 id, quint8 progPathId, quint8 musicId, quint8 multiplayerTracking, quint16 unk1)
 {
     this->x = x;
     this->y = y;
@@ -923,7 +923,7 @@ Zone::Zone(Zone *zone)
     bgUnk1 = zone->getBgUnk1();
 }
 
-bool Zone::clickDetection(int xcheck, int ycheck)
+bool Zone::clickDetection(qint32 xcheck, qint32 ycheck)
 {
     return QRect(x,y,38,18).contains(xcheck, ycheck);
 }
@@ -954,7 +954,7 @@ void Zone::setBackground(tempZoneBackground background)
 
 
 // Location
-Location::Location(int x, int y, int width, int height, int id)
+Location::Location(qint32 x, qint32 y, qint32 width, qint32 height, qint32 id)
 {
     this->x = x;
     this->y = y;
@@ -972,11 +972,11 @@ Location::Location(Location *loc)
     id = loc->getid();
 }
 
-int Location::getType() const { return 4; }
-int Location::getid() const { return id; }
+qint32 Location::getType() const { return 4; }
+qint32 Location::getid() const { return id; }
 
 // Format: 4:ID:X:Y:Width:Height
-QString Location::toString(int xOffset, int yOffset) const { return QString("4:%1:%2:%3:%4:%5").arg(id).arg(x+xOffset).arg(y+yOffset).arg(width).arg(height); }
+QString Location::toString(qint32 xOffset, qint32 yOffset) const { return QString("4:%1:%2:%3:%4:%5").arg(id).arg(x+xOffset).arg(y+yOffset).arg(width).arg(height); }
 
 
 // Path
@@ -994,7 +994,7 @@ Path::Path(Path *path)
         nodes.append(new PathNode(node, this));
 }
 
-void Path::insertNode(PathNode* node, int index)
+void Path::insertNode(PathNode* node, qint32 index)
 {
     if (index == -1)
         nodes.append(node);
@@ -1010,7 +1010,7 @@ void Path::removeNode(PathNode *node)
 QList<PathNode*> Path::getNodes() const { return nodes; }
 
 // Path Node
-PathNode::PathNode(int x, int y, float speed, float accel, quint32 unk1, Path* parentPath)
+PathNode::PathNode(qint32 x, qint32 y, float speed, float accel, quint32 unk1, Path* parentPath)
 {
     this->x = x;
     this->y = y;
@@ -1045,7 +1045,7 @@ ProgressPath::ProgressPath(ProgressPath *path)
         nodes.append(new ProgressPathNode(node, this));
 }
 
-void ProgressPath::insertNode(ProgressPathNode* node, int index)
+void ProgressPath::insertNode(ProgressPathNode* node, qint32 index)
 {
     if (index == -1)
         nodes.append(node);
@@ -1061,7 +1061,7 @@ void ProgressPath::removeNode(ProgressPathNode *node)
 QList<ProgressPathNode*> ProgressPath::getNodes() const { return nodes; }
 
 // Progress Path Node
-ProgressPathNode::ProgressPathNode(int x, int y, ProgressPath *parentPath)
+ProgressPathNode::ProgressPathNode(qint32 x, qint32 y, ProgressPath *parentPath)
 {
     this->x = x;
     this->y = y;
