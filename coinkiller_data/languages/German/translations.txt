@@ -65,6 +65,7 @@ layer=Ebene
 area=Gebiet
 addArea=Gebiet hinzufügen
 removeArea=Gebiet entfernen
+renderLiquids=Flüssigkeiten darstellen
 
 [TilesetEditor]
 tileset=Tileset

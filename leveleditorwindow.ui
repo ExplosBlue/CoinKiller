@@ -173,6 +173,7 @@
    <addaction name="separator"/>
    <addaction name="actionFullscreen"/>
    <addaction name="actionGrid"/>
+   <addaction name="actionRenderLiquids"/>
    <addaction name="separator"/>
    <addaction name="actionToggleLayer1"/>
    <addaction name="actionToggleLayer2"/>
@@ -390,6 +391,20 @@
    </property>
    <property name="toolTip">
     <string>&lt;Lower Layer&gt;</string>
+   </property>
+  </action>
+  <action name="actionRenderLiquids">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&lt;RenderLiquids&gt;</string>
+   </property>
+   <property name="toolTip">
+    <string>&lt;RenderLiquids&gt;</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+L</string>
    </property>
   </action>
  </widget>

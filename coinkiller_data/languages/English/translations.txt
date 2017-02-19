@@ -65,6 +65,7 @@ layer=Layer
 area=Area
 addArea=Add Area
 removeArea=Remove Area
+renderLiquids=Render Liquids
 
 [TilesetEditor]
 tileset=Tileset

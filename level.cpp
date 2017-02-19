@@ -313,8 +313,6 @@ Level::Level(Game *game, SarcFilesystem* archive, int area, QString lvlName)
 
             BgdatObject* obj = new BgdatObject(x, y, w, h, id, l);
 
-            qDebug() << obj->getx() << obj->gety() << obj->getwidth() << obj->getheight() << sizeof(int);
-
             objects[l].append(obj);
 
             bgdat->skip(6);

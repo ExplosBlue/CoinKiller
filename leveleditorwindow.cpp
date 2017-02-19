@@ -61,6 +61,7 @@ LevelEditorWindow::LevelEditorWindow(LevelManager* lvlMgr, int initialArea, Sett
     ui->actionLowerLayer->setIcon(QIcon(basePath + "layer_down.png"));
     ui->actionFullscreen->setIcon(QIcon(basePath + "expand.png"));
     ui->actionGrid->setIcon(QIcon(basePath + "grid.png"));
+    ui->actionRenderLiquids->setIcon(QIcon(basePath + "render_liquids.png"));
     ui->actionAddArea->setIcon(QIcon(basePath + "add.png"));
     ui->actionDeleteCurrentArea->setIcon(QIcon(basePath + "remove.png"));
 
@@ -74,7 +75,10 @@ LevelEditorWindow::LevelEditorWindow(LevelManager* lvlMgr, int initialArea, Sett
     ui->sidebar->setMinimumSize(350, 20);
 
     loadArea(initialArea, false, true);
+
     updateAreaSelector(initialArea);
+    ui->actionGrid->setChecked(settings->get("grid", false).toBool());
+    ui->actionRenderLiquids->setChecked(settings->get("renderLiquids", true).toBool());
 }
 
 LevelEditorWindow::~LevelEditorWindow()
@@ -139,6 +143,9 @@ void LevelEditorWindow::loadTranslations()
 
     ui->actionGrid->setText(settings->getTranslation("LevelEditor", "grid"));
     ui->actionGrid->setToolTip(settings->getTranslation("LevelEditor", "grid"));
+
+    ui->actionRenderLiquids->setText(settings->getTranslation("LevelEditor", "renderLiquids"));
+    ui->actionRenderLiquids->setToolTip(settings->getTranslation("LevelEditor", "renderLiquids"));
 
     ui->actionAddArea->setText(settings->getTranslation("LevelEditor", "addArea"));
     ui->actionAddArea->setToolTip(settings->getTranslation("LevelEditor", "addArea"));
@@ -277,6 +284,13 @@ void LevelEditorWindow::on_actionFullscreen_toggled(bool toggle)
 void LevelEditorWindow::on_actionGrid_toggled(bool toggle)
 {
     levelView->toggleGrid(toggle);
+    settings->set("grid", toggle);
+}
+
+void LevelEditorWindow::on_actionRenderLiquids_toggled(bool toggle)
+{
+    levelView->toggleRenderLiquids(toggle);
+    settings->set("renderLiquids", toggle);
 }
 
 void LevelEditorWindow::setSelSprite(int spriteId)
@@ -436,6 +450,7 @@ void LevelEditorWindow::loadArea(int id, bool closeLevel, bool init)
     ui->actionToggleLayer2->setChecked(true);
     levelView->setLayerMask(layerMask);
     levelView->toggleGrid(ui->actionGrid->isChecked());
+    levelView->toggleGrid(ui->actionRenderLiquids->isChecked());
 
     zoom = 1.0;
 

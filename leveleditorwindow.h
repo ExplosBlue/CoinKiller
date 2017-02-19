@@ -79,6 +79,8 @@ private slots:
 
     void on_actionGrid_toggled(bool arg1);
 
+    void on_actionRenderLiquids_toggled(bool arg1);
+
     void on_actionPaste_triggered();
 
     void on_actionCut_triggered();
