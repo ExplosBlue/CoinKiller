@@ -43,6 +43,7 @@ loadUnpackedRomFS=Entpacktes ROMFS laden...
 selectUnpackedRomFSFolder=Ausgepacktes ROMFS auswählen...
 aboutCoinKiller=Über CoinKiller
 languages=Sprachen
+NightMode=Nacht-Modus
 updateSDat=Spritedata updaten
 sDatWarning=Alle Änderungen an spritedata.xml werden überschrieben!\n\nMöchtest du fortfahren?
 sDatSuccess=Die Spritedata wurde erfolgreich aktuallisiert!

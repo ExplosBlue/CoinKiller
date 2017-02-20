@@ -186,6 +186,7 @@ void MainWindow::loadTranslations()
     ui->updateSpriteData->setText(settings->getTranslation("MainWindow", "updateSDat"));
     ui->tabWidget->setTabText(3, settings->getTranslation("General", "tools"));
     ui->openSarcExplorerBtn->setText(settings->getTranslation("SarcExplorer", "sarcExplorer"));
+    ui->nightModeBtn->setText(settings->getTranslation("MainWindow", "NightMode"));
 }
 
 void MainWindow::on_updateSpriteData_clicked()
@@ -287,4 +288,26 @@ void MainWindow::on_removeTilesetBtn_clicked()
 void MainWindow::on_tilesetView_clicked(const QModelIndex &index)
 {
     ui->removeTilesetBtn->setEnabled(index.data(Qt::UserRole+1).toString() != "");
+}
+
+int nightMode = 0;
+
+void MainWindow::on_nightModeBtn_clicked()
+{
+    if (nightMode == 1)
+    {
+        QFile styleSheet(QCoreApplication::applicationDirPath() + "/coinkiller_data/LightMode.qss");
+        styleSheet.open(QFile::ReadOnly);
+        QString lightSheet = QLatin1String(styleSheet.readAll());
+        setStyleSheet(lightSheet);
+        nightMode = 0;
+    }
+    else
+    {
+        QFile styleSheet(QCoreApplication::applicationDirPath() + "/coinkiller_data/NightMode.qss");
+        styleSheet.open(QFile::ReadOnly);
+        QString nightSheet = QLatin1String(styleSheet.readAll());
+        setStyleSheet(nightSheet);
+        nightMode = 1;
+    }
 }
