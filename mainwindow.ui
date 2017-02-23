@@ -145,6 +145,13 @@
           </property>
          </widget>
         </item>
+        <item>
+         <widget class="QPushButton" name="testButton">
+          <property name="text">
+           <string>Test Button :D</string>
+          </property>
+         </widget>
+        </item>
        </layout>
       </widget>
      </widget>

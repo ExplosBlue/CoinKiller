@@ -36,6 +36,7 @@
 #include "sarcexplorerwindow.h"
 #include "newtilesetdialog.h"
 #include "sillytest.h" // REMOVE ME!!
+#include "ctpk_new.h"  // ME AS WELL!
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -67,7 +68,8 @@ MainWindow::~MainWindow()
     if (!startupClose)
     {
         delete settings;
-        delete game;
+        if (gameLoaded)
+            delete game;
     }
     delete ui;
 }
@@ -75,6 +77,7 @@ MainWindow::~MainWindow()
 void MainWindow::setGameLoaded(bool loaded)
 {
     ui->tab_tilesets->setEnabled(loaded);
+    gameLoaded = loaded;
 }
 
 void MainWindow::on_actionAbout_triggered()
@@ -287,4 +290,14 @@ void MainWindow::on_removeTilesetBtn_clicked()
 void MainWindow::on_tilesetView_clicked(const QModelIndex &index)
 {
     ui->removeTilesetBtn->setEnabled(index.data(Qt::UserRole+1).toString() != "");
+}
+
+void MainWindow::on_testButton_clicked()
+{
+    if (!gameLoaded)
+        return;
+
+    SarcFilesystem* archive = new SarcFilesystem(game->fs->openFile("/Unit/J_Kihon.sarc"));
+
+    Ctpk_new* ctpk = new Ctpk_new(archive->openFile("/BG_tex/coin_red.ctpk"));
 }

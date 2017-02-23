@@ -373,7 +373,7 @@ NormalImageRenderer::NormalImageRenderer(QRect rect, QString filename)
     this->filename = filename;
 }
 
-void NormalImageRenderer::render(QPainter *painter, QRect *drawrect)
+void NormalImageRenderer::render(QPainter *painter, QRect *)
 {
     painter->drawPixmap(rect, QPixmap(filename));
 }
@@ -387,7 +387,7 @@ RoundedRectRenderer::RoundedRectRenderer(const Object *obj, QString text, QColor
     this->align = align;
 }
 
-void RoundedRectRenderer::render(QPainter *painter, QRect *drawrect)
+void RoundedRectRenderer::render(QPainter *painter, QRect *)
 {
     QRect rect(obj->getx()+obj->getOffsetX(), obj->gety()+obj->getOffsetY(), obj->getwidth(), obj->getheight());
 
@@ -412,7 +412,7 @@ TileGodRenderer::TileGodRenderer(const Sprite *spr, Tileset *tileset)
     this->tileset = tileset;
 }
 
-void TileGodRenderer::render(QPainter *painter, QRect *drawrect)
+void TileGodRenderer::render(QPainter *painter, QRect *)
 {
     QRect sprrect(spr->getx(), spr->gety(), spr->getwidth(), spr->getheight());
 
@@ -464,7 +464,7 @@ SpecialExitControllerRenderer::SpecialExitControllerRenderer(const Sprite *spr)
     this->spr = spr;
 }
 
-void SpecialExitControllerRenderer::render(QPainter *painter, QRect *drawrect)
+void SpecialExitControllerRenderer::render(QPainter *painter, QRect *)
 {
     QRect sprRect(spr->getx(), spr->gety(), spr->getwidth(), spr->getheight());
     painter->fillRect(sprRect, QColor(0,255,0,30));
@@ -556,7 +556,7 @@ BulletBillLauncherRenderer::BulletBillLauncherRenderer(const Sprite *spr)
     this->spr = spr;
 }
 
-void BulletBillLauncherRenderer::render(QPainter *painter, QRect *drawrect)
+void BulletBillLauncherRenderer::render(QPainter *painter, QRect *)
 {
     QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/");
 
@@ -579,7 +579,7 @@ GoombaRenderer::GoombaRenderer(const Sprite *spr)
     this->spr = spr;
 }
 
-void GoombaRenderer::render(QPainter *painter, QRect *drawrect)
+void GoombaRenderer::render(QPainter *painter, QRect *)
 {
     QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/");
 
@@ -593,7 +593,7 @@ BoneGoombaRenderer::BoneGoombaRenderer(const Sprite *spr)
     this->spr = spr;
 }
 
-void BoneGoombaRenderer::render(QPainter *painter, QRect *drawrect)
+void BoneGoombaRenderer::render(QPainter *painter, QRect *)
 {
     QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/");
 
@@ -686,7 +686,7 @@ RecLiftRenderer::RecLiftRenderer(const Sprite *spr, QString path)
     if (spr->getid() == 192) sideOffset = 3;
 }
 
-void RecLiftRenderer::render(QPainter *painter, QRect *drawrect)
+void RecLiftRenderer::render(QPainter *painter, QRect *)
 {
     int blockWidth = spr->getNybble(15) > 0 ? spr->getNybble(15)*20 : 20;
     int blockHeight = spr->getNybble(13) > 0 ? spr->getNybble(13)*20 : 20;
@@ -722,7 +722,7 @@ MushroomPlatformRenderer::MushroomPlatformRenderer(const Sprite *spr, QString ba
     this->basePath = basePath;
 }
 
-void MushroomPlatformRenderer::render(QPainter *painter, QRect *drawrect)
+void MushroomPlatformRenderer::render(QPainter *painter, QRect *)
 {
     painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX(), spr->gety(), 24, 20), QPixmap(basePath + "l.png"));
     painter->drawPixmap(QRect(spr->getx()-spr->getOffsetX()-24, spr->gety(), 24, 20), QPixmap(basePath + "r.png"));
@@ -737,7 +737,7 @@ BobOmbCannonRenderer::BobOmbCannonRenderer(const Sprite *spr)
     this->spr = spr;
 }
 
-void BobOmbCannonRenderer::render(QPainter *painter, QRect *drawrect)
+void BobOmbCannonRenderer::render(QPainter *painter, QRect *)
 {
     QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/");
 
@@ -752,7 +752,7 @@ UrchinRenderer::UrchinRenderer(const Sprite *spr)
     this->spr = spr;
 }
 
-void UrchinRenderer::render(QPainter *painter, QRect *drawrect)
+void UrchinRenderer::render(QPainter *painter, QRect *)
 {
     QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/");
 
@@ -767,7 +767,7 @@ ChainChompRenderer::ChainChompRenderer(const Sprite *spr)
     this->spr = spr;
 }
 
-void ChainChompRenderer::render(QPainter *painter, QRect *drawrect)
+void ChainChompRenderer::render(QPainter *painter, QRect *)
 {
     QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/");
 
@@ -814,7 +814,7 @@ ClockRenderer::ClockRenderer(const Sprite *spr)
     this->spr = spr;
 }
 
-void ClockRenderer::render(QPainter *painter, QRect *drawrect)
+void ClockRenderer::render(QPainter *painter, QRect *)
 {
     QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/");
 

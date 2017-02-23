@@ -68,7 +68,7 @@ public:
         return ret;
     }
 
-    quint32 readStringASCII(QString& ret, quint32 len) // len=0 for NULL terminated string
+    quint32 readStringASCII(QString& ret, quint32 len=0) // len=0 for NULL terminated string
     {
         char temp8[64];
         QChar temp16[64];
