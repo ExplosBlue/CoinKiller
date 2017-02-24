@@ -28,12 +28,12 @@
 #include <QMessageBox>
 #include <QScrollBar>
 
-LevelEditorWindow::LevelEditorWindow(LevelManager* lvlMgr, int initialArea, SettingsManager *settings) :
+LevelEditorWindow::LevelEditorWindow(LevelManager* lvlMgr, int initialArea) :
     QMainWindow(lvlMgr->getParent()),
     ui(new Ui::LevelEditorWindow)
 {
     this->lvlMgr = lvlMgr;
-    this->settings = settings;
+    this->settings = SettingsManager::getInstance();
 
     this->setAttribute(Qt::WA_DeleteOnClose);
     ui->setupUi(this);
@@ -484,7 +484,7 @@ void LevelEditorWindow::loadArea(int id, bool closeLevel, bool init)
     connect(entranceEditor, SIGNAL(selectedEntrChanged(Object*)), levelView, SLOT(selectObj(Object*)));
 
     // Setup Zone Editor
-    zoneEditor = new ZoneEditorWidget(&level->zones, settings);
+    zoneEditor = new ZoneEditorWidget(&level->zones);
     connect(zoneEditor, SIGNAL(updateLevelView()), levelView, SLOT(update()));
     connect(zoneEditor, SIGNAL(selectedZoneChanged(Object*)), levelView, SLOT(selectObj(Object*)));
 

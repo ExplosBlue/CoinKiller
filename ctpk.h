@@ -1,20 +1,3 @@
-/*
-    Copyright 2015 StapleButter
-
-    This file is part of CoinKiller.
-
-    CoinKiller is free software: you can redistribute it and/or modify it under
-    the terms of the GNU General Public License as published by the Free
-    Software Foundation, either version 3 of the License, or (at your option)
-    any later version.
-
-    CoinKiller is distributed in the hope that it will be useful, but WITHOUT ANY
-    WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-    FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
-    You should have received a copy of the GNU General Public License along
-    with CoinKiller. If not, see http://www.gnu.org/licenses/.
-*/
-
 #ifndef CTPK_H
 #define CTPK_H
 
@@ -22,17 +5,76 @@
 
 #include <QImage>
 
-
 class Ctpk
 {
 public:
     Ctpk(FileBase* file);
     ~Ctpk();
 
-    QImage* getTexture(quint32 num);
-
+    QImage* getTexture(quint32 entryIndex);
+    QImage* getTexture(QString filename);
 
 private:
+    FileBase* file;
+
+    enum TextrueFormat
+    {
+        RGBA8888 = 0,
+        RGB888 = 1,
+        RGBA5551 = 2,
+        RGB565 = 3,
+        RGBA4444 = 4,
+        LA88 = 5,
+        HL8 = 6,
+        L8 = 7,
+        A8 = 8,
+        LA44 = 9,
+        L4 = 10,
+        A4 = 11,
+        ETC1 = 12,
+        ETC1_A4 = 13
+    };
+
+    struct CtpkEntry
+    {
+        quint32 filenameOffset;
+        quint32 dataSize;
+        quint32 dataOffset;
+        quint32 format;
+        quint16 width;
+        quint16 height;
+        quint8 mipLevel;
+        quint8 type;
+        quint16 unk;
+        quint32 bmpSizeOffset;
+        quint32 unixTimestamp;
+
+        quint32 info1;
+
+        quint32 filenameHash;
+
+        quint32 info2;
+
+
+        QString filename;
+    };
+
+    quint32 version;
+    quint32 numEntries;
+    quint32 texSectionOffset;
+    quint32 texSectionSize;
+    quint32 hashSectionOffset;
+    quint32 infoSectionOffset;
+
+    QList<CtpkEntry*> entries;
+
+
+    CtpkEntry* getEntryByFilename(QString filename);
+
+    QImage* getTexture(CtpkEntry* entry);
+    QImage* getTextureETC1(CtpkEntry* entry);
+    QImage* getTextureRaster(CtpkEntry* entry);
+
     qint32 clampColor(qint32 val)
     {
         if (val > 255) return 255;
@@ -40,13 +82,9 @@ private:
         return val;
     }
 
-    FileBase* file;
 
-    quint16 numTextures;
-    quint32 texSectionOffset;
-    quint32 texSectionSize;
-    quint32 hashSectionOffset;
-    quint32 infoSectionOffset;
+    void printInfo();
+
 };
 
 #endif // CTPK_H

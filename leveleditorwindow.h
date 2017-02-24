@@ -46,7 +46,7 @@ class LevelEditorWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit LevelEditorWindow(LevelManager* lvlMgr, int initialArea, SettingsManager* settings);
+    explicit LevelEditorWindow(LevelManager* lvlMgr, int initialArea);
     ~LevelEditorWindow();
     void closeEvent();
 

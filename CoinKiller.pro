@@ -48,8 +48,7 @@ SOURCES += main.cpp\
     levelminimap.cpp \
     objectseditionmode.cpp \
     sarcexplorerwindow.cpp \
-    newtilesetdialog.cpp \
-    ctpk_new.cpp
+    newtilesetdialog.cpp
 
 HEADERS  += mainwindow.h \
     filesystembase.h \
@@ -89,8 +88,7 @@ HEADERS  += mainwindow.h \
     levelminimap.h \
     objectseditionmode.h \
     sarcexplorerwindow.h \
-    newtilesetdialog.h \
-    ctpk_new.h
+    newtilesetdialog.h
 
 FORMS    += mainwindow.ui \
     leveleditorwindow.ui \
