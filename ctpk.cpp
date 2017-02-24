@@ -1,4 +1,5 @@
-#include "Ctpk.h"
+#include "ctpk.h"
+#include "settingsmanager.h"
 
 #include <QDebug>
 
@@ -39,7 +40,8 @@ Ctpk::Ctpk(FileBase* file)
         entry->filenameOffset = file->read32();
         entry->dataSize = file->read32();
         entry->dataOffset = file->read32();
-        entry->format = file->read32();
+        entry->format = (TextrueFormat)file->read32();
+        updataEntryHasAlpha(entry);
         entry->width = file->read16();
         entry->height = file->read16();
         entry->mipLevel = file->read8();
@@ -111,6 +113,22 @@ Ctpk::CtpkEntry* Ctpk::getEntryByFilename(QString filename)
     return NULL;
 }
 
+void Ctpk::updataEntryHasAlpha(CtpkEntry* entry)
+{
+    switch (entry->format)
+    {
+    case RGBA4444:
+    case RGBA5551:
+    case RGBA8888:
+    case ETC1_A4:
+        entry->hasAlpha = true;
+        break;
+    default:
+        entry->hasAlpha = false;
+        break;
+    }
+}
+
 QImage* Ctpk::getTexture(quint32 entryIndex)
 {
     if (entryIndex > numEntries-1)
@@ -135,41 +153,39 @@ QImage* Ctpk::getTexture(QString filename)
 
 QImage* Ctpk::getTexture(CtpkEntry* entry)
 {
-    switch (entry->format)
-    {
-        case ETC1:
-        case ETC1_A4:
-            return getTextureETC1(entry);
-        default:
-            return getTextureRaster(entry);
-    }
-}
-
-QImage* Ctpk::getTextureRaster(CtpkEntry* entry)
-{
-    bool hasAlpha;
-    switch (entry->format)
-    {
-    case RGBA4444:
-    case RGBA5551:
-    case RGBA8888:
-        hasAlpha = true;
-        break;
-    default:
-        hasAlpha = false;
-        break;
-    }
-
     QImage::Format imgFormat;
 
-    if (hasAlpha)
-        imgFormat = QImage::Format_RGBA8888_Premultiplied;
+    if (entry->hasAlpha)
+    {
+        if (SettingsManager::getInstance()->get("premultiplyAlpha", true).toBool())
+            imgFormat = QImage::Format_RGBA8888_Premultiplied;
+        else
+            imgFormat = QImage::Format_RGBA8888;
+    }
     else
         imgFormat = QImage::Format_RGB888;
 
 
     QImage* tex = new QImage(entry->width, entry->height, imgFormat);
+
+    switch (entry->format)
+    {
+        case ETC1:
+        case ETC1_A4:
+            getTextureETC1(entry, tex);
+            break;
+        default:
+            getTextureRaster(entry, tex);
+            break;
+    }
+
+    return tex;
+}
+
+void Ctpk::getTextureRaster(CtpkEntry* entry, QImage* tex)
+{    
     quint8* data = tex->scanLine(0);
+    bool premultiply = (tex->format() == QImage::Format_RGBA8888_Premultiplied);
 
     file->open();
     file->seek(texSectionOffset + entry->dataOffset);
@@ -246,14 +262,16 @@ QImage* Ctpk::getTextureRaster(CtpkEntry* entry)
                                     }
                                     }
 
-                                    if (hasAlpha)
+                                    if (entry->hasAlpha)
                                     {
                                         quint32 dstpos = ((yy + sy + ty + y) * entry->width + xx + sx + tx + x) * 4;
 
-                                        // Premultiply. We loose a bit of precision here.
-                                        r = (r * a) / 255;
-                                        g = (g * a) / 255;
-                                        b = (b * a) / 255;
+                                        if (premultiply)
+                                        {
+                                            r = (r * a) / 255;
+                                            g = (g * a) / 255;
+                                            b = (b * a) / 255;
+                                        }
 
                                         data[dstpos + 0] = r;
                                         data[dstpos + 1] = g;
@@ -277,10 +295,9 @@ QImage* Ctpk::getTextureRaster(CtpkEntry* entry)
     }
 
     file->close();
-    return tex;
 }
 
-QImage* Ctpk::getTextureETC1(CtpkEntry* entry)
+void Ctpk::getTextureETC1(CtpkEntry* entry, QImage* tex)
 {
     const qint32 etc1_mod[8][2] =
     {
@@ -288,9 +305,8 @@ QImage* Ctpk::getTextureETC1(CtpkEntry* entry)
         {18, 60}, {24, 80}, {33, 106}, {47, 183}
     };
 
-    // TODO: Handle non-Alpha images correctly (current solution is ugly)
-    QImage* tex = new QImage(entry->width, entry->height, QImage::Format_RGBA8888_Premultiplied); // R,G,B,A
     quint8* data = tex->scanLine(0);
+    bool premultiply = (tex->format() == QImage::Format_RGBA8888_Premultiplied);
 
     file->open();
     file->seek(texSectionOffset + entry->dataOffset);
@@ -304,14 +320,11 @@ QImage* Ctpk::getTextureETC1(CtpkEntry* entry)
                 for (quint32 tx = 0; tx < 8; tx += 4)
                 {
                     quint64 alpha;
-
-                    if (entry->format = ETC1_A4)
+                    if (entry->format == ETC1_A4)
                     {
                         alpha = (quint64)file->read32();
                         alpha |= ((quint64)file->read32() << 32);
                     }
-                    else
-                        alpha = 0xFFFFFFFFFFFFFFFF;
 
                     quint16 subindexes = file->read16();
                     quint16 negative = file->read16();
@@ -380,19 +393,34 @@ QImage* Ctpk::getTextureETC1(CtpkEntry* entry)
                             g = clampColor(g + mod);
                             b = clampColor(b + mod);
 
-                            quint8 a = alpha & 0xF;
-                            a |= (a << 4);
 
-                            // premultiply shit
-                            r = (r * a) / 255;
-                            g = (g * a) / 255;
-                            b = (b * a) / 255;
 
-                            quint32 dstpos = ((sy + ty + y) * entry->width + sx + tx + x) * 4;
-                            data[dstpos + 0] = r;
-                            data[dstpos + 1] = g;
-                            data[dstpos + 2] = b;
-                            data[dstpos + 3] = a;
+                            if (entry->hasAlpha)
+                            {
+                                quint8 a = alpha & 0xF;
+                                a |= (a << 4);
+
+                                quint32 dstpos = ((sy + ty + y) * entry->width + sx + tx + x) * 4;
+
+                                if (premultiply)
+                                {
+                                    r = (r * a) / 255;
+                                    g = (g * a) / 255;
+                                    b = (b * a) / 255;
+                                }
+
+                                data[dstpos + 0] = r;
+                                data[dstpos + 1] = g;
+                                data[dstpos + 2] = b;
+                                data[dstpos + 3] = a;
+                            }
+                            else
+                            {
+                                quint32 dstpos = ((sy + ty + y) * entry->width + sx + tx + x) * 3;
+                                data[dstpos + 0] = r;
+                                data[dstpos + 1] = g;
+                                data[dstpos + 2] = b;
+                            }
 
                             subindexes >>= 1;
                             negative >>= 1;
@@ -405,7 +433,6 @@ QImage* Ctpk::getTextureETC1(CtpkEntry* entry)
     }
 
     file->close();
-    return tex;
 }
 
 
