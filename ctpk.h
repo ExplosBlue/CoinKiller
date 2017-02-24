@@ -40,7 +40,7 @@ private:
         quint32 filenameOffset;
         quint32 dataSize;
         quint32 dataOffset;
-        quint32 format;
+        TextrueFormat format;
         quint16 width;
         quint16 height;
         quint8 mipLevel;
@@ -57,6 +57,7 @@ private:
 
 
         QString filename;
+        bool hasAlpha;
     };
 
     quint32 version;
@@ -72,8 +73,8 @@ private:
     CtpkEntry* getEntryByFilename(QString filename);
 
     QImage* getTexture(CtpkEntry* entry);
-    QImage* getTextureETC1(CtpkEntry* entry);
-    QImage* getTextureRaster(CtpkEntry* entry);
+    void getTextureRaster(CtpkEntry* entry, QImage* tex);
+    void getTextureETC1(CtpkEntry* entry, QImage* tex);
 
     qint32 clampColor(qint32 val)
     {
@@ -81,6 +82,8 @@ private:
         if (val < 0) return 0;
         return val;
     }
+
+    void updataEntryHasAlpha(CtpkEntry* entry);
 
 
     void printInfo();

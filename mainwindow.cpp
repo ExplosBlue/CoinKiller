@@ -296,7 +296,7 @@ void MainWindow::on_testButton_clicked()
     if (!gameLoaded)
         return;
 
-    QString testPath = "/rgba8888.ctpk";
+    QString testPath = "/etc1.ctpk";
     QString intPath = "test.tga";
 
     Ctpk* ctpk = new Ctpk(game->fs->openFile(testPath));
