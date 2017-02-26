@@ -1,4 +1,4 @@
-ifndef CTPK_H
+#ifndef CTPK_H
 #define CTPK_H
 
 #include "filesystem.h"
