@@ -28,7 +28,7 @@ Tileset::Tileset(Game *game, QString name)
     archive = new SarcFilesystem(game->fs->openFile("/Unit/"+name+".sarc"));
     texture = new Ctpk(archive->openFile("/BG_tex/"+name+".ctpk"));
 
-    texImage = texture->getTexture(0);
+    texImage = texture->getTexture((quint32)0);
 
     if (name.startsWith("J_"))
         drawOverrides = true;
@@ -884,6 +884,6 @@ void Tileset::replaceCTPK(QString filename)
     texFile->close();
 
     texture = new Ctpk(archive->openFile("/BG_tex/"+name+".ctpk"));
-  
+
     texImage = texture->getTexture(name + ".tga");
 }

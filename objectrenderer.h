@@ -12,7 +12,7 @@ public:
     ObjectRenderer() {}
     ObjectRenderer(Object *) {}
     virtual ~ObjectRenderer() {}
-    virtual void render(QPainter *, QRect *drawrect) {}
+    virtual void render(QPainter *, QRect *) {}
 };
 
 class SpriteRenderer: public ObjectRenderer

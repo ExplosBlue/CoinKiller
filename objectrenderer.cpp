@@ -77,7 +77,7 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
         ret = new NormalImageRenderer(spr, basePath + "door.png");
         break;
     case 70: // Castle Boss Door
-        ret = new NormalImageRenderer(spr, basePath + "door_castle.png");
+        ret = new NormalImageRenderer(spr, basePath + "door_castle_boss.png");
         break;
     case 71: // Closed Door
         ret = new NormalImageRenderer(spr, basePath + "door_closed.png");
@@ -645,8 +645,7 @@ ReznorBlockRenderer::ReznorBlockRenderer(const Sprite *spr)
 {
     this->spr = spr;
 }
-
-void ReznorBlockRenderer::render(QPainter *painter, QRect *)
+void ReznorBlockRenderer::render(QPainter *painter, QRect *drawrect)
 {
     QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/");
 
@@ -810,11 +809,11 @@ void UpDownMushroomRenderer::render(QPainter *painter, QRect *)
         color = "blue";
     else
         color = "pink";
-  
+
     for (int i = 0; i < spr->getNybble(4); i++)
         painter->drawPixmap(QRect(spr->getx(), spr->gety()+spr->getOffsetY()+20+i*20, 20, 30), QPixmap(basePath + "stem.png"));
     painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX(), spr->gety(), 30, 30), QPixmap(basePath + color + "_l.png"));
-    painter->drawPixmap(QRect(spr->getx()-spr->getOffsetX()-10, spr->gety(), 30, 30), QPixmap(basePath + color + "_r.png"))
+    painter->drawPixmap(QRect(spr->getx()-spr->getOffsetX()-10, spr->gety(), 30, 30), QPixmap(basePath + color + "_r.png"));
     for (int i = 30; i < spr->getwidth()-30; i += 20)
         painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()+i, spr->gety(), 20, 30), QPixmap(basePath + color + "_m.png"));
 }
@@ -856,7 +855,7 @@ GoombaRenderer::GoombaRenderer(const Sprite *spr)
     this->spr = spr;
 }
 
-void GoombaRenderer::render(QPainter *painter, QRect *drawrect)
+void GoombaRenderer::render(QPainter *painter, QRect *)
 {
     QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/");
 
@@ -981,8 +980,7 @@ RecLiftRenderer::RecLiftRenderer(const Sprite *spr, QString path)
     this->path = path;
     if (spr->getid() == 192) sideOffset = 3;
 }
-
-void RecLiftRenderer::render(QPainter *painter, QRect *drawrect)
+void RecLiftRenderer::render(QPainter *painter, QRect *)
 {
     int blockWidth = spr->getNybble(15) > 0 ? spr->getNybble(15)*20 : 20;
     int blockHeight = spr->getNybble(13) > 0 ? spr->getNybble(13)*20 : 20;

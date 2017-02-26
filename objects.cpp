@@ -192,28 +192,28 @@ void Sprite::setRect()
         offsety = 10;
         break;
     case 38: // Reznor Wheel
-        if(getNybble(6) == 1)
-        {
-            width = 349;
-            height = 353;
-            offsetx = -162;
-            offsety = -177;
-        }
-        else
-        {
-            width = 201;
-            height = 177;
-            offsetx = -92;
-            offsety = -76;
-        }
+            if(getNybble(6) == 1)
+            {
+                width = 349;
+                height = 353;
+                offsetx = -162;
+                offsety = -177;
+            }
+            else
+            {
+                width = 201;
+                height = 177;
+                offsetx = -92;
+                offsety = -76;
+            }
 
-        break;
-    case 39: // Reznor Battle Dissapearing blocks
-        if(getNybble(4) == 0)
-            width = 20;
-        else
-            width = getNybble(4)*20;
-        break;
+            break;
+        case 39: // Reznor Battle Dissapearing blocks
+            if(getNybble(4) == 0)
+                width = 20;
+            else
+                width = getNybble(4)*20;
+            break;
     case 52: // Checkpoint Flag
         width = 37;
         height = 65;
@@ -656,6 +656,7 @@ void Sprite::setRect()
         if (getNybble(5) != 1) offsetx = -1;
         else offsetx = -10;
         offsety = -12;
+        break;
     case 216: // Boss Shutter
         width = 34;
         height = 60;

@@ -130,6 +130,7 @@
     <addaction name="actionCut"/>
     <addaction name="actionCopy"/>
     <addaction name="actionDelete"/>
+    <addaction name="actionSelectAll"/>
     <addaction name="separator"/>
     <addaction name="actionRaise"/>
     <addaction name="actionLower"/>
@@ -173,6 +174,7 @@
    <addaction name="separator"/>
    <addaction name="actionFullscreen"/>
    <addaction name="actionGrid"/>
+   <addaction name="actionRenderLiquids"/>
    <addaction name="separator"/>
    <addaction name="actionToggleLayer1"/>
    <addaction name="actionToggleLayer2"/>
@@ -390,6 +392,31 @@
    </property>
    <property name="toolTip">
     <string>&lt;Lower Layer&gt;</string>
+   </property>
+  </action>
+  <action name="actionRenderLiquids">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&lt;RenderLiquids&gt;</string>
+   </property>
+   <property name="toolTip">
+    <string>&lt;RenderLiquids&gt;</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+L</string>
+   </property>
+  </action>
+  <action name="actionSelectAll">
+   <property name="text">
+    <string>&lt;SelectAll&gt;</string>
+   </property>
+   <property name="toolTip">
+    <string>&lt;SelectAll&gt;</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+A</string>
    </property>
   </action>
  </widget>
