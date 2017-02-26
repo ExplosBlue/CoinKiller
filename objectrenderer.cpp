@@ -37,6 +37,9 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
     case 27: // POW Block
         ret = new NormalImageRenderer(spr, basePath + "pow_block.png");
         break;
+    case 28: // Movement Controlled POW Block
+        ret = new NormalImageRenderer(spr, basePath +"pow_block.png");
+        break;
     case 29: // Bob-omb
         ret = new NormalImageRenderer(spr, basePath + "bob-omb.png");
         break;
@@ -51,6 +54,12 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
         break;
     case 35: // Lava Bubble
         ret = new NormalImageRenderer(spr, basePath + "lava_bubble.png");
+        break;
+    case 38: // Reznor Wheel
+        ret = new NormalImageRenderer(spr, basePath + "reznor_wheel.png");
+        break;
+    case 39: // Reznor Battle Dissapearing Blocks
+        ret = new ReznorBlockRenderer(spr);
         break;
     case 52: // Checkpoint Flag
         ret = new NormalImageRenderer(spr, basePath + "checkpoint_flag.png");
@@ -94,6 +103,21 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
     case 83: // Fish Bone
         ret = new NormalImageRenderer(spr, basePath + "fish_bone.png");
         break;
+    case 84: // Flag Controller - Chainer
+        ret = new FlagRenderer(spr);
+        break;
+    case 85: // Flag Controller - IF
+        ret = new FlagRenderer(spr);
+        break;
+    case 86: // Flag Controller - Zone enter
+        ret = new FlagRenderer(spr);
+        break;
+    case 87: // Flag Controller - Multi Chainer
+        ret = new FlagRenderer(spr);
+        break;
+    case 88: // Flag Controller - On screen
+        ret = new FlagRenderer(spr);
+        break;
     case 92: // Grinder
         ret = new NormalImageRenderer(spr, basePath + "grinder.png");
         break;
@@ -111,6 +135,12 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
         break;
     case 99: // Wiggler
         ret = new NormalImageRenderer(spr, basePath + "wiggler.png");
+        break;
+    case 100: // Rotation Controlled ? Block
+        ret = new ItemBlockRenderer(spr, basePath + "question_block");
+        break;
+    case 101: // Movement Controlled ? Block
+        ret = new ItemBlockRenderer(spr, basePath + "question_block");
         break;
     case 106: // Trampoline
         ret = new NormalImageRenderer(spr, basePath + "trampoline.png");
@@ -135,6 +165,12 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
         break;
     case 117: // Banzi Bill Launcher
         ret = new NormalImageRenderer(spr, basePath + "banzai_bill_launcher.png");
+        break;
+    case 120: // Up Down Mushroom
+        ret = new UpDownMushroomRenderer(spr, basePath + "up_down_mushroom/");
+        break;
+    case 123: // Bouncy Mushroom
+        ret = new BouncyMushroomRenderer(spr);
         break;
     case 124: // Mushroom Platform
         ret = new MushroomPlatformRenderer(spr, basePath + "mushroom_platform/");
@@ -241,6 +277,12 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
     case 200: // Spiny Cheep Cheep
         ret = new NormalImageRenderer(spr, basePath + "spiny_cheep_cheep.png");
         break;
+    case 203: // Rotation Controlled Brick Block
+        ret = new ItemBlockRenderer(spr, basePath + "brick_block");
+        break;
+    case 204: // Movement Controlled Brick Block
+        ret = new ItemBlockRenderer(spr, basePath + "brick_block");
+        break;
     case 205: // Red Ring
         ret = new NormalImageRenderer(spr, basePath + "red_ring.png");
         break;
@@ -259,11 +301,23 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
     case 221: // ! Switch
         ret = new SwitchRenderer(spr, basePath + "exclamation_switch.png");
         break;
+    case 222: // Brick Block Contaning ! Switch
+        ret = new NormalImageRenderer(spr, basePath + "brick_block_exclamation_switch.png");
+        break;
     case 223: // ? Switch
         ret = new SwitchRenderer(spr, basePath + "question_switch.png");
         break;
+    case 224: // Brick Block Contaning ? Switch
+        ret = new NormalImageRenderer(spr, basePath + "brick_block_question_switch.png");
+        break;
     case 225: // P Switch
         ret = new SwitchRenderer(spr, basePath + "p_switch.png");
+        break;
+    case 226: // Brick Block Contaning P Switch
+        ret = new NormalImageRenderer(spr, basePath + "brick_block_p_switch.png");
+        break;
+    case 227: // Floating Barrel
+        ret = new NormalImageRenderer(spr, basePath + "barrel.png");
         break;
     case 228: // Boo
         ret = new NormalImageRenderer(spr, basePath + "boo.png");
@@ -292,8 +346,26 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
     case 255: // Bowser Head Statue
         ret = new NormalImageRenderer(spr, basePath + "bowser_head_statue.png");
         break;
+    case 260: // Tower Cutscene Roy
+        ret = new NormalImageRenderer(spr, basePath + "roy_cutscene.png");
+        break;
+    case 261: // Tower Cutscene Iggy
+        ret = new NormalImageRenderer(spr, basePath + "iggy_cutscene.png");
+        break;
+    case 262: // Tower Cutscene Wendy
+        ret = new NormalImageRenderer(spr, basePath + "wendy_cutscene.png");
+        break;
+    case 263: // Tower Cutscene Morton
+        ret = new NormalImageRenderer(spr, basePath + "morton_cutscene.png");
+        break;
+    case 264: // Tower Cutscene Ludwig
+        ret = new NormalImageRenderer(spr, basePath + "ludwig_cutscene.png");
+        break;
+    case 265: // Tower Cutscene No koopa
+        ret = new NormalImageRenderer(spr, basePath + "tower_cutscene.png");
+        break;
     case 267: // Long Question Block
-        ret = new LongQBlockRenderer(spr, basePath + "long_question_block.png");
+        ret = new ItemBlockRenderer(spr, basePath + "long_question_block.png");
         break;
     case 269: // Gold Ship
         ret = new NormalImageRenderer(spr, basePath + "gold_ship.png");
@@ -308,10 +380,10 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
         ret = new NormalImageRenderer(spr, basePath + "flying_gold_block.png");
         break;
     case 275: // Long Question Block - Underground
-        ret = new LongQBlockRenderer(spr, basePath + "long_question_block_underground.png");
+        ret = new ItemBlockRenderer(spr, basePath + "long_question_block_underground.png");
         break;
     case 276: // Long Question Block - Lava
-        ret = new LongQBlockRenderer(spr, basePath + "long_question_block_lava.png");
+        ret = new ItemBlockRenderer(spr, basePath + "long_question_block_lava.png");
         break;
     case 277: // Switchable Conveyor Belt
         ret = new NormalImageRenderer(spr, basePath + "switchable_conveyor_belt.png");
@@ -373,7 +445,7 @@ NormalImageRenderer::NormalImageRenderer(QRect rect, QString filename)
     this->filename = filename;
 }
 
-void NormalImageRenderer::render(QPainter *painter, QRect *)
+void NormalImageRenderer::render(QPainter *painter, QRect *drawrect)
 {
     painter->drawPixmap(rect, QPixmap(filename));
 }
@@ -387,7 +459,7 @@ RoundedRectRenderer::RoundedRectRenderer(const Object *obj, QString text, QColor
     this->align = align;
 }
 
-void RoundedRectRenderer::render(QPainter *painter, QRect *)
+void RoundedRectRenderer::render(QPainter *painter, QRect *drawrect)
 {
     QRect rect(obj->getx()+obj->getOffsetX(), obj->gety()+obj->getOffsetY(), obj->getwidth(), obj->getheight());
 
@@ -412,7 +484,7 @@ TileGodRenderer::TileGodRenderer(const Sprite *spr, Tileset *tileset)
     this->tileset = tileset;
 }
 
-void TileGodRenderer::render(QPainter *painter, QRect *)
+void TileGodRenderer::render(QPainter *painter, QRect *drawrect)
 {
     QRect sprrect(spr->getx(), spr->gety(), spr->getwidth(), spr->getheight());
 
@@ -464,7 +536,7 @@ SpecialExitControllerRenderer::SpecialExitControllerRenderer(const Sprite *spr)
     this->spr = spr;
 }
 
-void SpecialExitControllerRenderer::render(QPainter *painter, QRect *)
+void SpecialExitControllerRenderer::render(QPainter *painter, QRect *drawrect)
 {
     QRect sprRect(spr->getx(), spr->gety(), spr->getwidth(), spr->getheight());
     painter->fillRect(sprRect, QColor(0,255,0,30));
@@ -473,6 +545,65 @@ void SpecialExitControllerRenderer::render(QPainter *painter, QRect *)
     painter->setPen(Qt::black);
     painter->setFont(QFont("Arial", 8, QFont::Normal));
     painter->drawText(sprRect.adjusted(2,2,15,0), "Warp");
+}
+
+// Sprite 39: Reznor Battle Disapearing Blocks
+ReznorBlockRenderer::ReznorBlockRenderer(const Sprite *spr)
+{
+    this->spr = spr;
+}
+void ReznorBlockRenderer::render(QPainter *painter, QRect *drawrect)
+{
+    QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/");
+
+    if(spr->getNybble(4) == 0)
+        painter->drawPixmap(spr->getx(), spr->gety(), 20, 20, QPixmap(basePath + "reznor_platform.png"));
+    for (int i = 0; i < spr->getNybble(4); i++)
+        painter->drawPixmap(spr->getx()+spr->getOffsetX()+i*20, spr->gety(), 20, 20, QPixmap(basePath + "reznor_platform.png"));
+}
+
+// Sprite 84/85/86/87/88: Flags
+FlagRenderer::FlagRenderer(const Sprite *spr)
+{
+    this->spr = spr;
+
+    this->rect = new RoundedRectRenderer(spr, "", QColor(243,156,18,150));
+}
+void FlagRenderer::render(QPainter *painter, QRect *drawrect)
+{
+    rect->render(painter, drawrect);
+    QRect textRect(spr->getx()+2, spr->gety()+1, 16, 20);
+
+    if(spr->getid() == 84) // Chainer
+    {
+        painter->drawText(textRect, "F", Qt::AlignLeft | Qt::AlignTop);
+        painter->setFont(QFont("Arial", 7, QFont::Thin));
+        painter->drawText(textRect, QString("Cha"), Qt::AlignLeft | Qt::AlignBottom);
+    }
+    else if(spr->getid() == 85) // Location
+    {
+        painter->drawText(textRect, "F", Qt::AlignLeft | Qt::AlignTop);
+        painter->setFont(QFont("Arial", 7, QFont::Normal));
+        painter->drawText(textRect, QString("Loc"), Qt::AlignLeft | Qt::AlignBottom);
+    }
+    else if(spr->getid() == 86) // Zone Enter
+    {
+        painter->drawText(textRect, "F", Qt::AlignLeft | Qt::AlignTop);
+        painter->setFont(QFont("Arial", 7, QFont::Normal));
+        painter->drawText(textRect, QString("Zon"), Qt::AlignLeft | Qt::AlignBottom);
+    }
+    else if(spr->getid() == 87) // Multi Chaner
+    {
+        painter->drawText(textRect, "F", Qt::AlignLeft | Qt::AlignTop);
+        painter->setFont(QFont("Arial", 7, QFont::Normal));
+        painter->drawText(textRect, QString("Mch"), Qt::AlignLeft | Qt::AlignBottom);
+    }
+    else // Onscreen
+    {
+        painter->drawText(textRect, "F", Qt::AlignLeft | Qt::AlignTop);
+        painter->setFont(QFont("Arial", 7, QFont::Normal));
+        painter->drawText(textRect, QString("Ons"), Qt::AlignLeft | Qt::AlignBottom);
+    }
 }
 
 // Sprite 94: Flipper (One Way Gate)
@@ -518,7 +649,6 @@ void GoalRenderer::render(QPainter *painter, QRect *drawrect)
     fort->render(painter, drawrect);
 }
 
-
 // Sprite 109: Signboard
 SignboardRenderer::SignboardRenderer(const Sprite *spr)
 {
@@ -556,7 +686,7 @@ BulletBillLauncherRenderer::BulletBillLauncherRenderer(const Sprite *spr)
     this->spr = spr;
 }
 
-void BulletBillLauncherRenderer::render(QPainter *painter, QRect *)
+void BulletBillLauncherRenderer::render(QPainter *painter, QRect *drawrect)
 {
     QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/");
 
@@ -572,6 +702,65 @@ void BulletBillLauncherRenderer::render(QPainter *painter, QRect *)
     }
 }
 
+// Sprite 120: Up-Down Mushroom
+UpDownMushroomRenderer::UpDownMushroomRenderer(const Sprite *spr, QString basePath)
+{
+    this->spr = spr;
+    this->basePath = basePath;
+}
+
+void UpDownMushroomRenderer::render(QPainter *painter, QRect *drawrect)
+{
+    if((spr->getNybble(7)) < (spr->getNybble(4)))
+    {
+    painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX(), spr->gety(), 30, 30), QPixmap(basePath + "blue_l.png"));
+    painter->drawPixmap(QRect(spr->getx()-spr->getOffsetX()-30, spr->gety(), 30, 30), QPixmap(basePath + "blue_r.png"));
+    for (int i = 0; i < spr->getNybble(4); i++)
+        painter->drawPixmap(QRect(spr->getx(), spr->gety()+spr->getOffsetY()+30+i*20, 14, 30), QPixmap(basePath + "stem.png"));
+    for (int i = 30; i < spr->getwidth()-30; i += 20)
+        painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()+i, spr->gety(), 20, 30), QPixmap(basePath + "blue_m.png"));
+    }
+    else
+    {
+    painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX(), spr->gety(), 30, 30), QPixmap(basePath + "pink_l.png"));
+    painter->drawPixmap(QRect(spr->getx()-spr->getOffsetX()-30, spr->gety(), 30, 30), QPixmap(basePath + "pink_r.png"));
+    for (int i = 0; i < spr->getNybble(4); i++)
+        painter->drawPixmap(QRect(spr->getx(), spr->gety()+spr->getOffsetY()+30+i*20, 14, 30), QPixmap(basePath + "stem.png"));
+    for (int i = 30; i < spr->getwidth()-30; i += 20)
+        painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()+i, spr->gety(), 20, 30), QPixmap(basePath + "pink_m.png"));
+    }
+}
+
+// Sprite 123: Bouncy Mushroom
+BouncyMushroomRenderer::BouncyMushroomRenderer(const Sprite *spr)
+{
+    this->spr = spr;
+}
+
+void BouncyMushroomRenderer::render(QPainter *painter, QRect *drawrect)
+{
+    QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/");
+
+    if (spr->getNybble(15) == 1) painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), QPixmap(basePath + "bouncy_mushroom_big.png"));
+    else painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), QPixmap(basePath + "bouncy_mushroom.png"));
+}
+
+
+// Sprite 124: Mushroom Platform Renderer
+MushroomPlatformRenderer::MushroomPlatformRenderer(const Sprite *spr, QString basePath)
+{
+    this->spr = spr;
+    this->basePath = basePath;
+}
+
+void MushroomPlatformRenderer::render(QPainter *painter, QRect *drawrect)
+{
+    painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX(), spr->gety(), 24, 20), QPixmap(basePath + "l.png"));
+    painter->drawPixmap(QRect(spr->getx()-spr->getOffsetX()-24, spr->gety(), 24, 20), QPixmap(basePath + "r.png"));
+    for (int i = 24; i < spr->getwidth()-24; i += 20)
+        painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()+i, spr->gety(), 20, 20), QPixmap(basePath + "m.png"));
+}
+
 
 // Sprite 135: Goomba
 GoombaRenderer::GoombaRenderer(const Sprite *spr)
@@ -579,7 +768,7 @@ GoombaRenderer::GoombaRenderer(const Sprite *spr)
     this->spr = spr;
 }
 
-void GoombaRenderer::render(QPainter *painter, QRect *)
+void GoombaRenderer::render(QPainter *painter, QRect *drawrect)
 {
     QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/");
 
@@ -587,13 +776,14 @@ void GoombaRenderer::render(QPainter *painter, QRect *)
     else painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), QPixmap(basePath + "goomba_blue.png"));
 }
 
+
 // Sprite 136: Bone Goomba
 BoneGoombaRenderer::BoneGoombaRenderer(const Sprite *spr)
 {
     this->spr = spr;
 }
 
-void BoneGoombaRenderer::render(QPainter *painter, QRect *)
+void BoneGoombaRenderer::render(QPainter *painter, QRect *drawrect)
 {
     QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/");
 
@@ -621,6 +811,7 @@ void GoombaTowerRenderer::render(QPainter *painter, QRect *drawrect)
     bottom->render(painter, drawrect);
 }
 
+
 // Sprite 147: 3 Plat Rickshaw
 ThreePlatRickRenderer::ThreePlatRickRenderer(const Sprite *spr)
 {
@@ -634,6 +825,7 @@ void ThreePlatRickRenderer::render(QPainter *painter, QRect *drawrect)
 {
     img->render(painter, drawrect);
 }
+
 
 // Sprite 154: 4 Plat Rickshaw
 FourPlatRickRenderer::FourPlatRickRenderer(const Sprite *spr)
@@ -649,6 +841,7 @@ void FourPlatRickRenderer::render(QPainter *painter, QRect *drawrect)
     img->render(painter, drawrect);
 }
 
+
 // Sprite 165: Koopa Troopa
 KoopaTroopaRenderer::KoopaTroopaRenderer(const Sprite *spr)
 {
@@ -662,6 +855,7 @@ void KoopaTroopaRenderer::render(QPainter *painter, QRect *drawrect)
 {
     img->render(painter, drawrect);
 }
+
 
 // Sprite 176/180/221/223/225: Switches/Grounded Piranha plants
 SwitchRenderer::SwitchRenderer(const Sprite *spr, QString filename)
@@ -685,8 +879,7 @@ RecLiftRenderer::RecLiftRenderer(const Sprite *spr, QString path)
     this->path = path;
     if (spr->getid() == 192) sideOffset = 3;
 }
-
-void RecLiftRenderer::render(QPainter *painter, QRect *)
+void RecLiftRenderer::render(QPainter *painter, QRect *drawrect)
 {
     int blockWidth = spr->getNybble(15) > 0 ? spr->getNybble(15)*20 : 20;
     int blockHeight = spr->getNybble(13) > 0 ? spr->getNybble(13)*20 : 20;
@@ -722,7 +915,7 @@ MushroomPlatformRenderer::MushroomPlatformRenderer(const Sprite *spr, QString ba
     this->basePath = basePath;
 }
 
-void MushroomPlatformRenderer::render(QPainter *painter, QRect *)
+void MushroomPlatformRenderer::render(QPainter *painter, QRect *drawrect)
 {
     painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX(), spr->gety(), 24, 20), QPixmap(basePath + "l.png"));
     painter->drawPixmap(QRect(spr->getx()-spr->getOffsetX()-24, spr->gety(), 24, 20), QPixmap(basePath + "r.png"));
@@ -730,14 +923,13 @@ void MushroomPlatformRenderer::render(QPainter *painter, QRect *)
         painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()+i, spr->gety(), 20, 20), QPixmap(basePath + "m.png"));
 }
 
-
 // Sprite 215: Bob-omb Cannon
 BobOmbCannonRenderer::BobOmbCannonRenderer(const Sprite *spr)
 {
     this->spr = spr;
 }
 
-void BobOmbCannonRenderer::render(QPainter *painter, QRect *)
+void BobOmbCannonRenderer::render(QPainter *painter, QRect *drawrect)
 {
     QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/");
 
@@ -752,7 +944,7 @@ UrchinRenderer::UrchinRenderer(const Sprite *spr)
     this->spr = spr;
 }
 
-void UrchinRenderer::render(QPainter *painter, QRect *)
+void UrchinRenderer::render(QPainter *painter, QRect *drawrect)
 {
     QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/");
 
@@ -767,7 +959,7 @@ ChainChompRenderer::ChainChompRenderer(const Sprite *spr)
     this->spr = spr;
 }
 
-void ChainChompRenderer::render(QPainter *painter, QRect *)
+void ChainChompRenderer::render(QPainter *painter, QRect *drawrect)
 {
     QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/");
 
@@ -775,14 +967,14 @@ void ChainChompRenderer::render(QPainter *painter, QRect *)
     else painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), QPixmap(basePath + "chain_chomp_1.png"));
 }
 
-// Sprites 267/275/276: Long ? Blocks
-LongQBlockRenderer::LongQBlockRenderer(const Sprite *spr, QString filename)
+// Sprites 100/101/203/204/267/275/276: Item Blocks
+ItemBlockRenderer::ItemBlockRenderer(const Sprite *spr, QString filename)
 {
     this->spr = spr;
     block = new NormalImageRenderer(spr, filename);
 }
 
-void LongQBlockRenderer::render(QPainter *painter, QRect *drawrect)
+void ItemBlockRenderer::render(QPainter *painter, QRect *drawrect)
 {
     block->render(painter, drawrect);
 
@@ -791,12 +983,13 @@ void LongQBlockRenderer::render(QPainter *painter, QRect *drawrect)
 
     switch (spr->getNybble(13))
     {
-        case 1: case 8: overlay = "coin.png"; break;
+        case 1: overlay = "coin.png"; break;
         case 2: overlay = "fire_flower.png"; break;
         case 4: overlay = "super_leaf.png"; break;
         case 5: overlay = "gold_flower.png"; break;
         case 6: overlay = "mini_mushroom.png"; break;
         case 7: overlay = "super_star.png"; break;
+        case 8: overlay = "coin_star.png"; break;
         case 10: overlay = "10_coins.png"; break;
         case 11: overlay = "1up_mushroom.png"; break;
         case 13: overlay = "trampoline.png"; break;
@@ -804,7 +997,10 @@ void LongQBlockRenderer::render(QPainter *painter, QRect *drawrect)
         default: return; break;
     }
 
-    painter->drawPixmap(spr->getx()+spr->getOffsetX()+20, spr->gety()+spr->getOffsetY(), 20, 20, QPixmap(basePath + overlay));
+    if ((spr->getheight() == 20) && (spr->getwidth() == 20))
+        painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), 20, 20, QPixmap(basePath + overlay));
+    else
+        painter->drawPixmap(spr->getx()+spr->getOffsetX()+20, spr->gety()+spr->getOffsetY(), 20, 20, QPixmap(basePath + overlay));
 }
 
 
@@ -814,7 +1010,7 @@ ClockRenderer::ClockRenderer(const Sprite *spr)
     this->spr = spr;
 }
 
-void ClockRenderer::render(QPainter *painter, QRect *)
+void ClockRenderer::render(QPainter *painter, QRect *drawrect)
 {
     QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/");
 

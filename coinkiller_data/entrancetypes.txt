@@ -13,7 +13,7 @@ Normal (Mispositioned)
 Normal (Mispositioned)
 Normal (Mispositioned)
 Unknown
-Unknown
+Boss Door
 Mini Pipe Facing Up
 Mini Pipe Facing Down
 Mini Pipe Facing Left

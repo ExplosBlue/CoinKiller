@@ -191,6 +191,12 @@ void Sprite::setRect()
         height = 21;
         offsety = 10;
         break;
+    case 38: // Reznor Wheel
+        width = 201;
+        height = 177;
+        offsetx = -92;
+        offsety = -76;
+        break;
     case 52: // Checkpoint Flag
         width = 37;
         height = 65;
@@ -350,6 +356,28 @@ void Sprite::setRect()
         width = 80;
         height = 103;
         offsety = -3;
+        break;
+    case 120: // Up-Down Mushroom
+        width = getNybble(5)*20 + 80;
+        height = 30;
+        offsetx = -(width / 2);
+        break;
+    case 123: // Bouncy Mushroom Platform
+        if(getNybble(15) == 1)
+        {
+            width = 160;
+            height = 20;
+            offsetx = -70;
+            offsety = 20;
+        }
+        else
+        {
+            width = 120;
+            height = 20;
+            offsetx = -50;
+            offsety = 10;
+        }
+
         break;
     case 124: // Mushroom Platform
         width = getNybble(6)*20 + 68;
@@ -634,6 +662,10 @@ void Sprite::setRect()
         offsetx = -1;
         if (getNybble(5) != 1) offsety = -4;
         break;
+    case 227: // Floating Barrel
+        width = 60;
+        height = 61;
+        break;
     case 228: // Boo
         width = 45;
         height = 44;
@@ -696,6 +728,42 @@ void Sprite::setRect()
         height = 42;
         offsetx = -18;
         offsety = -1;
+        break;
+    case 260: // Tower cutscene Roy
+        width = 65;
+        height = 131;
+        offsetx = 368;
+        offsety = -200;
+        break;
+    case 261: // Tower cutscene Iggy
+        width = 47;
+        height = 126;
+        offsetx = 375;
+        offsety = -200;
+        break;
+    case 262: // Tower cutscene Wendy
+        width = 46;
+        height = 123;
+        offsetx = 376;
+        offsety = -200;
+        break;
+    case 263: // Tower cutscene Morton
+        width = 67;
+        height = 125;
+        offsetx = 370;
+        offsety = -200;
+        break;
+    case 264: // Tower cutscene Ludwig
+        width = 50;
+        height = 125;
+        offsetx = 370;
+        offsety = -200;
+        break;
+    case 265: // Tower cutscene No Koopa
+        width = 46;
+        height = 123;
+        offsetx = 376;
+        offsety = -200;
         break;
     case 267: case 275: case 276: // Long Question Blocks
         width = 60;

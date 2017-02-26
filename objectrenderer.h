@@ -89,6 +89,28 @@ protected:
     const Sprite *spr;
 };
 
+// Sprite 39: Reznor Battle Disapearing Blocks
+class ReznorBlockRenderer: public ObjectRenderer
+{
+public:
+    ReznorBlockRenderer(const Sprite *spr);
+    void render(QPainter *painter, QRect *drawrect);
+protected:
+    const Sprite* spr;
+    QString basePath;
+};
+
+// Sprites 84/85/86/87/88: Flags
+class FlagRenderer: public ObjectRenderer
+{
+public:
+    FlagRenderer(const Sprite *spr);
+    void render(QPainter *painter, QRect *drawrect);
+private:
+    RoundedRectRenderer *rect;
+    const Sprite* spr;
+};
+
 // Sprite 94: Flipper (One way gate)
 class FlipperRenderer: public SpriteRenderer
 {
@@ -143,6 +165,28 @@ protected:
     const Sprite *spr;
 };
 
+// Sprite 120: Up-Down Mushroom
+class UpDownMushroomRenderer: public ObjectRenderer
+{
+public:
+    UpDownMushroomRenderer(const Sprite *spr, QString basePath);
+    void render(QPainter *painter, QRect *drawrect);
+protected:
+    const Sprite *spr;
+    QString basePath;
+};
+
+// Sprite 123: Boucny Mushroom
+class BouncyMushroomRenderer: public SpriteRenderer
+{
+public:
+    BouncyMushroomRenderer(const Sprite *spr);
+    void render(QPainter *painter, QRect *drawrect);
+protected:
+    const Sprite *spr;
+};
+
+
 // Sprite 124: Mushroom Platform
 class MushroomPlatformRenderer: public ObjectRenderer
 {
@@ -152,6 +196,17 @@ public:
 protected:
     const Sprite *spr;
     QString basePath;
+};
+
+// Sprite 134: Ruins Plat Rickshaw
+class RuinsRickRenderer: public ObjectRenderer
+{
+public:
+    RuinsRickRenderer(const Sprite *spr);
+    void render(QPainter *painter, QRect *drawrect);
+protected:
+    const Object *obj;
+    NormalImageRenderer *img;
 };
 
 // Sprite 135: Goomba
@@ -274,11 +329,11 @@ protected:
     const Sprite *spr;
 };
 
-// Sprites 267/275/276: Long ? Blocks
-class LongQBlockRenderer: public SpriteRenderer
+// Sprites 100/101/203/204/267/275/276: Item Blocks
+class ItemBlockRenderer: public SpriteRenderer
 {
 public:
-    LongQBlockRenderer(const Sprite *spr, QString filename);
+    ItemBlockRenderer(const Sprite *spr, QString filename);
     void render(QPainter *painter, QRect *drawrect);
 protected:
     const Sprite *spr;
@@ -293,17 +348,6 @@ public:
     void render(QPainter *painter, QRect *drawrect);
 protected:
     const Sprite *spr;
-};
-
-// Sprite 134: Ruins Plat Rickshaw
-class RuinsRickRenderer: public ObjectRenderer
-{
-public:
-    RuinsRickRenderer(const Sprite *spr);
-    void render(QPainter *painter, QRect *drawrect);
-protected:
-    const Object *obj;
-    NormalImageRenderer *img;
 };
 
 class EntranceRenderer : public ObjectRenderer
