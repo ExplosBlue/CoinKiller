@@ -136,7 +136,6 @@ QComboBox::drop-down
 {
      subcontrol-origin: padding;
      subcontrol-position: top right;
-     width: 15px;
 
      border-left-width: 0px;
      border-left-color: darkgray;
