@@ -253,6 +253,9 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
     case 184: // Parabomb
         ret = new NormalImageRenderer(spr, basePath + "parabomb.png");
         break;
+    case 185: // Koopa Paratroopa
+        ret = new KoopaParatroopaRenderer(spr);
+        break;
     case 189: // Rectangle Lift - Tower
         ret = new RecLiftRenderer(spr, basePath + "tower_rectangle_lift/");
         break;
@@ -847,6 +850,20 @@ KoopaTroopaRenderer::KoopaTroopaRenderer(const Sprite *spr)
 }
 
 void KoopaTroopaRenderer::render(QPainter *painter, QRect *drawrect)
+{
+    img->render(painter, drawrect);
+}
+
+// Sprite 185: Koopa Paratroopa
+KoopaParatroopaRenderer::KoopaParatroopaRenderer(const Sprite *spr)
+{
+    QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/");
+
+    if (spr->getNybble(5) == 1) img = new NormalImageRenderer(spr, basePath + "koopa_paratroopa_red.png");
+    else img = new NormalImageRenderer(spr, basePath + "koopa_paratroopa_green.png");
+}
+
+void KoopaParatroopaRenderer::render(QPainter *painter, QRect *drawrect)
 {
     img->render(painter, drawrect);
 }

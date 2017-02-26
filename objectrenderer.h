@@ -275,6 +275,17 @@ protected:
     NormalImageRenderer *img;
 };
 
+// Sprite 185: Koopa Paratroopa
+class KoopaParatroopaRenderer: public ObjectRenderer
+{
+public:
+    KoopaParatroopaRenderer(const Sprite *spr);
+    void render(QPainter *painter, QRect *drawrect);
+protected:
+    const Object *obj;
+    NormalImageRenderer *img;
+};
+
 // Sprite 189: RecLiftRenderer
 class RecLiftRenderer: public SpriteRenderer
 {
