@@ -360,7 +360,7 @@ void Sprite::setRect()
     case 120: // Up-Down Mushroom
         width = getNybble(5)*20 + 80;
         height = 30;
-        offsetx = -(width / 2);
+        offsetx = 10-(width / 2);
         break;
     case 123: // Bouncy Mushroom Platform
         if(getNybble(15) == 1)
