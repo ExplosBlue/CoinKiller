@@ -30,8 +30,7 @@ public:
     void raiseLayer();
     void lowerLayer();
 
-    void select(Object* obj);
-    void selectAll();
+    virtual void select(Object* obj);
 
     void setDrawType(int drawType) { this->drawType = drawType; }
     void setObject(int selObject, int selTileset);
