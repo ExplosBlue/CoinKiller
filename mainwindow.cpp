@@ -60,6 +60,8 @@ MainWindow::MainWindow(QWidget *parent) :
     loadTranslations();
     settings->setupLanguageSelector(ui->languageSelector);
     setGameLoaded(false);
+
+    ui->nightModeCheckbox->setChecked(settings->get("nightmode", false).toBool());
 }
 
 MainWindow::~MainWindow()
@@ -186,7 +188,7 @@ void MainWindow::loadTranslations()
     ui->updateSpriteData->setText(settings->getTranslation("MainWindow", "updateSDat"));
     ui->tabWidget->setTabText(3, settings->getTranslation("General", "tools"));
     ui->openSarcExplorerBtn->setText(settings->getTranslation("SarcExplorer", "sarcExplorer"));
-    ui->nightModeBtn->setText(settings->getTranslation("MainWindow", "NightMode"));
+    ui->nightModeCheckbox->setText(settings->getTranslation("MainWindow", "NightMode"));
 }
 
 void MainWindow::on_updateSpriteData_clicked()
@@ -290,24 +292,51 @@ void MainWindow::on_tilesetView_clicked(const QModelIndex &index)
     ui->removeTilesetBtn->setEnabled(index.data(Qt::UserRole+1).toString() != "");
 }
 
-int nightMode = 0;
-
-void MainWindow::on_nightModeBtn_clicked()
+void MainWindow::on_nightModeCheckbox_toggled(bool checked)
 {
-    if (nightMode == 1)
-    {
-        QFile styleSheet(QCoreApplication::applicationDirPath() + "/coinkiller_data/LightMode.qss");
-        styleSheet.open(QFile::ReadOnly);
-        QString lightSheet = QLatin1String(styleSheet.readAll());
-        setStyleSheet(lightSheet);
-        nightMode = 0;
-    }
+    setNightmode(checked);
+}
+
+void MainWindow::setNightmode(bool nightmode)
+{
+    settings->set("nightmode", nightmode);
+
+    if (nightmode)
+        setStyleSheetFromPath("nightmode.qss");
     else
+        setStyleSheetFromPath("lightmode.qss");
+}
+  
+void MainWindow::setStyleSheetFromPath(QString path)
+{
+    QFile styleSheetFile(QCoreApplication::applicationDirPath() + "/coinkiller_data/" + path);
+
+    if (!styleSheetFile.exists())
     {
-        QFile styleSheet(QCoreApplication::applicationDirPath() + "/coinkiller_data/NightMode.qss");
-        styleSheet.open(QFile::ReadOnly);
-        QString nightSheet = QLatin1String(styleSheet.readAll());
-        setStyleSheet(nightSheet);
-        nightMode = 1;
+        setStyleSheet("");
+        return;
     }
+
+    styleSheetFile.open(QFile::ReadOnly);
+    QString styleSheetTxt = QLatin1String(styleSheetFile.readAll());
+    setStyleSheet(styleSheetTxt);
+}
+
+void MainWindow::on_testButton_clicked()
+{
+    if (!gameLoaded)
+        return;
+
+    QString testPath = "/etc1.ctpk";
+    QString intPath = "test.tga";
+
+    Ctpk* ctpk = new Ctpk(game->fs->openFile(testPath));
+
+
+    QImage* img = ctpk->getTexture(intPath);
+
+    img->save("Z:/TestFolder" + testPath + ".png");
+
+    delete img;
+    delete ctpk;
 }

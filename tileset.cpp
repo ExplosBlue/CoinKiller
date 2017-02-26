@@ -884,6 +884,6 @@ void Tileset::replaceCTPK(QString filename)
     texFile->close();
 
     texture = new Ctpk(archive->openFile("/BG_tex/"+name+".ctpk"));
-
-    texImage = texture->getTexture(0);
+  
+    texImage = texture->getTexture(name + ".tga");
 }

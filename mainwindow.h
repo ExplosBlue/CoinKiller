@@ -56,11 +56,13 @@ private slots:
 
     void on_addTilesetBtn_clicked();
 
-    void on_nightModeBtn_clicked();
-
     void on_removeTilesetBtn_clicked();
 
     void on_tilesetView_clicked(const QModelIndex &index);
+
+    void on_testButton_clicked();
+
+    void on_nightModeCheckbox_toggled(bool checked);
 
 private:
     Ui::MainWindow *ui;
@@ -75,6 +77,9 @@ private:
     bool startupClose = false;
     bool checkForMissingFiles();
     void loadTranslations();
+
+    void setNightmode(bool nightmode);
+    void setStyleSheetFromPath(QString path);
 };
 
 #endif // MAINWINDOW_H
