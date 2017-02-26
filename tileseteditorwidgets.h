@@ -48,7 +48,7 @@ class ObjectEditor : public QWidget
 {
     Q_OBJECT
 public:
-    explicit ObjectEditor(Tileset *tileset, QWidget *parent);
+    explicit ObjectEditor(Tileset *tileset, QWidget *parent, SettingsManager* settings);
     void setBGColor(QColor bgColor) { this->bgColor = bgColor; update(); }
     void setMarkers(bool value) { this->showMarkers = value; update(); }
 
@@ -66,6 +66,7 @@ protected:
 
 private:
     Tileset *tileset;
+    SettingsManager* settings;
 
     int objNbr;
     QColor bgColor;

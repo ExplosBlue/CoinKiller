@@ -21,7 +21,7 @@ class TilesetEditorWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit TilesetEditorWindow(QWidget *parent, Tileset *tileset);
+    explicit TilesetEditorWindow(QWidget *parent, Tileset *tileset, SettingsManager* settigs);
     ~TilesetEditorWindow();
 
 signals:

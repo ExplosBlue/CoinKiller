@@ -29,7 +29,7 @@ class ZoneEditorWidget : public QWidget
 {
     Q_OBJECT
 public:
-    ZoneEditorWidget(QList<Zone*> *zones);
+    ZoneEditorWidget(QList<Zone*> *zones, SettingsManager *settings);
     void deselect();
     void select(Zone* zone);
     void updateEditor();

@@ -37,7 +37,7 @@ void LevelManager::openAreaEditor(int id)
     if (!hasArea(id))
         throw std::runtime_error("Opening Level Editor failed: Area does not exist.");
 
-    LevelEditorWindow* lvlEditor = new LevelEditorWindow(this, id);
+    LevelEditorWindow* lvlEditor = new LevelEditorWindow(this, id, game->settingsMgr);
     connect(this, SIGNAL(updateLevelEditors()), lvlEditor, SLOT(handleMgrUpdate()));
     lvlEditor->show();
 }

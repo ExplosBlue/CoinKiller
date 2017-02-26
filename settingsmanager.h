@@ -28,8 +28,7 @@ class SettingsManager : public QObject
 {
     Q_OBJECT
 public:
-    static SettingsManager* init(QWidget* parentWidget);
-    static SettingsManager* getInstance();
+    SettingsManager(QWidget* parentWidget);
     ~SettingsManager();
 
     void loadTranslations(QString languageName);
@@ -46,15 +45,10 @@ public:
     QColor getColor(const QString &key, const QColor &defaultColor = Qt::white);
     void setColor(const QString &key, const QColor &color);
 
-protected:
-    SettingsManager(QWidget* parentWidget);
-
 private slots:
     void setLanguage(QString language);
 
 private:
-    static SettingsManager* instance;
-
     QSettings settings;
 
     QWidget* parentWidget;

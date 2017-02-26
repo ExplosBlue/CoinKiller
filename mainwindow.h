@@ -62,13 +62,10 @@ private slots:
 
     void on_tilesetView_clicked(const QModelIndex &index);
 
-    void on_testButton_clicked();
-
 private:
     Ui::MainWindow *ui;
 
     Game* game;
-    bool gameLoaded;
 
     SettingsManager* settings;
 

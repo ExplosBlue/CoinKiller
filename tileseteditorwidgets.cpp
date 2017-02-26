@@ -129,7 +129,7 @@ void TilesetPicker::mouseMoveEvent(QMouseEvent* evt)
     repaint();
 }
 
-ObjectEditor::ObjectEditor(Tileset *tileset, QWidget *parent) : QWidget(parent)
+ObjectEditor::ObjectEditor(Tileset *tileset, QWidget *parent, SettingsManager* settings) : QWidget(parent)
 {
     objNbr = -1;
     paintTileNbrTL = -1;
@@ -137,6 +137,7 @@ ObjectEditor::ObjectEditor(Tileset *tileset, QWidget *parent) : QWidget(parent)
     selX = -1;
     selY = -1;
     this->tileset = tileset;
+    this->settings = settings;
     bgColor = Qt::white;
     showMarkers = true;
 }
@@ -161,7 +162,7 @@ void ObjectEditor::paintEvent(QPaintEvent* evt)
     {
         selX = -1;
         selY = -1;
-        emit updateSelTileLabel(SettingsManager::getInstance()->getTranslation("TilesetEditor", "noneData"));
+        emit updateSelTileLabel(settings->getTranslation("TilesetEditor", "noneData"));
     }
 
     QPixmap objPix(currW, currH);
@@ -298,7 +299,7 @@ void ObjectEditor::mousePressEvent(QMouseEvent* evt)
     {
         selX = -1;
         selY = -1;
-        emit updateSelTileLabel(SettingsManager::getInstance()->getTranslation("TilesetEditor", "noneData"));
+        emit updateSelTileLabel(settings->getTranslation("TilesetEditor", "noneData"));
     }
 
     update();
@@ -309,7 +310,7 @@ void ObjectEditor::selectedObjectChanged(int objNbr)
     this->objNbr = objNbr;
     selX = -1;
     selY = -1;
-    emit updateSelTileLabel(SettingsManager::getInstance()->getTranslation("TilesetEditor", "noneData"));
+    emit updateSelTileLabel(settings->getTranslation("TilesetEditor", "noneData"));
     update();
 }
 

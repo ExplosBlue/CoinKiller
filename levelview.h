@@ -37,12 +37,10 @@ public:
     void setLayerMask(quint8 mask) { layerMask = mask; update(); }
     void setZoom(float zoom) { this->zoom = zoom; setMinimumSize(4096*20*zoom, 4096*20*zoom); setMaximumSize(4096*20*zoom, 4096*20*zoom); update(); }
     void toggleGrid(bool toggle) { grid = toggle; update(); }
-    void toggleRenderLiquids(bool toggle) { renderLiquids = toggle; update(); }
     void saveLevel();
     void copy();
     void paste();
     void cut();
-    void selectAll();
     void deleteSel();
     void raise();
     void lower();
@@ -84,7 +82,6 @@ private:
     EditionMode* mode;
 
     bool grid;
-    bool renderLiquids;
 
     quint8 layerMask;
 

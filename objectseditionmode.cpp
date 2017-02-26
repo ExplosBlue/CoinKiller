@@ -634,19 +634,6 @@ void ObjectsEditonMode::select(Object *obj)
     selectedObjects.append(obj);
 }
 
-void ObjectsEditonMode::selectAll()
-{
-    selectedObjects.clear();
-
-    for (int i=0; i<2; i++) foreach (BgdatObject* bgdat, level->objects[i]) selectedObjects.append(bgdat);
-    foreach (Sprite* spr, level->sprites) selectedObjects.append(spr);
-    foreach (Entrance* entr, level->entrances) selectedObjects.append(entr);
-    foreach (Location* loc, level->locations) selectedObjects.append(loc);
-    foreach (Zone* zone, level->zones) selectedObjects.append(zone);
-    foreach (Path* path, level->paths) foreach (PathNode* node, path->getNodes()) selectedObjects.append(node);
-    foreach (ProgressPath* path, level->progressPaths) foreach (ProgressPathNode* node, path->getNodes()) selectedObjects.append(node);
-}
-
 void ObjectsEditonMode::deleteSelection()
 {
     level->remove(selectedObjects);

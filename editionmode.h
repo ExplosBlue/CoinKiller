@@ -40,7 +40,6 @@ public:
     virtual void lowerLayer() {}
 
     virtual void select(Object*) {}
-    virtual void selectAll() {}
 
     Qt::CursorShape getActualCursor() { return actualCursor; }
 

@@ -46,7 +46,7 @@ class LevelEditorWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit LevelEditorWindow(LevelManager* lvlMgr, int initialArea);
+    explicit LevelEditorWindow(LevelManager* lvlMgr, int initialArea, SettingsManager* settings);
     ~LevelEditorWindow();
     void closeEvent();
 
@@ -79,8 +79,6 @@ private slots:
 
     void on_actionGrid_toggled(bool arg1);
 
-    void on_actionRenderLiquids_toggled(bool arg1);
-
     void on_actionPaste_triggered();
 
     void on_actionCut_triggered();
@@ -106,8 +104,6 @@ private slots:
     void handleAreaIndexChange(int index);
 
     void handleMgrUpdate();
-
-    void on_actionSelectAll_triggered();
 
 private:
     Ui::LevelEditorWindow *ui;

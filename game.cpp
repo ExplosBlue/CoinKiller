@@ -1,11 +1,11 @@
 #include "game.h"
-#include "settingsmanager.h"
 
 #include <QHash>
 
-Game::Game(FilesystemBase* fs)
+Game::Game(FilesystemBase* fs, SettingsManager *settingsMgr)
 {
     this->fs = fs;
+    this->settingsMgr = settingsMgr;
 }
 
 
@@ -31,7 +31,7 @@ QStandardItemModel* Game::getCourseModel()
     QStandardItemModel* model = new QStandardItemModel();
 
     QDomDocument levelNames;
-    QFile f(SettingsManager::getInstance()->getFilePath("levelnames.xml"));
+    QFile f(settingsMgr->getFilePath("levelnames.xml"));
     if (!f.open(QIODevice::ReadOnly))
         return model;
     levelNames.setContent(&f);
@@ -70,8 +70,6 @@ void Game::loadLevelNamesCat(QStandardItem* item, QDomElement node)
 
 QStandardItemModel* Game::getTilesetModel()
 {
-    SettingsManager* settingsMgr = SettingsManager::getInstance();
-
     QStandardItemModel* model = new QStandardItemModel();
     model->setColumnCount(2);
     QStringList headers;
