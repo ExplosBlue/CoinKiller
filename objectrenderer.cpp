@@ -768,7 +768,6 @@ GoombaRenderer::GoombaRenderer(const Sprite *spr)
     this->spr = spr;
 }
 
-
 void GoombaRenderer::render(QPainter *painter, QRect *drawrect)
 {
     QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/");
@@ -880,8 +879,6 @@ RecLiftRenderer::RecLiftRenderer(const Sprite *spr, QString path)
     this->path = path;
     if (spr->getid() == 192) sideOffset = 3;
 }
-
-
 void RecLiftRenderer::render(QPainter *painter, QRect *drawrect)
 {
     int blockWidth = spr->getNybble(15) > 0 ? spr->getNybble(15)*20 : 20;
@@ -911,6 +908,20 @@ void RecLiftRenderer::render(QPainter *painter, QRect *drawrect)
     if (spr->getNybble(9) == 5 || spr->getNybble(9) == 6) for (int y = 0; y < blockHeight+20; y+=20) painter->drawPixmap(QRect(spr->getx()+blockWidth+20, spr->gety()+y, 20, 20), QPixmap(path + "s_r.png"));
 }
 
+// Sprite 124: Mushroom Platform Renderer
+MushroomPlatformRenderer::MushroomPlatformRenderer(const Sprite *spr, QString basePath)
+{
+    this->spr = spr;
+    this->basePath = basePath;
+}
+
+void MushroomPlatformRenderer::render(QPainter *painter, QRect *drawrect)
+{
+    painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX(), spr->gety(), 24, 20), QPixmap(basePath + "l.png"));
+    painter->drawPixmap(QRect(spr->getx()-spr->getOffsetX()-24, spr->gety(), 24, 20), QPixmap(basePath + "r.png"));
+    for (int i = 24; i < spr->getwidth()-24; i += 20)
+        painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()+i, spr->gety(), 20, 20), QPixmap(basePath + "m.png"));
+}
 
 // Sprite 215: Bob-omb Cannon
 BobOmbCannonRenderer::BobOmbCannonRenderer(const Sprite *spr)

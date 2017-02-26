@@ -26,6 +26,7 @@ copy=Copy
 paste=Paste
 cut=Cut
 delete=Delete
+selectAll=Select All
 ok=OK
 cancel=Cancel
 world=World
@@ -66,6 +67,7 @@ layer=Layer
 area=Area
 addArea=Add Area
 removeArea=Remove Area
+renderLiquids=Render Liquids
 
 [TilesetEditor]
 tileset=Tileset

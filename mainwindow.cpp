@@ -56,7 +56,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     QCoreApplication::setOrganizationName("Blarg City");
     QCoreApplication::setApplicationName("CoinKiller");
-    settings = new SettingsManager(this);
+    settings = SettingsManager::init(this);
+
     loadTranslations();
     settings->setupLanguageSelector(ui->languageSelector);
     setGameLoaded(false);
@@ -66,8 +67,8 @@ MainWindow::~MainWindow()
 {
     if (!startupClose)
     {
-        delete settings;
-        delete game;
+        if (gameLoaded)
+            delete game;
     }
     delete ui;
 }
@@ -75,6 +76,7 @@ MainWindow::~MainWindow()
 void MainWindow::setGameLoaded(bool loaded)
 {
     ui->tab_tilesets->setEnabled(loaded);
+    gameLoaded = loaded;
 }
 
 void MainWindow::on_actionAbout_triggered()
@@ -98,7 +100,7 @@ void MainWindow::on_actionLoadUnpackedROMFS_triggered()
 
 
     FilesystemBase* fs = new ExternalFilesystem(dirpath);
-    game = new Game(fs, settings);
+    game = new Game(fs);
 
     setGameLoaded(true);
 
@@ -132,7 +134,7 @@ void MainWindow::on_tilesetView_doubleClicked(const QModelIndex &index)
         return;
 
     QString data = index.data(Qt::UserRole+1).toString();
-    TilesetEditorWindow* tsEditor = new TilesetEditorWindow(this, game->getTileset(data), settings);
+    TilesetEditorWindow* tsEditor = new TilesetEditorWindow(this, game->getTileset(data));
     tsEditor->show();
 }
 
@@ -242,11 +244,11 @@ void MainWindow::on_addTilesetBtn_clicked()
     QFile blankTs(QCoreApplication::applicationDirPath() + "/coinkiller_data/blank_tileset.sarc");
     if (!blankTs.exists())
     {
-        QMessageBox::information(this, "CoinKiller", game->settingsMgr->getTranslation("MainWindow", "blankTilesetMissing") + " (/coinkiller_data/blank_tileset.sarc).", QMessageBox::StandardButton::Ok);
+        QMessageBox::information(this, "CoinKiller", settings->getTranslation("MainWindow", "blankTilesetMissing") + " (/coinkiller_data/blank_tileset.sarc).", QMessageBox::StandardButton::Ok);
         return;
     }
 
-    NewTilesetDialog ntd(this, game->settingsMgr);
+    NewTilesetDialog ntd(this, settings);
     int result = ntd.exec();
 
     if (result != QDialog::Accepted)
@@ -254,11 +256,11 @@ void MainWindow::on_addTilesetBtn_clicked()
 
     if (game->fs->fileExists("/Unit/" + ntd.getName() + ".sarc"))
     {
-        QMessageBox::information(this, "CoinKiller", game->settingsMgr->getTranslation("MainWindow", "tilesetExists"), QMessageBox::StandardButton::Ok);
+        QMessageBox::information(this, "CoinKiller", settings->getTranslation("MainWindow", "tilesetExists"), QMessageBox::StandardButton::Ok);
         return;
     }
 
-    blankTs.copy(game->settingsMgr->getLastRomFSPath() + "/Unit/" + ntd.getName() + ".sarc");
+    blankTs.copy(settings->getLastRomFSPath() + "/Unit/" + ntd.getName() + ".sarc");
 
     SarcFilesystem sarc(game->fs->openFile("/Unit/" + ntd.getName() + ".sarc"));
     sarc.renameFile("BG_chk/d_bgchk_REPLACE.bin", "d_bgchk_" + ntd.getName() + ".bin");
@@ -310,4 +312,22 @@ void MainWindow::on_nightModeBtn_clicked()
         setStyleSheet(nightSheet);
         nightMode = 1;
     }
+  
+void MainWindow::on_testButton_clicked()
+{
+    if (!gameLoaded)
+        return;
+
+    QString testPath = "/etc1.ctpk";
+    QString intPath = "test.tga";
+
+    Ctpk* ctpk = new Ctpk(game->fs->openFile(testPath));
+
+
+    QImage* img = ctpk->getTexture(intPath);
+
+    img->save("Z:/TestFolder" + testPath + ".png");
+
+    delete img;
+    delete ctpk;
 }

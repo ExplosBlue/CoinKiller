@@ -25,6 +25,27 @@
 #include <QMessageBox>
 #include <QStringList>
 
+
+SettingsManager* SettingsManager::instance = NULL;
+
+SettingsManager* SettingsManager::init(QWidget* parentWidget)
+{
+    if (instance != NULL)
+        throw new std::runtime_error("SettingsManager already inited.");
+
+    instance = new SettingsManager(parentWidget);
+    return instance;
+}
+
+SettingsManager* SettingsManager::getInstance()
+{
+    if (instance == NULL)
+        throw new std::runtime_error("SettingsManager not inited.");
+
+    return instance;
+}
+
+
 SettingsManager::SettingsManager(QWidget* parentWidget)
 {
     this->parentWidget = parentWidget;

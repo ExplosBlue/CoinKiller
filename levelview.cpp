@@ -43,6 +43,7 @@ LevelView::LevelView(QWidget *parent, Level* level) : QWidget(parent)
 
     zoom = 1;
     grid = false;
+    renderLiquids = false;
 }
 
 LevelView::~LevelView()
@@ -117,24 +118,27 @@ void LevelView::paintEvent(QPaintEvent* evt)
     }
 
     // Render Liquids
-    for (int i = 0; i < level->zones.size(); i++)
+    if (renderLiquids)
     {
-        const Zone* zone = level->zones.at(i);
-
-        QRect zonerect(zone->getx(), zone->gety(), zone->getwidth(), zone->getheight());
-
-        if (!drawrect.intersects(zonerect))
-            continue;
-
-        foreach (Sprite* s, level->sprites)
+        for (int i = 0; i < level->zones.size(); i++)
         {
-            if (s->getid() != 12 && s->getid() != 13 && s->getid() != 15)
+            const Zone* zone = level->zones.at(i);
+
+            QRect zonerect(zone->getx(), zone->gety(), zone->getwidth(), zone->getheight());
+
+            if (!drawrect.intersects(zonerect))
                 continue;
 
-            if (zonerect.contains(s->getx(), s->gety(), false))
+            foreach (Sprite* s, level->sprites)
             {
-                LiquidRenderer liquidRend(s, zone);
-                liquidRend.render(&painter, &drawrect);
+                if (s->getid() != 12 && s->getid() != 13 && s->getid() != 15)
+                    continue;
+
+                if (zonerect.contains(s->getx(), s->gety(), false))
+                {
+                    LiquidRenderer liquidRend(s, zone);
+                    liquidRend.render(&painter, &drawrect);
+                }
             }
         }
     }
@@ -459,6 +463,12 @@ void LevelView::cut()
     editionModePtr()->cut();
     update();
     emit updateMinimapBounds();
+}
+
+void LevelView::selectAll()
+{
+    editionModePtr()->selectAll();
+    update();
 }
 
 void LevelView::deleteSel()
