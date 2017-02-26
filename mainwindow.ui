@@ -126,16 +126,16 @@
            <widget class="QListWidget" name="languageSelector"/>
           </item>
           <item>
-           <widget class="QPushButton" name="nightModeBtn">
+           <widget class="QPushButton" name="updateSpriteData">
             <property name="text">
-             <string>&lt;NightMode&gt;</string>
+             <string>&lt;UpdateSpritedata&gt;</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="updateSpriteData">
+           <widget class="QCheckBox" name="nightModeCheckbox">
             <property name="text">
-             <string>&lt;UpdateSpritedata&gt;</string>
+             <string>&lt;NightMode&gt;</string>
             </property>
            </widget>
           </item>
