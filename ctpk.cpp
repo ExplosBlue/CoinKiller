@@ -1,36 +1,100 @@
-/*
-    Copyright 2015 StapleButter
-
-    This file is part of CoinKiller.
-
-    CoinKiller is free software: you can redistribute it and/or modify it under
-    the terms of the GNU General Public License as published by the Free
-    Software Foundation, either version 3 of the License, or (at your option)
-    any later version.
-
-    CoinKiller is distributed in the hope that it will be useful, but WITHOUT ANY
-    WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-    FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
-    You should have received a copy of the GNU General Public License along
-    with CoinKiller. If not, see http://www.gnu.org/licenses/.
-*/
-
 #include "ctpk.h"
+#include "settingsmanager.h"
+
+#include <QDebug>
 
 Ctpk::Ctpk(FileBase* file)
 {
     this->file = file;
 
     file->open();
+    file->seek(0);
 
-    file->seek(6);
-    numTextures = file->read16();
+    QString magic;
+    file->readStringASCII(magic, 4);
+
+    if (magic != "CTPK")
+    {
+        throw std::runtime_error("CTPK: invalid file");
+    }
+
+
+    // Parse CTPK Header
+
+    version = file->read16();
+    numEntries = file->read16();
+
     texSectionOffset = file->read32();
     texSectionSize = file->read32();
     hashSectionOffset = file->read32();
     infoSectionOffset = file->read32();
 
+
+    // Parse Entries
+
+    for (uint i = 0; i < numEntries; i++)
+    {
+        file->seek((i + 1) * 0x20);
+
+        CtpkEntry* entry = new CtpkEntry();
+        entry->filenameOffset = file->read32();
+        entry->dataSize = file->read32();
+        entry->dataOffset = file->read32();
+        entry->format = (TextrueFormat)file->read32();
+        updataEntryHasAlpha(entry);
+        entry->width = file->read16();
+        entry->height = file->read16();
+        entry->mipLevel = file->read8();
+        entry->type = file->read8();
+        entry->unk = file->read16();
+        entry->bmpSizeOffset = file->read32();
+        entry->unixTimestamp = file->read32();
+        entries.append(entry);
+    }
+
+
+    // Parse Info 1 (Whatever this is)
+
+    for (uint i = 0; i< numEntries; i++)
+    {
+        entries[i]->info1 = file->read32();
+    }
+
+
+    // Parse Hashes
+
+    file->seek(hashSectionOffset);
+
+    for (uint i = 0; i< numEntries; i++)
+    {
+        entries[i]->filenameHash = file->read32();
+        file->skip(4);      // Hash Index?
+    }
+
+
+    // Parse Info 2 (Whatever this is, something about the texture)
+
+    file->seek(infoSectionOffset);
+
+    for (uint i = 0; i< numEntries; i++)
+    {
+        entries[i]->info2 = file->read32();
+    }
+
+
+    // Parse Filenames
+
+    foreach (CtpkEntry* entry, entries)
+    {
+        file->seek(entry->filenameOffset);
+        file->readStringASCII(entry->filename);
+    }
+
+
     file->close();
+
+
+    printInfo();
 }
 
 Ctpk::~Ctpk()
@@ -38,8 +102,202 @@ Ctpk::~Ctpk()
     delete file;
 }
 
+Ctpk::CtpkEntry* Ctpk::getEntryByFilename(QString filename)
+{
+    foreach (CtpkEntry* entry, entries)
+    {
+        if (entry->filename == filename)
+            return entry;
+    }
 
-QImage* Ctpk::getTexture(quint32 num)
+    return NULL;
+}
+
+void Ctpk::updataEntryHasAlpha(CtpkEntry* entry)
+{
+    switch (entry->format)
+    {
+    case RGBA4444:
+    case RGBA5551:
+    case RGBA8888:
+    case ETC1_A4:
+        entry->hasAlpha = true;
+        break;
+    default:
+        entry->hasAlpha = false;
+        break;
+    }
+}
+
+QImage* Ctpk::getTexture(quint32 entryIndex)
+{
+    if (entryIndex > numEntries-1)
+    {
+        throw std::runtime_error("CTPK: Texture Index out ouf Bounds");
+    }
+
+    return getTexture(entries[entryIndex]);
+}
+
+QImage* Ctpk::getTexture(QString filename)
+{
+    CtpkEntry* entry = getEntryByFilename(filename);
+
+    if (entry == NULL)
+    {
+        throw std::runtime_error("CTPK: Texture not found");
+    }
+
+    return getTexture(entry);
+}
+
+QImage* Ctpk::getTexture(CtpkEntry* entry)
+{
+    QImage::Format imgFormat;
+
+    if (entry->hasAlpha)
+    {
+        if (SettingsManager::getInstance()->get("premultiplyAlpha", true).toBool())
+            imgFormat = QImage::Format_RGBA8888_Premultiplied;
+        else
+            imgFormat = QImage::Format_RGBA8888;
+    }
+    else
+        imgFormat = QImage::Format_RGB888;
+
+
+    QImage* tex = new QImage(entry->width, entry->height, imgFormat);
+
+    switch (entry->format)
+    {
+        case ETC1:
+        case ETC1_A4:
+            getTextureETC1(entry, tex);
+            break;
+        default:
+            getTextureRaster(entry, tex);
+            break;
+    }
+
+    return tex;
+}
+
+void Ctpk::getTextureRaster(CtpkEntry* entry, QImage* tex)
+{    
+    quint8* data = tex->scanLine(0);
+    bool premultiply = (tex->format() == QImage::Format_RGBA8888_Premultiplied);
+
+    file->open();
+    file->seek(texSectionOffset + entry->dataOffset);
+
+    for (quint32 y = 0; y < entry->height; y += 8)
+    {
+        for (quint32 x = 0; x < entry->width; x += 8)
+        {
+            for (quint32 ty = 0; ty < 8; ty += 4)
+            {
+                for (quint32 tx = 0; tx < 8; tx += 4)
+                {
+                    for (quint32 sy = 0; sy < 4; sy += 2)
+                    {
+                        for (quint32 sx = 0; sx < 4; sx += 2)
+                        {
+                            for (quint32 yy = 0; yy < 2; yy++)
+                            {
+                                for (quint32 xx = 0; xx < 2; xx++)
+                                {
+
+                                    quint32 r, g, b, a;
+
+                                    switch (entry->format)
+                                    {
+                                    case RGBA4444:
+                                    {
+                                        quint16 i = file->read16();
+                                        r = ((i >> 12) & 0xF) << 4;
+                                        g = ((i >> 8) & 0xF) << 4;
+                                        b = ((i >> 4) & 0xF) << 4;
+                                        a = (i & 0xF) << 4;
+                                        break;
+                                    }
+                                    case RGBA5551:
+                                    {
+                                        quint16 i = file->read16();
+                                        r = ((i >> 11) & 0x1F) << 3;
+                                        g = ((i >> 6) & 0x1F) << 3;
+                                        b = ((i >> 1) & 0x1F) << 3;
+                                        if (i & 1)
+                                            a = 255;
+                                        else
+                                            a = 0;
+                                        break;
+                                    }
+                                    case RGBA8888:
+                                    {
+                                        a = file->read8();
+                                        b = file->read8();
+                                        g = file->read8();
+                                        r = file->read8();
+                                        break;
+                                    }
+                                    case RGB565:
+                                    {
+                                        quint16 i = file->read16();
+                                        r = ((i >> 11) & 0x1F) << 3;
+                                        g = ((i >> 5) & 0x3F) << 2;
+                                        b = (i & 0x1F) << 3;
+                                        break;
+                                    }
+                                    case RGB888:
+                                    {
+                                        b = file->read8();
+                                        g = file->read8();
+                                        r = file->read8();
+                                        break;
+                                    }
+                                    default:
+                                    {
+                                        throw std::runtime_error("CTPK: Unsupported Texture Format");
+                                        break;
+                                    }
+                                    }
+
+                                    if (entry->hasAlpha)
+                                    {
+                                        quint32 dstpos = ((yy + sy + ty + y) * entry->width + xx + sx + tx + x) * 4;
+
+                                        if (premultiply)
+                                        {
+                                            r = (r * a) / 255;
+                                            g = (g * a) / 255;
+                                            b = (b * a) / 255;
+                                        }
+
+                                        data[dstpos + 0] = r;
+                                        data[dstpos + 1] = g;
+                                        data[dstpos + 2] = b;
+                                        data[dstpos + 3] = a;
+                                    }
+                                    else
+                                    {
+                                        quint32 dstpos = ((yy + sy + ty + y) * entry->width + xx + sx + tx + x) * 3;
+                                        data[dstpos + 0] = r;
+                                        data[dstpos + 1] = g;
+                                        data[dstpos + 2] = b;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    file->close();
+}
+
+void Ctpk::getTextureETC1(CtpkEntry* entry, QImage* tex)
 {
     const qint32 etc1_mod[8][2] =
     {
@@ -47,45 +305,26 @@ QImage* Ctpk::getTexture(quint32 num)
         {18, 60}, {24, 80}, {33, 106}, {47, 183}
     };
 
-    file->open();
-
-    file->seek(0x20 + (0x20*num) + 4);
-    quint32 size = file->read32();
-    quint32 offset = file->read32();
-    quint32 format = file->read32();
-    quint16 width = file->read16();
-    quint16 height = file->read16();
-    // well whatever. We don't care about the remaining crap
-
-    if (format != 0xD) // hax!!
-    {
-        qDebug("BAD TEXTURE FORMAT!!");
-        return NULL;
-    }
-
-    file->seek(texSectionOffset + offset);
-
-    //quint8* data = new quint8[width*height*4];
-    //QImage* tex = new QImage(width, height, QImage::Format_ARGB32); // 0xAARRGGBB
-    QImage* tex = new QImage(width, height, QImage::Format_RGBA8888_Premultiplied); // R,G,B,A
     quint8* data = tex->scanLine(0);
+    bool premultiply = (tex->format() == QImage::Format_RGBA8888_Premultiplied);
 
-    //for (quint32 t = 0; t < (size>>4); t++)
-    for (quint32 y = 0; y < height; y += 8)
+    file->open();
+    file->seek(texSectionOffset + entry->dataOffset);
+
+    for (quint32 y = 0; y < entry->height; y += 8)
     {
-        for (quint32 x = 0; x < width; x += 8)
+        for (quint32 x = 0; x < entry->width; x += 8)
         {
             for (quint32 ty = 0; ty < 8; ty += 4)
             {
                 for (quint32 tx = 0; tx < 8; tx += 4)
                 {
-                   /* data[((y*width)+x)*4 + 0] = 0;
-                    data[((y*width)+x)*4 + 1] = 255;
-                    data[((y*width)+x)*4 + 2] = 255;
-                    data[((y*width)+x)*4 + 3] = 255;*/
-
-                    quint64 alpha = (quint64)file->read32();
-                    alpha |= ((quint64)file->read32() << 32);
+                    quint64 alpha;
+                    if (entry->format == ETC1_A4)
+                    {
+                        alpha = (quint64)file->read32();
+                        alpha |= ((quint64)file->read32() << 32);
+                    }
 
                     quint16 subindexes = file->read16();
                     quint16 negative = file->read16();
@@ -154,19 +393,34 @@ QImage* Ctpk::getTexture(quint32 num)
                             g = clampColor(g + mod);
                             b = clampColor(b + mod);
 
-                            quint8 a = alpha & 0xF;
-                            a |= (a << 4);
 
-                            // premultiply shit
-                            r = (r * a) / 255;
-                            g = (g * a) / 255;
-                            b = (b * a) / 255;
 
-                            quint32 dstpos = ((sy + ty + y) * width + sx + tx + x) * 4;
-                            data[dstpos + 0] = r;
-                            data[dstpos + 1] = g;
-                            data[dstpos + 2] = b;
-                            data[dstpos + 3] = a;
+                            if (entry->hasAlpha)
+                            {
+                                quint8 a = alpha & 0xF;
+                                a |= (a << 4);
+
+                                quint32 dstpos = ((sy + ty + y) * entry->width + sx + tx + x) * 4;
+
+                                if (premultiply)
+                                {
+                                    r = (r * a) / 255;
+                                    g = (g * a) / 255;
+                                    b = (b * a) / 255;
+                                }
+
+                                data[dstpos + 0] = r;
+                                data[dstpos + 1] = g;
+                                data[dstpos + 2] = b;
+                                data[dstpos + 3] = a;
+                            }
+                            else
+                            {
+                                quint32 dstpos = ((sy + ty + y) * entry->width + sx + tx + x) * 3;
+                                data[dstpos + 0] = r;
+                                data[dstpos + 1] = g;
+                                data[dstpos + 2] = b;
+                            }
 
                             subindexes >>= 1;
                             negative >>= 1;
@@ -179,6 +433,37 @@ QImage* Ctpk::getTexture(quint32 num)
     }
 
     file->close();
-    return tex;
 }
 
+
+void Ctpk::printInfo()
+{
+    qDebug() << "CTPK Info:";
+    qDebug() << "- Version:" << version;
+    qDebug() << "- Entry Count:" << numEntries;
+    qDebug() << "- Texture Section Offset:" << texSectionOffset;
+    qDebug() << "- Texture Section Size:" << texSectionSize;
+    qDebug() << "- Hash Section Offset:" << hashSectionOffset;
+    qDebug() << "- Info Section Offset:" << infoSectionOffset;
+
+    qDebug() << "- Entries:";
+    for (uint i = 0; i < numEntries; i++)
+    {
+        CtpkEntry* entry = entries[i];
+
+        qDebug() << "  - Entry" << i;
+        qDebug() << "    - Filename:" << entry->filename;
+        qDebug() << "    - Filename Offset:" << entry->filenameOffset;
+        qDebug() << "    - Filename Hash:" << entry->filenameHash;
+        qDebug() << "    - Format:" << entry->format;
+        qDebug() << "    - Width:" << entry->width;
+        qDebug() << "    - Height:" << entry->height;
+        qDebug() << "    - Mip Level:" << entry->mipLevel;
+        qDebug() << "    - Type:" << entry->type;
+        qDebug() << "    - Bitmap Size Offset:" << entry->bmpSizeOffset;
+        qDebug() << "    - Unix Timestamp:" << entry->unixTimestamp;
+        qDebug() << "    - Info 1:" << entry->info1;
+        qDebug() << "    - Info 2:" << entry->info2;
+        qDebug() << "    - Unknown:" << entry->unk;
+    }
+}

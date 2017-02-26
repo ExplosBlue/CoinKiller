@@ -11,7 +11,7 @@
 #include <QColorDialog>
 #include <QInputDialog>
 
-TilesetEditorWindow::TilesetEditorWindow(QWidget *parent, Tileset *tileset, SettingsManager *settigs) :
+TilesetEditorWindow::TilesetEditorWindow(QWidget *parent, Tileset *tileset) :
     QMainWindow(parent),
     ui(new Ui::TilesetEditorWindow)
 {
@@ -20,7 +20,8 @@ TilesetEditorWindow::TilesetEditorWindow(QWidget *parent, Tileset *tileset, Sett
     this->selectedTileBR = -1;
     this->selectedSpecialBehavior = -1;
     this->selectedParameter = -1;
-    this->settings = settigs;
+
+    this->settings = SettingsManager::getInstance();
 
     ui->setupUi(this);
     ui->behaviorsTab->setEnabled(false);
@@ -45,7 +46,7 @@ TilesetEditorWindow::TilesetEditorWindow(QWidget *parent, Tileset *tileset, Sett
     ui->tilesetPicker->setWidget(tilesetPicker);
     tilesetPicker->setMinimumSize(440, 440);
     tilesetPicker->setMaximumSize(440, 440);
-    tilesetPicker->setBGColor(settigs->getColor("tspColor"));
+    tilesetPicker->setBGColor(settings->getColor("tspColor"));
 
     connect(tilesetPicker, SIGNAL(selectedTileChanged(int, int)), this, SLOT(updateSelectedTile(int, int)));
     connect(tilesetPicker, SIGNAL(selectedOvTileChanged(int)), this, SLOT(updateSelectedOvTile(int)));
@@ -61,7 +62,7 @@ TilesetEditorWindow::TilesetEditorWindow(QWidget *parent, Tileset *tileset, Sett
     // Setup Objects Editor
     setupObjectBehaviorModel();
     ui->objectEditor->removeItem(ui->objectEditorSpacer);
-    objectEditor = new ObjectEditor(tileset, this, settigs);
+    objectEditor = new ObjectEditor(tileset, this);
     connect(this, SIGNAL(selectedObjectChanged(int)), objectEditor, SLOT(selectedObjectChanged(int)));
     connect(objectEditor, SIGNAL(updateSelTileLabel(QString)), this, SLOT(setSelTileData(QString)));
     connect(tilesetPicker, SIGNAL(selectedTileChanged(int, int)), objectEditor, SLOT(selectedPaintTileChanged(int, int)));

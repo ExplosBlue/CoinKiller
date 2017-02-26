@@ -7,10 +7,9 @@
 #include <QPaintEvent>
 #include <QResizeEvent>
 
-ZoneEditorWidget::ZoneEditorWidget(QList<Zone*> *zones, SettingsManager* settings)
+ZoneEditorWidget::ZoneEditorWidget(QList<Zone*> *zones)
 {
     this->zones = zones;
-    this->settings = settings;
 
     multiplayerTrackings.insert(0, "Horizontal");
     multiplayerTrackings.insert(6, "Vertical");
@@ -147,7 +146,7 @@ void ZoneEditorWidget::updateBgPreview()
 
 void ZoneEditorWidget::loadMusicIDs()
 {
-    QFile file(settings->getFilePath("musicids.txt"));
+    QFile file(SettingsManager::getInstance()->getFilePath("musicids.txt"));
     if(!file.open(QIODevice::ReadOnly))
         return;
 

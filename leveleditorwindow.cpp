@@ -28,12 +28,12 @@
 #include <QMessageBox>
 #include <QScrollBar>
 
-LevelEditorWindow::LevelEditorWindow(LevelManager* lvlMgr, int initialArea, SettingsManager *settings) :
+LevelEditorWindow::LevelEditorWindow(LevelManager* lvlMgr, int initialArea) :
     QMainWindow(lvlMgr->getParent()),
     ui(new Ui::LevelEditorWindow)
 {
     this->lvlMgr = lvlMgr;
-    this->settings = settings;
+    this->settings = SettingsManager::getInstance();
 
     this->setAttribute(Qt::WA_DeleteOnClose);
     ui->setupUi(this);
@@ -55,12 +55,14 @@ LevelEditorWindow::LevelEditorWindow(LevelManager* lvlMgr, int initialArea, Sett
     ui->actionCut->setIcon((QIcon(basePath + "cut.png")));
     ui->actionCopy->setIcon((QIcon(basePath + "copy.png")));
     ui->actionDelete->setIcon(QIcon(basePath + "delete.png"));
+    ui->actionSelectAll->setIcon(QIcon(basePath + "select_all.png"));
     ui->actionRaise->setIcon(QIcon(basePath + "raise.png"));
     ui->actionLower->setIcon(QIcon(basePath + "lower.png"));
     ui->actionRaiseLayer->setIcon(QIcon(basePath + "layer_up.png"));
     ui->actionLowerLayer->setIcon(QIcon(basePath + "layer_down.png"));
     ui->actionFullscreen->setIcon(QIcon(basePath + "expand.png"));
     ui->actionGrid->setIcon(QIcon(basePath + "grid.png"));
+    ui->actionRenderLiquids->setIcon(QIcon(basePath + "render_liquids.png"));
     ui->actionAddArea->setIcon(QIcon(basePath + "add.png"));
     ui->actionDeleteCurrentArea->setIcon(QIcon(basePath + "remove.png"));
 
@@ -74,7 +76,10 @@ LevelEditorWindow::LevelEditorWindow(LevelManager* lvlMgr, int initialArea, Sett
     ui->sidebar->setMinimumSize(350, 20);
 
     loadArea(initialArea, false, true);
+
     updateAreaSelector(initialArea);
+    ui->actionGrid->setChecked(settings->get("grid", false).toBool());
+    ui->actionRenderLiquids->setChecked(settings->get("renderLiquids", true).toBool());
 }
 
 LevelEditorWindow::~LevelEditorWindow()
@@ -100,6 +105,9 @@ void LevelEditorWindow::loadTranslations()
 
     ui->actionCut->setText(settings->getTranslation("General", "cut"));
     ui->actionCut->setToolTip(settings->getTranslation("General", "cut"));
+
+    ui->actionSelectAll->setText(settings->getTranslation("General", "selectAll"));
+    ui->actionSelectAll->setToolTip(settings->getTranslation("General", "selectAll"));
 
     ui->actionCopy->setText(settings->getTranslation("General", "copy"));
     ui->actionCopy->setToolTip(settings->getTranslation("General", "copy"));
@@ -139,6 +147,9 @@ void LevelEditorWindow::loadTranslations()
 
     ui->actionGrid->setText(settings->getTranslation("LevelEditor", "grid"));
     ui->actionGrid->setToolTip(settings->getTranslation("LevelEditor", "grid"));
+
+    ui->actionRenderLiquids->setText(settings->getTranslation("LevelEditor", "renderLiquids"));
+    ui->actionRenderLiquids->setToolTip(settings->getTranslation("LevelEditor", "renderLiquids"));
 
     ui->actionAddArea->setText(settings->getTranslation("LevelEditor", "addArea"));
     ui->actionAddArea->setToolTip(settings->getTranslation("LevelEditor", "addArea"));
@@ -240,6 +251,11 @@ void LevelEditorWindow::on_actionDelete_triggered()
     levelView->deleteSel();
 }
 
+void LevelEditorWindow::on_actionSelectAll_triggered()
+{
+    levelView->selectAll();
+}
+
 void LevelEditorWindow::on_actionRaise_triggered()
 {
     levelView->raise();
@@ -277,6 +293,13 @@ void LevelEditorWindow::on_actionFullscreen_toggled(bool toggle)
 void LevelEditorWindow::on_actionGrid_toggled(bool toggle)
 {
     levelView->toggleGrid(toggle);
+    settings->set("grid", toggle);
+}
+
+void LevelEditorWindow::on_actionRenderLiquids_toggled(bool toggle)
+{
+    levelView->toggleRenderLiquids(toggle);
+    settings->set("renderLiquids", toggle);
 }
 
 void LevelEditorWindow::setSelSprite(int spriteId)
@@ -436,6 +459,7 @@ void LevelEditorWindow::loadArea(int id, bool closeLevel, bool init)
     ui->actionToggleLayer2->setChecked(true);
     levelView->setLayerMask(layerMask);
     levelView->toggleGrid(ui->actionGrid->isChecked());
+    levelView->toggleRenderLiquids(ui->actionRenderLiquids->isChecked());
 
     zoom = 1.0;
 
@@ -460,7 +484,7 @@ void LevelEditorWindow::loadArea(int id, bool closeLevel, bool init)
     connect(entranceEditor, SIGNAL(selectedEntrChanged(Object*)), levelView, SLOT(selectObj(Object*)));
 
     // Setup Zone Editor
-    zoneEditor = new ZoneEditorWidget(&level->zones, settings);
+    zoneEditor = new ZoneEditorWidget(&level->zones);
     connect(zoneEditor, SIGNAL(updateLevelView()), levelView, SLOT(update()));
     connect(zoneEditor, SIGNAL(selectedZoneChanged(Object*)), levelView, SLOT(selectObj(Object*)));
 

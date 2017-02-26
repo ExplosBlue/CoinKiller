@@ -68,6 +68,7 @@ private:
     Ui::MainWindow *ui;
 
     Game* game;
+    bool gameLoaded;
 
     SettingsManager* settings;
 
