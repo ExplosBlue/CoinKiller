@@ -192,11 +192,28 @@ void Sprite::setRect()
         offsety = 10;
         break;
     case 38: // Reznor Wheel
-        width = 201;
-        height = 177;
-        offsetx = -92;
-        offsety = -76;
-        break;
+            if(getNybble(6) == 1)
+            {
+                width = 349;
+                height = 353;
+                offsetx = -162;
+                offsety = -177;
+            }
+            else
+            {
+                width = 201;
+                height = 177;
+                offsetx = -92;
+                offsety = -76;
+            }
+
+            break;
+        case 39: // Reznor Battle Dissapearing blocks
+            if(getNybble(4) == 0)
+                width = 20;
+            else
+                width = getNybble(4)*20;
+            break;
     case 52: // Checkpoint Flag
         width = 37;
         height = 65;
@@ -358,8 +375,8 @@ void Sprite::setRect()
         offsety = -3;
         break;
     case 120: // Up-Down Mushroom
-        width = getNybble(5)*20 + 80;
-        height = 30;
+        width = getNybble(5)*20 + 40;
+        height = getNybble(4)*20 + 30;
         offsetx = 10-(width / 2);
         break;
     case 123: // Bouncy Mushroom Platform
@@ -640,6 +657,12 @@ void Sprite::setRect()
         else offsetx = -10;
         offsety = -12;
         break;
+    case 216: // Boss Shutter
+        width = 34;
+        height = 60;
+        offsetx = 3;
+        offsety = 20;
+        break;
     case 219: // Star Coin
         width = 40;
         height = 40;
@@ -665,6 +688,7 @@ void Sprite::setRect()
     case 227: // Floating Barrel
         width = 60;
         height = 61;
+        offsety = 10;
         break;
     case 228: // Boo
         width = 45;

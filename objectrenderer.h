@@ -89,6 +89,17 @@ protected:
     const Sprite *spr;
 };
 
+// Sprite 38: Reznor Wheel
+class ReznorWheelRenderer: public ObjectRenderer
+{
+public:
+    ReznorWheelRenderer(const Sprite *spr);
+    void render(QPainter *painter, QRect *drawrect);
+protected:
+    const Sprite* spr;
+    QString basePath;
+};
+
 // Sprite 39: Reznor Battle Disapearing Blocks
 class ReznorBlockRenderer: public ObjectRenderer
 {
