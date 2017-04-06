@@ -683,6 +683,7 @@ ReznorWheelRenderer::ReznorWheelRenderer(const Sprite *spr)
 {
     this->spr = spr;
 }
+
 void ReznorWheelRenderer::render(QPainter *painter, QRect *)
 {
     QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/");
@@ -770,6 +771,7 @@ ReznorBlockRenderer::ReznorBlockRenderer(const Sprite *spr)
 {
     this->spr = spr;
 }
+
 void ReznorBlockRenderer::render(QPainter *painter, QRect *)
 {
     QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/");
