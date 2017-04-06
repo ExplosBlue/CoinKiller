@@ -66,6 +66,17 @@ protected:
 
 // Special Sprite Renderers
 
+// Sprite 4/5/6/7: Burner Right/Down/Left/Up
+class BurnerRenderer: public SpriteRenderer
+{
+public:
+    BurnerRenderer(const Sprite *spr, QString basePath);
+    void render(QPainter *painter, QRect *drawrect);
+protected:
+    const Sprite *spr;
+    QString basePath;
+};
+
 // Sprite 18: Tile God
 class TileGodRenderer: public SpriteRenderer
 {
@@ -109,6 +120,24 @@ public:
 protected:
     const Sprite* spr;
     QString basePath;
+};
+
+// Sprite 44: Track-controlled Burner - Four Directions
+class FourBurnerRenderer: public SpriteRenderer
+{
+public:
+    FourBurnerRenderer(const Sprite *spr, QString basePath);
+    void render(QPainter *painter, QRect *drawrect);
+protected:
+    const Sprite *spr;
+    QString basePath;
+    QString big;
+    int size = 0;
+    NormalImageRenderer *up;
+    NormalImageRenderer *down;
+    NormalImageRenderer *left;
+    NormalImageRenderer *right;
+    NormalImageRenderer *center;
 };
 
 // Sprites 84/85/86/87/88: Flags
@@ -209,6 +238,17 @@ protected:
     QString basePath;
 };
 
+// Sprite 127: Bowser Flame
+class BowserFlameRenderer: public ObjectRenderer
+{
+public:
+    BowserFlameRenderer(const Sprite *spr);
+    void render(QPainter *painter, QRect *drawrect);
+protected:
+    const Object *obj;
+    NormalImageRenderer *img;
+};
+
 // Sprite 134: Ruins Plat Rickshaw
 class RuinsRickRenderer: public ObjectRenderer
 {
@@ -253,6 +293,28 @@ protected:
     NormalImageRenderer *bottom;
 };
 
+// Sprite 144/145: Horizontal/Vertical Lift
+class LiftRenderer: public ObjectRenderer
+{
+public:
+    LiftRenderer(const Sprite *spr, QString basePath);
+    void render(QPainter *painter, QRect *drawrect);
+protected:
+    const Sprite *spr;
+    QString basePath;
+};
+
+// Sprite 146: Track Controlled Lift
+class TrackLiftRenderer: public ObjectRenderer
+{
+public:
+    TrackLiftRenderer(const Sprite *spr, QString basePath);
+    void render(QPainter *painter, QRect *drawrect);
+protected:
+    const Sprite *spr;
+    QString basePath;
+};
+
 // Sprite 147: 3 Plat Rickshaw
 class ThreePlatRickRenderer: public ObjectRenderer
 {
@@ -275,6 +337,17 @@ protected:
     NormalImageRenderer *img;
 };
 
+// Sprite 159: Spike Top
+class SpikeTopRenderer: public ObjectRenderer
+{
+public:
+    SpikeTopRenderer(const Sprite *spr);
+    void render(QPainter *painter, QRect *drawrect);
+protected:
+    const Object *obj;
+    NormalImageRenderer *img;
+};
+
 // Sprite 165: Koopa Troopa
 class KoopaTroopaRenderer: public ObjectRenderer
 {
@@ -283,6 +356,18 @@ public:
     void render(QPainter *painter, QRect *drawrect);
 protected:
     const Object *obj;
+    NormalImageRenderer *img;
+};
+
+// Sprite 175/176/177/178/179/180: Grounded Piranha Plants
+class PlantRenderer: public ObjectRenderer
+{
+public:
+    PlantRenderer(const Sprite *spr, QString filename);
+    void render(QPainter *painter, QRect *drawrect);
+protected:
+    const Object *obj;
+    QString filename;
     NormalImageRenderer *img;
 };
 
@@ -331,6 +416,16 @@ protected:
     NormalImageRenderer *img;
 };
 
+// Sprite 232: Spiny
+class SpinyRenderer: public SpriteRenderer
+{
+public:
+    SpinyRenderer(const Sprite *spr);
+    void render(QPainter *painter, QRect *drawrect);
+protected:
+    const Sprite *spr;
+};
+
 // Sprite 240: Urchin
 class UrchinRenderer: public SpriteRenderer
 {
@@ -370,6 +465,27 @@ public:
     void render(QPainter *painter, QRect *drawrect);
 protected:
     const Sprite *spr;
+};
+
+// Sprite 297: Horizontal Rail Controlled Fence
+class RailContFenceRenderer: public SpriteRenderer
+{
+public:
+    RailContFenceRenderer(const Sprite *spr);
+    void render(QPainter *painter, QRect *drawrect);
+protected:
+    const Sprite *spr;
+};
+
+// Sprite 311: Coin Meteor
+class CoinMeteorRenderer: public ObjectRenderer
+{
+public:
+    CoinMeteorRenderer(const Sprite *spr);
+    void render(QPainter *painter, QRect *drawrect);
+protected:
+    const Object *obj;
+    NormalImageRenderer *img;
 };
 
 class EntranceRenderer : public ObjectRenderer
