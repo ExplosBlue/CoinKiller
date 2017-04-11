@@ -129,10 +129,10 @@ Sprite::Sprite(qint32 x, qint32 y, qint32 id)
 
 Sprite::Sprite(Sprite *spr)
 {
-    x = getx();
-    y = gety();
-    id = getid();
-    for (qint32 i = 0; i < 12; i++) spriteData[i] = getByte(i);
+    x = spr->getx();
+    y = spr->gety();
+    id = spr->getid();
+    for (qint32 i = 0; i < 12; i++) spriteData[i] = spr->getByte(i);
     setRect();
 }
 
@@ -148,46 +148,6 @@ void Sprite::setRect()
         height = 67;
         offsetx = -31;
         offsety = -26;
-        break;
-    case 4: // Burner Right
-        if(getNybble(4) == 1)
-            width = 110;
-        else
-            width = 65;
-        height = 20;
-        break;
-    case 5: // Burner Down
-        if(getNybble(4) == 1)
-            height = 110;
-        else
-            height = 65;
-        width = 20;
-        break;
-    case 6: // Burner Left
-        if(getNybble(4) == 1)
-        {
-            width = 110;
-            offsetx = -90;
-        }
-        else
-        {
-            width = 65;
-            offsetx = -45;
-        }
-        height = 20;
-        break;
-    case 7: // Burner Up
-        if(getNybble(4) == 1)
-        {
-            height = 110;
-            offsety = -90;
-        }
-        else
-        {
-            height = 65;
-            offsety = -45;
-        }
-        width = 20;
         break;
     case 8: // Swoop
         width = 13;
@@ -232,165 +192,33 @@ void Sprite::setRect()
         offsety = 10;
         break;
     case 38: // Reznor Wheel
-        if(getNybble(6) == 1)
-        {
-            width = 349;
-            height = 353;
-            offsetx = -162;
-            offsety = -177;
-        }
-        else
-        {
-            width = 201;
-            height = 177;
-            offsetx = -92;
-            offsety = -76;
-        }
-        break;
-    case 39: // Reznor Battle Dissapearing blocks
-        if(getNybble(4) == 0)
-            width = 20;
-        else
-            width = getNybble(4)*20;
-        break;
-    case 40: // !Burner Right
-        if(getNybble(4) == 1)
-            width = 116;
-        else
-            width = 71;
-        height = 20;
-        break;
-    case 41: // !Burner Down
-        if(getNybble(4) == 1)
-            height = 115;
-        else
-            height = 69;
-        width = 20;
-        break;
-    case 42: // !Burner Left
-        if(getNybble(4) == 1)
-        {
-            width = 116;
-            offsetx = -94;
-        }
-        else
-        {
-            width = 71;
-            offsetx = -49;
-        }
-        height = 20;
-        break;
-    case 43: // !Burner Up
-        if(getNybble(4) == 1)
-        {
-            height = 115;
-            offsety = -95;
-        }
-        else
-        {
-            height = 69;
-            offsety = -51;
-        }
-        width = 20;
-        break;
-    case 44: // Track-controlled Burner - Four Directions
-        width = 21;
-        height = 21;
-        if((getNybble(8) == 4)||(getNybble(8) == 5)||(getNybble(8) == 6)||(getNybble(8) == 7)||(getNybble(8) == 12)||(getNybble(8) == 13)||(getNybble(8) == 14)||(getNybble(8) == 15))
-        {
-            if(getNybble(4) == 1)
+            if(getNybble(6) == 1)
             {
-                height = height+120;
-                offsety = offsety-height+21;
+                width = 349;
+                height = 353;
+                offsetx = -162;
+                offsety = -177;
             }
             else
             {
-                height = width+60;
-                offsety = offsety-height+21;
+                width = 201;
+                height = 177;
+                offsetx = -92;
+                offsety = -76;
             }
-        }
-        if((getNybble(8) == 8)||(getNybble(8) == 9)||(getNybble(8) == 10)||(getNybble(8) == 11)||(getNybble(8) == 12)||(getNybble(8) == 13)||(getNybble(8) == 14)||(getNybble(8) == 15))
-        {
-            if(getNybble(4) == 1)
-                height = height+120;
+
+            break;
+        case 39: // Reznor Battle Dissapearing blocks
+            if(getNybble(4) == 0)
+                width = 20;
             else
-                height = height+60;
-        }
-        if((getNybble(8) == 2)||(getNybble(8) == 3)||(getNybble(8) == 6)||(getNybble(8) == 7)||(getNybble(8) == 10)||(getNybble(8) == 11)||(getNybble(8) == 14)||(getNybble(8) == 15))
-        {
-            if(getNybble(4) == 1)
-            {
-                width = width+120;
-                offsetx = offsetx-width+21;
-            }
-            else
-            {
-                width = width+60;
-                offsetx = offsetx-width+21;
-            }
-        }
-        if((getNybble(8) == 1)||(getNybble(8) == 3)||(getNybble(8) == 5)||(getNybble(8) == 7)||(getNybble(8) == 9)||(getNybble(8) == 11)||(getNybble(8) == 13)||(getNybble(8) == 15))
-        {
-            if(getNybble(4) == 1)
-                width = width+120;
-            else
-                width = width+60;
-        }
-        break;
-    case 45: // Track Controlled Burner Right
-        if(getNybble(4) == 1)
-            width = 110;
-        else
-            width = 65;
-        height = 20;
-        break;
-    case 46: // Track Controlled Burner Down
-        if(getNybble(4) == 1)
-            height = 110;
-        else
-            height = 65;
-        width = 20;
-        break;
-    case 47: // Track Controlled Burner Left
-        if(getNybble(4) == 1)
-        {
-            width = 110;
-            offsetx = -90;
-        }
-        else
-        {
-            width = 65;
-            offsetx = -45;
-        }
-        height = 20;
-        break;
-    case 48: // Track Controlled Burner Up
-        if(getNybble(4) == 1)
-        {
-            height = 110;
-            offsety = -90;
-        }
-        else
-        {
-            height = 65;
-            offsety = -45;
-        }
-        width = 20;
-        break;
+                width = getNybble(4)*20;
+            break;
     case 52: // Checkpoint Flag
         width = 37;
         height = 65;
         offsetx = 1;
         offsety = -25;
-        break;
-    case 63: // Skewer Left
-        width = 557;
-        height = 82;
-        break;
-    case 64: // Skewer Right
-        width = 557;
-        height = 82;
-        offsetx = -537;
         break;
     case 66: case 67: // Pipe Cannons
         width = 40;
@@ -446,12 +274,6 @@ void Sprite::setRect()
         width = 33;
         height = 21;
         offsetx = -4;
-        break;
-    case 89: // porcupuffer
-        width = 61;
-        height = 59;
-        offsetx = -21;
-        offsety = -20;
         break;
     case 92: // Grinder
         width = 49;
@@ -561,14 +383,14 @@ void Sprite::setRect()
         if(getNybble(15) == 1)
         {
             width = 160;
-            height = 30;
+            height = 20;
             offsetx = -70;
-            offsety = 10;
+            offsety = 20;
         }
         else
         {
             width = 120;
-            height = 30;
+            height = 20;
             offsetx = -50;
             offsety = 10;
         }
@@ -584,21 +406,6 @@ void Sprite::setRect()
         height = 108;
         offsetx = -58;
         offsety = -87;
-        break;
-    case 127: // Bowser Flame
-        width = 57;
-        height = 36;
-        offsetx = 28;
-        offsety = -20;
-        break;
-    case 133: // Bowser Shutter
-        width = 36;
-        height = 120;
-        offsety = 20;
-        break;
-    case 134: // Bowser Bridge
-        width = 402;
-        height = 52;
         break;
     case 135: // Goomba
         width = 21;
@@ -636,9 +443,6 @@ void Sprite::setRect()
         break;
     case 139: // Goomba Tower
         width = 21;
-        if(getNybble(5) == 0)
-            height = 46;
-        else
         height = getNybble(5) * 21 + 4;
         offsety = - height + 21 + 1;
         break;
@@ -648,30 +452,11 @@ void Sprite::setRect()
         offsetx = -5;
         offsety = -6;
         break;
-    case 143: // Conveyor Belt Switch
+    case 143: // 	Conveyor Belt Switch
         width = 28;
         height = 42;
         offsetx = -4;
         offsety = -21;
-        break;
-    case 144: case 145: // Horizontal/Vertical Lift
-        if(getNybble(5) == 0)
-            width = 44;
-        else
-            width = (getNybble(5)-1)*20 + 44;
-        height = 22;
-        //offsetx = 58 -(width / 2);
-        break;
-    case 146: // Track Controlled Lift
-        if(getNybble(15) == 0)
-            width = 84;
-        else if(getNybble(15) == 1)
-            width = 35;
-        else
-            width = (getNybble(15)-2)*20 + 44;
-        height = 22;
-        offsetx = 40 -(width / 2);
-        offsety = 10;
         break;
     case 147: // 3 plat rickshaw
         if (getNybble(5) != 1)
@@ -716,14 +501,6 @@ void Sprite::setRect()
             offsety = -54;
         }
         break;
-    case 159: // Spike Top
-        width = 20;
-        height = 25;
-        if(getNybble(5) == 1)
-            offsety = 0;
-        else
-            offsety = -5;
-        break;
     case 165: // Koopa Troopa
         width = 27;
         height = 35;
@@ -735,30 +512,6 @@ void Sprite::setRect()
         height = 37;
         offsetx = 5;
         offsety = 40;
-        break;
-    case 168: // Fire Pipe Piranha Plant - Down
-        width = 30;
-        height = 55;
-        offsetx = 5;
-        offsety = 40;
-        break;
-    case 169: // Fire Pipe Piranha Plant - Left
-        width = 55;
-        height = 30;
-        offsetx = -55;
-        offsety = 5;
-        break;
-    case 170: // Fire Pipe Piranha Plant - Right
-        width = 55;
-        height = 30;
-        offsetx = 40;
-        offsety = 5;
-        break;
-    case 171: // Fire Pipe Piranha Plant - Up
-        width = 30;
-        height = 55;
-        offsetx = 5;
-        offsety = -55;
         break;
     case 172: // Pipe Bone Piranha Plant - Up
         width = 30;
@@ -782,50 +535,44 @@ void Sprite::setRect()
         width = 54;
         height = 33;
         offsetx = -8;
-        if (getNybble(5) == 1)
-            offsety = -3;
         break;
     case 176: // Big Grounded Piranha plant
-        width = 110;
-        height = 65;
-        offsetx = -25;
         if (getNybble(5) != 1)
+        {
+            width = 110;
+            height = 65;
+            offsetx = -25;
             offsety = 16;
+        }
         else
+        {
+            width = 110;
+            height = 65;
+            offsetx = -25;
             offsety = 60;
-        break;
-    case 177: // Grounded Fire Piranha Plant
-        width = 54;
-        height = 33;
-        offsetx = -8;
-        if (getNybble(5) == 1)
-            offsety = -3;
-        break;
-    case 178: // Big Grounded Fire Piranha plant
-        width = 110;
-        height = 65;
-        offsetx = -25;
-        if (getNybble(5) != 1)
-            offsety = 16;
-        else
-            offsety = 60;
+        }
         break;
     case 179: // Grounded Bone Piranha Plant
         width = 53;
         height = 33;
         offsetx = -8;
         offsety = 8;
-        if (getNybble(5) == 1)
-            offsety = -3;
         break;
     case 180: // Big Grounded Bone Piranha plant
-        width = 110;
-        height = 68;
-        offsetx = -25;
         if (getNybble(5) != 1)
+        {
+            width = 110;
+            height = 68;
+            offsetx = -25;
             offsety = 14;
+        }
         else
+        {
+            width = 110;
+            height = 68;
+            offsetx = -25;
             offsety = 58;
+        }
         break;
     case 181: // Pipe Piranha Plant - Left
         width = 37;
@@ -903,14 +650,6 @@ void Sprite::setRect()
         offsetx = -46;
         offsety = -27;
         break;
-    case 212: // Roy Wall
-        width = 99;
-        height = 200;
-        if(getNybble(6) == 1)
-            offsetx = 40;
-        else
-            offsetx = -40;
-        break;
     case 215: // Bob-omb Cannon
         width = 31;
         height = 32;
@@ -962,32 +701,6 @@ void Sprite::setRect()
         height = 132;
         offsetx = -16;
         offsety = 15;
-        break;
-    case 232: // Spiny
-        if(getNybble(5) == 1)
-        {
-            width = 22;
-            height = 19;
-        }
-        else if(getNybble(5) == 2)
-        {
-            width = 21;
-            height = 20;
-        }
-        else if(getNybble(5) == 3)
-        {
-            width = 21;
-            height = 20;
-        }
-        else
-        {
-            width = 22;
-            height = 19;
-        }
-        break;
-    case 233: // Upside Down Spiny
-        width = 21;
-        height = 20;
         break;
     case 234: // Spiked Ball
         width = 38;
@@ -1061,14 +774,14 @@ void Sprite::setRect()
     case 263: // Tower cutscene Morton
         width = 67;
         height = 125;
-        offsetx = 560;
-        offsety = -160;
+        offsetx = 370;
+        offsety = -200;
         break;
     case 264: // Tower cutscene Ludwig
         width = 50;
         height = 125;
-        offsetx = 300;
-        offsety = -240;
+        offsetx = 370;
+        offsety = -200;
         break;
     case 265: // Tower cutscene No Koopa
         width = 46;
@@ -1089,11 +802,6 @@ void Sprite::setRect()
         height = 38;
         offsetx = 1;
         offsety = 1;
-        break;
-    case 272: // Peach Cage
-        width = 68;
-        height = 108;
-        offsety = 40;
         break;
     case 273: // Coin Roulette Block
         width = 31;
@@ -1154,55 +862,9 @@ void Sprite::setRect()
         offsetx = -1;
         offsety = -19;
         break;
-    case 297: // Horizontal Rail Controlled Fence
-        if (getNybble(5) == 1)
-        {
-            width = 63;
-            height = 144;
-            if(getNybble(7) == 3)
-                offsety = -135;
-            else
-                offsety = -11;
-        }
-        else if (getNybble(5) == 2)
-        {
-            width = 122;
-            height = 83;
-            if(getNybble(7) == 3)
-                offsety = -75;
-            else
-                offsety = -10;
-        }
-        else
-        {
-            width = 63;
-            height = 84;
-            if(getNybble(7) == 3)
-                offsety = -75;
-            else
-                offsety = -11;
-        }
-
-        break;
     case 302: // Moon Coin
         width = 40;
         height = 40;
-        break;
-    case 311: // Coin Meteor
-        if(getNybble(5) == 1)
-        {
-            width = 60;
-            height = 60;
-            offsetx = 30;
-            offsety = -30-(getNybble(7)*60);
-        }
-        else
-        {
-            width = 30;
-            height = 30;
-            offsetx = 20;
-            offsety = -20-(getNybble(7)*30);
-        }
         break;
     case 314: // Ruins rickshaw
         if (getNybble(5) != 1)
