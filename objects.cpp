@@ -377,11 +377,41 @@ void Sprite::setRect()
         }
         width = 20;
         break;
+    case 51: // Fuzzy
+        if(getNybble(7) == 1)
+        {
+            width = 91;
+            height = 83;
+            offsetx = -21;
+            offsety = -23;
+        }
+        else
+        {
+            width = 45;
+            height = 41;
+            offsetx = -2;
+            offsety = -1;
+        }
+        break;
     case 52: // Checkpoint Flag
         width = 37;
         height = 65;
         offsetx = 1;
         offsety = -25;
+        break;
+    case 61: // Red Coin
+        if(getNybble(9) >= 1)
+        {
+            width = 24;
+            height = 36;
+            offsetx = -2;
+            offsety = -16;
+        }
+        else
+        {
+            width = 20;
+            height = 20;
+        }
         break;
     case 63: // Skewer Left
         width = 557;
@@ -505,6 +535,10 @@ void Sprite::setRect()
         height = 41;
         offsety = -20;
         break;
+    case 107: // Path-Controlled Climbable fence
+        width = 240;
+        height = 240;
+        break;
     case 108: // Spider Web
         width = 80;
         height = 80;
@@ -552,6 +586,66 @@ void Sprite::setRect()
         height = 103;
         offsety = -3;
         break;
+    case 118: // Bullet Bill
+        if(getNybble(5) == 1)
+        {
+            width = 26;
+            height = 20;
+            offsety = 2;
+            offsetx = -6;
+        }
+        else if(getNybble(5) == 2)
+        {
+            width = 20;
+            height = 26;
+            offsetx = -2;
+        }
+        else if(getNybble(5) == 3)
+        {
+            width = 20;
+            height = 26;
+            offsety = -6;
+            offsetx = 2;
+        }
+        else if(getNybble(5) == 4)
+        {
+            width = 25;
+            height = 25;
+            offsetx = -5;
+        }
+        else if(getNybble(5) == 5)
+        {
+            width = 25;
+            height = 25;
+            offsety = 20;
+            offsetx = -20;
+        }
+        else if(getNybble(5) == 6)
+        {
+            width = 25;
+            height = 25;
+            offsety = -5;
+        }
+        else if(getNybble(5) == 7)
+        {
+            width = 25;
+            height = 25;
+            offsety = -25;
+            offsetx = 15;
+        }
+        else
+        {
+            width = 26;
+            height = 20;
+            offsety = 2;
+        }
+        break;
+    case 119: // Banzai bill
+        width = 108;
+        height = 80;
+        offsety = -20;
+        offsetx = -30;
+        break;
     case 120: // Up-Down Mushroom
         width = getNybble(5)*20 + 40;
         height = getNybble(4)*20 + 30;
@@ -576,7 +670,7 @@ void Sprite::setRect()
         break;
     case 124: // Mushroom Platform
         width = getNybble(6)*20 + 68;
-        height = 20;
+        height = getNybble(10)*20 + 100;
         offsetx = -(width / 2);
         break;
     case 125: // Bowser
@@ -590,6 +684,12 @@ void Sprite::setRect()
         height = 36;
         offsetx = 28;
         offsety = -20;
+        break;
+    case 128: // Dry Bowser
+        width = 136;
+        height = 105;
+        offsetx = -55;
+        offsety = -85;
         break;
     case 133: // Bowser Shutter
         width = 36;
@@ -695,10 +795,27 @@ void Sprite::setRect()
         offsetx = -6;
         offsety = -6;
         break;
+    case 149: // Changeable direction platform
+        width = 126;
+        height = 27;
+        offsetx = -3;
+        break;
     case 150: // Seesaw Lift
         width = 280;
         height = 20;
-        offsetx= 20;
+        offsetx = 20;
+        break;
+    case 151: // Scale Lift
+        if(getNybble(5) == 0)
+            width = 27;
+        else
+            width = 17+(getNybble(5)*20-10);
+        if(getNybble(7) >= getNybble(4))
+            height = 16+(getNybble(7)*20);
+        else
+            height = 16+(getNybble(4)*20);
+        offsety = -13;
+        offsetx = -4;
         break;
     case 154: // 4 plat rickshaw
         if (getNybble(5) == 1)
@@ -717,12 +834,48 @@ void Sprite::setRect()
         }
         break;
     case 159: // Spike Top
-        width = 20;
-        height = 25;
-        if(getNybble(5) == 1)
-            offsety = 0;
+        if(getNybble(4) == 1)
+        {
+            width = 25;
+            height = 20;
+            offsetx = -5;
+        }
+        else if(getNybble(4) == 2)
+        {
+            width = 20;
+            height = 25;
+        }
+        else if(getNybble(4) == 3)
+        {
+            width = 25;
+            height = 20;
+        }
         else
+        {
+            width = 20;
+            height = 25;
             offsety = -5;
+        }
+        break;
+    case 163: // Climbing Koopa - Vertical
+        width = 27;
+        height = 37;
+        offsetx = -3;
+        offsety = 3;
+        break;
+    case 164: // Climbing Koopa - Horizontal
+        height = 37;
+        offsety = 3;
+        if(getNybble(4) == 1)
+        {
+            width = 26;
+            offsetx = -2;
+        }
+        else
+        {
+            width = 27;
+            offsetx = -3;
+        }
         break;
     case 165: // Koopa Troopa
         width = 27;
@@ -924,7 +1077,7 @@ void Sprite::setRect()
         offsetx = 3;
         offsety = 20;
         break;
-    case 219: // Star Coin
+    case 219: case 220: // Star Coin
         width = 40;
         height = 40;
         break;
@@ -1184,9 +1337,15 @@ void Sprite::setRect()
         }
 
         break;
-    case 302: // Moon Coin
+    case 302: case 303: // Moon Coin
         width = 40;
         height = 40;
+        break;
+    case 305: // Path Controlled Ice Lift
+        width = 308;
+        height = 104;
+        offsetx = 60;
+        offsety = 10;
         break;
     case 311: // Coin Meteor
         if(getNybble(5) == 1)
