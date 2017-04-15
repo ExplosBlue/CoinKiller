@@ -100,15 +100,19 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
     case 48: // Track Controlled Burner Up
         ret = new BurnerRenderer(spr, basePath + "track_burner_up");
         break;
+<<<<<<< HEAD
     case 51: // Fuzzy
         ret = new FuzzyRenderer(spr);
         break;
+=======
+>>>>>>> origin/master
     case 52: // Checkpoint Flag
         ret = new NormalImageRenderer(spr, basePath + "checkpoint_flag.png");
         break;
     case 55: // Coin
         ret = new NormalImageRenderer(spr, basePath + "coin.png");
         break;
+<<<<<<< HEAD
     case 59: // Rotation Controlled Coin
         ret = new RotationSpriteRenderer(spr, basePath + "coin.png");
         break;
@@ -120,6 +124,13 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
         break;
     case 62: // Rotation Controlled Red Coin
         ret = new RotationSpriteRenderer(spr, basePath + "red_coin.png");
+=======
+    case 61: // Red Coin
+        ret = new NormalImageRenderer(spr, basePath + "red_coin.png");
+        break;
+    case 62: // Rotation Controlled Red Coin
+        ret = new NormalImageRenderer(spr, basePath + "red_coin.png");
+>>>>>>> origin/master
         break;
     case 63: // Skewer Left
         ret = new NormalImageRenderer(spr, basePath + "skewer_left.png");
@@ -253,9 +264,12 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
     case 127: // Bowser Flame
         ret = new BowserFlameRenderer(spr);
         break;
+<<<<<<< HEAD
     case 128: // Dry Bowser
         ret = new NormalImageRenderer(spr, basePath + "dry_bowser.png");
         break;
+=======
+>>>>>>> origin/master
     case 133: // Bowser Shutter
         ret = new NormalImageRenderer(spr, basePath + "bowser_shutter.png");
         break;
@@ -321,6 +335,9 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
         break;
     case 164: // Climing Koopa - Vertical
         ret = new ClimbKoopaVertRenderer(spr);
+        break;
+    case 159: // Spike Top
+        ret = new SpikeTopRenderer(spr);
         break;
     case 165: // Koopa Troopa
         ret = new KoopaTroopaRenderer(spr);
@@ -464,7 +481,11 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
         ret = new NormalImageRenderer(spr, basePath + "big_boo.png");
         break;
     case 232: // Spiny
+<<<<<<< HEAD
         ret = new SpinyRenderer(spr, basePath + "spiny");
+=======
+        ret = new SpinyRenderer(spr);
+>>>>>>> origin/master
         break;
     case 233: // Celing Spiny
         ret = new NormalImageRenderer(spr, basePath + "spiny_ceiling.png");
@@ -568,12 +589,15 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
     case 302: // Moon Coin
         ret = new NormalImageRenderer(spr, basePath + "moon_coin.png");
         break;
+<<<<<<< HEAD
     case 303: // Rotation Controlled Moon Coin
         ret = new RotationSpriteRenderer(spr, basePath + "moon_coin.png");
         break;
     case 305: // Path Controlled Ice Lift
         ret = new NormalImageRenderer(spr, basePath + "ice_lift.png");
         break;
+=======
+>>>>>>> origin/master
     case 311: // Coin Meteor
         ret = new CoinMeteorRenderer(spr);
         break;
@@ -879,6 +903,7 @@ void FourBurnerRenderer::render(QPainter *painter, QRect *drawrect)
         right->render(painter,drawrect);
 }
 
+<<<<<<< HEAD
 // Sprite 51: Fuzzy
 FuzzyRenderer::FuzzyRenderer(const Sprite *spr)
 {
@@ -925,6 +950,8 @@ void RedCoinRenderer::render(QPainter *painter, QRect *drawrect)
     img->render(painter, drawrect);
 }
 
+=======
+>>>>>>> origin/master
 // Sprite 84/85/86/87/88: Flags
 FlagRenderer::FlagRenderer(const Sprite *spr)
 {
@@ -1235,7 +1262,11 @@ void BoneGoombaRenderer::render(QPainter *painter, QRect *)
 }
 
 
+<<<<<<< HEAD
 // Sprite 127: Bowser Flmae
+=======
+// Sprite 165: Koopa Troopa
+>>>>>>> origin/master
 BowserFlameRenderer::BowserFlameRenderer(const Sprite *spr)
 {
     QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/");
@@ -1429,6 +1460,7 @@ SpikeTopRenderer::SpikeTopRenderer(const Sprite *spr)
 {
     QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/");
 
+<<<<<<< HEAD
     if (spr->getNybble(5) == 1)
         flipped = "flipped_";
     else
@@ -1438,6 +1470,10 @@ SpikeTopRenderer::SpikeTopRenderer(const Sprite *spr)
     else if (spr->getNybble(4) == 2) img = new NormalImageRenderer(spr, basePath + flipped +"spiketop_ceiling.png");
     else if (spr->getNybble(4) == 3) img = new NormalImageRenderer(spr, basePath + flipped + "spiketop_right.png");
     else img = new NormalImageRenderer(spr, basePath + flipped + "spiketop.png");
+=======
+    if (spr->getNybble(5) == 1) img = new NormalImageRenderer(spr, basePath + "spiketop_ceiling.png");
+    else img = new NormalImageRenderer(spr, basePath + "spiketop.png");
+>>>>>>> origin/master
 }
 
 void SpikeTopRenderer::render(QPainter *painter, QRect *drawrect)
@@ -1445,6 +1481,7 @@ void SpikeTopRenderer::render(QPainter *painter, QRect *drawrect)
     img->render(painter, drawrect);
 }
 
+<<<<<<< HEAD
 // Sprite 163: Climbing Koopa - Horizontal
 ClimbKoopaHorRenderer::ClimbKoopaHorRenderer(const Sprite *spr)
 {
@@ -1478,6 +1515,8 @@ void ClimbKoopaVertRenderer::render(QPainter *painter, QRect *drawrect)
     img->render(painter, drawrect);
 }
 
+=======
+>>>>>>> origin/master
 
 // Sprite 165: Koopa Troopa
 KoopaTroopaRenderer::KoopaTroopaRenderer(const Sprite *spr)
@@ -1590,18 +1629,33 @@ void BobOmbCannonRenderer::render(QPainter *painter, QRect *)
 
 
 // Sprite 232: Spiny
+<<<<<<< HEAD
 SpinyRenderer::SpinyRenderer(const Sprite *spr, QString basePath)
 {
     this->spr = spr;
     this->basePath = basePath;
+=======
+SpinyRenderer::SpinyRenderer(const Sprite *spr)
+{
+    this->spr = spr;
+>>>>>>> origin/master
 }
 
 void SpinyRenderer::render(QPainter *painter, QRect *)
 {
+<<<<<<< HEAD
     if (spr->getNybble(5) == 1) painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), QPixmap(basePath + "_ceiling.png"));
     else if (spr->getNybble(5) == 2) painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), QPixmap(basePath + "_shell.png"));
     else if (spr->getNybble(5) == 3) painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), QPixmap(basePath + "_shell_ceiling.png"));
     else painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), QPixmap(basePath + ".png"));
+=======
+    QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/");
+
+    if (spr->getNybble(5) == 1) painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), QPixmap(basePath + "spiny_ceiling.png"));
+    else if (spr->getNybble(5) == 2) painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), QPixmap(basePath + "spiny_shell.png"));
+    else if (spr->getNybble(5) == 3) painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), QPixmap(basePath + "spiny_shell_ceiling.png"));
+    else painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), QPixmap(basePath + "spiny.png"));
+>>>>>>> origin/master
 }
 
 
