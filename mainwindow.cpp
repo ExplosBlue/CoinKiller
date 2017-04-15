@@ -84,7 +84,7 @@ void MainWindow::setGameLoaded(bool loaded)
 void MainWindow::on_actionAbout_triggered()
 {
     QMessageBox::information(this, "About that thing you're using",
-                             "CoinKiller v1.0 -- by StapleButter and Mariomaster\n\nhttp://kuribo64.net/ or whatever\n\nDefault Icons by Icons8\n\noh and this is free software, if you paid for it, you got scammed");
+                             "CoinKiller v1.0 -- by StapleButter and RicBent\n\nhttp://kuribo64.net/ or whatever\n\nDefault Icons by Icons8\n\noh and this is free software, if you paid for it, you got scammed");
 }
 
 void MainWindow::on_actionLoadUnpackedROMFS_triggered()
