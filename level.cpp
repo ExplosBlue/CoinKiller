@@ -400,26 +400,23 @@ void Level::save()
     qSort(spritesUsed);
 
     // Sort Sprites
-    if (zones.size() > 0)
-    {
-        QList<int> zoneIDs;
-        foreach (Zone* z, zones) zoneIDs.append(z->getid());
-        qSort(zoneIDs);
+    QList<int> zoneIDs;
+    foreach (Zone* z, zones) zoneIDs.append(z->getid());
+    qSort(zoneIDs);
 
-        QList<Sprite*> sortedSprites;
-        for (int i = 0; i < zoneIDs.count(); i++)
+    QList<Sprite*> sortedSprites;
+    for (int i = 0; i < zoneIDs.count(); i++)
+    {
+        foreach (Sprite* spr, sprites)
         {
-            foreach (Sprite* spr, sprites)
+            if (getNextZoneID(spr) == i)
             {
-                if (getNextZoneID(spr) == i)
-                {
-                    sprites.removeOne(spr);
-                    sortedSprites.append(spr);
-                }
+                sprites.removeOne(spr);
+                sortedSprites.append(spr);
             }
         }
-        sprites = sortedSprites;
     }
+    sprites = sortedSprites;
 
     // Calc Block Offsets/Sizes and File Size
     quint32 blockOffsets[17];
