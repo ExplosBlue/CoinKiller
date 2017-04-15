@@ -252,10 +252,7 @@ void Tileset::drawTile(QPainter& painter, TileGrid& grid, int num, int x, int y,
         if (xx == 16 && yy == 0) { painter.drawPixmap(rdst, QPixmap(basePath + "blue_coin.png")); return; }
         if (xx == 10 && yy == 3) { painter.drawPixmap(rdst, QPixmap(basePath + "vine.png")); return; }
         if (xx == 11 && yy == 0) { painter.drawPixmap(rdst, QPixmap(basePath + "solid.png")); return; }
-<<<<<<< HEAD
 
-=======
->>>>>>> origin/master
     }
 
     QRect rsrc(2 + ((num%21)*24), 2 + ((num/21)*24), 20, 20);

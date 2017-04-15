@@ -151,7 +151,6 @@ protected:
     NormalImageRenderer *center;
 };
 
-<<<<<<< HEAD
 // Sprite 51: Fuzzy
 class FuzzyRenderer: public ObjectRenderer
 {
@@ -184,8 +183,6 @@ protected:
     NormalImageRenderer *img;
 };
 
-=======
->>>>>>> origin/master
 // Sprites 84/85/86/87/88: Flags
 class FlagRenderer: public ObjectRenderer
 {
@@ -438,7 +435,6 @@ public:
 protected:
     const Object *obj;
     NormalImageRenderer *img;
-<<<<<<< HEAD
     QString flipped;
 };
 
@@ -463,8 +459,6 @@ protected:
     const Object *obj;
     NormalImageRenderer *img;
     QString behind;
-=======
->>>>>>> origin/master
 };
 
 // Sprite 165: Koopa Troopa
@@ -539,18 +533,11 @@ protected:
 class SpinyRenderer: public SpriteRenderer
 {
 public:
-<<<<<<< HEAD
     SpinyRenderer(const Sprite *spr, QString basePath);
     void render(QPainter *painter, QRect *drawrect);
 protected:
     const Sprite *spr;
     QString basePath;
-=======
-    SpinyRenderer(const Sprite *spr);
-    void render(QPainter *painter, QRect *drawrect);
-protected:
-    const Sprite *spr;
->>>>>>> origin/master
 };
 
 // Sprite 240: Urchin

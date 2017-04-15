@@ -377,7 +377,6 @@ void Sprite::setRect()
         }
         width = 20;
         break;
-<<<<<<< HEAD
     case 51: // Fuzzy
         if(getNybble(7) == 1)
         {
@@ -394,15 +393,12 @@ void Sprite::setRect()
             offsety = -1;
         }
         break;
-=======
->>>>>>> origin/master
     case 52: // Checkpoint Flag
         width = 37;
         height = 65;
         offsetx = 1;
         offsety = -25;
         break;
-<<<<<<< HEAD
     case 61: // Red Coin
         if(getNybble(9) >= 1)
         {
@@ -417,8 +413,6 @@ void Sprite::setRect()
             height = 20;
         }
         break;
-=======
->>>>>>> origin/master
     case 63: // Skewer Left
         width = 557;
         height = 82;
@@ -691,15 +685,12 @@ void Sprite::setRect()
         offsetx = 28;
         offsety = -20;
         break;
-<<<<<<< HEAD
     case 128: // Dry Bowser
         width = 136;
         height = 105;
         offsetx = -55;
         offsety = -85;
         break;
-=======
->>>>>>> origin/master
     case 133: // Bowser Shutter
         width = 36;
         height = 120;
@@ -843,7 +834,6 @@ void Sprite::setRect()
         }
         break;
     case 159: // Spike Top
-<<<<<<< HEAD
         if(getNybble(4) == 1)
         {
             width = 25;
@@ -886,14 +876,6 @@ void Sprite::setRect()
             width = 27;
             offsetx = -3;
         }
-=======
-        width = 20;
-        height = 25;
-        if(getNybble(5) == 1)
-            offsety = 0;
-        else
-            offsety = -5;
->>>>>>> origin/master
         break;
     case 165: // Koopa Troopa
         width = 27;
@@ -1355,7 +1337,6 @@ void Sprite::setRect()
         }
 
         break;
-<<<<<<< HEAD
     case 302: case 303: // Moon Coin
         width = 40;
         height = 40;
@@ -1366,12 +1347,6 @@ void Sprite::setRect()
         offsetx = 60;
         offsety = 10;
         break;
-=======
-    case 302: // Moon Coin
-        width = 40;
-        height = 40;
-        break;
->>>>>>> origin/master
     case 311: // Coin Meteor
         if(getNybble(5) == 1)
         {
