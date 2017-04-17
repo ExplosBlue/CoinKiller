@@ -47,7 +47,7 @@ NightMode=Nacht-Modus
 updateSDat=Spritedata updaten
 sDatWarning=Alle Änderungen an spritedata.xml werden überschrieben!\n\nMöchtest du fortfahren?
 sDatSuccess=Die Spritedata wurde erfolgreich aktuallisiert!
-sDatErrorNetwork=Aktuallisieren der Spritedata fehlgeschlagen:\n\nVerbindung zu kuribo64.net fehlgeschlagen!
+sDatErrorNetwork=Aktuallisieren der Spritedata fehlgeschlagen:\n\nVerbindung zu %1 fehlgeschlagen!
 sDatErrorFile=Aktuallisieren der Spritedata fehlgeschlagen:\n\nspritedata.xml konnte nicht zum Schreiben geöffnet werden!
 
 [LevelEditor]

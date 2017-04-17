@@ -202,7 +202,10 @@ void MainWindow::on_updateSpriteData_clicked()
 
     this->setEnabled(false);
 
-    QUrl sdUrl("http://kuribo64.net/nsmb2/spritexml2.php");
+    // RIP in Pieces
+    // QUrl sdUrl("http://kuribo64.net/nsmb2/spritexml2.php");
+
+    QUrl sdUrl("http://nsmb2.us.to/spritedb/spritexml2.php");
     sdDownloader = new FileDownloader(sdUrl, this);
 
     connect(sdDownloader, SIGNAL(downloaded(QNetworkReply::NetworkError)), this, SLOT(sdDownload_finished(QNetworkReply::NetworkError)));
@@ -225,7 +228,7 @@ void MainWindow::sdDownload_finished(QNetworkReply::NetworkError error)
         }
     }
     else
-        QMessageBox::information(this, "CoinKiller", settings->getTranslation("MainWindow", "sDatErrorNetwork"), QMessageBox::Ok);
+        QMessageBox::information(this, "CoinKiller", settings->getTranslation("MainWindow", "sDatErrorNetwork").arg(sdDownloader->getUrl().toString()), QMessageBox::Ok);
 
     this->setEnabled(true);
 }
