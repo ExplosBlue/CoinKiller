@@ -127,12 +127,12 @@ Sprite::Sprite(qint32 x, qint32 y, qint32 id)
     this->id = id;
 }
 
-Sprite::Sprite(Sprite *spr)
+Sprite::Sprite(Sprite* spr)
 {
-    x = getx();
-    y = gety();
-    id = getid();
-    for (qint32 i = 0; i < 12; i++) spriteData[i] = getByte(i);
+    x = spr->getx();
+    y = spr->gety();
+    id = spr->getid();
+    for (qint32 i = 0; i < 12; i++) spriteData[i] = spr->getByte(i);
     setRect();
 }
 
