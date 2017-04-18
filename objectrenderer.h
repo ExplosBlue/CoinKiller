@@ -63,6 +63,22 @@ protected:
     QTextOption align;
 };
 
+class CircleRenderer: public ObjectRenderer
+{
+public:
+    CircleRenderer();
+    CircleRenderer(int offsetx, int offsety, int width, int height, QString text, QColor color, QTextOption align = Qt::AlignHCenter | Qt::AlignVCenter);
+    void render(QPainter *painter, QRect *drawellipse);
+protected:
+    QString text;
+    QTextOption align;
+    QColor color;
+    int width;
+    int height;
+    int offsetx;
+    int offsety;
+};
+
 
 // Special Sprite Renderers
 
@@ -181,6 +197,22 @@ public:
 protected:
     QString filename;
     NormalImageRenderer *img;
+};
+
+// Sprite 78: Firebar
+class FireBarRenderer: public ObjectRenderer
+{
+public:
+    FireBarRenderer(const Sprite *spr, QString basePath);
+    void render(QPainter *painter, QRect *drawrect);
+protected:
+    const Sprite* spr;
+    QString basePath;
+    NormalImageRenderer *center;
+    CircleRenderer *radius;
+    int size;
+    int posoff;
+    QString amount;
 };
 
 // Sprites 84/85/86/87/88: Flags

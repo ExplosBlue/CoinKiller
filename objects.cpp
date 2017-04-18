@@ -644,7 +644,7 @@ void Sprite::setRect()
         width = 108;
         height = 80;
         offsety = -20;
-        offsetx = -30;
+        offsetx = -46;
         break;
     case 120: // Up-Down Mushroom
         width = getNybble(5)*20 + 40;
@@ -690,6 +690,12 @@ void Sprite::setRect()
         height = 105;
         offsetx = -55;
         offsety = -85;
+        break;
+    case 132: // Bowser Battle Switch and Platform Controller
+        width = 53;
+        height = 46;
+        offsetx = -27;
+        offsety = -44;
         break;
     case 133: // Bowser Shutter
         width = 36;
@@ -1081,23 +1087,12 @@ void Sprite::setRect()
         width = 40;
         height = 40;
         break;
-    case 221: // ! Switch
+    case 221: case 223: case 225: // Switches
         width = 22;
         height = 24;
         offsetx = -1;
         if (getNybble(5) != 1) offsety = -4;
-        break;
-    case 223: // ? Switch
-        width = 22;
-        height = 24;
-        offsetx = -1;
-        if (getNybble(5) != 1) offsety = -4;
-        break;
-    case 225: // P Switch
-        width = 22;
-        height = 24;
-        offsetx = -1;
-        if (getNybble(5) != 1) offsety = -4;
+        if (getNybble(4) == 1) offsetx = +9;
         break;
     case 227: // Floating Barrel
         width = 60;

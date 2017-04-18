@@ -157,6 +157,9 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
     case 77: // Thwomp
         ret = new NormalImageRenderer(spr, basePath + "thwomp.png");
         break;
+    case 78: // Fire Bar
+        ret = new FireBarRenderer(spr, basePath);
+        break;
     case 81: // Fireball Pipe - ! Junction
         ret = new NormalImageRenderer(spr, basePath + "fireballpipe_junction.png");
         break;
@@ -255,6 +258,9 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
         break;
     case 128: // Dry Bowser
         ret = new NormalImageRenderer(spr, basePath + "dry_bowser.png");
+        break;
+    case 132: // Bowser Battle Lift and Switch Controller
+        ret = new NormalImageRenderer(spr, basePath + "bowser_switch.png");
         break;
     case 133: // Bowser Shutter
         ret = new NormalImageRenderer(spr, basePath + "bowser_shutter.png");
@@ -636,6 +642,28 @@ void RoundedRectRenderer::render(QPainter *painter, QRect *)
     painter->drawText(rect, text, align);
 }
 
+CircleRenderer::CircleRenderer(int offsetx, int offsety, int width, int height, QString text, QColor color, QTextOption align)
+{
+    this->offsetx = offsetx;
+    this->offsety = offsety;
+    this->width = width;
+    this->height = height;
+    this->text = text;
+    this->color = color;
+    this->align = align;
+}
+
+void CircleRenderer::render(QPainter *painter, QRect *)
+{
+    QRect ellipse(offsetx, offsety, width, height);
+
+    painter->setPen(color);
+    painter->drawEllipse(ellipse);
+
+    painter->setFont(QFont("Arial", 7, QFont::Normal));
+    painter->drawText(ellipse, text, align);
+}
+
 
 // Sprite Renderers
 
@@ -923,6 +951,89 @@ RedCoinRenderer::RedCoinRenderer(const Sprite *spr, QString filename)
 void RedCoinRenderer::render(QPainter *painter, QRect *drawrect)
 {
     img->render(painter, drawrect);
+}
+
+// Sprite 78: Firebar
+FireBarRenderer::FireBarRenderer(const Sprite *spr, QString basePath)
+{
+    this->spr = spr;
+    this->basePath = basePath;
+
+    size = (spr->getNybble(5)*40) + 20;
+    posoff = (spr->getNybble(5)*20);
+
+    center = new NormalImageRenderer(spr, basePath + "firebar_center.png");
+    radius = new CircleRenderer(spr->getx()-posoff, spr->gety()-posoff, size, size, "", QColor(0,0,0));
+
+}
+
+void FireBarRenderer::render(QPainter *painter, QRect *drawrect)
+{
+    center->render(painter, drawrect);
+    if(spr->getNybble(5) > 0)
+        radius->render(painter, drawrect);
+
+    switch (spr->getNybble(4))
+    {
+        case 5: amount = "6"; break;
+        case 6: amount = "7"; break;
+        case 7: amount = "8"; break;
+        case 8: amount = "9"; break;
+        case 9: amount = "10"; break;
+        case 10: amount = "11"; break;
+        case 11: amount = "12"; break;
+        case 12: amount = "13"; break;
+        case 13: amount = "14"; break;
+        case 14: amount = "15"; break;
+        case 15: amount = "16"; break;
+        default: amount = "5"; break;
+    }
+
+    //Center flame
+    painter->drawPixmap(QRect(spr->getx(), spr->gety(), 20, 20), QPixmap(basePath + "firebar_fire.png"));
+
+    //Right side bar
+    if ((spr->getNybble(4) == 0) || (spr->getNybble(4) == 1) || (spr->getNybble(4) == 3))
+    {
+        for (int i = 0; i < spr->getNybble(5); i++)
+            painter->drawPixmap(QRect(spr->getx()+20+i*20, spr->gety(), 20, 20), QPixmap(basePath + "firebar_fire.png"));
+    }
+    //Left side bar
+    if ((spr->getNybble(4) == 1) ||(spr->getNybble(4) == 3))
+    {
+        for (int i = 0; i < spr->getNybble(5); i++)
+            painter->drawPixmap(QRect(spr->getx()-20-i*20, spr->gety(), 20, 20), QPixmap(basePath + "firebar_fire.png"));
+    }
+    //Top bar
+    if ((spr->getNybble(4) == 2) || (spr->getNybble(4) == 3))
+    {
+        for (int i = 0; i < spr->getNybble(5); i++)
+            painter->drawPixmap(QRect(spr->getx(), spr->gety()-20-i*20, 20, 20), QPixmap(basePath + "firebar_fire.png"));
+    }
+    //Bottom bar
+    if ((spr->getNybble(4) == 3))
+    {
+        for (int i = 0; i < spr->getNybble(5); i++)
+            painter->drawPixmap(QRect(spr->getx(), spr->gety()+20+i*20, 20, 20), QPixmap(basePath + "firebar_fire.png"));
+    }
+    //Bottom Left Bar
+    if ((spr->getNybble(4) == 2))
+    {
+        for (int i = 0; i < spr->getNybble(5); i++)
+            painter->drawPixmap(QRect(spr->getx()-15-i*15, spr->gety()+15+i*15, 20, 20), QPixmap(basePath + "firebar_fire.png"));
+    }
+    //Bottom Right Bar
+    if ((spr->getNybble(4) == 2))
+    {
+        for (int i = 0; i < spr->getNybble(5); i++)
+            painter->drawPixmap(QRect(spr->getx()+15+i*15, spr->gety()+15+i*15, 20, 20), QPixmap(basePath + "firebar_fire.png"));
+    }
+    if(spr->getNybble(4) >= 4)
+    {
+        painter->setFont(QFont("Arial", 8, QFont::Bold));
+        painter->drawText(QRect(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), 20, 20), amount, Qt::AlignHCenter | Qt::AlignVCenter);
+    }
+
 }
 
 // Sprite 84/85/86/87/88: Flags
@@ -1340,25 +1451,10 @@ ScalePlatformRenderer::ScalePlatformRenderer(const Sprite *spr, QString basePath
     this->basePath = basePath;
 
     //used to keep platforms centered
-    switch (spr->getNybble(15))
-    {
-        case 0: case 1: poffset = 28; break;
-        case 2: poffset = 38; break;
-        case 3: poffset = 48; break;
-        case 4: poffset = 58; break;
-        case 5: poffset = 68; break;
-        case 6: poffset = 78; break;
-        case 7: poffset = 88; break;
-        case 8: poffset = 98; break;
-        case 9: poffset = 108; break;
-        case 10: poffset = 118; break;
-        case 11: poffset = 128; break;
-        case 12: poffset = 138; break;
-        case 13: poffset = 148; break;
-        case 14: poffset = 158; break;
-        case 15: poffset = 168; break;
-        default: return; break;
-    }
+    if (spr->getNybble(15) == 0)
+        poffset = 28;
+    else
+        poffset = 28 + ((spr->getNybble(15)-1)*10);
 }
 
 void ScalePlatformRenderer::render(QPainter *painter, QRect *)
@@ -1381,32 +1477,28 @@ void ScalePlatformRenderer::render(QPainter *painter, QRect *)
     //Platforms
     if ((spr->getNybble(15) == 0))
     {
+        //Left Platform
         painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()-poffset, spr->gety()+spr->getOffsetY()+(20*spr->getNybble(7))+3, 22, 22), QPixmap(basePath + "platform_l.png"));
         painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()-poffset+22, spr->gety()+spr->getOffsetY()+(20*spr->getNybble(7))+3, 20, 22), QPixmap(basePath + "platform_m.png"));
         painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()-poffset+42, spr->gety()+spr->getOffsetY()+(20*spr->getNybble(7))+3, 22, 22), QPixmap(basePath + "platform_r.png"));
-    }
-    else
-    {
-        painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()-poffset, spr->gety()+spr->getOffsetY()+(20*spr->getNybble(7))+3, 22, 22), QPixmap(basePath + "platform_l.png"));
-        for (int i = 0; i < spr->getNybble(15); i++)
-            painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()-poffset+22+(20*i), spr->gety()+spr->getOffsetY()+(20*spr->getNybble(7))+3, 20, 22), QPixmap(basePath + "platform_m.png"));
-        painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()-poffset+22+(20*(spr->getNybble(15))), spr->gety()+spr->getOffsetY()+(20*spr->getNybble(7))+3, 22, 22), QPixmap(basePath + "platform_r.png"));
-    }
-
-    if ((spr->getNybble(15) == 0))
-    {
+        //Right Platform
         painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()-poffset+(spr->getNybble(5)*20), spr->gety()+spr->getOffsetY()+(20*spr->getNybble(4))+3, 22, 22), QPixmap(basePath + "platform_l.png"));
         painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()-poffset+22+(spr->getNybble(5)*20), spr->gety()+spr->getOffsetY()+(20*spr->getNybble(4))+3, 20, 22), QPixmap(basePath + "platform_m.png"));
         painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()-poffset+42+(spr->getNybble(5)*20), spr->gety()+spr->getOffsetY()+(20*spr->getNybble(4))+3, 22, 22), QPixmap(basePath + "platform_r.png"));
     }
     else
     {
+        //Left Platform
+        painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()-poffset, spr->gety()+spr->getOffsetY()+(20*spr->getNybble(7))+3, 22, 22), QPixmap(basePath + "platform_l.png"));
+        for (int i = 0; i < spr->getNybble(15); i++)
+            painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()-poffset+22+(20*i), spr->gety()+spr->getOffsetY()+(20*spr->getNybble(7))+3, 20, 22), QPixmap(basePath + "platform_m.png"));
+        painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()-poffset+22+(20*(spr->getNybble(15))), spr->gety()+spr->getOffsetY()+(20*spr->getNybble(7))+3, 22, 22), QPixmap(basePath + "platform_r.png"));
+        //Right Platform
         painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()-poffset+(spr->getNybble(5)*20), spr->gety()+spr->getOffsetY()+(20*spr->getNybble(4))+3, 22, 22), QPixmap(basePath + "platform_l.png"));
         for (int i = 0; i < spr->getNybble(15); i++)
             painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()-poffset+22+(20*i)+(spr->getNybble(5)*20), spr->gety()+spr->getOffsetY()+(20*spr->getNybble(4))+3, 20, 22), QPixmap(basePath + "platform_m.png"));
         painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()-poffset+22+(20*(spr->getNybble(15)))+(spr->getNybble(5)*20), spr->gety()+spr->getOffsetY()+(20*spr->getNybble(4))+3, 22, 22), QPixmap(basePath + "platform_r.png"));
     }
-
 }
 
 // Sprite 154: 4 Plat Rickshaw
@@ -1546,6 +1638,20 @@ RecLiftRenderer::RecLiftRenderer(const Sprite *spr, QString path)
 }
 void RecLiftRenderer::render(QPainter *painter, QRect *)
 {
+    QPen distLine;
+    distLine.setColor(Qt::black);
+    distLine.setWidth(2);
+
+    if (spr->getNybble(16) != 0)
+    {
+        painter->setPen(distLine);
+        if (spr->getNybble(11) == 0 || spr->getNybble(11) == 4) painter->drawLine(spr->getx(), spr->gety()+spr->getheight()/2, spr->getx()-(spr->getNybble(16)*20), spr->gety()+spr->getheight()/2);
+        if (spr->getNybble(11) == 1 || spr->getNybble(11) == 5) painter->drawLine(spr->getx()+spr->getwidth(), spr->gety()+spr->getheight()/2, spr->getx()+spr->getwidth()+(spr->getNybble(16)*20), spr->gety()+spr->getheight()/2);
+
+        if (spr->getNybble(11) == 2 || spr->getNybble(11) == 6) painter->drawLine(spr->getx()+spr->getwidth()/2, spr->gety(), spr->getx()+spr->getwidth()/2, spr->gety()-(spr->getNybble(16)*20));
+        if (spr->getNybble(11) == 3 || spr->getNybble(11) == 7) painter->drawLine(spr->getx()+spr->getwidth()/2, spr->gety()+spr->getheight(), spr->getx()+spr->getwidth()/2, spr->gety()+spr->getheight()+(spr->getNybble(16)*20));
+    }
+
     int blockWidth = spr->getNybble(15) > 0 ? spr->getNybble(15)*20 : 20;
     int blockHeight = spr->getNybble(13) > 0 ? spr->getNybble(13)*20 : 20;
 
@@ -1571,6 +1677,7 @@ void RecLiftRenderer::render(QPainter *painter, QRect *)
     if (spr->getNybble(9) == 2 || spr->getNybble(9) == 3) for (int x = 0; x < blockWidth+20; x+=20) painter->drawPixmap(QRect(spr->getx()+x, spr->gety()+blockHeight+20, 20, 20), QPixmap(path + "s_b.png"));
     if (spr->getNybble(9) == 4 || spr->getNybble(9) == 6) for (int y = 0; y < blockHeight+20; y+=20) painter->drawPixmap(QRect(spr->getx()-20, spr->gety()+y, 20, 20), QPixmap(path + "s_l.png"));
     if (spr->getNybble(9) == 5 || spr->getNybble(9) == 6) for (int y = 0; y < blockHeight+20; y+=20) painter->drawPixmap(QRect(spr->getx()+blockWidth+20, spr->gety()+y, 20, 20), QPixmap(path + "s_r.png"));
+
 }
 
 
