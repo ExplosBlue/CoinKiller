@@ -19,6 +19,10 @@ ZoneEditorWidget::ZoneEditorWidget(QList<Zone*> *zones)
     zoneList = new QListWidget();
     connect(zoneList, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(handleZoneListIndexChange(QListWidgetItem*)));
 
+    selectContentsBtn = new QPushButton(SettingsManager::getInstance()->getTranslation("LevelEditor", "selectZoneContents"), this);
+    connect(selectContentsBtn, SIGNAL(clicked(bool)), this, SLOT(handleSelectContentsClicked()));
+
+
     id = new QSpinBox();
     id->setRange(0, 255);
     connect(id, SIGNAL(valueChanged(int)), this, SLOT(handleIDChange(int)));
@@ -65,6 +69,8 @@ ZoneEditorWidget::ZoneEditorWidget(QList<Zone*> *zones)
     setLayout(layout);
 
     layout->addWidget(zoneList);
+
+    layout->addWidget(selectContentsBtn);
 
     edits = new QWidget();
     QGridLayout* subLayout = new QGridLayout();
@@ -309,4 +315,10 @@ void ZoneEditorWidget::handleBackgroundChange(QString text)
     if (!handleChanges) return;
     editZone->setBackgroundName(backgrounds.key(text, "Nohara_Castle"));
     updateBgPreview();
+}
+
+void ZoneEditorWidget::handleSelectContentsClicked()
+{
+    if (!handleChanges) return;
+    emit selectZoneContents(editZone);
 }

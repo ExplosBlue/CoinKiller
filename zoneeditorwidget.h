@@ -13,6 +13,7 @@
 #include <QLabel>
 #include <QScrollArea>
 #include <QCheckBox>
+#include <QPushButton>
 
 class BgPreview : public QLabel
 {
@@ -37,9 +38,12 @@ public:
 signals:
     void updateLevelView();
     void selectedZoneChanged(Object* zone);
+    void selectZoneContents(Zone* zone);
 
 private:
     QListWidget* zoneList;
+
+    QPushButton* selectContentsBtn;
 
     QSpinBox* id;
     QWidget* edits;
@@ -78,8 +82,6 @@ private:
     bool editingAZone = false;
     bool handleChanges = true;
 
-    SettingsManager* settings;
-
 private slots:
     void handleZoneListIndexChange(QListWidgetItem* item);
     void handleIDChange(int idVal);
@@ -92,6 +94,7 @@ private slots:
     void handleUnkUpperBoundChange(int val);
     void handleUnkLowerBoundChange(int val);
     void handleBackgroundChange(QString text);
+    void handleSelectContentsClicked();
 };
 
 #endif // ZONEEDITORWIDGET_H

@@ -62,6 +62,7 @@ signals:
 
 public slots:
     void selectObj(Object* obj);
+    void selectZoneContents(Zone* zone);
 
 protected:
     void paintEvent(QPaintEvent *) Q_DECL_OVERRIDE;

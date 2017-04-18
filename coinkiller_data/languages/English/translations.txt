@@ -68,6 +68,7 @@ area=Area
 addArea=Add Area
 removeArea=Remove Area
 renderLiquids=Render Liquids
+selectZoneContents=Select Contents
 
 [TilesetEditor]
 tileset=Tileset

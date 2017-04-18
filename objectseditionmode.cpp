@@ -647,6 +647,21 @@ void ObjectsEditonMode::selectAll()
     foreach (ProgressPath* path, level->progressPaths) foreach (ProgressPathNode* node, path->getNodes()) selectedObjects.append(node);
 }
 
+void ObjectsEditonMode::selectZoneContents(Zone* zone)
+{
+    selectAll();
+
+    QRect zoneRect(zone->getx(), zone->gety(), zone->getwidth(),zone->getheight());
+
+    for (int i = selectedObjects.size() - 1; i >= 0; i--)
+    {
+        Object* obj = selectedObjects[i];
+
+        if (!zoneRect.intersects(QRect(obj->getx() + obj->getOffsetX(), obj->gety() + obj->getOffsetY(), obj->getwidth(), obj->getheight())))
+            selectedObjects.removeAt(i);
+    }
+}
+
 void ObjectsEditonMode::deleteSelection()
 {
     level->remove(selectedObjects);
@@ -668,8 +683,13 @@ void ObjectsEditonMode::copy()
     int minY = 0x7FFFFFFF;
     int maxY = 0;
 
+    bool hasBgDats = false;
+
     foreach (Object* obj, selectedObjects)
     {
+        if (obj->getType() == 0)
+            hasBgDats = true;
+
         if (obj->toString(0,0) == "")
             continue;
 
@@ -680,6 +700,12 @@ void ObjectsEditonMode::copy()
     }
 
     QString clipboardText = QString("CoinKillerClip|%1:%2").arg(maxX-minX).arg(maxY-minY);
+
+    if (hasBgDats)
+    {
+        minX = typeRound(minX, 0);
+        minY = typeRound(minY, 0);
+    }
 
     foreach (Object* obj, selectedObjects)
     {

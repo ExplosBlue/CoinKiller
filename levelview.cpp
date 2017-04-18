@@ -19,6 +19,7 @@
 #include "levelview.h"
 #include "unitsconvert.h"
 #include "objectrenderer.h"
+#include "is.h"
 
 #include <QApplication>
 #include <QPainter>
@@ -498,6 +499,15 @@ void LevelView::selectObj(Object *obj)
     }
 
     update();
+}
+
+void LevelView::selectZoneContents(Zone* zone)
+{
+    if (is<ObjectsEditonMode*>(mode))
+    {
+        objectEditionMode->selectZoneContents(zone);
+        update();
+    }
 }
 
 void LevelView::setEditonMode(EditMode newMode, bool init)

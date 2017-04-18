@@ -68,6 +68,7 @@ area=Gebiet
 addArea=Gebiet hinzufügen
 removeArea=Gebiet entfernen
 renderLiquids=Flüssigkeiten darstellen
+selectZoneContents=Inhalt auswählen
 
 [TilesetEditor]
 tileset=Tileset

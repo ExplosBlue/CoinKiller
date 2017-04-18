@@ -33,6 +33,8 @@ public:
     void select(Object* obj);
     void selectAll();
 
+    void selectZoneContents(Zone* zone);
+
     void setDrawType(int drawType) { this->drawType = drawType; }
     void setObject(int selObject, int selTileset);
     void setLayer(int selLayer) { this->selLayer = selLayer; }
