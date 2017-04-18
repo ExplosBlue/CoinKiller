@@ -147,11 +147,9 @@ void LevelView::paintEvent(QPaintEvent* evt)
     // Render Sprites
     for (int i = 0; i < level->sprites.size(); i++)
     {
-        const Sprite* spr = level->sprites.at(i);
+        Sprite* spr = level->sprites.at(i);
 
-        QRect sprRect(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight());
-
-        if (!drawrect.intersects(sprRect))
+        if (!spr->doRender(drawrect))
             continue;
 
         SpriteRenderer sprRend(spr, level->tilesets);

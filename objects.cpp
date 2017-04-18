@@ -142,6 +142,12 @@ void Sprite::setRect()
     height = 20;
     offsetx = 0;
     offsety = 0;
+
+    renderOffsetX = 0;
+    renderOffsetY = 0;
+    renderOffsetW = 0;
+    renderOffsetH = 0;
+
     switch (id) {
     case 3: // Cheep Chomp
         width = 79;
@@ -529,6 +535,7 @@ void Sprite::setRect()
         width = 62;
         height = 200;
         offsetx = -22;
+        renderOffsetW = 280;
         break;
     case 99: // Wiggler
         width = 89;

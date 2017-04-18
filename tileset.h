@@ -88,10 +88,7 @@ public:
 
     Game* game;
 
-    QImage* getImage()
-    {
-        return texImage;
-    }
+    QImage* getImage() { return texImage; }
 
     void save();
 

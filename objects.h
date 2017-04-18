@@ -34,6 +34,7 @@ public:
     void increaseSize(qint32 deltax, qint32 deltay, qint32 snap = 0);
     virtual qint32 getType() const { return -1; }
     virtual bool isResizable() const { return false; }
+    virtual bool doRender(QRect r) { return r.intersects(QRect(x + offsetx, y + offsety, width, height)); }
     qint32 getx() const { return x; }
     qint32 gety() const { return y; }
     qint32 getwidth() const { return width; }
@@ -92,6 +93,7 @@ public:
     Sprite(qint32 x, qint32 y, qint32 id);
     qint32 getType() const;
     bool isResizable() const { return false; }
+    virtual bool doRender(QRect r) { return r.intersects(QRect(x + offsetx + renderOffsetX, y + offsety + renderOffsetY, width + renderOffsetW, height + renderOffsetH)); }
     qint32 getid() const;
     void setid(qint32 id) { this->id = id; this->setRect(); }
     void setByte(qint32 id, quint8 nbr);
@@ -105,6 +107,10 @@ public:
 protected:
     qint32 id;
     quint8 spriteData[12] = {0,0,0,0,0,0,0,0,0,0,0,0};
+    qint32 renderOffsetX;
+    qint32 renderOffsetY;
+    qint32 renderOffsetW;
+    qint32 renderOffsetH;
 };
 
 
