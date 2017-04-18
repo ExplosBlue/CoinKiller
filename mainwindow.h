@@ -60,8 +60,6 @@ private slots:
 
     void on_tilesetView_clicked(const QModelIndex &index);
 
-    void on_testButton_clicked();
-
     void on_nightModeCheckbox_toggled(bool checked);
 
 private:

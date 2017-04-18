@@ -205,7 +205,7 @@ void MainWindow::on_updateSpriteData_clicked()
     // RIP in Pieces
     // QUrl sdUrl("http://kuribo64.net/nsmb2/spritexml2.php");
 
-    QUrl sdUrl("http://nsmb2.us.to/spritedb/spritexml2.php");
+    QUrl sdUrl("http://nsmb2.us.to/spritedb/spritexml.php");
     sdDownloader = new FileDownloader(sdUrl, this);
 
     connect(sdDownloader, SIGNAL(downloaded(QNetworkReply::NetworkError)), this, SLOT(sdDownload_finished(QNetworkReply::NetworkError)));
@@ -325,23 +325,4 @@ void MainWindow::setStyleSheetFromPath(QString path)
     styleSheetFile.open(QFile::ReadOnly);
     QString styleSheetTxt = QLatin1String(styleSheetFile.readAll());
     setStyleSheet(styleSheetTxt);
-}
-
-void MainWindow::on_testButton_clicked()
-{
-    if (!gameLoaded)
-        return;
-
-    QString testPath = "/etc1.ctpk";
-    QString intPath = "test.tga";
-
-    Ctpk* ctpk = new Ctpk(game->fs->openFile(testPath));
-
-
-    QImage* img = ctpk->getTexture(intPath);
-
-    img->save("Z:/TestFolder" + testPath + ".png");
-
-    delete img;
-    delete ctpk;
 }
