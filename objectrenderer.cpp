@@ -1346,7 +1346,7 @@ void BoneGoombaRenderer::render(QPainter *painter, QRect *)
 }
 
 
-// Sprite 127: Bowser Flmae
+// Sprite 127: Bowser Flame
 BowserFlameRenderer::BowserFlameRenderer(const Sprite *spr)
 {
     QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/");
@@ -1645,11 +1645,11 @@ void RecLiftRenderer::render(QPainter *painter, QRect *)
     if (spr->getNybble(16) != 0)
     {
         painter->setPen(distLine);
-        if (spr->getNybble(11) == 0 || spr->getNybble(11) == 4) painter->drawLine(spr->getx(), spr->gety()+spr->getheight()/2, spr->getx()-(spr->getNybble(16)*20), spr->gety()+spr->getheight()/2);
-        if (spr->getNybble(11) == 1 || spr->getNybble(11) == 5) painter->drawLine(spr->getx()+spr->getwidth(), spr->gety()+spr->getheight()/2, spr->getx()+spr->getwidth()+(spr->getNybble(16)*20), spr->gety()+spr->getheight()/2);
+        if (spr->getNybble(11) %4 == 0) painter->drawLine(spr->getx()+spr->getwidth(), spr->gety()+spr->getheight()/2, spr->getx()+spr->getwidth()+(spr->getNybble(16)*20), spr->gety()+spr->getheight()/2);
+        if (spr->getNybble(11) %4 == 1) painter->drawLine(spr->getx(), spr->gety()+spr->getheight()/2, spr->getx()-(spr->getNybble(16)*20), spr->gety()+spr->getheight()/2);
 
-        if (spr->getNybble(11) == 2 || spr->getNybble(11) == 6) painter->drawLine(spr->getx()+spr->getwidth()/2, spr->gety(), spr->getx()+spr->getwidth()/2, spr->gety()-(spr->getNybble(16)*20));
-        if (spr->getNybble(11) == 3 || spr->getNybble(11) == 7) painter->drawLine(spr->getx()+spr->getwidth()/2, spr->gety()+spr->getheight(), spr->getx()+spr->getwidth()/2, spr->gety()+spr->getheight()+(spr->getNybble(16)*20));
+        if (spr->getNybble(11) %4 == 2) painter->drawLine(spr->getx()+spr->getwidth()/2, spr->gety(), spr->getx()+spr->getwidth()/2, spr->gety()-(spr->getNybble(16)*20));
+        if (spr->getNybble(11) %4 == 3) painter->drawLine(spr->getx()+spr->getwidth()/2, spr->gety()+spr->getheight(), spr->getx()+spr->getwidth()/2, spr->gety()+spr->getheight()+(spr->getNybble(16)*20));
     }
 
     int blockWidth = spr->getNybble(15) > 0 ? spr->getNybble(15)*20 : 20;

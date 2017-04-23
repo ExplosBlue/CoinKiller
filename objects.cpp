@@ -474,6 +474,12 @@ void Sprite::setRect()
         offsetx = -7;
         offsety = -2;
         break;
+    case 78: // Firebar
+        renderOffsetH = (getNybble(5)*40) + 20;
+        renderOffsetW = (getNybble(5)*40) + 20;
+        renderOffsetX = offsetx - (getNybble(5)*20);
+        renderOffsetY = offsety - (getNybble(5)*20);
+        break;
     case 81: // Fireball Pipe - ! Junction
         width = 40;
         height = 40;
