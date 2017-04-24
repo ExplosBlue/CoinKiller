@@ -220,6 +220,12 @@ void Sprite::setRect()
         width = qMax(getNybble(7) * 20, 20);
         height = qMax(getNybble(4) * 20, 20);
         break;
+    case 26: // Roulette Block
+        width = 30;
+        height = 30;
+        offsetx = -5;
+        offsety = -5;
+        break;
     case 29: // Bob-omb
         width = 29;
         height = 29;
@@ -404,6 +410,12 @@ void Sprite::setRect()
         height = 65;
         offsetx = 1;
         offsety = -25;
+        break;
+    case 56: // Coin Bubble
+        width = 30;
+        height = 30;
+        offsetx = -5;
+        offsety = -5;
         break;
     case 61: // Red Coin
         if(getNybble(9) >= 1)
@@ -1195,6 +1207,14 @@ void Sprite::setRect()
         offsetx = -14;
         offsety = -12;
         break;
+    case 253: // Larry Battle Platform
+        height = 10;
+        if(getNybble(10) == 0)
+            width = 20;
+        else
+            width = (getNybble(10)*20);
+        offsety = +10;
+        break;
     case 255: // Bowser Head Statue
         width = 40;
         height = 42;
@@ -1288,6 +1308,10 @@ void Sprite::setRect()
         height = 26;
         offsetx = -3;
         offsety = -1;
+        break;
+    case 281: //Rectangle Ice Lift
+        width = 280;
+        height = 60;
         break;
     case 287: // Toad House Door
         width = 40;

@@ -116,6 +116,18 @@ protected:
     const Sprite *spr;
 };
 
+// Spirte 26: Roulette Block
+class RouletteBlockRenderer: public SpriteRenderer
+{
+public:
+    RouletteBlockRenderer(const Sprite *spr);
+    void render(QPainter *painter, QRect *drawrect);
+protected:
+    const Sprite *spr;
+    QString basePath;
+    QString contents;
+};
+
 // Sprite 38: Reznor Wheel
 class ReznorWheelRenderer: public ObjectRenderer
 {
@@ -601,6 +613,17 @@ public:
 protected:
     const Sprite *spr;
     NormalImageRenderer* block;
+};
+
+// Sprite 253: Larry Battle Platform
+class LarryPlatformRenderer: public ObjectRenderer
+{
+public:
+    LarryPlatformRenderer(const Sprite *spr, QString basePath);
+    void render(QPainter *painter, QRect *drawrect);
+protected:
+    const Sprite *spr;
+    QString basePath;
 };
 
 // Sprite 259: Rotation Controlled Hard Block

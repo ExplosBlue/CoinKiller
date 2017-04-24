@@ -46,6 +46,9 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
     case 22: // Special Exit Controller
         ret = new SpecialExitControllerRenderer(spr);
         break;
+    case 26: // Roulette Block
+        ret = new RouletteBlockRenderer(spr);
+        break;
     case 27: // POW Block
         ret = new NormalImageRenderer(spr, basePath + "pow_block.png");
         break;
@@ -108,6 +111,9 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
         break;
     case 55: // Coin
         ret = new NormalImageRenderer(spr, basePath + "coin.png");
+        break;
+    case 56: // Coin Bubble
+        ret = new NormalImageRenderer(spr, basePath + "coin_bubble.png");
         break;
     case 59: // Rotation Controlled Coin
         ret = new RotationSpriteRenderer(spr, basePath + "coin.png");
@@ -493,6 +499,9 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
     case 251: // Treasure Chest
         ret = new NormalImageRenderer(spr, basePath + "treasure_chest.png");
         break;
+    case 253: // Larry Battle Platform
+        ret = new LarryPlatformRenderer(spr, basePath);
+        break;
     case 255: // Bowser Head Statue
         ret = new NormalImageRenderer(spr, basePath + "bowser_head_statue.png");
         break;
@@ -552,6 +561,9 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
         break;
     case 280: // + Clock
         ret = new ClockRenderer(spr);
+        break;
+    case 281: // Rectangle Ice Lift
+        ret = new NormalImageRenderer(spr, basePath + "ice_lift_rectangle.png");
         break;
     case 287: // Toad House Door
         ret = new NormalImageRenderer(spr, basePath + "door_toadhouse.png");
@@ -751,6 +763,29 @@ void SpecialExitControllerRenderer::render(QPainter *painter, QRect *)
     painter->drawText(sprRect.adjusted(2,2,15,0), "Warp");
 }
 
+// Sprite 26: Roulette Block
+RouletteBlockRenderer::RouletteBlockRenderer(const Sprite *spr)
+{
+    this->spr = spr;
+}
+void RouletteBlockRenderer::render(QPainter *painter, QRect *)
+{
+    QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/roulette_block/");
+
+    switch (spr->getNybble(13))
+    {
+        case 1: contents = "gold_leaf.png"; break;
+        case 2: contents = "leaf_star.png"; break;
+        case 3: contents = "star.png"; break;
+        case 4: contents = "flower_gold.png"; break;
+        default: contents = "flower_star.png"; break;
+    }
+
+    painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), 30, 30, QPixmap(basePath + "roulette_block.png"));
+    painter->drawPixmap(spr->getx()+spr->getOffsetX()+5, spr->gety()+spr->getOffsetY()+5, 20, 20, QPixmap(basePath + contents));
+
+}
+
 // Sprite 28/60/101/204/: Movement Controlled Sprites
 MovementSpriteRenderer::MovementSpriteRenderer(const Sprite *spr, QString fileName)
 {
@@ -779,78 +814,20 @@ void ReznorWheelRenderer::render(QPainter *painter, QRect *)
     if(spr->getNybble(6) == 1)
         painter->drawPixmap(spr->getx()+spr->getOffsetX(),spr->gety()+spr->getOffsetY(),349, 353, QPixmap(basePath + "reznor_wheel_big.png"));
     else
-    {
-        painter->drawPixmap(spr->getx()+spr->getOffsetX(),spr->gety()+spr->getOffsetY(),201, 177, QPixmap(basePath + "reznor_wheel.png"));
-
-        if(spr->getNybble(5) == 1) // Top Right
+    {   //Wheel
+        painter->drawPixmap(spr->getx()+spr->getOffsetX(),spr->gety()+spr->getOffsetY(),201, 177, QPixmap(basePath + "reznor_wheel.png"));        
+        //Top Right
+        if((spr->getNybble(5) == 1)||(spr->getNybble(5) == 3)||(spr->getNybble(5) == 5)||(spr->getNybble(5) == 7)||(spr->getNybble(5) == 9)||(spr->getNybble(5) == 11)||(spr->getNybble(5) == 13)||(spr->getNybble(5) == 15))
             painter->drawPixmap(spr->getx()+spr->getOffsetX()+145,spr->gety()+spr->getOffsetY()-10,48, 55, QPixmap(basePath + "reznor.png"));
-        if(spr->getNybble(5) == 2) // Top Left
+        //Top Left
+        if((spr->getNybble(5) == 2)||(spr->getNybble(5) == 3)||(spr->getNybble(5) == 6)||(spr->getNybble(5) == 7)||(spr->getNybble(5) == 10)||(spr->getNybble(5) == 11)||(spr->getNybble(5) == 14)||(spr->getNybble(5) == 15))
             painter->drawPixmap(spr->getx()+spr->getOffsetX()+35,spr->gety()+spr->getOffsetY()-40,48, 55, QPixmap(basePath + "reznor.png"));
-        if(spr->getNybble(5) == 3) // Top Left + Top Right
-        {
-            painter->drawPixmap(spr->getx()+spr->getOffsetX()+145,spr->gety()+spr->getOffsetY()-10,48, 55, QPixmap(basePath + "reznor.png"));
-            painter->drawPixmap(spr->getx()+spr->getOffsetX()+35,spr->gety()+spr->getOffsetY()-40,48, 55, QPixmap(basePath + "reznor.png"));
-        }
-        if(spr->getNybble(5) == 4) // Bottom Left
+        //Bottom Left
+        if((spr->getNybble(5) == 4)||(spr->getNybble(5) == 5)||(spr->getNybble(5) == 6)||(spr->getNybble(5) == 7)||(spr->getNybble(5) == 12)||(spr->getNybble(5) == 13)||(spr->getNybble(5) == 14)||(spr->getNybble(5) == 15))
             painter->drawPixmap(spr->getx()+spr->getOffsetX()+5,spr->gety()+spr->getOffsetY()+71,48, 55, QPixmap(basePath + "reznor.png"));
-        if(spr->getNybble(5) == 5) // Bottom Left + Top Right
-        {
-            painter->drawPixmap(spr->getx()+spr->getOffsetX()+5,spr->gety()+spr->getOffsetY()+71,48, 55, QPixmap(basePath + "reznor.png"));
-            painter->drawPixmap(spr->getx()+spr->getOffsetX()+145,spr->gety()+spr->getOffsetY()-10,48, 55, QPixmap(basePath + "reznor.png"));
-        }
-        if(spr->getNybble(5) == 6) // Bottom Left + Top Left
-        {
-            painter->drawPixmap(spr->getx()+spr->getOffsetX()+5,spr->gety()+spr->getOffsetY()+71,48, 55, QPixmap(basePath + "reznor.png"));
-            painter->drawPixmap(spr->getx()+spr->getOffsetX()+35,spr->gety()+spr->getOffsetY()-40,48, 55, QPixmap(basePath + "reznor.png"));
-        }
-        if(spr->getNybble(5) == 7) // Bottom Left + Top Left + Top Right
-        {
-            painter->drawPixmap(spr->getx()+spr->getOffsetX()+5,spr->gety()+spr->getOffsetY()+71,48, 55, QPixmap(basePath + "reznor.png"));
-            painter->drawPixmap(spr->getx()+spr->getOffsetX()+35,spr->gety()+spr->getOffsetY()-40,48, 55, QPixmap(basePath + "reznor.png"));
-            painter->drawPixmap(spr->getx()+spr->getOffsetX()+145,spr->gety()+spr->getOffsetY()-10,48, 55, QPixmap(basePath + "reznor.png"));
-        }
-        if(spr->getNybble(5) == 8) // Bottom Right
+        //Bottom Right
+        if((spr->getNybble(5) == 8)||(spr->getNybble(5) == 9)||(spr->getNybble(5) == 10)||(spr->getNybble(5) == 11)||(spr->getNybble(5) == 12)||(spr->getNybble(5) == 13)||(spr->getNybble(5) == 14)||(spr->getNybble(5) == 15))
             painter->drawPixmap(spr->getx()+spr->getOffsetX()+115,spr->gety()+spr->getOffsetY()+100,48, 55, QPixmap(basePath + "reznor.png"));
-        if(spr->getNybble(5) == 9) // Top Right + Bottom Right
-        {
-            painter->drawPixmap(spr->getx()+spr->getOffsetX()+145,spr->gety()+spr->getOffsetY()-10,48, 55, QPixmap(basePath + "reznor.png"));
-            painter->drawPixmap(spr->getx()+spr->getOffsetX()+115,spr->gety()+spr->getOffsetY()+100,48, 55, QPixmap(basePath + "reznor.png"));
-        }
-        if(spr->getNybble(5) == 10) // Top Left + Bottom Right
-        {
-            painter->drawPixmap(spr->getx()+spr->getOffsetX()+35,spr->gety()+spr->getOffsetY()-40,48, 55, QPixmap(basePath + "reznor.png"));
-            painter->drawPixmap(spr->getx()+spr->getOffsetX()+115,spr->gety()+spr->getOffsetY()+100,48, 55, QPixmap(basePath + "reznor.png"));
-        }
-        if(spr->getNybble(5) == 11) // Top Left + Top Right + Bottom Right
-        {
-            painter->drawPixmap(spr->getx()+spr->getOffsetX()+35,spr->gety()+spr->getOffsetY()-40,48, 55, QPixmap(basePath + "reznor.png"));
-            painter->drawPixmap(spr->getx()+spr->getOffsetX()+145,spr->gety()+spr->getOffsetY()-10,48, 55, QPixmap(basePath + "reznor.png"));
-            painter->drawPixmap(spr->getx()+spr->getOffsetX()+115,spr->gety()+spr->getOffsetY()+100,48, 55, QPixmap(basePath + "reznor.png"));
-        }
-        if(spr->getNybble(5) == 12) // Bottom Left + Bottom Right
-        {
-            painter->drawPixmap(spr->getx()+spr->getOffsetX()+5,spr->gety()+spr->getOffsetY()+71,48, 55, QPixmap(basePath + "reznor.png"));
-            painter->drawPixmap(spr->getx()+spr->getOffsetX()+115,spr->gety()+spr->getOffsetY()+100,48, 55, QPixmap(basePath + "reznor.png"));
-        }
-        if(spr->getNybble(5) == 13) // Bottom Left + Bottom Right + Top Right
-        {
-            painter->drawPixmap(spr->getx()+spr->getOffsetX()+5,spr->gety()+spr->getOffsetY()+71,48, 55, QPixmap(basePath + "reznor.png"));
-            painter->drawPixmap(spr->getx()+spr->getOffsetX()+115,spr->gety()+spr->getOffsetY()+100,48, 55, QPixmap(basePath + "reznor.png"));
-            painter->drawPixmap(spr->getx()+spr->getOffsetX()+145,spr->gety()+spr->getOffsetY()-10,48, 55, QPixmap(basePath + "reznor.png"));
-        }
-        if(spr->getNybble(5) == 14) // Bottom Left + Bottom Right + Top Left
-        {
-            painter->drawPixmap(spr->getx()+spr->getOffsetX()+5,spr->gety()+spr->getOffsetY()+71,48, 55, QPixmap(basePath + "reznor.png"));
-            painter->drawPixmap(spr->getx()+spr->getOffsetX()+115,spr->gety()+spr->getOffsetY()+100,48, 55, QPixmap(basePath + "reznor.png"));
-            painter->drawPixmap(spr->getx()+spr->getOffsetX()+35,spr->gety()+spr->getOffsetY()-40,48, 55, QPixmap(basePath + "reznor.png"));
-        }
-        if(spr->getNybble(5) == 15) // All
-        {
-            painter->drawPixmap(spr->getx()+spr->getOffsetX()+5,spr->gety()+spr->getOffsetY()+71,48, 55, QPixmap(basePath + "reznor.png"));
-            painter->drawPixmap(spr->getx()+spr->getOffsetX()+115,spr->gety()+spr->getOffsetY()+100,48, 55, QPixmap(basePath + "reznor.png"));
-            painter->drawPixmap(spr->getx()+spr->getOffsetX()+35,spr->gety()+spr->getOffsetY()-40,48, 55, QPixmap(basePath + "reznor.png"));
-            painter->drawPixmap(spr->getx()+spr->getOffsetX()+145,spr->gety()+spr->getOffsetY()-10,48, 55, QPixmap(basePath + "reznor.png"));
-        }
     }
 }
 
@@ -1781,6 +1758,21 @@ void ItemBlockRenderer::render(QPainter *painter, QRect *drawrect)
         painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), 20, 20, QPixmap(basePath + "rotation.png"));
     if((spr->getid() == 101) || (spr->getid() == 204))
         painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), 20, 20, QPixmap(basePath + "movement.png"));
+}
+
+// Sprite 253: Larry Battle Platform
+LarryPlatformRenderer::LarryPlatformRenderer(const Sprite *spr, QString basePath)
+{
+    this->spr = spr;
+    this->basePath = basePath;
+}
+void LarryPlatformRenderer::render(QPainter *painter, QRect *)
+{
+    if (spr->getNybble(10) == 0)
+        painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), 20, 10, QPixmap(basePath + "larry_platform.png"));
+    else
+        for (int i=0; i<spr->getNybble(10); i++)
+            painter->drawPixmap(spr->getx()+spr->getOffsetX()+i*20, spr->gety()+spr->getOffsetY(), 20, 10, QPixmap(basePath + "larry_platform.png"));
 }
 
 // Sprite 259: Rotation Controlled hard Block
