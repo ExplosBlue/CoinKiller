@@ -1370,12 +1370,35 @@ LiftRenderer::LiftRenderer(const Sprite *spr, QString basePath)
 
 void LiftRenderer::render(QPainter *painter, QRect *)
 {
-    painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX(), spr->gety(), 22, 22), QPixmap(basePath + "l.png"));
+    QPen distLine;
+    distLine.setColor(Qt::black);
+    distLine.setWidth(2);
+
+    painter->setPen(distLine);
+    if (spr->getNybble(7)!= 0)
+    {
+        if (spr->getNybble(9) == 1)
+        {
+            if (spr->getid() == 145)
+                painter->drawLine(spr->getx()+spr->getwidth()/2, spr->gety()+spr->getheight(), spr->getx()+spr->getwidth()/2, spr->gety()+spr->getheight()+(spr->getNybble(7)*20));
+            else
+                painter->drawLine(spr->getx(), spr->gety()+spr->getheight()/2, spr->getx()-(spr->getNybble(7)*20), spr->gety()+spr->getheight()/2);
+        }
+        else
+        {
+            if (spr->getid() == 145)
+                painter->drawLine(spr->getx()+spr->getwidth()/2, spr->gety()+spr->getheight(), spr->getx()+spr->getwidth()/2, spr->gety()+spr->getheight()-20-(spr->getNybble(7)*20));
+            else
+                painter->drawLine(spr->getx()+spr->getwidth(), spr->gety()+spr->getheight()/2, spr->getx()+spr->getwidth()+(spr->getNybble(7)*20), spr->gety()+spr->getheight()/2);
+        }
+    }
+
+    painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX(), spr->gety(), 20, 22), QPixmap(basePath + "l.png"));
     if(spr->getNybble(5) == 0)
-        painter->drawPixmap(QRect(spr->getx()-spr->getOffsetX()+(spr->getNybble(5))*20+22, spr->gety(), 22, 22), QPixmap(basePath + "r.png"));
+        painter->drawPixmap(QRect(spr->getx()-spr->getOffsetX()+(spr->getNybble(5))*20+20, spr->gety(), 22, 22), QPixmap(basePath + "r.png"));
     else
-        painter->drawPixmap(QRect(spr->getx()-spr->getOffsetX()+(spr->getNybble(5)-1)*20+22, spr->gety(), 22, 22), QPixmap(basePath + "r.png"));
-    for (int i = 22; i < spr->getwidth()-22; i += 20)
+        painter->drawPixmap(QRect(spr->getx()-spr->getOffsetX()+(spr->getNybble(5)-1)*20+20, spr->gety(), 22, 22), QPixmap(basePath + "r.png"));
+    for (int i = 20; i < spr->getwidth()-20; i += 20)
         painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()+i, spr->gety(), 20, 22), QPixmap(basePath + "m.png"));
 }
 

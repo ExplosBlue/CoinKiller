@@ -787,11 +787,26 @@ void Sprite::setRect()
         break;
     case 144: case 145: // Horizontal/Vertical Lift
         if(getNybble(5) == 0)
-            width = 44;
+            width = 40;
         else
-            width = (getNybble(5)-1)*20 + 44;
+            width = (getNybble(5)-1)*20 + 40;
         height = 22;
-        //offsetx = 58 -(width / 2);
+        //Down and right
+        if (getNybble(7) == 1)
+        {
+            if(getid() == 145)
+                renderOffsetH = 22 + (getNybble(7)*20);
+            renderOffsetW = width - (getNybble(7)*20);
+        }
+        else
+        {
+            if(getid() == 145)
+                renderOffsetH = 22 - (getNybble(7)*20);
+            renderOffsetW = width + (getNybble(7)*20);
+        }
+
+        renderOffsetX = width/2;
+        renderOffsetY = height/2;
         break;
     case 146: // Track Controlled Lift
         if(getNybble(15) == 0)
