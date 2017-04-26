@@ -551,6 +551,17 @@ protected:
     int sideOffset = 0;
 };
 
+// Sprite 213: Pokey
+class PokeyRenderer: public SpriteRenderer
+{
+public:
+    PokeyRenderer(const Sprite *spr, QString basePath);
+    void render(QPainter *painter, QRect *drawrect);
+protected:
+    const Sprite *spr;
+    QString basePath;
+};
+
 // Sprite 215: Bob-omb Cannon
 class BobOmbCannonRenderer: public SpriteRenderer
 {

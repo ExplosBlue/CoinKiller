@@ -1110,6 +1110,12 @@ void Sprite::setRect()
         else
             offsetx = -40;
         break;
+    case 213: // Pokey
+        width = 33;
+        height = 57 + ((getNybble(5)+1)*22);
+        offsetx = -7;
+        offsety = -height +22;
+        break;
     case 215: // Bob-omb Cannon
         width = 31;
         height = 32;

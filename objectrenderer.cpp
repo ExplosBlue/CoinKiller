@@ -436,6 +436,9 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
     case 212: // Roy Battle Walls
         ret = new NormalImageRenderer(spr, basePath + "roy_wall.png");
         break;
+    case 213: // Pokey
+        ret = new PokeyRenderer(spr, basePath);
+        break;
     case 215: // Bob-omb Cannon
         ret = new BobOmbCannonRenderer(spr);
         break;
@@ -1613,6 +1616,19 @@ void KoopaParatroopaRenderer::render(QPainter *painter, QRect *drawrect)
     img->render(painter, drawrect);
 }
 
+// Sprite 213: Pokey
+PokeyRenderer::PokeyRenderer(const Sprite *spr, QString basePath)
+{
+    this->spr = spr;
+    this->basePath = basePath;
+}
+void PokeyRenderer::render(QPainter *painter, QRect *)
+{
+    painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX(),spr->gety()+spr->getOffsetY(), 33, 33), QPixmap(basePath + "pokey_top.png"));
+    for(int i = 0; i < spr->getNybble(5)+1; i++)
+        painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX(),spr->gety()+spr->getOffsetY()+32+(i*22), 33, 22), QPixmap(basePath + "pokey_mid.png"));
+        painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX(),spr->gety()+spr->getOffsetY()+54+(spr->getNybble(5)*22), 33, 24), QPixmap(basePath + "pokey_bot.png"));
+}
 
 // Sprite 221/223/225: Switches
 SwitchRenderer::SwitchRenderer(const Sprite *spr, QString filename)
