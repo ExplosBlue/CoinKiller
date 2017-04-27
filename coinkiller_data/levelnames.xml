@@ -285,6 +285,8 @@
 
     <category name="Unused">
         <level file="1-12" name="World 1-Castle (Beta)" />
+		<level file="8-4" name="World Mushroom-2 (Beta)" />
+		<level file="7-5" name="World 4-Tower (Beta)" />
         <level file="5-9" name="World Flower-B (Beta)" />
         <level file="5-22" name="World 5-Extra Life Toad House (Unused)" />
         <level file="6-10" name="World 6-Castle (Beta 1)" />
@@ -292,8 +294,6 @@
         <level file="7-4" name="World Star-5 (Beta)" />
         <level file="9-8" name="World Star-6 (Beta)" />
         <level file="9-9" name="World Star-7 (Beta)" />
-        <level file="7-5" name="Beta Ice Level" />
-        <level file="8-4" name="Beta Underwater Level" />
     </category>
 
 </levels>
