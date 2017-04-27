@@ -1249,16 +1249,46 @@ void UpDownMushroomRenderer::render(QPainter *painter, QRect *)
 {
     QString color;
     if((spr->getNybble(7)) < (spr->getNybble(4)))
+    {
         color = "blue";
+        offset = (spr->getNybble(4)-spr->getNybble(7))*20;
+    }
     else
+    {
         color = "pink";
+        offset = (spr->getNybble(7)-spr->getNybble(4))*20;
 
+    }
+
+    // Inital Position
     for (int i = 0; i < spr->getNybble(4); i++)
         painter->drawPixmap(QRect(spr->getx(), spr->gety()+spr->getOffsetY()+20+i*20, 20, 30), QPixmap(basePath + "stem.png"));
     painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX(), spr->gety(), 30, 30), QPixmap(basePath + color + "_l.png"));
     painter->drawPixmap(QRect(spr->getx()-spr->getOffsetX()-10, spr->gety(), 30, 30), QPixmap(basePath + color + "_r.png"));
     for (int i = 30; i < spr->getwidth()-30; i += 20)
         painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()+i, spr->gety(), 20, 30), QPixmap(basePath + color + "_m.png"));
+
+    // Final Position
+    if (spr->getNybble(7) < spr->getNybble(4))
+    {
+        painter->setOpacity(0.3);
+        painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX(), spr->gety()+offset, 30, 30), QPixmap(basePath + color + "_l.png"));
+        painter->drawPixmap(QRect(spr->getx()-spr->getOffsetX()-10, spr->gety()+offset, 30, 30), QPixmap(basePath + color + "_r.png"));
+        for (int i = 30; i < spr->getwidth()-30; i += 20)
+            painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()+i, spr->gety()+offset, 20, 30), QPixmap(basePath + color + "_m.png"));
+        painter->setOpacity(1);
+    }
+    else
+    {
+        painter->setOpacity(0.3);
+        for (int i = 0; i < spr->getNybble(7); i++)
+            painter->drawPixmap(QRect(spr->getx(), spr->gety()-offset-20+((i+2)*20), 20, 30), QPixmap(basePath + "stem.png"));
+        painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX(), spr->gety()-offset, 30, 30), QPixmap(basePath + color + "_l.png"));
+        painter->drawPixmap(QRect(spr->getx()-spr->getOffsetX()-10, spr->gety()-offset, 30, 30), QPixmap(basePath + color + "_r.png"));
+        for (int i = 30; i < spr->getwidth()-30; i += 20)
+            painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()+i, spr->gety()-offset, 20, 30), QPixmap(basePath + color + "_m.png"));
+        painter->setOpacity(1);
+    }
 }
 
 // Sprite 123: Bouncy Mushroom

@@ -335,6 +335,7 @@ public:
 protected:
     const Sprite *spr;
     QString basePath;
+    int offset = 0;
 };
 
 // Sprite 123: Boucny Mushroom
