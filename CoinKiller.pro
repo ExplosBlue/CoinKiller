@@ -3,7 +3,7 @@
 # Project created by QtCreator 2015-08-15T21:23:38
 #
 #-------------------------------------------------
-
+RC_FILE = myapp.rc
 QT       += core gui\
             xml\
             network
