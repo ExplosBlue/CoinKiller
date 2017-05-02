@@ -1217,6 +1217,12 @@ void Sprite::setRect()
             offsety = -4;
         }
         break;
+    case 242: // Whirlpool
+        width = 200;
+        height = 150;
+        offsetx = -90;
+        offsety = -110;
+        break;
     case 244: // Chain Chomp
         width = 63;
         height = 63;

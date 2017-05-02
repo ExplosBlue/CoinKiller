@@ -496,6 +496,9 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
     case 240: // Urchin
         ret = new UrchinRenderer(spr);
         break;
+    case 242: // Whirlpool
+        ret = new NormalImageRenderer(spr, basePath + "whirlpool.png");
+        break;
     case 244: // Chain Chomp
         ret = new ChainChompRenderer(spr);
         break;
