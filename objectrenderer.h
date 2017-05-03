@@ -552,6 +552,31 @@ protected:
     int sideOffset = 0;
 };
 
+// Sprite 194: Cheep Cheep
+class CheepCheepRenderer: public SpriteRenderer
+{
+public:
+    CheepCheepRenderer(const Sprite *spr, QString basePath);
+    void render(QPainter *painter, QRect *drawrect);
+protected:
+    const Sprite *spr;
+    QString basePath;
+    QString filename;
+    NormalImageRenderer *img;
+};
+
+// Sprite 195: Big Cheep Cheep
+class BigCheepRenderer: public SpriteRenderer
+{
+public:
+    BigCheepRenderer(const Sprite *spr, QString basePath);
+    void render(QPainter *painter, QRect *drawrect);
+protected:
+    const Sprite *spr;
+    QString basePath;
+    NormalImageRenderer *img;
+};
+
 // Sprite 213: Pokey
 class PokeyRenderer: public SpriteRenderer
 {

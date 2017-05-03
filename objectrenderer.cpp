@@ -410,10 +410,10 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
         ret = new RecLiftRenderer(spr, basePath + "underwater_rectangle_lift/");
         break;
     case 194: // Cheep Cheep
-        ret = new NormalImageRenderer(spr, basePath + "cheep_cheep.png");
+        ret = new CheepCheepRenderer(spr, basePath + "cheep_cheep");
         break;
     case 195: // Big Cheep Cheep
-        ret = new NormalImageRenderer(spr, basePath + "big_cheep_cheep.png");
+        ret = new BigCheepRenderer(spr, basePath);
         break;
     case 200: // Spiny Cheep Cheep
         ret = new NormalImageRenderer(spr, basePath + "spiny_cheep_cheep.png");
@@ -1645,6 +1645,43 @@ KoopaParatroopaRenderer::KoopaParatroopaRenderer(const Sprite *spr)
 }
 
 void KoopaParatroopaRenderer::render(QPainter *painter, QRect *drawrect)
+{
+    img->render(painter, drawrect);
+}
+
+// Sprite 194: Cheep Cheep
+CheepCheepRenderer::CheepCheepRenderer(const Sprite *spr, QString basePath)
+{
+    this->spr = spr;
+    this->basePath =basePath;
+
+    switch (spr->getNybble(5))
+    {
+        case 1: filename = "_green"; break;
+        case 3: case 4: case 6: case 7: filename = "_right"; break;
+        case 8: filename = "_orange"; break;
+        default: filename = ""; break;
+    }
+
+    img = new NormalImageRenderer(spr, basePath + filename + ".png");
+}
+void CheepCheepRenderer::render(QPainter *painter, QRect *drawrect)
+{
+    img->render(painter, drawrect);
+}
+
+// Sprite 195: Big Cheep Cheep
+BigCheepRenderer::BigCheepRenderer(const Sprite *spr, QString basePath)
+{
+    this->spr = spr;
+    this->basePath = basePath;
+
+    if (spr->getNybble(5) == 1)
+        img = new NormalImageRenderer(spr, basePath + "big_cheep_cheep_green.png");
+    else
+        img = new NormalImageRenderer(spr, basePath + "big_cheep_cheep.png");
+}
+void BigCheepRenderer::render(QPainter *painter, QRect *drawrect)
 {
     img->render(painter, drawrect);
 }

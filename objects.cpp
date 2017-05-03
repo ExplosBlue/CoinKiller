@@ -1072,14 +1072,29 @@ void Sprite::setRect()
         }
         break;
     case 194: // Cheep Cheep
-        width = 22;
-        height = 21;
-        offsety = -3;
+        if(getNybble(5) == 1 || getNybble(5) == 8)
+        {
+            width = 24;
+            offsetx = -3;
+        }
+        else
+            width = 22;
+        height = 20;
         break;
     case 195: // Big Cheep Cheep
-        width = 60;
-        height = 56;
-        offsety = -5;
+        if(getNybble(5) == 1)
+        {
+            width = 62;
+            height = 58;
+            offsety = -7;
+            offsetx = 2;
+        }
+        else
+        {
+            width = 60;
+            height = 56;
+            offsety = -5;
+        }
         break;
     case 200: // Spiny Cheep Cheep
         width = 20;
