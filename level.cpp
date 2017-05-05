@@ -411,7 +411,7 @@ void Level::save()
         {
             foreach (Sprite* spr, sprites)
             {
-                if (getNextZoneID(spr) == i)
+                if (getNextZoneID(spr) == zones[i]->getid())
                 {
                     sprites.removeOne(spr);
                     sortedSprites.append(spr);
