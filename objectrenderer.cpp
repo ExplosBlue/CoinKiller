@@ -1,5 +1,6 @@
 #include "objectrenderer.h"
 #include "objects.h"
+#include "imagecache.h"
 
 #include <QPainter>
 
@@ -7,41 +8,39 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
 {
     this->spr = spr;
 
-    QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/");
-
     switch (spr->getid()) {
     case 3: // Cheep Chomp
-        ret = new NormalImageRenderer(spr, basePath + "cheep_chomp.png");
+        ret = new NormalImageRenderer(spr, "cheep_chomp.png");
         break;
     case 4: // Burner Right
-        ret = new BurnerRenderer(spr, basePath + "burner_right");
+        ret = new BurnerRenderer(spr, "burner_right");
         break;
     case 5: // Burner Down
-        ret = new BurnerRenderer(spr, basePath + "burner_down");
+        ret = new BurnerRenderer(spr, "burner_down");
         break;
     case 6: // Burner Left
-        ret = new BurnerRenderer(spr, basePath + "burner_left");
+        ret = new BurnerRenderer(spr, "burner_left");
         break;
     case 7: // Burner Up
-        ret = new BurnerRenderer(spr, basePath + "burner_up");
+        ret = new BurnerRenderer(spr, "burner_up");
         break;
     case 8: // Swoop
-        ret = new NormalImageRenderer(spr, basePath + "swoop.png");
+        ret = new NormalImageRenderer(spr, "swoop.png");
         break;
     case 9: // Whomp
-        ret = new NormalImageRenderer(spr, basePath + "whomp.png");
+        ret = new NormalImageRenderer(spr, "whomp.png");
         break;
     case 18: // Tile God
         ret = new TileGodRenderer(spr, tilesets[0]);
         break;
     case 19: // Desert Crater
-        ret = new NormalImageRenderer(spr, basePath + "desert_crater.png");
+        ret = new NormalImageRenderer(spr, "desert_crater.png");
         break;
     case 20: // Gold Block
-        ret = new NormalImageRenderer(spr, basePath + "gold_block.png");
+        ret = new NormalImageRenderer(spr, "gold_block.png");
         break;
     case 21: // Note Block
-        ret = new NormalImageRenderer(spr, basePath + "note_block.png");
+        ret = new NormalImageRenderer(spr, "note_block.png");
         break;
     case 22: // Special Exit Controller
         ret = new SpecialExitControllerRenderer(spr);
@@ -50,25 +49,25 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
         ret = new RouletteBlockRenderer(spr);
         break;
     case 27: // POW Block
-        ret = new NormalImageRenderer(spr, basePath + "pow_block.png");
+        ret = new NormalImageRenderer(spr, "pow_block.png");
         break;
     case 28: // Movement Controlled POW Block
-        ret = new MovementSpriteRenderer(spr, basePath +"pow_block.png");
+        ret = new MovementSpriteRenderer(spr, "pow_block.png");
         break;
     case 29: // Bob-omb
-        ret = new NormalImageRenderer(spr, basePath + "bob-omb.png");
+        ret = new NormalImageRenderer(spr, "bob-omb.png");
         break;
     case 31: // Boomerang Bro.
-        ret = new NormalImageRenderer(spr, basePath + "boomerang_bro.png");
+        ret = new NormalImageRenderer(spr, "boomerang_bro.png");
         break;
     case 32: // Fire Bro.
-        ret = new NormalImageRenderer(spr, basePath + "fire_bro.png");
+        ret = new NormalImageRenderer(spr, "fire_bro.png");
         break;
     case 33: // Hammer Bro.
-        ret = new NormalImageRenderer(spr, basePath + "hammer_bro.png");
+        ret = new NormalImageRenderer(spr, "hammer_bro.png");
         break;
     case 35: // Lava Bubble
-        ret = new NormalImageRenderer(spr, basePath + "lava_bubble.png");
+        ret = new NormalImageRenderer(spr, "lava_bubble.png");
         break;
     case 38: // Reznor Wheel
         ret = new ReznorWheelRenderer(spr);
@@ -77,100 +76,100 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
         ret = new ReznorBlockRenderer(spr);
         break;
     case 40: // ! Burner Right
-        ret = new BurnerRenderer(spr, basePath + "!burner_right");
+        ret = new BurnerRenderer(spr, "!burner_right");
         break;
     case 41: // ! Burner Down
-        ret = new BurnerRenderer(spr, basePath + "!burner_down");
+        ret = new BurnerRenderer(spr, "!burner_down");
         break;
     case 42: // ! Burner Left
-        ret = new BurnerRenderer(spr, basePath + "!burner_left");
+        ret = new BurnerRenderer(spr, "!burner_left");
         break;
     case 43: // ! Burner Up
-        ret = new BurnerRenderer(spr, basePath + "!burner_up");
+        ret = new BurnerRenderer(spr, "!burner_up");
         break;
     case 44: // Track-controlled Burner - Four Directions
-        ret = new FourBurnerRenderer(spr, basePath + "four_track_controlled_burner/");
+        ret = new FourBurnerRenderer(spr, "four_track_controlled_burner/");
         break;
     case 45: // Track Controlled Burner Right
-        ret = new BurnerRenderer(spr, basePath + "track_burner_right");
+        ret = new BurnerRenderer(spr, "track_burner_right");
         break;
     case 46: // Track Controlled Burner Down
-        ret = new BurnerRenderer(spr, basePath + "track_burner_down");
+        ret = new BurnerRenderer(spr, "track_burner_down");
         break;
     case 47: // Track Controlled Burner Left
-        ret = new BurnerRenderer(spr, basePath + "track_burner_left");
+        ret = new BurnerRenderer(spr, "track_burner_left");
         break;
     case 48: // Track Controlled Burner Up
-        ret = new BurnerRenderer(spr, basePath + "track_burner_up");
+        ret = new BurnerRenderer(spr, "track_burner_up");
         break;
     case 51: // Fuzzy
         ret = new FuzzyRenderer(spr);
         break;
     case 52: // Checkpoint Flag
-        ret = new NormalImageRenderer(spr, basePath + "checkpoint_flag.png");
+        ret = new NormalImageRenderer(spr, "checkpoint_flag.png");
         break;
     case 55: // Coin
-        ret = new NormalImageRenderer(spr, basePath + "coin.png");
+        ret = new NormalImageRenderer(spr, "coin.png");
         break;
     case 56: // Coin Bubble
-        ret = new NormalImageRenderer(spr, basePath + "coin_bubble.png");
+        ret = new NormalImageRenderer(spr, "coin_bubble.png");
         break;
     case 59: // Rotation Controlled Coin
-        ret = new RotationSpriteRenderer(spr, basePath + "coin.png");
+        ret = new RotationSpriteRenderer(spr, "coin.png");
         break;
     case 60: // Movement Controlled Coin
-        ret = new MovementSpriteRenderer(spr, basePath + "coin.png");
+        ret = new MovementSpriteRenderer(spr, "coin.png");
         break;
     case 61: // Red Coin
-        ret = new RedCoinRenderer(spr, basePath + "red_coin.png");
+        ret = new RedCoinRenderer(spr, "red_coin.png");
         break;
     case 62: // Rotation Controlled Red Coin
-        ret = new RotationSpriteRenderer(spr, basePath + "red_coin.png");
+        ret = new RotationSpriteRenderer(spr, "red_coin.png");
         break;
     case 63: // Skewer Left
-        ret = new NormalImageRenderer(spr, basePath + "skewer_left.png");
+        ret = new NormalImageRenderer(spr, "skewer_left.png");
         break;
     case 64: // Skewer Right
-        ret = new NormalImageRenderer(spr, basePath + "skewer_right.png");
+        ret = new NormalImageRenderer(spr, "skewer_right.png");
         break;
     case 66: // Pipe Cannon
-        ret = new NormalImageRenderer(spr, basePath + "pipe_cannon.png");
+        ret = new NormalImageRenderer(spr, "pipe_cannon.png");
         break;
     case 67: // Pipe Cannon - Ludwig Bossfight
-        ret = new NormalImageRenderer(spr, basePath + "pipe_cannon_ludwig.png");
+        ret = new NormalImageRenderer(spr, "pipe_cannon_ludwig.png");
         break;
     case 69: // Door
-        ret = new NormalImageRenderer(spr, basePath + "door.png");
+        ret = new NormalImageRenderer(spr, "door.png");
         break;
     case 70: // Castle Boss Door
-        ret = new NormalImageRenderer(spr, basePath + "door_castle.png");
+        ret = new NormalImageRenderer(spr, "door_castle.png");
         break;
     case 71: // Closed Door
-        ret = new NormalImageRenderer(spr, basePath + "door_closed.png");
+        ret = new NormalImageRenderer(spr, "door_closed.png");
         break;
     case 72: // Final Boss Door
-        ret = new NormalImageRenderer(spr, basePath + "door_final_boss.png");
+        ret = new NormalImageRenderer(spr, "door_final_boss.png");
         break;
     case 73: // Ghost House Door
-        ret = new NormalImageRenderer(spr, basePath + "door_ghosthouse.png");
+        ret = new NormalImageRenderer(spr, "door_ghosthouse.png");
         break;
     case 75: // Tower Boss Door
-        ret = new NormalImageRenderer(spr, basePath + "door_tower.png");
+        ret = new NormalImageRenderer(spr, "door_tower.png");
         break;
     case 76: // Big Thwomp
-        ret = new NormalImageRenderer(spr, basePath + "big_thwomp.png");
+        ret = new NormalImageRenderer(spr, "big_thwomp.png");
         break;
     case 77: // Thwomp
-        ret = new NormalImageRenderer(spr, basePath + "thwomp.png");
+        ret = new NormalImageRenderer(spr, "thwomp.png");
         break;
     case 78: // Fire Bar
-        ret = new FireBarRenderer(spr, basePath);
+        ret = new FireBarRenderer(spr);
         break;
     case 81: // Fireball Pipe - ! Junction
-        ret = new NormalImageRenderer(spr, basePath + "fireballpipe_junction.png");
+        ret = new NormalImageRenderer(spr, "fireballpipe_junction.png");
         break;
     case 83: // Fish Bone
-        ret = new NormalImageRenderer(spr, basePath + "fish_bone.png");
+        ret = new NormalImageRenderer(spr, "fish_bone.png");
         break;
     case 84: // Flag Controller - Chainer
         ret = new FlagRenderer(spr);
@@ -188,49 +187,49 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
         ret = new FlagRenderer(spr);
         break;
     case 89: // porcupuffer
-        ret = new NormalImageRenderer(spr, basePath + "porcupuffer.png");
+        ret = new NormalImageRenderer(spr, "porcupuffer.png");
         break;
     case 92: // Grinder
-        ret = new NormalImageRenderer(spr, basePath + "grinder.png");
+        ret = new NormalImageRenderer(spr, "grinder.png");
         break;
     case 94: // Flipper (One way gate)
         ret = new FlipperRenderer(spr);
         break;
     case 93: // Scuttlebug
-        ret = new NormalImageRenderer(spr, basePath + "scuttlebug.png");
+        ret = new NormalImageRenderer(spr, "scuttlebug.png");
         break;
     case 95: // Blooper
-        ret = new NormalImageRenderer(spr, basePath + "blooper.png");
+        ret = new NormalImageRenderer(spr, "blooper.png");
         break;
     case 97: // End of Level Flag
         ret = new GoalRenderer(spr);
         break;
     case 99: // Wiggler
-        ret = new NormalImageRenderer(spr, basePath + "wiggler.png");
+        ret = new NormalImageRenderer(spr, "wiggler.png");
         break;
     case 100: // Rotation Controlled ? Block
-        ret = new ItemBlockRenderer(spr, basePath + "question_block");
+        ret = new ItemBlockRenderer(spr, "question_block");
         break;
     case 101: // Movement Controlled ? Block
-        ret = new ItemBlockRenderer(spr, basePath + "question_block");
+        ret = new ItemBlockRenderer(spr, "question_block");
         break;
     case 106: // Trampoline
-        ret = new NormalImageRenderer(spr, basePath + "trampoline.png");
+        ret = new NormalImageRenderer(spr, "trampoline.png");
         break;
     case 107: // Path Controlled Climbable Fence
         ret = new PathContFenceRenderer(spr);
         break;
     case 108: // Spider Web
-        ret = new NormalImageRenderer(spr, basePath + "spider_web.png");
+        ret = new NormalImageRenderer(spr, "spider_web.png");
         break;
     case 109: // Signboard
         ret = new SignboardRenderer(spr);
         break;
     case 110: // Dry Bones
-        ret = new NormalImageRenderer(spr, basePath + "dry_bones.png");
+        ret = new NormalImageRenderer(spr, "dry_bones.png");
         break;
     case 111: // Giant Dry Bones
-        ret = new NormalImageRenderer(spr, basePath + "giant_dry_bones.png");
+        ret = new NormalImageRenderer(spr, "giant_dry_bones.png");
         break;
     case 114: // Floating Box
         ret = new FloatingBoxRenderer(spr);
@@ -239,7 +238,7 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
         ret = new BulletBillLauncherRenderer(spr);
         break;
     case 117: // Banzai Bill Launcher
-        ret = new NormalImageRenderer(spr, basePath + "banzai_bill_launcher.png");
+        ret = new NormalImageRenderer(spr, "banzai_bill_launcher.png");
         break;
     case 118: // Bullet Bill
         ret = new BulletBillRenderer(spr);
@@ -248,31 +247,31 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
         ret = new BanzaiBillRenderer(spr);
         break;
     case 120: // Up Down Mushroom
-        ret = new UpDownMushroomRenderer(spr, basePath + "up_down_mushroom/");
+        ret = new UpDownMushroomRenderer(spr, "up_down_mushroom/");
         break;
     case 123: // Bouncy Mushroom
         ret = new BouncyMushroomRenderer(spr);
         break;
     case 124: // Mushroom Platform
-        ret = new MushroomPlatformRenderer(spr, basePath + "mushroom_platform/");
+        ret = new MushroomPlatformRenderer(spr, "mushroom_platform/");
         break;
     case 125: // Bowser
-        ret = new NormalImageRenderer(spr, basePath + "bowser.png");
+        ret = new NormalImageRenderer(spr, "bowser.png");
         break;
     case 127: // Bowser Flame
         ret = new BowserFlameRenderer(spr);
         break;
     case 128: // Dry Bowser
-        ret = new NormalImageRenderer(spr, basePath + "dry_bowser.png");
+        ret = new NormalImageRenderer(spr, "dry_bowser.png");
         break;
     case 132: // Bowser Battle Lift and Switch Controller
-        ret = new NormalImageRenderer(spr, basePath + "bowser_switch.png");
+        ret = new NormalImageRenderer(spr, "bowser_switch.png");
         break;
     case 133: // Bowser Shutter
-        ret = new NormalImageRenderer(spr, basePath + "bowser_shutter.png");
+        ret = new NormalImageRenderer(spr, "bowser_shutter.png");
         break;
     case 134: // Bowser Bridge
-        ret = new NormalImageRenderer(spr, basePath + "bowser_bridge.png");
+        ret = new NormalImageRenderer(spr, "bowser_bridge.png");
         break;
     case 135: // Goomba
         ret = new GoombaRenderer(spr);
@@ -281,49 +280,49 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
         ret = new BoneGoombaRenderer(spr);
         break;
     case 137: // Micro Goomba
-        ret = new NormalImageRenderer(spr, basePath + "micro_goomba.png");
+        ret = new NormalImageRenderer(spr, "micro_goomba.png");
         break;
     case 138: // Paragoomba
-        ret = new NormalImageRenderer(spr, basePath + "paragoomba.png");
+        ret = new NormalImageRenderer(spr, "paragoomba.png");
         break;
     case 139: // Goomba Tower
         ret = new GoombaTowerRenderer(spr);
         break;
     case 140: // Crowber
-        ret = new NormalImageRenderer(spr, basePath + "crowber.png");
+        ret = new NormalImageRenderer(spr, "crowber.png");
         break;
     case 143: // Conveyor Belt Switch
-        ret = new NormalImageRenderer(spr, basePath + "conveyor_belt_switch.png");
+        ret = new NormalImageRenderer(spr, "conveyor_belt_switch.png");
         break;
     case 144: // Horizontal Lift
-        ret = new LiftRenderer(spr, basePath + "lift_platform/");
+        ret = new LiftRenderer(spr, "lift_platform/");
         break;
     case 145: // Vertical Lift
-        ret = new LiftRenderer(spr, basePath + "lift_platform/");
+        ret = new LiftRenderer(spr, "lift_platform/");
         break;
     case 146: // Track Controlled Lift
-        ret = new TrackLiftRenderer(spr, basePath + "track_controlled_lift/");
+        ret = new TrackLiftRenderer(spr, "track_controlled_lift/");
         break;
     case 147: // 3 Plat rickshaw
         ret = new ThreePlatRickRenderer(spr);
         break;
     case 148: //Move While On Lift
-        ret = new NormalImageRenderer(spr, basePath + "move_while_on_lift.png");
+        ret = new NormalImageRenderer(spr, "move_while_on_lift.png");
         break;
     case 149: // Changeable Direction Platform
-        ret = new NormalImageRenderer(spr, basePath + "change_direction_platofrm.png");
+        ret = new NormalImageRenderer(spr, "change_direction_platofrm.png");
         break;
     case 150: // Seesaw Lift
-        ret = new NormalImageRenderer(spr, basePath + "seesaw_lift.png");
+        ret = new NormalImageRenderer(spr, "seesaw_lift.png");
         break;
     case 151: // Scale Lift
-        ret = new ScalePlatformRenderer(spr, basePath + "scale_lift/");
+        ret = new ScalePlatformRenderer(spr, "scale_lift/");
         break;
     case 154: // 3 Plat rickshaw
         ret = new FourPlatRickRenderer(spr);
         break;
     case 158: // Buzzy Beetle
-        ret = new SpinyRenderer(spr, basePath + "buzzy_beetle");
+        ret = new SpinyRenderer(spr, "buzzy_beetle");
         break;
     case 159: // Spike Top
         ret = new SpikeTopRenderer(spr);
@@ -338,265 +337,265 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
         ret = new KoopaTroopaRenderer(spr);
         break;
     case 167: // Pipe Piranha Plant - Down
-        ret = new NormalImageRenderer(spr, basePath + "piranha_pipe_down.png");
+        ret = new NormalImageRenderer(spr, "piranha_pipe_down.png");
         break;
     case 168: // Fire Pipe Piranha Plant - Down
-        ret = new NormalImageRenderer(spr, basePath + "piranha_fire_pipe_down.png");
+        ret = new NormalImageRenderer(spr, "piranha_fire_pipe_down.png");
         break;
     case 169: // Pipe Piranha Plant - Left
-        ret = new NormalImageRenderer(spr, basePath + "piranha_fire_pipe_left.png");
+        ret = new NormalImageRenderer(spr, "piranha_fire_pipe_left.png");
         break;
     case 170: // Pipe Piranha Plant - Right
-        ret = new NormalImageRenderer(spr, basePath + "piranha_fire_pipe_right.png");
+        ret = new NormalImageRenderer(spr, "piranha_fire_pipe_right.png");
         break;
     case 171: // Pipe Piranha Plant - Up
-        ret = new NormalImageRenderer(spr, basePath + "piranha_fire_pipe_up.png");
+        ret = new NormalImageRenderer(spr, "piranha_fire_pipe_up.png");
         break;
     case 172: // Pipe bone Piranha Plant - Up
-        ret = new NormalImageRenderer(spr, basePath + "bone_piranha_pipe_up.png");
+        ret = new NormalImageRenderer(spr, "bone_piranha_pipe_up.png");
         break;
     case 173: // Pipe Bone Piranha Plant - Left
-        ret = new NormalImageRenderer(spr, basePath + "bone_piranha_pipe_left.png");
+        ret = new NormalImageRenderer(spr, "bone_piranha_pipe_left.png");
         break;
     case 174: // Pipe Bone Piranha Plant - Right
-        ret = new NormalImageRenderer(spr, basePath + "bone_piranha_pipe_right.png");
+        ret = new NormalImageRenderer(spr, "bone_piranha_pipe_right.png");
         break;
     case 175: // Grounded Piranha Plant
-        ret = new PlantRenderer(spr, basePath + "piranha_plant.png");
+        ret = new PlantRenderer(spr, "piranha_plant.png");
         break;
     case 176: // Big Grounded Pirahna Plant
-        ret = new PlantRenderer(spr, basePath + "big_piranha_plant.png");
+        ret = new PlantRenderer(spr, "big_piranha_plant.png");
         break;
     case 177: // Grounded Fire Piranha Plant
-        ret = new PlantRenderer(spr, basePath + "fire_piranha_plant.png");
+        ret = new PlantRenderer(spr, "fire_piranha_plant.png");
         break;
     case 178: // Big Grounded Fire Pirahna Plant
-        ret = new PlantRenderer(spr, basePath + "big_fire_piranha_plant.png");
+        ret = new PlantRenderer(spr, "big_fire_piranha_plant.png");
         break;
     case 179: // Grounded Bone Piranha Plant
-        ret = new PlantRenderer(spr, basePath + "bone_piranha_plant.png");
+        ret = new PlantRenderer(spr, "bone_piranha_plant.png");
         break;
     case 180: // Big Grounded Bone Pirahna Plant
-        ret = new PlantRenderer(spr, basePath + "big_bone_piranha_plant.png");
+        ret = new PlantRenderer(spr, "big_bone_piranha_plant.png");
         break;
     case 181: // Pipe Piranha Plant - Left
-        ret = new NormalImageRenderer(spr, basePath + "piranha_pipe_left.png");
+        ret = new NormalImageRenderer(spr, "piranha_pipe_left.png");
         break;
     case 182: // Pipe Piranha Plant - Right
-        ret = new NormalImageRenderer(spr, basePath + "piranha_pipe_right.png");
+        ret = new NormalImageRenderer(spr, "piranha_pipe_right.png");
         break;
     case 183: // Pipe Piranha Plant - Up
-        ret = new NormalImageRenderer(spr, basePath + "piranha_pipe_up.png");
+        ret = new NormalImageRenderer(spr, "piranha_pipe_up.png");
         break;
     case 184: // Parabomb
-        ret = new NormalImageRenderer(spr, basePath + "parabomb.png");
+        ret = new NormalImageRenderer(spr, "parabomb.png");
         break;
     case 185: // Koopa Paratroopa
         ret = new KoopaParatroopaRenderer(spr);
         break;
     case 189: // Rectangle Lift - Tower
-        ret = new RecLiftRenderer(spr, basePath + "tower_rectangle_lift/");
+        ret = new RecLiftRenderer(spr, "tower_rectangle_lift/");
         break;
     case 190: // Rectangle Lift - Ghosthouse (Checkered)
-        ret = new RecLiftRenderer(spr, basePath + "checkered_rectangle_lift/");
+        ret = new RecLiftRenderer(spr, "checkered_rectangle_lift/");
         break;
     case 191: // Rectangle Lift - Desert
-        ret = new RecLiftRenderer(spr, basePath + "desert_rectangle_lift/");
+        ret = new RecLiftRenderer(spr, "desert_rectangle_lift/");
         break;
     case 192: // Rectangle Lift - Castle
-        ret = new RecLiftRenderer(spr, basePath + "castle_rectangle_lift/");
+        ret = new RecLiftRenderer(spr, "castle_rectangle_lift/");
         break;
     case 193: // Rectangle Lift - Underwater
-        ret = new RecLiftRenderer(spr, basePath + "underwater_rectangle_lift/");
+        ret = new RecLiftRenderer(spr, "underwater_rectangle_lift/");
         break;
     case 194: // Cheep Cheep
-        ret = new CheepCheepRenderer(spr, basePath + "cheep_cheep");
+        ret = new CheepCheepRenderer(spr, "cheep_cheep");
         break;
     case 195: // Big Cheep Cheep
-        ret = new BigCheepRenderer(spr, basePath);
+        ret = new BigCheepRenderer(spr);
         break;
     case 200: // Spiny Cheep Cheep
-        ret = new NormalImageRenderer(spr, basePath + "spiny_cheep_cheep.png");
+        ret = new NormalImageRenderer(spr, "spiny_cheep_cheep.png");
         break;
     case 203: // Rotation Controlled Brick Block
-        ret = new ItemBlockRenderer(spr, basePath + "brick_block");
+        ret = new ItemBlockRenderer(spr, "brick_block");
         break;
     case 204: // Movement Controlled Brick Block
-        ret = new ItemBlockRenderer(spr, basePath + "brick_block");
+        ret = new ItemBlockRenderer(spr, "brick_block");
         break;
     case 205: // Red Ring
-        ret = new NormalImageRenderer(spr, basePath + "red_ring.png");
+        ret = new NormalImageRenderer(spr, "red_ring.png");
         break;
     case 206: // Gold Ring
-        ret = new NormalImageRenderer(spr, basePath + "gold_ring.png");
+        ret = new NormalImageRenderer(spr, "gold_ring.png");
         break;
     case 211: // Roy Koopa
-        ret = new NormalImageRenderer(spr, basePath + "boss_roy.png");
+        ret = new NormalImageRenderer(spr, "boss_roy.png");
         break;
     case 212: // Roy Battle Walls
-        ret = new NormalImageRenderer(spr, basePath + "roy_wall.png");
+        ret = new NormalImageRenderer(spr, "roy_wall.png");
         break;
     case 213: // Pokey
-        ret = new PokeyRenderer(spr, basePath);
+        ret = new PokeyRenderer(spr);
         break;
     case 215: // Bob-omb Cannon
         ret = new BobOmbCannonRenderer(spr);
         break;
     case 216: // Boss Shutter
-        ret = new NormalImageRenderer(spr, basePath + "boss_shutter.png");
+        ret = new NormalImageRenderer(spr, "boss_shutter.png");
         break;
     case 219: // Star Coin
-        ret = new NormalImageRenderer(spr, basePath + "star_coin.png");
+        ret = new NormalImageRenderer(spr, "star_coin.png");
         break;
     case 220: // Rotation Controlled Star Coin
-        ret = new RotationSpriteRenderer(spr, basePath + "star_coin.png");
+        ret = new RotationSpriteRenderer(spr, "star_coin.png");
         break;
     case 221: // ! Switch
-        ret = new SwitchRenderer(spr, basePath + "exclamation_switch.png");
+        ret = new SwitchRenderer(spr, "exclamation_switch.png");
         break;
     case 222: // Brick Block Contaning ! Switch
-        ret = new NormalImageRenderer(spr, basePath + "brick_block_exclamation_switch.png");
+        ret = new NormalImageRenderer(spr, "brick_block_exclamation_switch.png");
         break;
     case 223: // ? Switch
-        ret = new SwitchRenderer(spr, basePath + "question_switch.png");
+        ret = new SwitchRenderer(spr, "question_switch.png");
         break;
     case 224: // Brick Block Contaning ? Switch
-        ret = new NormalImageRenderer(spr, basePath + "brick_block_question_switch.png");
+        ret = new NormalImageRenderer(spr, "brick_block_question_switch.png");
         break;
     case 225: // P Switch
-        ret = new SwitchRenderer(spr, basePath + "p_switch.png");
+        ret = new SwitchRenderer(spr, "p_switch.png");
         break;
     case 226: // Brick Block Contaning P Switch
-        ret = new NormalImageRenderer(spr, basePath + "brick_block_p_switch.png");
+        ret = new NormalImageRenderer(spr, "brick_block_p_switch.png");
         break;
     case 227: // Floating Barrel
-        ret = new NormalImageRenderer(spr, basePath + "barrel.png");
+        ret = new NormalImageRenderer(spr, "barrel.png");
         break;
     case 228: // Boo
-        ret = new NormalImageRenderer(spr, basePath + "boo.png");
+        ret = new NormalImageRenderer(spr, "boo.png");
         break;
     case 229: // Big Boo
-        ret = new NormalImageRenderer(spr, basePath + "big_boo.png");
+        ret = new NormalImageRenderer(spr, "big_boo.png");
         break;
     case 232: // Spiny
-        ret = new SpinyRenderer(spr, basePath + "spiny");
+        ret = new SpinyRenderer(spr, "spiny");
         break;
     case 233: // Celing Spiny
-        ret = new NormalImageRenderer(spr, basePath + "spiny_ceiling.png");
+        ret = new NormalImageRenderer(spr, "spiny_ceiling.png");
         break;
     case 234: // Spiked Ball
-        ret = new NormalImageRenderer(spr, basePath + "spiked_ball.png");
+        ret = new NormalImageRenderer(spr, "spiked_ball.png");
         break;
     case 235: // Big Spiked Ball
-        ret = new NormalImageRenderer(spr, basePath + "big_spiked_ball.png");
+        ret = new NormalImageRenderer(spr, "big_spiked_ball.png");
         break;
     case 236: // Mega Spiked Ball
-        ret = new NormalImageRenderer(spr, basePath + "mega_spiked_ball.png");
+        ret = new NormalImageRenderer(spr, "mega_spiked_ball.png");
         break;
     case 240: // Urchin
         ret = new UrchinRenderer(spr);
         break;
     case 242: // Whirlpool
-        ret = new NormalImageRenderer(spr, basePath + "whirlpool.png");
+        ret = new NormalImageRenderer(spr, "whirlpool.png");
         break;
     case 244: // Chain Chomp
         ret = new ChainChompRenderer(spr);
         break;
     case 251: // Treasure Chest
-        ret = new NormalImageRenderer(spr, basePath + "treasure_chest.png");
+        ret = new NormalImageRenderer(spr, "treasure_chest.png");
         break;
     case 253: // Larry Battle Platform
-        ret = new LarryPlatformRenderer(spr, basePath);
+        ret = new LarryPlatformRenderer(spr);
         break;
     case 255: // Bowser Head Statue
-        ret = new NormalImageRenderer(spr, basePath + "bowser_head_statue.png");
+        ret = new NormalImageRenderer(spr, "bowser_head_statue.png");
         break;
     case 259: // Rotation Controlled Hard Block
         ret = new HardBlockRenderer(spr);
         break;
     case 260: // Tower Cutscene Roy
-        ret = new NormalImageRenderer(spr, basePath + "roy_cutscene.png");
+        ret = new NormalImageRenderer(spr, "roy_cutscene.png");
         break;
     case 261: // Tower Cutscene Iggy
-        ret = new NormalImageRenderer(spr, basePath + "iggy_cutscene.png");
+        ret = new NormalImageRenderer(spr, "iggy_cutscene.png");
         break;
     case 262: // Tower Cutscene Wendy
-        ret = new NormalImageRenderer(spr, basePath + "wendy_cutscene.png");
+        ret = new NormalImageRenderer(spr, "wendy_cutscene.png");
         break;
     case 263: // Tower Cutscene Morton
-        ret = new NormalImageRenderer(spr, basePath + "morton_cutscene.png");
+        ret = new NormalImageRenderer(spr, "morton_cutscene.png");
         break;
     case 264: // Tower Cutscene Ludwig
-        ret = new NormalImageRenderer(spr, basePath + "ludwig_cutscene.png");
+        ret = new NormalImageRenderer(spr, "ludwig_cutscene.png");
         break;
     case 265: // Tower Cutscene No koopa
-        ret = new NormalImageRenderer(spr, basePath + "tower_cutscene.png");
+        ret = new NormalImageRenderer(spr, "tower_cutscene.png");
         break;
     case 267: // Long Question Block
-        ret = new ItemBlockRenderer(spr, basePath + "long_question_block.png");
+        ret = new ItemBlockRenderer(spr, "long_question_block.png");
         break;
     case 269: // Gold Ship
-        ret = new NormalImageRenderer(spr, basePath + "gold_ship.png");
+        ret = new NormalImageRenderer(spr, "gold_ship.png");
         break;
     case 270: // Icy Spiked Ball
-        ret = new NormalImageRenderer(spr, basePath + "icy_spiked_ball.png");
+        ret = new NormalImageRenderer(spr, "icy_spiked_ball.png");
         break;
     case 272: // Peach Cage
-        ret = new NormalImageRenderer(spr, basePath + "peach_cage.png");
+        ret = new NormalImageRenderer(spr, "peach_cage.png");
         break;
     case 273: // Coin Roulette Block
-        ret = new NormalImageRenderer(spr, basePath + "coin_roulette_block.png");
+        ret = new NormalImageRenderer(spr, "coin_roulette_block.png");
         break;
     case 274: // Flying Gold Block Spawn Point
-        ret = new NormalImageRenderer(spr, basePath + "flying_gold_block.png");
+        ret = new NormalImageRenderer(spr, "flying_gold_block.png");
         break;
     case 275: // Long Question Block - Underground
-        ret = new ItemBlockRenderer(spr, basePath + "long_question_block_underground.png");
+        ret = new ItemBlockRenderer(spr, "long_question_block_underground.png");
         break;
     case 276: // Long Question Block - Lava
-        ret = new ItemBlockRenderer(spr, basePath + "long_question_block_lava.png");
+        ret = new ItemBlockRenderer(spr, "long_question_block_lava.png");
         break;
     case 277: // Switchable Conveyor Belt
-        ret = new NormalImageRenderer(spr, basePath + "switchable_conveyor_belt.png");
+        ret = new NormalImageRenderer(spr, "switchable_conveyor_belt.png");
         break;
     case 278: // Assist Block
-        ret = new NormalImageRenderer(spr, basePath + "assist_block.png");
+        ret = new NormalImageRenderer(spr, "assist_block.png");
         break;
     case 279: // Lemmy Ball
-        ret = new NormalImageRenderer(spr, basePath + "lemmy_ball.png");
+        ret = new NormalImageRenderer(spr, "lemmy_ball.png");
         break;
     case 280: // + Clock
         ret = new ClockRenderer(spr);
         break;
     case 281: // Rectangle Ice Lift
-        ret = new NormalImageRenderer(spr, basePath + "ice_lift_rectangle.png");
+        ret = new NormalImageRenderer(spr, "ice_lift_rectangle.png");
         break;
     case 287: // Toad House Door
-        ret = new NormalImageRenderer(spr, basePath + "door_toadhouse.png");
+        ret = new NormalImageRenderer(spr, "door_toadhouse.png");
         break;
     case 289: // Bouncy Mushroom Platform - Castle
-        ret = new NormalImageRenderer(spr, basePath + "bouncy_mushroom_castle.png");
+        ret = new NormalImageRenderer(spr, "bouncy_mushroom_castle.png");
         break;
     case 293: // Punching Glove
-        ret = new NormalImageRenderer(spr, basePath + "punching_glove.png");
+        ret = new NormalImageRenderer(spr, "punching_glove.png");
         break;
     case 294: // Warp Cannon
-        ret = new NormalImageRenderer(spr, basePath + "warp_cannon.png");
+        ret = new NormalImageRenderer(spr, "warp_cannon.png");
         break;
     case 296: // Toad
-        ret = new NormalImageRenderer(spr, basePath + "toad.png");
+        ret = new NormalImageRenderer(spr, "toad.png");
         break;
     case 297: // Horizontal Rail Controlled Fence
         ret = new RailContFenceRenderer(spr);
         break;
     case 302: // Moon Coin
-        ret = new NormalImageRenderer(spr, basePath + "moon_coin.png");
+        ret = new NormalImageRenderer(spr, "moon_coin.png");
         break;
     case 303: // Rotation Controlled Moon Coin
-        ret = new RotationSpriteRenderer(spr, basePath + "moon_coin.png");
+        ret = new RotationSpriteRenderer(spr, "moon_coin.png");
         break;
     case 305: // Path Controlled Ice Lift
-        ret = new NormalImageRenderer(spr, basePath + "ice_lift.png");
+        ret = new NormalImageRenderer(spr, "ice_lift.png");
         break;
     case 311: // Coin Meteor
         ret = new CoinMeteorRenderer(spr);
@@ -605,7 +604,7 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
         ret = new RuinsRickRenderer(spr);
         break;
     case 322: // Big Grinder
-        ret = new NormalImageRenderer(spr, basePath + "big_grinder.png");
+        ret = new NormalImageRenderer(spr, "big_grinder.png");
         break;
     default:
         ret = new RoundedRectRenderer(spr, QString("%1").arg(spr->getid()), QColor(0,90,150,150));
@@ -622,18 +621,18 @@ void SpriteRenderer::render(QPainter *painter, QRect *drawrect)
 NormalImageRenderer::NormalImageRenderer(const Object *obj, QString filename)
 {
     rect = QRect(obj->getx()+obj->getOffsetX(), obj->gety()+obj->getOffsetY(), obj->getwidth(), obj->getheight());
-    this->filename = filename;
+    this->name = filename;
 }
 
 NormalImageRenderer::NormalImageRenderer(QRect rect, QString filename)
 {
     this->rect = rect;
-    this->filename = filename;
+    this->name = filename;
 }
 
-void NormalImageRenderer::render(QPainter *painter, QRect *)
+void NormalImageRenderer::render(QPainter* painter, QRect *)
 {
-    painter->drawPixmap(rect, QPixmap(filename));
+    painter->drawPixmap(rect, ImageCache::getInstance()->get(SpriteImg, name));
 }
 
 
@@ -937,15 +936,14 @@ void RedCoinRenderer::render(QPainter *painter, QRect *drawrect)
 }
 
 // Sprite 78: Firebar
-FireBarRenderer::FireBarRenderer(const Sprite *spr, QString basePath)
+FireBarRenderer::FireBarRenderer(const Sprite *spr)
 {
     this->spr = spr;
-    this->basePath = basePath;
 
     size = (spr->getNybble(5)*40) + 20;
     posoff = (spr->getNybble(5)*20);
 
-    center = new NormalImageRenderer(spr, basePath + "firebar_center.png");
+    center = new NormalImageRenderer(spr, "firebar_center.png");
     radius = new CircleRenderer(spr->getx()-posoff, spr->gety()-posoff, size, size, "", QColor(0,0,0));
 
 }
@@ -956,65 +954,49 @@ void FireBarRenderer::render(QPainter *painter, QRect *drawrect)
     if(spr->getNybble(5) > 0)
         radius->render(painter, drawrect);
 
-    switch (spr->getNybble(4))
-    {
-        case 5: amount = "6"; break;
-        case 6: amount = "7"; break;
-        case 7: amount = "8"; break;
-        case 8: amount = "9"; break;
-        case 9: amount = "10"; break;
-        case 10: amount = "11"; break;
-        case 11: amount = "12"; break;
-        case 12: amount = "13"; break;
-        case 13: amount = "14"; break;
-        case 14: amount = "15"; break;
-        case 15: amount = "16"; break;
-        default: amount = "5"; break;
-    }
-
     //Center flame
-    painter->drawPixmap(QRect(spr->getx(), spr->gety(), 20, 20), QPixmap(basePath + "firebar_fire.png"));
+    painter->drawPixmap(QRect(spr->getx(), spr->gety(), 20, 20), ImageCache::getInstance()->get(SpriteImg, "firebar_fire.png"));
 
     //Right side bar
     if ((spr->getNybble(4) == 0) || (spr->getNybble(4) == 1) || (spr->getNybble(4) == 3))
     {
         for (int i = 0; i < spr->getNybble(5); i++)
-            painter->drawPixmap(QRect(spr->getx()+20+i*20, spr->gety(), 20, 20), QPixmap(basePath + "firebar_fire.png"));
+            painter->drawPixmap(QRect(spr->getx()+20+i*20, spr->gety(), 20, 20), ImageCache::getInstance()->get(SpriteImg, "firebar_fire.png"));
     }
     //Left side bar
     if ((spr->getNybble(4) == 1) ||(spr->getNybble(4) == 3))
     {
         for (int i = 0; i < spr->getNybble(5); i++)
-            painter->drawPixmap(QRect(spr->getx()-20-i*20, spr->gety(), 20, 20), QPixmap(basePath + "firebar_fire.png"));
+            painter->drawPixmap(QRect(spr->getx()-20-i*20, spr->gety(), 20, 20), ImageCache::getInstance()->get(SpriteImg, "firebar_fire.png"));
     }
     //Top bar
     if ((spr->getNybble(4) == 2) || (spr->getNybble(4) == 3))
     {
         for (int i = 0; i < spr->getNybble(5); i++)
-            painter->drawPixmap(QRect(spr->getx(), spr->gety()-20-i*20, 20, 20), QPixmap(basePath + "firebar_fire.png"));
+            painter->drawPixmap(QRect(spr->getx(), spr->gety()-20-i*20, 20, 20), ImageCache::getInstance()->get(SpriteImg, "firebar_fire.png"));
     }
     //Bottom bar
     if ((spr->getNybble(4) == 3))
     {
         for (int i = 0; i < spr->getNybble(5); i++)
-            painter->drawPixmap(QRect(spr->getx(), spr->gety()+20+i*20, 20, 20), QPixmap(basePath + "firebar_fire.png"));
+            painter->drawPixmap(QRect(spr->getx(), spr->gety()+20+i*20, 20, 20), ImageCache::getInstance()->get(SpriteImg, "firebar_fire.png"));
     }
     //Bottom Left Bar
     if ((spr->getNybble(4) == 2))
     {
         for (int i = 0; i < spr->getNybble(5); i++)
-            painter->drawPixmap(QRect(spr->getx()-15-i*15, spr->gety()+15+i*15, 20, 20), QPixmap(basePath + "firebar_fire.png"));
+            painter->drawPixmap(QRect(spr->getx()-15-i*15, spr->gety()+15+i*15, 20, 20), ImageCache::getInstance()->get(SpriteImg, "firebar_fire.png"));
     }
     //Bottom Right Bar
     if ((spr->getNybble(4) == 2))
     {
         for (int i = 0; i < spr->getNybble(5); i++)
-            painter->drawPixmap(QRect(spr->getx()+15+i*15, spr->gety()+15+i*15, 20, 20), QPixmap(basePath + "firebar_fire.png"));
+            painter->drawPixmap(QRect(spr->getx()+15+i*15, spr->gety()+15+i*15, 20, 20), ImageCache::getInstance()->get(SpriteImg, "firebar_fire.png"));
     }
     if(spr->getNybble(4) >= 4)
     {
         painter->setFont(QFont("Arial", 8, QFont::Bold));
-        painter->drawText(QRect(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), 20, 20), amount, Qt::AlignHCenter | Qt::AlignVCenter);
+        painter->drawText(QRect(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), 20, 20), QString::number(spr->getNybble(4) + 1), Qt::AlignHCenter | Qt::AlignVCenter);
     }
 
 }
@@ -1671,33 +1653,31 @@ void CheepCheepRenderer::render(QPainter *painter, QRect *drawrect)
 }
 
 // Sprite 195: Big Cheep Cheep
-BigCheepRenderer::BigCheepRenderer(const Sprite *spr, QString basePath)
+BigCheepRenderer::BigCheepRenderer(const Sprite *spr)
 {
-    this->spr = spr;
-    this->basePath = basePath;
-
     if (spr->getNybble(5) == 1)
-        img = new NormalImageRenderer(spr, basePath + "big_cheep_cheep_green.png");
+        img = new NormalImageRenderer(spr, "big_cheep_cheep_green.png");
     else
-        img = new NormalImageRenderer(spr, basePath + "big_cheep_cheep.png");
+        img = new NormalImageRenderer(spr, "big_cheep_cheep.png");
 }
+
 void BigCheepRenderer::render(QPainter *painter, QRect *drawrect)
 {
     img->render(painter, drawrect);
 }
 
 // Sprite 213: Pokey
-PokeyRenderer::PokeyRenderer(const Sprite *spr, QString basePath)
+PokeyRenderer::PokeyRenderer(const Sprite *spr)
 {
     this->spr = spr;
-    this->basePath = basePath;
 }
+
 void PokeyRenderer::render(QPainter *painter, QRect *)
 {
-    painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX(),spr->gety()+spr->getOffsetY(), 33, 33), QPixmap(basePath + "pokey_top.png"));
+    painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX(),spr->gety()+spr->getOffsetY(), 33, 33), ImageCache::getInstance()->get(SpriteImg, "pokey_top.png"));
     for(int i = 0; i < spr->getNybble(5)+1; i++)
-        painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX(),spr->gety()+spr->getOffsetY()+32+(i*22), 33, 22), QPixmap(basePath + "pokey_mid.png"));
-        painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX(),spr->gety()+spr->getOffsetY()+54+(spr->getNybble(5)*22), 33, 24), QPixmap(basePath + "pokey_bot.png"));
+        painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX(),spr->gety()+spr->getOffsetY()+32+(i*22), 33, 22), ImageCache::getInstance()->get(SpriteImg, "pokey_mid.png"));
+    painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX(),spr->gety()+spr->getOffsetY()+54+(spr->getNybble(5)*22), 33, 24), ImageCache::getInstance()->get(SpriteImg, "pokey_bot.png"));
 }
 
 // Sprite 221/223/225: Switches
@@ -1870,18 +1850,19 @@ void ItemBlockRenderer::render(QPainter *painter, QRect *drawrect)
 }
 
 // Sprite 253: Larry Battle Platform
-LarryPlatformRenderer::LarryPlatformRenderer(const Sprite *spr, QString basePath)
+LarryPlatformRenderer::LarryPlatformRenderer(const Sprite *spr)
 {
     this->spr = spr;
-    this->basePath = basePath;
 }
+
 void LarryPlatformRenderer::render(QPainter *painter, QRect *)
 {
-    if (spr->getNybble(10) == 0)
-        painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), 20, 10, QPixmap(basePath + "larry_platform.png"));
-    else
-        for (int i=0; i<spr->getNybble(10); i++)
-            painter->drawPixmap(spr->getx()+spr->getOffsetX()+i*20, spr->gety()+spr->getOffsetY(), 20, 10, QPixmap(basePath + "larry_platform.png"));
+    int b_width = spr->getNybble(10);
+    if (b_width < 1)
+        b_width = 1;
+
+    for (int i=0; i < b_width; i++)
+        painter->drawPixmap(spr->getx()+spr->getOffsetX()+i*20, spr->gety()+spr->getOffsetY(), 20, 10, ImageCache::getInstance()->get(SpriteImg, "larry_platform.png"));
 }
 
 // Sprite 259: Rotation Controlled hard Block
@@ -2076,7 +2057,7 @@ void LiquidRenderer::render(QPainter *painter, QRect *drawrect)
 
     currY += top.height();
 
-    for (currY; currY < zone->gety() + zone->getheight(); currY += base.height())
+    for (; currY < zone->gety() + zone->getheight(); currY += base.height())
     {
         for (int x = zone->getx(); x < zone->getx() + zone->getwidth(); x += base.width())
         {

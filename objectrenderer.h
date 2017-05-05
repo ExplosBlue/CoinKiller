@@ -42,12 +42,12 @@ protected:
 class NormalImageRenderer: public ObjectRenderer
 {
 public:
-    NormalImageRenderer(const Object *obj, QString filename);
-    NormalImageRenderer(QRect rect, QString filename);
+    NormalImageRenderer(const Object *obj, QString name);
+    NormalImageRenderer(QRect rect, QString name);
     void render(QPainter *painter, QRect *drawrect);
 protected:
     QRect rect;
-    QString filename;
+    QString name;
 };
 
 class RoundedRectRenderer: public ObjectRenderer
@@ -215,16 +215,14 @@ protected:
 class FireBarRenderer: public ObjectRenderer
 {
 public:
-    FireBarRenderer(const Sprite *spr, QString basePath);
+    FireBarRenderer(const Sprite *spr);
     void render(QPainter *painter, QRect *drawrect);
 protected:
     const Sprite* spr;
-    QString basePath;
     NormalImageRenderer *center;
     CircleRenderer *radius;
     int size;
     int posoff;
-    QString amount;
 };
 
 // Sprites 84/85/86/87/88: Flags
@@ -569,11 +567,9 @@ protected:
 class BigCheepRenderer: public SpriteRenderer
 {
 public:
-    BigCheepRenderer(const Sprite *spr, QString basePath);
+    BigCheepRenderer(const Sprite *spr);
     void render(QPainter *painter, QRect *drawrect);
 protected:
-    const Sprite *spr;
-    QString basePath;
     NormalImageRenderer *img;
 };
 
@@ -581,11 +577,10 @@ protected:
 class PokeyRenderer: public SpriteRenderer
 {
 public:
-    PokeyRenderer(const Sprite *spr, QString basePath);
+    PokeyRenderer(const Sprite *spr);
     void render(QPainter *painter, QRect *drawrect);
 protected:
     const Sprite *spr;
-    QString basePath;
 };
 
 // Sprite 215: Bob-omb Cannon
@@ -656,11 +651,10 @@ protected:
 class LarryPlatformRenderer: public ObjectRenderer
 {
 public:
-    LarryPlatformRenderer(const Sprite *spr, QString basePath);
+    LarryPlatformRenderer(const Sprite *spr);
     void render(QPainter *painter, QRect *drawrect);
 protected:
     const Sprite *spr;
-    QString basePath;
 };
 
 // Sprite 259: Rotation Controlled Hard Block

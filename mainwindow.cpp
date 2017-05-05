@@ -31,6 +31,8 @@
 
 #include "filesystem.h"
 
+#include "imagecache.h"
+
 #include "leveleditorwindow.h"
 #include "tileseteditorwindow.h"
 #include "sarcexplorerwindow.h"
@@ -58,6 +60,8 @@ MainWindow::MainWindow(QWidget *parent) :
     QCoreApplication::setApplicationName("CoinKiller");
     settings = SettingsManager::init(this);
 
+    ImageCache::init();
+
     loadTranslations();
     settings->setupLanguageSelector(ui->languageSelector);
     setGameLoaded(false);
@@ -71,6 +75,9 @@ MainWindow::~MainWindow()
     {
         if (gameLoaded)
             delete game;
+
+        delete ImageCache::getInstance();
+        delete SettingsManager::getInstance();
     }
     delete ui;
 }
