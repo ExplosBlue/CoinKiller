@@ -1,61 +1,75 @@
-<?xml version="1.0"?>
+﻿<?xml version="1.0"?>
 <sprites>
   <sprite id="0" name="Autoscrolling Controller" notes="Actor: 0x1a5">
-    <value nybble="1-2" title="Triggering Flag ID" comment="_Not tested_,"/>
-    <value nybble="6" title="Path ID" comment="_Tested_."/>
+    <value nybble="1-2" title="Triggering Event ID"/>
+    <value nybble="5" title="Unknown Value 5"/>
+    <value nybble="6" title="Path ID"/>
+    <value nybble="7-8" title="Unused Value 7-8"/>
+    <value nybble="9" title="Unknown Value 9"/>
     <value nybble="10" title="Unknown Value 10"/>
+    <value nybble="11" title="Unknown Value 11"/>
+    <value nybble="12" title="Unknown Value 12"/>
+    <value nybble="13-14" title="Unknown Value 13-14"/>
+    <value nybble="15" title="Unknown Value 15"/>
+    <value nybble="16" title="Unknown Value 16"/>
   </sprite>
-  <sprite id="1" name="Water Flow for Pipe" notes="Actor: 0x056">
-    <value nybble="1-2" title="Triggering Flag" comment="Turns off when this flag is activated. _Not tested_,"/>
+  <sprite id="1" name="Water Flow for Pipe">
+    <value nybble="1-2" title="Disabling Flag" comment="Turns off while the specified flag is activated."/>
+    <list nybble="6" title="Orientation" comment="Which way the pipe its placed on is facing.">
+      <entry value="0">Pipe Up</entry>
+      <entry value="1">Pipe Down</entry>
+      <entry value="2">Pipe Right</entry>
+      <entry value="3">Pipe Left</entry>
+    </list>
   </sprite>
-  <sprite id="2" name="Bubble Particle Spawner" notes="Actor: 0x058">
+  <sprite id="2" name="Downwards Water Pull" notes="Actor: 0x058">
     <value nybble="6" title="Unknown Value 6" comment="Unknown."/>
     <list nybble="11" title="Size" comment="When 1 or above the size is always 5 blocks.">
       <entry value="0">10 blocks</entry>
       <entry value="1">5 blocks</entry>
     </list>
   </sprite>
-  <sprite id="3" name="Cheep Chomp" notes="Actor: 0x13d">
-    <value nybble="2" title="Unknown 2"/>
-    <value nybble="11" title="Unknown 11"/>
-    <value nybble="12" title="Unknown 12"/>
-  </sprite>
+  <sprite id="3" name="Cheep Chomp" notes="Actor: 0x13d"/>
   <sprite id="4" name="Burner - Right" notes="A burner that spits out a fire that faces right.&#13;&#10;Actor: 0x05c">
     <checkbox nybble="5" title="Longer Flame" comment="Makes the fire longer."/>
     <checkbox nybble="11" title="Pauses" comment="When checked, the burner does not stay on constantly."/>
   </sprite>
-  <sprite id="5" name="Burner - Down" notes="Actor: 0x05f&#13;&#10;Sprite has additional data present in stage 7-5 A2, this data is unused.">
+  <sprite id="5" name="Burner - Down" notes="Actor: 0x05f">
     <checkbox nybble="5" title="Longer Flame" comment="Makes the fire longer."/>
     <checkbox nybble="11" title="Pauses" comment="When checked, the burner does not stay on constantly."/>
   </sprite>
   <sprite id="6" name="Burner - Left" notes="Actor: 0x05d">
-    <checkbox nybble="11" title="Pauses" comment="When checked, the burner does not stay on constantly."/>
     <checkbox nybble="5" title="Longer Flame" comment="Makes the fire longer."/>
+    <checkbox nybble="11" title="Pauses" comment="When checked, the burner does not stay on constantly."/>
   </sprite>
   <sprite id="7" name="Burner - Up" notes="Actor: 0x05e">
-    <value nybble="14" title="Unknown Value 14"/>
     <checkbox nybble="5" title="Longer Flame" comment="Makes the fire longer."/>
     <checkbox nybble="11" title="Pauses" comment="When checked, the burner does not stay on constantly."/>
     <value nybble="12" title="Pause Time" comment="Incremetaly increases how long the burner pauses for. (Requires Nybble 11 to have a value of 1))"/>
+    <value nybble="14" title="Unknown Value 14"/>
   </sprite>
-  <sprite id="8" name="Swoop (Swooper)" notes="Actor: 0x100&#13;&#10;Existing In-Game Sprite Data: Incomplete."/>
+  <sprite id="8" name="Swooper" notes="Actor: 0x100&#13;&#10;Existing In-Game Sprite Data in final-sprite-table levels: ????&#13;&#10;&#13;&#10;This enemy flies towards Mario when activated.">
+    <list nybble="6" title="Behavior" comment="Used in coin rush level 14-1">
+      <entry value="0">Flies when close</entry>
+      <entry value="1">Flies when directly under</entry>
+    </list>
+  </sprite>
   <sprite id="9" name="Whomp" notes="Actor: 0x0c5">
-    <value nybble="1-2" title="Flag" comment="_Not tested_."/>
     <list nybble="5" title="Movement" comment="Controls if the Whomp walks or not.">
       <entry value="0">Walks</entry>
       <entry value="1">Still</entry>
     </list>
-    <checkbox nybble="6" title="Big" comment="_Ttested_. Also increases amount of coins, if Object is is set to Coins."/>
-    <value nybble="9" title="Roulette Block Content" comment="_Not tested_."/>
-    <list nybble="10" title="Object" comment="If Movement = Walks, this object appears when the Whomp is KO'd. If Movement = Still, it is appeared when the Whomp is down. _Not tested_. ]">
+    <checkbox nybble="6" title="Big" comment="Also increases amount of coins, if Object is is set to Coins."/>
+    <value nybble="9" title="Roulette Block Content"/>
+    <list nybble="10" title="Object" comment="If Movement = Walks, this object appears when the Whomp is KO'd. If Movement = Still, it is appeared when the Whomp is down.">
       <entry value="0">Nothing</entry>
       <entry value="1">Roulette Block</entry>
-      <entry value="2">Unknown</entry>
+      <entry value="2">Star Coin (Unused)</entry>
       <entry value="3">Red Coin Ring</entry>
       <entry value="4">Coins</entry>
       <entry value="5">Moon Coin</entry>
     </list>
-    <list nybble="12" title="Moon Coin Number" comment="_Not tested_.">
+    <list nybble="12" title="Star/Moon Coin Number">
       <entry value="0">One</entry>
       <entry value="1">Two</entry>
       <entry value="2">Three</entry>
@@ -65,36 +79,41 @@
     <value nybble="1-2" title="Triggering Flag"/>
   </sprite>
   <sprite id="11" name="Water Flow" notes="Actor: 0x057">
-    <value nybble="1-2" title="Triggering Flag" comment="Turns off when this flag ID is activated. _Not tested_,"/>
-    <list nybble="6" title="Direction" comment="_Not tested_,">
-      <entry value="0">Up?</entry>
-      <entry value="1">Down?</entry>
+    <value nybble="1-2" title="Triggering ID" comment="What ID triggers the flow turning off."/>
+    <value nybble="5" title="Unknown Value 5"/>
+    <list nybble="6" title="Direction" comment="The direction of the water flow.">
+      <entry value="0">Down</entry>
+      <entry value="1">Up</entry>
       <entry value="2">Right</entry>
       <entry value="3">Left</entry>
     </list>
-    <value nybble="12" title="Location ID"/>
+    <value nybble="11-12" title="Location ID" comment="What location the water flow should be in."/>
   </sprite>
   <sprite id="12" name="Lava" notes="Actor: 0x040">
-    <value nybble="1-2" title="Triggering Flag" comment="_Not tested_."/>
+    <value nybble="1-2" title="Triggering Value ID"/>
+    <value nybble="3-4" title="Target Value ID"/>
+    <value nybble="7-8" title="Raise Distance"/>
+    <checkbox nybble="10" title="Moves"/>
   </sprite>
   <sprite id="13" name="Poison Water" notes="Actor: 0x041">
     <value nybble="1-2" title="Triggering Flag" comment="_Not tested_."/>
+    <value nybble="7" title="Rising Height" comment="In blocks."/>
+    <checkbox nybble="8" title="Moves" comment="Allows the posion water to move up and/or down."/>
     <value nybble="9-10" title="Rising Delay" comment="In milliseconds."/>
     <value nybble="11-12" title="Lowering Delay" comment="In milliseconds."/>
-    <checkbox nybble="8" title="Rising" comment="Allows the posion water to rise."/>
-    <value nybble="7" title="Rising Height" comment="In blocks."/>
   </sprite>
   <sprite id="14" name="Cloud FG Effect" notes="Notes: Creates an horizontal line of clouds.&#13;&#10;Actor: 0x042&#13;&#10;Existing In-Game Sprite Data: Inaccurate."/>
   <sprite id="15" name="Water" notes="Actor: 0x03f">
-    <value nybble="1-2" title="Triggering Flag" comment="_Not tested_."/>
-    <value nybble="6" title="Unknown Value 6"/>
-    <value nybble="7" title="Raise Distance" comment="In blocks"/>
-    <value nybble="4" title="Unknown Value 4"/>
-    <value nybble="9-10" title="Duration to stay at low point" comment="In milliseconds"/>
-    <value nybble="11-12" title="Duration to stay at high point" comment="In milliseconds"/>
-    <value nybble="8" title="Unknown Value 8"/>
+    <value nybble="1-2" title="Triggering Flag"/>
+    <value nybble="4" title="Unknown 4"/>
+    <value nybble="7" title="Raise Distance" comment="In blocks."/>
+    <value nybble="9" title="Duration to stay at low point" comment="In seconds."/>
+    <checkbox nybble="10" title="Fills up entire screen" comment="Makes water fill up the entire screen."/>
+    <value nybble="11" title="Duration to stay at high point" comment="In seconds."/>
   </sprite>
-  <sprite id="16" name="Amp" notes="Actor: 0x131"/>
+  <sprite id="16" name="Amp" notes="Actor: 0x131">
+    <checkbox nybble="5" title="Shift 1/2 Block Right" comment="Useless."/>
+  </sprite>
   <sprite id="17" name="Rotating Amp Controller (spawns Amp/s)" notes="Actor: 0x133">
     <value nybble="5" title="Unknown Value 5" comment="..."/>
     <value nybble="6" title="Unknown Value 6" comment="..."/>
@@ -105,11 +124,9 @@
     <value nybble="14" title="Unknown Value 14" comment="..."/>
   </sprite>
   <sprite id="18" name="Tile Creater/Destroyer (Tile God Event)" notes="Actor: 0x1b2">
-    <checkbox nybble="6" title="&quot;Poof&quot; Effect" comment="_Tested_"/>
-    <value nybble="1-2" title="Triggering Flag" comment="_Tested_,"/>
-    <value nybble="14" title="Height" comment="_Tested_, 0 = 1, but otherwise as expected."/>
-    <value nybble="16" title="Width" comment="_Tested_, 0 = 1, but otherwise as expected."/>
-    <list nybble="7" title="Tile" comment="_Tested_,">
+    <value nybble="1-2" title="Triggering Flag ID"/>
+    <checkbox nybble="6" title="&quot;Poof&quot; Effect"/>
+    <list nybble="7" title="Tile">
       <entry value="0">Red Block</entry>
       <entry value="1">Brick Block</entry>
       <entry value="2">Coin</entry>
@@ -123,33 +140,67 @@
       <entry value="10">Horizontal Mini Pipe Center</entry>
       <entry value="11">Left-facing/Right-facing [which?] Horizontal Green Pipe - Bottom Left</entry>
     </list>
-    <list nybble="8" title="Action" comment="_Tested_,">
+    <list nybble="8" title="Action">
       <entry value="0">Destroy</entry>
       <entry value="1">Create</entry>
     </list>
+    <checkbox nybble="11" title="Effect Never Expires"/>
+    <value nybble="14" title="Height" comment="0 or 1 = 1 block"/>
+    <value nybble="16" title="Width" comment="0 or 1 = 1 block"/>
+    <value nybble="18" title="Size or shape related? 18"/>
+    <value nybble="20" title="Size or shape related? 20"/>
   </sprite>
   <sprite id="19" name="Desert Crater" notes="Notes:&#13;&#10;todo:&#13;&#10;* Can it be triggered by anything else (e.g. spike ball)?&#13;&#10;Actor: 0x0b9">
-    <value nybble="1-2" title="Target Flag ID" comment="Switches on when exploded by a Bob-omb. _Tested_"/>
+    <value nybble="1-2" title="Target Flag ID" comment="Switches on when exploded by a Bob-omb."/>
   </sprite>
-  <sprite id="20" name="Gold Block" notes="Actor: 0x0b5&#13;&#10;Existing In-Game Sprite Data:  Used in 10-1 A1, 10-2 A1, 10-2 A2, 14-3 A1, 15-3 A2, 16-1 A1, 16-1 A1, 17-1 A1, 17-1 A1, 17-1 A1, 17-1 A1, 17-3 A2, 18-3 A2, 3-9 A1, 3-9 A1, 3-9 A1, 3-9 A1, 8-3 A1, 8-3 A1">
-    <list nybble="5" title="Unknown Nybble 5" comment="_Needs further testing_.">
+  <sprite id="20" name="Gold Block" notes="Actor: 0x0b5">
+    <list nybble="5" title="Settings" comment="_Needs further testing_.">
       <entry value="0">Normal</entry>
       <entry value="1">Spouting Coins</entry>
     </list>
   </sprite>
-  <sprite id="21" name="Note Block"/>
+  <sprite id="21" name="Note Block">
+    <checkbox nybble="5" title="Unused Checkbox 5 [Depricated]" comment="No idea what this does, leaves behind one bit."/>
+    <value nybble="8" title="Unknown Value 8" comment="Max value is 0x0F."/>
+    <list nybble="14" title="Item" comment="The item is only spawned if the block is hit from below.">
+      <entry value="0">None</entry>
+      <entry value="1">Coin</entry>
+      <entry value="2">Fire Flower</entry>
+      <entry value="3">None</entry>
+      <entry value="4">Tanooki Leaf</entry>
+      <entry value="5">Gold Flower</entry>
+      <entry value="6">Mini Mushroom</entry>
+      <entry value="7">Star</entry>
+      <entry value="8">Star if invincible</entry>
+      <entry value="9">???</entry>
+      <entry value="10">Multi Coin Block</entry>
+      <entry value="11">1-UP</entry>
+      <entry value="12">None</entry>
+      <entry value="13">Springboard</entry>
+      <entry value="14">Mushroom if small</entry>
+      <entry value="15">None</entry>
+    </list>
+    <value nybble="21-22" title="Movement ID [Depricated]" comment="Doesn't work at all."/>
+  </sprite>
   <sprite id="22" name="Special Exit Controller (Warp Entrance)" notes="Actor: 0x1b0">
+    <value nybble="1-2" title="Triggering Flag ID" comment="Broken; Mario gets stuck if after touching warp area if this is set to &gt;0, even if flag is/gets activated."/>
     <value nybble="5" title="Height" comment=" "/>
     <value nybble="6" title="Entrance" comment="The actor warps Mario to the destination of this entrance."/>
     <value nybble="8" title="Width"/>
+    <list nybble="10" title="Required Player Movement">
+      <entry value="0">None</entry>
+      <entry value="1">On vine</entry>
+      <entry value="2">Unknown 2</entry>
+      <entry value="3">Flying from Pipe Cannon</entry>
+      <entry value="4">Standing</entry>
+    </list>
+    <value nybble="11" title="Unknown 11"/>
     <list nybble="12" title="Mario Movement" comment="4=Mario jumps while saying &quot;wahee&quot; and the level is completed with the normal exit. With this, the Entrance ID doesn't matter.">
       <entry value="0">Normal</entry>
       <entry value="4">Cannon end</entry>
       <entry value="8">Walk right</entry>
       <entry value="12">Walk left</entry>
     </list>
-    <value nybble="10" title="Required Player Movement"/>
-    <value nybble="11" title="Unknown value 11"/>
   </sprite>
   <sprite id="23" name="Respawnable Hidden Block" notes="Notes: Like the NSMBDS actor&#13;&#10;Actor: 0x1b1">
     <value nybble="5" title="Unknown Value 5" comment="When set to 13 No block spawns. _Needs more testing_"/>
@@ -158,27 +209,43 @@
     <value nybble="10" title="Unknown Value 10"/>
   </sprite>
   <sprite id="24" name="Flying ? Block" notes="Actor: 0x0af">
-    <list nybble="5" title="Unknown Value 5" comment="Seems to repeat after 3. _Needs more testing_.">
-      <entry value="0">Far</entry>
+    <list nybble="5" title="Direction">
+      <entry value="0">Right</entry>
       <entry value="1">Short Back and Forth</entry>
       <entry value="2">Up and Down</entry>
       <entry value="3">Still</entry>
     </list>
-    <value nybble="6" title="Colour" comment="Repeats after 3. The &quot;hit&quot; graphics are yellow no matter what this is set to."/>
-    <value nybble="10" title="Unknown Value 10"/>
-    <value nybble="14" title="Contents" comment="10=&quot;Wings fall off&quot; effect plays every time block is hit. _Needs further testing_."/>
+    <value nybble="6" title="Colour" comment="The &quot;hit&quot; graphics are yellow no matter what this is set to."/>
+    <list nybble="14" title="Contents" comment="10=&quot;Wings fall off&quot; effect plays every time block is hit.">
+      <entry value="0">Unknown (appears to be nothing)</entry>
+      <entry value="1">Coin</entry>
+      <entry value="2">Super Mushroom if small and Fire Flower if big</entry>
+      <entry value="3">Same as 0?</entry>
+      <entry value="4">Super Mushroom if small and Super Leaf if big</entry>
+      <entry value="5">Gold Flower</entry>
+      <entry value="6">Mini Mushroom</entry>
+      <entry value="7">Super Star</entry>
+      <entry value="8">Coin if not invincible and Super Star if invincible</entry>
+      <entry value="9">Mega Mushroom</entry>
+      <entry value="10">Ten Coins</entry>
+      <entry value="11">1-Up Mushroom</entry>
+      <entry value="12">Same as 0?</entry>
+      <entry value="13">Trampoline</entry>
+      <entry value="14">Super Mushroom if small and coin if big</entry>
+      <entry value="15">Same as 0?</entry>
+    </list>
   </sprite>
   <sprite id="25" name="Fly Away ? Block (contains 1-Up)" notes="Actor: 0x0b4&#13;&#10;Existing In-Game Sprite Data:&#13;&#10;0000 0000 0000 0000 0000 0000    15-1 A1"/>
   <sprite id="26" name="Roulette Block" notes="Pops when touched by Mega Mario. The Actor Name has a spelling mistake.&#13;&#10;Actor: 0x06d">
-    <list nybble="14" title="Contents" comment="This powerup will be in-between the Super Mushroom (first item) and 1-Up Mushroom (last item). Values beyond 4 are unused or do not exist.">
+    <list nybble="14" title="Contents" comment="This powerup will be in-between the Super Mushroom (first item) and 1-Up Mushroom (last item). 3 is unused.">
       <entry value="0">Fire Flower and Star</entry>
       <entry value="1">Gold Flower and Super Leaf</entry>
       <entry value="2">Super Leaf and Star</entry>
-      <entry value="3">(Unused)</entry>
+      <entry value="3">Super Star</entry>
       <entry value="4">Fire Flower and Gold Flower</entry>
     </list>
   </sprite>
-  <sprite id="27" name="POW Block" notes="Pops when touched by Mega Mario.&#13;&#10;Contains no additional sprite data.&#13;&#10;Actor: 0x0b2"/>
+  <sprite id="27" name="POW Block" notes="Pops when touched by Mega Mario.&#13;&#10;Actor: 0x0b2"/>
   <sprite id="28" name="Movement-controlled POW Block" notes="Actor: 0x0b3">
     <value nybble="21-22" title="Movement ID" comment="..."/>
   </sprite>
@@ -198,43 +265,50 @@
   </sprite>
   <sprite id="31" name="Boomerang Bro." notes="Actor: 0x114"/>
   <sprite id="32" name="Fire Bro." notes="Actor: 0x115">
-    <value nybble="1-2" title="Triggering Flag" comment="Maybe defunct Gold Ring related ID?"/>
-    <value nybble="6" title="Unknown 6"/>
+    <value nybble="1-2" title="Defunct Gold Ring Flag" comment="Defunct Triggering Flag that was presumably required for Gold Ring functionality at one point."/>
   </sprite>
-  <sprite id="33" name="Hammer Bro." notes="Notes: Throws coins when gold.&#13;&#10;Actor: 0x113">
-    <value nybble="6" title="Unknown 6"/>
-    <value nybble="8" title="Unknown 8"/>
+  <sprite id="33" name="Hammer Bro." notes="Notes: Throws coins when gold.&#13;&#10;Actor: 0x113"/>
+  <sprite id="34" name="Sledge Bro.">
+    <value nybble="6" title="Unknown 6" comment="Used as 1 in 18-1 A2 &amp; A3"/>
+    <value nybble="20" title="Unknown 20" comment="Used as 1 in 18-1 A2"/>
   </sprite>
-  <sprite id="34" name="Sledge Bro."/>
   <sprite id="35" name="Lava Bubble" notes="Previously known as Podoboos.&#13;&#10;Actor: 0x137">
-    <value nybble="1-2" title="Flag"/>
     <value nybble="6" title="Time Between Jumps" comment="In seconds"/>
   </sprite>
   <sprite id="36" name="Arch-movement Lava Bubbles">
-    <value nybble="1-2" title="Flag"/>
-    <value nybble="6" title="Amount"/>
     <value nybble="7" title="Delay" comment="Delay between fire balls"/>
-    <value nybble="10" title="Unknown Value 10"/>
   </sprite>
-  <sprite id="37" name="Tower Boss Controller (Reznor Only)" notes="Notes: Judging by the name, this is an unused early version of sprite 265, or it is spawned by something.&#13;&#10;Actor: 0x023"/>
+  <sprite id="37" name="Tower Boss Controller (Reznor Only) [UNUSED]" notes="Notes: Judging by the name, this is an unused early version of sprite 265, or it is spawned by something.&#13;&#10;Actor: 0x023"/>
   <sprite id="38" name="Reznor Wheel" notes="Actor: 0x18f">
-    <value nybble="5" title="Unknown Nybble 5" comment="No visible change"/>
-    <list nybble="6" title="Amount &amp; Position" comment="When at 5, only one reznor seems to spawn if there is only a single wheel.">
-      <entry value="0">Soft Lock</entry>
-      <entry value="5">2 in Position 1</entry>
-      <entry value="10">2 in Position 2</entry>
-      <entry value="15">4 Reznors</entry>
+    <value nybble="5" title="Location ID" comment="Sets the location used to initialise the fight."/>
+    <list nybble="6" title="Amount &amp; Position" comment="Sets the amount and positions of the reznors.">
+      <entry value="0">None</entry>
+      <entry value="1">Top Right</entry>
+      <entry value="2">Top Left</entry>
+      <entry value="3">Top Left and Top Right</entry>
+      <entry value="4">Bottom Left</entry>
+      <entry value="5">Bottom Left and Top Right</entry>
+      <entry value="6">Top Left and Bottom Left</entry>
+      <entry value="7">Top Both and Bottom Left</entry>
+      <entry value="8">Bottom Right</entry>
+      <entry value="9">Top Right and Bottom Right</entry>
+      <entry value="10">Top Left and Bottom Right</entry>
+      <entry value="11">Both Top and Bottom Right</entry>
+      <entry value="12">Bottom Left and Bottom Right</entry>
+      <entry value="13">Both Bottom and Top Right</entry>
+      <entry value="14">Both Bottom and Top Left</entry>
+      <entry value="15">Both Bottom and Both Top</entry>
     </list>
-    <checkbox nybble="7" title="Big Wheel"/>
-    <value nybble="8" title="Unknown Nybble 8"/>
-    <checkbox nybble="10" title="Anti-clockwise" comment="Rotates anti-clockwise instead of clockwise."/>
+    <checkbox nybble="7" title="Big Wheel" comment="When checked, the reznor wheel will be a big reznor wheel."/>
+    <checkbox nybble="8" title="Less Frequent Fire" comment="When checked, reznor will breath fire less frequent."/>
+    <checkbox nybble="10" title="Counter-clockwise" comment="Rotates counter-clockwise instead of clockwise."/>
     <value nybble="14" title="Unknown Nybble 14"/>
   </sprite>
   <sprite id="39" name="Reznor Battle Disappearing Blocks" notes="Actor: 0x18e">
-    <value nybble="5" title="Length" comment="_Needs further testing_."/>
-    <list nybble="6" title="Side" comment="_Needs further testing_.">
-      <entry value="0">Left</entry>
-      <entry value="1">Right</entry>
+    <value nybble="5" title="Length" comment="Must be 1 or above, a value of 0 causes no sprite to be present."/>
+    <list nybble="6" title="Breaking Direction" comment="Sets the direction the platform with break in.">
+      <entry value="0">Right to Left</entry>
+      <entry value="1">Left to Right</entry>
     </list>
     <value nybble="8" title="Unknown Value 8"/>
   </sprite>
@@ -252,67 +326,97 @@
     <checkbox nybble="5" title="Long Flame"/>
     <value nybble="6" title="Unknown Value 6"/>
   </sprite>
-  <sprite id="44" name="Track-controlled Burner - Multiple Directions" notes="Actor: 0x068">
-    <value nybble="5" title="Unknown Value 5" comment="..."/>
-    <value nybble="6" title="Unknown Value 6" comment="..."/>
-    <value nybble="7" title="Unknown Value 7" comment="..."/>
-    <value nybble="9" title="Unknown Value 9" comment="..."/>
-    <value nybble="11" title="Unknown Value 11" comment="..."/>
+  <sprite id="44" name="Track-controlled Burner - Four Directions" notes="Actor: 0x068">
+    <checkbox nybble="5" title="Longer Flame" comment="When checked the flame will be longer."/>
+    <checkbox nybble="6" title="Not on a track" comment="Check this if the burner isn't placed on a track."/>
+    <list nybble="7" title="Speed" comment="All Values After 6 are repeated.">
+      <entry value="0">Normal</entry>
+      <entry value="1">Fast</entry>
+      <entry value="2">Faster</entry>
+      <entry value="3">Fastest</entry>
+      <entry value="4">Slowest</entry>
+      <entry value="5">Slower</entry>
+      <entry value="6">Slow</entry>
+    </list>
+    <list nybble="9" title="Flame Direction" comment="Changesthe direction flames will come from.">
+      <entry value="0">None</entry>
+      <entry value="1">Right</entry>
+      <entry value="2">Left</entry>
+      <entry value="3">Right and Left</entry>
+      <entry value="4">Up</entry>
+      <entry value="5">Up and Right</entry>
+      <entry value="6">Up and Left</entry>
+      <entry value="7">Up Left and Right</entry>
+      <entry value="8">Down</entry>
+      <entry value="9">Down and Right</entry>
+      <entry value="10">Down and Left</entry>
+      <entry value="11">Down Left and Right</entry>
+      <entry value="12">Up and Down</entry>
+      <entry value="13">Up Down and Right</entry>
+      <entry value="14">Up Down and Left</entry>
+      <entry value="15">All Four</entry>
+    </list>
+    <checkbox nybble="11" title="Pauses" comment="When checked, the flame will pause every 5 seconds."/>
   </sprite>
   <sprite id="45" name="Track-controlled Burner - Right" notes="Actor: 0x060">
-    <value nybble="5" title="Unknown Value 5" comment="..."/>
+    <checkbox nybble="5" title="Long flame??" comment="_not tested_"/>
     <value nybble="7" title="Unknown Value 7" comment="..."/>
     <value nybble="8" title="Unknown Value 8" comment="..."/>
   </sprite>
   <sprite id="46" name="Track-controlled Burner - Down" notes="Actor: 0x063">
-    <value nybble="5" title="Unknown Value 5" comment="Checkbox?"/>
+    <checkbox nybble="5" title="Long flame??" comment="Checkbox?"/>
     <value nybble="7" title="Unknown Value 7" comment="..."/>
     <value nybble="8" title="Unknown Value 8" comment="Checkbox?"/>
     <value nybble="11" title="Unknown Value 11" comment="Checkbox?"/>
   </sprite>
   <sprite id="47" name="Track-controlled Burner - Left" notes="Notes: It is left, like the Actor Name says.&#13;&#10;Actor: 0x061.">
-    <value nybble="5" title="Unknown Value 5" comment="..."/>
+    <checkbox nybble="5" title="Long flame??" comment="..."/>
     <value nybble="7" title="Unknown Value 7" comment="..."/>
     <value nybble="8" title="Unknown Value 8" comment="..."/>
   </sprite>
-  <sprite id="48" name="Track-controlled Burner - Down" notes="Actor: 0x062">
-    <value nybble="5" title="Unknown Value 5" comment="..."/>
+  <sprite id="48" name="Track-controlled Burner - Up" notes="Actor: 0x062">
+    <checkbox nybble="5" title="Long flame" comment="..."/>
     <value nybble="6" title="Unknown Value 6" comment="..."/>
     <value nybble="9" title="Unknown Value 9" comment="..."/>
     <value nybble="11" title="Unknown Value 11" comment="..."/>
+    <value nybble="20" title="Location ID"/>
   </sprite>
-  <sprite id="49" name="Ludwig von Koopa Battle - Chain" notes="Actor: 0x06c">
-    <value nybble="5" title="Swingable by Ludwig" comment="After he is hit twice."/>
-  </sprite>
-  <sprite id="50" name="Ludgwig Battle Chain Controller" notes="Actor: 0x06b">
-    <value nybble="5" title="Unknown Value 5" comment="..."/>
-    <value nybble="7" title="Unknown Value 7" comment="..."/>
-    <value nybble="8" title="Unknown Value 8" comment="..."/>
-    <value nybble="11" title="Unknown Value 11" comment="..."/>
-  </sprite>
+  <sprite id="49" name="Ludwig von Koopa Battle - Chain" notes="Actor: 0x06c"/>
+  <sprite id="50" name="Ludgwig Battle Chain Controller" notes="Actor: 0x06b"/>
   <sprite id="51" name="Fuzzy" notes="Nybbles 19-20 seem to be about speed or tracks.&#13;&#10;Actor: 0x149">
     <value nybble="1-2" title="Flag" comment="_Not tested_."/>
     <value nybble="5" title="Speed" comment="_Not tested_."/>
-    <checkbox nybble="6" title="Direction" comment="_Not tested_."/>
-    <checkbox nybble="8" title="Big" comment="_Not tested_."/>
+    <checkbox nybble="6" title="Move Clockwise" comment="Makes the fuzzy move clockwise."/>
+    <checkbox nybble="8" title="Big" comment="Makes the fuzzy bigger."/>
   </sprite>
-  <sprite id="52" name="Checkpoint Flag" notes="==Notes==&#13;&#10;Possible settings:&#13;&#10;* Face Left&#13;&#10;* Falls&#13;&#10;&#13;&#10;==Other Fields==&#13;&#10;Actor: 0x18a">
-    <value nybble="10" title="Entrance ID"/>
+  <sprite id="52" name="Checkpoint Flag" notes="==Other Fields==&#13;&#10;Actor: 0x18a">
+    <value nybble="6" title="Midway Point No." comment="For if you want more than one checkpoint."/>
+    <value nybble="8" title="Unknown 8"/>
+    <value nybble="9-10" title="Entrance ID"/>
   </sprite>
   <sprite id="53" name="Rotation Controller - Swaying" notes="Actor: 0x020">
-    <value nybble="1-2" title="Flag"/>
-    <value nybble="7" title="unknown 7"/>
-    <value nybble="8" title="unknown 8"/>
-    <value nybble="17" title="unknown 17"/>
-    <value nybble="18" title="unknown 18"/>
-    <value nybble="19" title="unknown 19"/>
-    <value nybble="21" title="unknown 21"/>
+    <value nybble="1-2" title="Triggering Flag ID"/>
+    <value nybble="7" title="Unknown 7"/>
+    <value nybble="8" title="Unknown 8"/>
+    <value nybble="17" title="Unknown 17"/>
+    <value nybble="18" title="Unknown 18"/>
+    <value nybble="19" title="Unknown 19"/>
+    <value nybble="21" title="Unknown 21"/>
     <value nybble="22" title="Rotation ID"/>
   </sprite>
   <sprite id="54" name="Rotation Controller - Spinning" notes="Actor: 0x01e">
     <value nybble="1-2" title="Triggering Flag"/>
     <checkbox nybble="7" title="Spin Clockwise"/>
-    <list nybble="12" title="Arc">
+    <list nybble="8" title="Effect" comment="1 seems to be same as 0. 3+ ditto or non-existent.">
+      <entry value="0">None</entry>
+      <entry value="2">Coin sound</entry>
+    </list>
+    <list nybble="10" title="Mode" comment="0 it completes rotation specified in Rotation Distance and goes back when event is switched off. 1 it spins constantly at the speed and direction set and when the event is switched on it slows down to a halt then reverses direction. 2 it rotates constantly while the event is on (playing the effect again and again). It is unknown what decides if it stops at the start or end rotation (e.g. if it stops at 0&#xB0;  or 180&#xB0;). 3 seems to be the same as 2.">
+      <entry value="0">Event Triggered</entry>
+      <entry value="1">Already Spinning</entry>
+      <entry value="2">Spinning while event is on</entry>
+    </list>
+    <list nybble="11" title="Starting Rotation" comment="No Starting Rotation at 0. Value that sets an initial Rotation for any controlled Sprite. Upon initial Rotation, it will shift the Sprite (arc * 11.25) degrees per Value. For Coins and Blocks the Starting Rotation Value is doubled, e.g. 4 = 180 degrees">
       <entry value="0">No Arc</entry>
       <entry value="1">22.5 degrees</entry>
       <entry value="2">45 degrees</entry>
@@ -330,8 +434,24 @@
       <entry value="14">315 degrees</entry>
       <entry value="15">337.5 degrees</entry>
     </list>
-    <value nybble="22" title="Rotation ID"/>
-    <value nybble="8" title="Unknown value 8"/>
+    <list nybble="12" title="Swing Arc (Rotation Distance)" comment="No swing arc at 0. Distance Value that sets how large its swing arc is. It will swing (arc * 11.25) degrees in each Direction per Value. Unlike the Starting Rotation and both rotations in NSMBW, the value doesn't seem to be doubled for coins and blocks.">
+      <entry value="0">No Arc</entry>
+      <entry value="1">22.5 degrees</entry>
+      <entry value="2">45 degrees</entry>
+      <entry value="3">67.5 degrees</entry>
+      <entry value="4">90 degrees</entry>
+      <entry value="5">112.5 degrees</entry>
+      <entry value="6">135 degrees</entry>
+      <entry value="7">157.5 degrees</entry>
+      <entry value="8">180 degrees</entry>
+      <entry value="9">202.5 degrees</entry>
+      <entry value="10">225 degrees</entry>
+      <entry value="11">247.5 degrees</entry>
+      <entry value="12">270 degrees</entry>
+      <entry value="13">292.5 degrees</entry>
+      <entry value="14">315 degrees</entry>
+      <entry value="15">337.5 degrees</entry>
+    </list>
     <list nybble="18" title="Speed of Rotation">
       <entry value="4">Slowest</entry>
       <entry value="7">Slower</entry>
@@ -342,16 +462,14 @@
       <entry value="5">Faster</entry>
       <entry value="6">Fastest</entry>
     </list>
+    <value nybble="21-22" title="Rotation ID"/>
   </sprite>
   <sprite id="55" name="Coin" notes="Notes: Can be bounced by Trampoline Mushroom Platforms and Invisible Trampoline Block when loose.&#13;&#10;Actor: 0x0cf"/>
   <sprite id="56" name="Coin in Bubble" notes="Notes: Horizontal movement direction is determined by Mario&amp;#39;s position. Moves towards Mario.&#13;&#10;Actor: 0x0dd">
-    <value nybble="1-2" title="Flag" comment="Appears without &quot;flourish&quot; when on. _Needs further testing_"/>
+    <value nybble="1-2" title="Triggering Flag ID" comment="Appears without &quot;flourish&quot; when on. _Needs further testing_"/>
   </sprite>
   <sprite id="57" name="Coin Spawner - Eruption" notes="Actor: 0x07c">
-    <value nybble="12" title="Unknown Value 12"/>
-    <value nybble="9" title="Unknown Value 9"/>
-    <value nybble="10" title="Unknown Value 10"/>
-    <value nybble="1-2" title="Triggering Flag"/>
+    <value nybble="1-2" title="Triggering Flag ID"/>
     <value nybble="5" title="Unknown Value 5"/>
     <list nybble="6" title="Direction" comment="_Needs further testing_. Seems to repeat after 3.">
       <entry value="0">Up</entry>
@@ -360,16 +478,16 @@
       <entry value="3">Right</entry>
     </list>
     <value nybble="7" title="Time Active"/>
-    <list nybble="13" title="Sparkles" comment="_Further testing neeed_.Seems to define if sparkles appear while coins are being appeared.">
-      <entry value="0">No Sparkles</entry>
-      <entry value="1">Same as 0?</entry>
+    <value nybble="9" title="Unknown Value 9"/>
+    <value nybble="10" title="Unknown Value 10"/>
+    <value nybble="12" title="Unknown Value 12"/>
+    <list nybble="13" title="Effect" comment="_Needs further testing_">
+      <entry value="0">None</entry>
       <entry value="2">Sparkles</entry>
-      <entry value="3">Same as 2?</entry>
-      <entry value="4">Same as 0?</entry>
     </list>
   </sprite>
   <sprite id="58" name="Coin Spawner - Fountain" notes="Actor: 0x07d">
-    <value nybble="1-2" title="Triggering Flag" comment="_Not tested_."/>
+    <value nybble="1-2" title="Triggering Flag ID" comment="_Not tested_."/>
     <list nybble="6" title="Mode" comment="Defines how the coins move. _Not tested_.">
       <entry value="0">???</entry>
       <entry value="1">One coin moves up and down once</entry>
@@ -390,7 +508,10 @@
     </list>
   </sprite>
   <sprite id="59" name="Rotation-controlled Coin" notes="Actor: 0x0e0">
-    <value nybble="22" title="Rotation ID"/>
+    <value nybble="1-2" title="Triggering Event ID"/>
+    <value nybble="12" title="Unknown 12"/>
+    <value nybble="13" title="Unknown 13"/>
+    <value nybble="21-22" title="Rotation ID"/>
   </sprite>
   <sprite id="60" name="Movement-controlled Coin" notes="Actor: 0x0e2">
     <value nybble="8" title="Unknown Value 8" comment="..."/>
@@ -398,33 +519,42 @@
     <value nybble="11" title="Unknown Value 11" comment="..."/>
   </sprite>
   <sprite id="61" name="Red Coin" notes="Actor: 0x0d6">
-    <value nybble="1-2" title="Triggering Flag" comment="_Tested_."/>
+    <value nybble="1-2" title="Triggering Flag ID" comment="What triggers the coin activating."/>
     <value nybble="5" title="Unknown Value 5"/>
+    <checkbox nybble="7" title="Falling" comment="Is the coin falling? (Paracoin)"/>
+    <list nybble="10" title="Movement Type (Falling)" comment="0 makes the coin normal, or makes it fall in a straight line. 1 and 2 make the coin into a paracoin, and both are at a different sync.">
+      <entry value="0">Normal/Falling</entry>
+      <entry value="1">Paracoin 1</entry>
+      <entry value="2">Paracoin 2</entry>
+    </list>
   </sprite>
   <sprite id="62" name="Rotation-controlled Red Coin" notes="Actor: 0x0d7">
-    <value nybble="1-2" title="Triggering Flag" comment="Todo: For what?"/>
+    <value nybble="1-2" title="Triggering Flag"/>
+    <value nybble="21-22" title="Rotation ID"/>
   </sprite>
   <sprite id="63" name="Skewer - Left" notes="Despite what the Actor Name says, this is the small variation.&#13;&#10;Actor: 0x19a"/>
-  <sprite id="64" name="Skewer - Right" notes="Despite what the Actor Name says, this is the small variation.&#13;&#10;Actor: 0x19b"/>
+  <sprite id="64" name="Skewer - Right" notes="Despite what the Actor Name says, this is the small variation.&#13;&#10;Actor: 0x19b">
+    <value nybble="5-6" title="Unknown Field 5-6"/>
+  </sprite>
   <sprite id="65" name="Morton Koopa Jr. - Respawn Pipe" notes="Used without data. Strangely, this is a NSMBW style pipe.&#13;&#10;Actor: 0x093&#13;&#10;Existing In-Game Sprite Data: Inaccurate"/>
   <sprite id="66" name="Pipe Cannon">
     <list nybble="6" title="Firing Direction">
-      <entry value="0">???</entry>
-      <entry value="1">???</entry>
-      <entry value="2">???</entry>
-      <entry value="3">???</entry>
+      <entry value="0">Unknown 0</entry>
+      <entry value="1">Unknown 1</entry>
+      <entry value="2">Unknown 2</entry>
+      <entry value="3">Unknown 3</entry>
       <entry value="4">Straight Up</entry>
       <entry value="5">Right (45 degrees)</entry>
       <entry value="6">Left (45 degrees)</entry>
-      <entry value="7">???</entry>
-      <entry value="8">???</entry>
-      <entry value="9">???</entry>
-      <entry value="10">???</entry>
-      <entry value="11">???</entry>
-      <entry value="12">???</entry>
-      <entry value="13">???</entry>
-      <entry value="14">???</entry>
-      <entry value="15">???</entry>
+      <entry value="7">Unknown 7</entry>
+      <entry value="8">Unknown 8</entry>
+      <entry value="9">Unknown 9</entry>
+      <entry value="10">Unknown 10</entry>
+      <entry value="11">Unknown 11</entry>
+      <entry value="12">Unknown 12</entry>
+      <entry value="13">Unknown 13</entry>
+      <entry value="14">Unknown 14</entry>
+      <entry value="15">Unknown 15</entry>
     </list>
   </sprite>
   <sprite id="67" name="Pipe Cannon - Ludwig von Koopa Battle"/>
@@ -441,31 +571,24 @@
       <entry value="2">Left</entry>
       <entry value="3">Right</entry>
     </list>
-    <list nybble="10" title="Speed, presumably">
-      <entry value="0">???</entry>
-      <entry value="1">???</entry>
-      <entry value="2">???</entry>
-    </list>
+    <value nybble="10" title="Speed??"/>
   </sprite>
-  <sprite id="69" name="Door - Normal" notes="Used without data..."/>
+  <sprite id="69" name="Door - Normal">
+    <value nybble="7" title="Unknown Value 7" comment="Unused?"/>
+  </sprite>
   <sprite id="70" name="Door - Castle Boss" notes="Used without data..."/>
   <sprite id="71" name="Door - Sealed"/>
   <sprite id="72" name="Door - Final Boss" notes="Used without data..."/>
-  <sprite id="73" name="Door - Ghost House" notes="A door in 1-12 shows data at nybble 12, this data is unused and doesn't do anything in game.">
-    <value nybble="1-2" title="Triggering Flag"/>
-    <checkbox nybble="9" title="Ledge under door" comment="Adds a small ledge under the door when set to 1. This is only a visual change."/>
-    <checkbox nybble="10" title="Become Boos" comment="Door becomes boos if the player tries to enter it."/>
+  <sprite id="73" name="Door - Ghost House">
+    <checkbox nybble="9" title="Ledge Under Door" comment="Adds a small ledge under the door when set to 1. This is only a visual change."/>
+    <checkbox nybble="10" title="Fake Door"/>
   </sprite>
-  <sprite id="74" name="Door - Normal, Flag-triggered">
-    <value nybble="1-2" title="Flag" comment="_Not tested_,"/>
-    <value nybble="9" title="Unknown Value 9"/>
-    <value nybble="10" title="Unknown Value 10"/>
-    <value nybble="12" title="Unknown Value 12"/>
+  <sprite id="74" name="Door - Ghost House - Flag-triggered">
+    <value nybble="1-2" title="Triggering Flag"/>
+    <checkbox nybble="10" title="Fake Door"/>
   </sprite>
   <sprite id="75" name="Door - Tower Boss" notes="Used without data..."/>
   <sprite id="76" name="Big Thwomp">
-    <value nybble="1-2" title="Flag 1-2" comment="_Needs further testing_"/>
-    <value nybble="3-4" title="Flag 3-4" comment="_Needs further testing_"/>
     <list nybble="6" title="Actions" comment="Unused for this sprite. Used on 77, however.">
       <entry value="0">Normal</entry>
       <entry value="1">???</entry>
@@ -473,17 +596,24 @@
     </list>
   </sprite>
   <sprite id="77" name="Thwomp" notes="Actor: 0x103">
-    <list nybble="6" title="Actions" comment="...">
+    <list nybble="6" title="Actions">
       <entry value="0">Normal</entry>
       <entry value="1">???</entry>
       <entry value="2">Automatically Fall</entry>
     </list>
-    <value nybble="7" title="Unknown Value 7" comment="..."/>
   </sprite>
-  <sprite id="78" name="Fire Bar">
-    <value nybble="5" title="Two Opposite Bars." comment="_Not tested_,"/>
-    <value nybble="6" title="Length" comment="Value + 1. Number of fire balls. _Not tested_,"/>
-    <value nybble="7" title="Clockwise" comment="Initial rotation direction. 0 = Anticlockwise. _Not tested_,"/>
+  <sprite id="78" name="Fire Bar" notes="A bar of fire that rotates in a specified direction.">
+    <value nybble="5" title="Number of Bars" comment="Value + 1 High values may cause Bars to not spawn."/>
+    <value nybble="6" title="Length" comment="Value + 1. Number of fire balls."/>
+    <list nybble="7" title="Rotation">
+      <entry value="0">Counterclockwise</entry>
+      <entry value="1">Clockwise</entry>
+    </list>
+    <list nybble="18" title="Speed" comment="2 is very glitchy and is not advised under normal circumstances. 1, however, works pretty fine. [Unused]">
+      <entry value="0">Normal</entry>
+      <entry value="1">Slightly Faster</entry>
+      <entry value="2">Very Very Fast</entry>
+    </list>
   </sprite>
   <sprite id="79" name="Fireball Pipe - Spawner">
     <value nybble="1-2" title="Triggering Flag ID"/>
@@ -509,11 +639,14 @@
     <value nybble="3-4" title="Target Flag ID" comment="_Not tested_."/>
     <value nybble="8" title="Unknown Value 8"/>
   </sprite>
-  <sprite id="82" name="Fire Snake">
-    <value nybble="1-2" title="Unknown Flag"/>
-  </sprite>
+  <sprite id="82" name="Fire Snake" notes="Existing In-Game Sprite Data in final-sprite-table levels:&#13;&#10;all 0 in 2-something&#13;&#10;all 0 in star-something (9-something)"/>
   <sprite id="83" name="Fish Bone">
-    <checkbox nybble="5" title="Facing Left" comment="0 = right. _Not tested_,"/>
+    <list nybble="5" title="Direction">
+      <entry value="0">Right</entry>
+      <entry value="1">Left</entry>
+    </list>
+    <value nybble="6" title="Unknown 6"/>
+    <value nybble="10" title="Unknown 10"/>
   </sprite>
   <sprite id="84" name="Flag Controller - Chainer (If X, do Y)">
     <value nybble="1-2" title="Triggering Flag ID" comment="..."/>
@@ -525,64 +658,69 @@
     <value nybble="12" title="Time between Flags" comment="0 is instant, 1 - 15 increases time, 15 is the longest time. "/>
   </sprite>
   <sprite id="85" name="Flag Controller - Uses Locations (&quot;IF&quot;)">
-    <value nybble="5" title="Unknown 5" comment="Used as 1 in 2-5 (for an instance used for detecting chain chomp and player location)"/>
     <value nybble="1-2" title="Target Flag ID" comment="The flag that will activate when the player/enemy is in the location."/>
+    <list nybble="5" title="Usage Mode">
+      <entry value="0">Single Use</entry>
+      <entry value="1">Multi Use?</entry>
+      <entry value="2">Only when Status is satisfied</entry>
+    </list>
     <list nybble="7" title="Required Player Form" comment="The item/power-up state that the player needs to be in to activate the event.">
       <entry value="0">No Requirement</entry>
       <entry value="1">Small</entry>
       <entry value="2">Super</entry>
       <entry value="3">Fire</entry>
-      <entry value="4">Not White Tanooki or Gold or Mini</entry>
-      <entry value="5">Tanooki,F</entry>
+      <entry value="4">Unknown 4</entry>
+      <entry value="5">Tanooki</entry>
+      <entry value="6">Unknown 6</entry>
+      <entry value="7">Unknown 7</entry>
     </list>
-    <list nybble="8" title="Required Player Movement" comment="5 is unused, but used in NSMBU.">
+    <list nybble="8" title="Required Player Movement" comment="5=You need to actually ground-pound a surface - not just do the &quot;spin upside-down&quot; bit">
       <entry value="0">No Requirement</entry>
       <entry value="1">Standing</entry>
       <entry value="2">In the air</entry>
       <entry value="3">On vine</entry>
       <entry value="5">Ground-pound</entry>
-      <entry value="7">On Horizontal Climbable Rope</entry>
-      <entry value="8">On Swinging Rope or Swinging Vine</entry>
+      <entry value="7">On Horizontal Rope</entry>
+      <entry value="8">On Swinging Rope/Vine</entry>
+      <entry value="9">Possible 9</entry>
+      <entry value="10">Possible 10</entry>
     </list>
     <value nybble="9-10" title="Enemy Watch Location ID" comment="The enemy has to be in this location. If this needs to be ignored, check the designated checkbox."/>
-    <value nybble="11-12" title="Player Watch Location ID" comment="The player has to be in this location. If this needs to be ignored, check the designated checkbox."/>
     <checkbox nybble="9-10" title="Ignore Enemy Location" mask="255" comment="When checked, it will ignore the enemy's location."/>
+    <value nybble="11-12" title="Player Watch Location ID" comment="The player has to be in this location. If this needs to be ignored, check the designated checkbox."/>
     <checkbox nybble="11-12" title="Ignore Player Location" mask="255" comment="When checked, it will ignore the player's location."/>
   </sprite>
   <sprite id="86" name="Flag Controller - Zone Enter">
     <value nybble="1-2" title="Target Flag ID"/>
   </sprite>
   <sprite id="87" name="Flag Controller - Multi-Chainer (If X, do Y THROUGH Z)">
-    <value nybble="1-2" title="End Flag (Target)" comment="The activator will trigger all Flags from the start Flag ID to this Flag ID (including this one). The Value entered here must be larger than the Value entered for &amp;#39;Start Flag ID&amp;#39;"/>
-    <value nybble="3-4" title="Start Flag (Triggering)" comment="The activator will start running when this Flag ID is triggered."/>
-    <value nybble="11-12" title="Unknown Value 11-12" comment="Most likely delay per event."/>
-    <checkbox nybble="5" title="Unknown Checkbox 5"/>
+    <value nybble="1-2" title="End Flag ID (Target)" comment="The activator will trigger all Flags from the start Flag ID to this Flag ID (including this one). The Value entered here must be larger than the Value entered for &amp;#39;Start Flag ID&amp;#39;"/>
+    <value nybble="3-4" title="Start Flag ID (Triggering)" comment="The activator will start running when this Flag ID is triggered."/>
+    <value nybble="5" title="Unknown 5"/>
+    <value nybble="11-12" title="Delay" comment="The delay between flags."/>
   </sprite>
   <sprite id="88" name="Flag Controller - Onscreen" notes="It activates when it enters the screen.">
     <value nybble="1-2" title="Target Flag ID"/>
+    <value nybble="12" title="Unknown 12"/>
   </sprite>
   <sprite id="89" name="Porcupuffer" notes="Actor: 0x116">
-    <value nybble="9" title="Unknown Value 9" comment="Always 1..."/>
+    <checkbox nybble="9" title="Never comes back" comment="Used only once, and simply a visual detail used at the beginning of a level. :c"/>
   </sprite>
   <sprite id="90" name="Porcupuffer Spawn Area" notes="Actor: 0x134">
-    <value nybble="1-2" title="Flag" comment="_Not tested_,"/>
-    <value nybble="4" title="Unknown Value 4" comment="..."/>
-    <value nybble="6" title="Unknown Value 6" comment="..."/>
-    <value nybble="7" title="Unknown Value 7" comment="..."/>
-    <value nybble="8" title="Unknown Value 8" comment="..."/>
-    <value nybble="12" title="Unknown Value 12" comment="..."/>
+    <value nybble="2" title="Unknown Value 2"/>
+    <value nybble="4" title="Unknown Value 4"/>
+    <value nybble="5-6" title="Location ID" comment="When Mario is in this location, the porcupuffers will spawn."/>
+    <value nybble="7-8" title="Respawn Time (Seconds)" comment="Time it takes before a new porcupuffer spawns, in seconds."/>
   </sprite>
-  <sprite id="91" name="Coin Coffer (similar to Moneybag)">
-    <value nybble="1-2" title="Triggering Flag" comment="_Needs further testing_."/>
-    <value nybble="8" title="Unknown Value 8"/>
-    <value nybble="9" title="Unknown Value 9"/>
-    <value nybble="10" title="Unknown Value 12"/>
-  </sprite>
+  <sprite id="91" name="Coin Coffer (similar to Moneybag)"/>
   <sprite id="92" name="Grinder">
-    <value nybble="1-2" title="Triggering Flag"/>
+    <value nybble="1-2" title="Triggering Flag ID"/>
     <value nybble="5" title="Speed"/>
-    <checkbox nybble="6" title="Go Right"/>
-    <value nybble="20" title="Location ID"/>
+    <list nybble="6" title="Start Direction">
+      <entry value="0">Left/Up</entry>
+      <entry value="1">Right/Down</entry>
+    </list>
+    <value nybble="20" title="Location ID" comment="Purpose unknown"/>
   </sprite>
   <sprite id="93" name="Scuttlebug" notes="Perhaps has unused values to make it walk around like in NSMBDS?">
     <value nybble="5" title="Unknown Value 5" comment="..."/>
@@ -592,6 +730,7 @@
     </list>
   </sprite>
   <sprite id="94" name="Flipper (One Way Gate)">
+    <value nybble="5" title="Unknown 5" comment="Used as 1 in 1-A etc"/>
     <list nybble="6" title="Direction" comment="Repeats after 7.">
       <entry value="0">Right,swings down</entry>
       <entry value="1">Left,swings down</entry>
@@ -603,29 +742,20 @@
       <entry value="7">Down,swings right</entry>
     </list>
   </sprite>
-  <sprite id="95" name="Blooper">
-    <value nybble="6" title="Unknown Value 6" comment="..."/>
-    <value nybble="7" title="Unknown Value 7" comment="..."/>
-    <value nybble="8" title="Unknown Value 8" comment="..."/>
-    <value nybble="10" title="Unknown Value 10" comment="..."/>
-    <value nybble="11" title="Unknown Value 11" comment="..."/>
-    <value nybble="12" title="Unknown Value 12" comment="..."/>
-  </sprite>
+  <sprite id="95" name="Blooper"/>
   <sprite id="96" name="Blooper Nanny"/>
   <sprite id="97" name="Goal Pole and Fort" notes="This sprite is sometimes used on the top block of a 1x10 invisible solid. This might to be a leftover from when this was necessary, or it was just for visualization.">
-    <value nybble="6" title="Unknown Value 6"/>
-    <checkbox nybble="11" title="Secret Exit" comment="Turns it into a secret exit, which looks different and makes a different path on the Map if there&amp;#39;s a secret there."/>
+    <checkbox nybble="11" title="Secret Exit" comment="Turns it into a secret exit, which looks different and makes a different path on the Map if there is a secret there."/>
   </sprite>
   <sprite id="98" name="Movement Controller - &quot;GroupId&quot;" notes="Appears in levels with Snake Block OR Snake Block Controller.">
     <value nybble="12" title="GroupID" comment="The ID to use when linking to a groupID"/>
   </sprite>
   <sprite id="99" name="Wiggler">
-    <value nybble="5" title="Unknown Value 5" comment="..."/>
-    <value nybble="6" title="Unknown Value 6" comment="..."/>
-    <value nybble="16" title="Unknown Value 16" comment="..."/>
+    <checkbox nybble="6" title="Unknown 6" comment="Set to 1 in 3-4 ~ Doesn't seem to change anything"/>
   </sprite>
   <sprite id="100" name="Rotation-controlled ? Block">
-    <value nybble="1-2" title="Flag" comment="_Needs further testing_."/>
+    <value nybble="1-2" title="Triggering Flag"/>
+    <checkbox nybble="12" title="Upside Down" comment="When checked, the block will appear upside down."/>
     <list nybble="14" title="Contents" comment="3, 9, 12 and 15 are all empty blocks">
       <entry value="0">Nothing</entry>
       <entry value="1">Coin</entry>
@@ -640,39 +770,63 @@
       <entry value="13">Springboard</entry>
       <entry value="14">Mushroom if small</entry>
     </list>
-    <value nybble="21-22" title="Rotation ID"/>
-    <value nybble="12" title="Unknown Value 12"/>
+    <value nybble="21-22" title="Rotation ID" comment="Match with a Rotation Controller to cause the Block to move."/>
   </sprite>
   <sprite id="101" name="Movement-controlled ? Block">
     <value nybble="5" title="Unknown Value 5" comment="..."/>
     <value nybble="6" title="Unknown Value 6" comment="..."/>
     <value nybble="8" title="Unknown Value 8" comment="..."/>
-    <value nybble="14" title="Unknown Value 14" comment="..."/>
+    <list nybble="14" title="Item" comment="...">
+      <entry value="0">Empty</entry>
+      <entry value="1">Coin</entry>
+      <entry value="2">Fire Flower</entry>
+      <entry value="4">Tanooki Leaf</entry>
+      <entry value="5">Gold Flower</entry>
+      <entry value="6">Mini Mushroom</entry>
+      <entry value="7">Star</entry>
+      <entry value="8">Star/Coin</entry>
+      <entry value="10">10 Coins</entry>
+      <entry value="11">1-UP</entry>
+      <entry value="13">Trampoline</entry>
+      <entry value="14">Mushroom/Coin</entry>
+    </list>
     <value nybble="21-22" title="Movement ID" comment="..."/>
   </sprite>
   <sprite id="102" name="Iggy Koopa"/>
   <sprite id="103" name="Toad House Controller"/>
-  <sprite id="104" name="Lakitu's Cloud" notes="Actor: 0x10F&#13;&#10;Used in Impossible Pack to have non-respawning Lakitu. Seems to display Lakitu a frame or few after spawning. Maybe spawns the JugemBody actor."/>
+  <sprite id="104" name="Lakitu's Cloud" notes="Actor: 0x10F&#13;&#10;Used in Impossible Pack to have non-respawning Lakitu. Seems to display Lakitu a frame or few after spawning. Maybe spawns the JugemBody actor inside the cloud."/>
   <sprite id="105" name="Lakitu Spawn Area">
     <value nybble="1-2" title="Flag"/>
     <value nybble="7-8" title="Location ID"/>
   </sprite>
-  <sprite id="106" name="Trampoline (Springboard)" notes="Mega Mario general info:&#13;&#10;* Squashes down springboard if standing on it. Maybe a purposely programmed unused behaviour, or a collision glitch?">
-    <value nybble="7" title="Unknown Nybble 7" comment="Doesn't seem to be &quot;remember position&quot;."/>
-  </sprite>
-  <sprite id="107" name="Path-controlled Climbable Fence"/>
-  <sprite id="108" name="Spider Web">
-    <value nybble="1-2" title="Triggering Flag" comment="_Further testing needed_. Appears when put on."/>
-    <value nybble="5" title="Height" comment="_Tested_."/>
-    <value nybble="6" title="Width" comment="_Tested_."/>
-  </sprite>
-  <sprite id="109" name="Signboard" notes="Post part will be behind layer 2.">
-    <list nybble="5" title="Behavior" comment="0, 1 and 2 _tested_. 2 = Can't move sideways.">
-      <entry value="0">Normal</entry>
-      <entry value="1">Board part behind layer 2</entry>
-      <entry value="2">Gravity affected</entry>
+  <sprite id="106" name="Trampoline (Springboard)"/>
+  <sprite id="107" name="Path-controlled Climbable Fence">
+    <value nybble="5" title="Path ID" comment="Sets which path the fence should follow."/>
+    <list nybble="12" title="End Behavior?">
+      <entry value="0">???</entry>
+      <entry value="1">???</entry>
+      <entry value="2">???</entry>
     </list>
-    <list nybble="6" title="Inscription">
+    <value nybble="13" title="Row 3 Layout (Bitfield)" comment="In a horizontal view, each row is a set of 4. This number converted to binary represents the layout. (0 = no fence, 1 = fence)."/>
+    <value nybble="14" title="Row 4 Layout (Bitfield)" comment="In a horizontal view, each row is a set of 4. This number converted to binary represents the layout. (0 = no fence, 1 = fence)."/>
+    <value nybble="15" title="Row 1 Layout (Bitfield)" comment="In a horizontal view, each row is a set of 4. This number converted to binary represents the layout. (0 = no fence, 1 = fence)."/>
+    <value nybble="16" title="Row 2 Layout (Bitfield)" comment="In a horizontal view, each row is a set of 4. This number converted to binary represents the layout. (0 = no fence, 1 = fence)."/>
+    <value nybble="17" title="Unknown17"/>
+    <value nybble="19" title="Unknown19"/>
+  </sprite>
+  <sprite id="108" name="Spider Web">
+    <value nybble="1-2" title="Triggering Flag ID" comment="_Further testing needed_. Appears when put on."/>
+    <value nybble="5" title="Height" comment="Never used as anything but &quot;2&quot;"/>
+    <value nybble="6" title="Width" comment="Never used as anything but &quot;2&quot;"/>
+  </sprite>
+  <sprite id="109" name="Signboard" notes="&quot;Post&quot; part will be behind layer 2 tiles.">
+    <list nybble="5" title="Behavior" comment="1=Whole sign is behind certain things, 2 = vertical movement only. _needs further testing_">
+      <entry value="0">Normal</entry>
+      <entry value="1">Z order change</entry>
+      <entry value="2">Gravity affected</entry>
+      <entry value="3">Unknown 3</entry>
+    </list>
+    <list nybble="6" title="Inscription" comment="8 is unused.">
       <entry value="0">Arrow Right</entry>
       <entry value="1">Arrow Right-Up</entry>
       <entry value="2">Arrow Up</entry>
@@ -690,51 +844,40 @@
       <entry value="14">Arrow Right-Down</entry>
       <entry value="15">Arrow Right-Down</entry>
     </list>
-    <value nybble="8" title="Unknown Value 8"/>
   </sprite>
-  <sprite id="110" name="Dry Bones" notes="Actor: 0x0fa">
-    <value nybble="5" title="Unknown Value 5" comment="..."/>
-    <value nybble="6" title="Unknown Value 6" comment="..."/>
+  <sprite id="110" name="Dry Bones" notes="Actor: 0x0fa"/>
+  <sprite id="111" name="Big Dry Bones"/>
+  <sprite id="112" name="Volcano Rock Spawn Area">
+    <value nybble="5-6" title="Location ID" comment="The location ID where the rocks spawn in."/>
+    <value nybble="9-10" title="Unknown Value 9-10"/>
   </sprite>
-  <sprite id="111" name="Big Dry Bones">
-    <value nybble="5" title="Unknown Value 5"/>
-    <value nybble="7" title="Unknown Value 7" comment="..."/>
-  </sprite>
-  <sprite id="112" name="Volcano Rock Spawn Area"/>
   <sprite id="113" name="Flame Chomp" notes="Actor: 0x10e"/>
   <sprite id="114" name="Floating Box">
     <checkbox nybble="6" title="Big"/>
   </sprite>
-  <sprite id="115" name="Bill Blaster (Bullet Bill Cannon)" notes="Known values:&#13;&#10;&quot;If bull's-eye bills (and possibly normal ones) explode after a while&quot;">
-    <value nybble="17" title="Unknown Nybble 17"/>
-    <value nybble="15" title="Unknown Nybble 15"/>
-    <value nybble="14" title="Unknown Nybble 14"/>
+  <sprite id="115" name="Bill Blaster (Bullet Bill Cannon)">
     <value nybble="5" title="Height" comment="Value + 2"/>
-    <list nybble="6" title="Bullet Bill Type">
+    <list nybble="6" title="Bullet Bill Type" comment="Doesn't seem to exist for the Banzai Bill Blaster">
       <entry value="0">Normal</entry>
       <entry value="1">Bull's-Eye</entry>
+    </list>
+    <list nybble="7" title="Bull's-Eye Bill behaviour">
+      <entry value="0">Normal</entry>
+      <entry value="1">Explode after a while</entry>
     </list>
     <list nybble="8" title="Firing Direction">
       <entry value="0">Both</entry>
       <entry value="1">Left</entry>
       <entry value="2">Right</entry>
     </list>
-    <value nybble="9" title="Unknown Nybble 9"/>
-    <value nybble="10" title="Unknown Nybble 10"/>
-    <value nybble="12" title="Unknown Nybble 12"/>
-    <value nybble="13" title="Unknown Nybble 13"/>
     <checkbox nybble="11" title="Upside Down"/>
-    <value nybble="16" title="Unknown Nybble 16"/>
   </sprite>
   <sprite id="116" name="Bill Blaster Turret  (Direction-changing Bullet Bill Launcher)">
-    <value nybble="6" title="Unknown Value 6"/>
-    <value nybble="7" title="Unknown Value 7" comment="Checkbox?"/>
     <list nybble="8" title="Firing Direction" comment="If the other sprites are anything to go by. _Not tested_.">
       <entry value="0">Both</entry>
       <entry value="1">Left</entry>
       <entry value="2">Right</entry>
     </list>
-    <value nybble="10" title="Unknown Value 10"/>
   </sprite>
   <sprite id="117" name="Banzai Bill Blaster (Banzai Bill Launcher)">
     <list nybble="8" title="Firing Direction" comment="_Tested_.">
@@ -747,29 +890,51 @@
     <value nybble="12" title="Unknown Value 12"/>
   </sprite>
   <sprite id="118" name="Bullet Bill">
-    <value nybble="1-2" title="Triggering Flag" comment="Apparent while triggered."/>
-    <list nybble="6" title="Direction" comment="Other values make it face to the screen.">
+    <value nybble="1-2" title="Triggering Flag" comment="Appears when triggered. _needs further testing_"/>
+    <list nybble="6" title="Direction" comment="Other values make it face to the screen in a glitchy way.">
       <entry value="0">Right</entry>
       <entry value="1">Left</entry>
       <entry value="2">Down</entry>
       <entry value="3">Up</entry>
       <entry value="4">Down-Left</entry>
       <entry value="5">Down-Right</entry>
-      <entry value="6">Up-Right 7</entry>
+      <entry value="6">Up-Right</entry>
+      <entry value="7">Up-Left</entry>
     </list>
   </sprite>
   <sprite id="119" name="Banzai Bill">
+    <value nybble="5" title="Unknown Value 5"/>
     <list nybble="6" title="Direction">
       <entry value="0">Right</entry>
       <entry value="1">Left</entry>
     </list>
+    <value nybble="7" title="Unknown Value 7"/>
+    <value nybble="8" title="Unknown Value 8"/>
+    <list nybble="10" title="Unknown List 10">
+      <entry value="0">???</entry>
+      <entry value="1">???</entry>
+      <entry value="2">???</entry>
+      <entry value="3">???</entry>
+    </list>
+    <checkbox nybble="11" title="Unknown Checkbox 11"/>
   </sprite>
-  <sprite id="120" name="Rise or lower while/once on Mushroom Platform lift" notes="Has appeared previously in the original NSMB."/>
+  <sprite id="120" name="Up/Down Mushrooms" notes="if Stem Height &gt; Final Height then Blue (down)&#13;&#10;if Stem Height &lt; Final Height then Pink (up)">
+    <value nybble="5" title="Starting Height" comment="Initial height of stem."/>
+    <value nybble="6" title="Platform Width" comment="The platform's width."/>
+    <value nybble="8" title="Ending Height" comment="Destination height when stood on, from stem bottom."/>
+    <checkbox nybble="10" title="Slower Movement" comment="Makes the platform go slower when moving."/>
+  </sprite>
   <sprite id="121" name="Expanding and contracting Mushroom Platform">
-    <value nybble="5" title="Unknown Value 5" comment="Checkbox?"/>
-    <value nybble="6" title="Unknown Value 6" comment="..."/>
-    <value nybble="7" title="Unknown Value 7" comment="Always 1..."/>
-    <value nybble="8" title="Unknown Value 8" comment="Checkbox?"/>
+    <list nybble="5" title="Starts Out:">
+      <entry value="0">Contracted</entry>
+      <entry value="1">Expanded</entry>
+    </list>
+    <value nybble="6" title="Stem Height" comment="Initial height of stem, (value + 2)"/>
+    <list nybble="7" title="Stem Color">
+      <entry value="0">Colored Stem</entry>
+      <entry value="1">Gray Stem</entry>
+    </list>
+    <value nybble="8" title="Expansion Related"/>
   </sprite>
   <sprite id="122" name="Expanding and contracting Mushroom Platform Synchronizer">
     <value nybble="6" title="Unknown Value 6" comment="Checkbox?"/>
@@ -783,13 +948,32 @@
     <checkbox nybble="16" title="Longer Platform" comment="todo: Give detail on sizes."/>
   </sprite>
   <sprite id="124" name="Mushroom Platform">
-    <value nybble="5" title="Unknown Value 5" comment="..."/>
-    <value nybble="6" title="Unknown Value 6" comment="..."/>
+    <value nybble="5-6" title="Tilt Speed" comment="Value Modulo 64. Speed increases for values 1-32, then decreases for values 33-63."/>
     <value nybble="7" title="Length" comment="(value+3)"/>
-    <value nybble="8" title="Unknown Value 8" comment="..."/>
-    <value nybble="9" title="Unknown Value 9" comment="..."/>
-    <value nybble="10" title="Unknown Value 10" comment="..."/>
-    <value nybble="11" title="Unknown Value 11" comment="..."/>
+    <list nybble="8" title="Starting Tilt/Tilt Angle" comment="...">
+      <entry value="0">No Tilt</entry>
+      <entry value="1">Left - 11.25 Degrees</entry>
+      <entry value="2">Left - 22.5 Degrees</entry>
+      <entry value="3">Left - 33.75 Degrees</entry>
+      <entry value="4">Left - 45 Degrees</entry>
+      <entry value="5">Left - 56.25 Degrees</entry>
+      <entry value="6">Left - 67.5 Degrees</entry>
+      <entry value="7">Left - 78.75 Degrees</entry>
+      <entry value="8">No Tilt</entry>
+      <entry value="9">Right - 11.25 Degrees</entry>
+      <entry value="10">Right - 22.5 Degrees</entry>
+      <entry value="11">Right - 33.75 Degrees</entry>
+      <entry value="12">Right - 45 Degrees</entry>
+      <entry value="13">Right - 56.25 Degrees</entry>
+      <entry value="14">Right - 67.5 Degrees</entry>
+      <entry value="15">Right - 78.75 Degrees</entry>
+    </list>
+    <list nybble="9" title="Stretches Vertically?" comment="...">
+      <entry value="0">No</entry>
+      <entry value="2">Yes</entry>
+    </list>
+    <value nybble="10" title="Stretch Height" comment="..."/>
+    <value nybble="11" title="Stem Length" comment="(value+4)"/>
   </sprite>
   <sprite id="125" name="Bowser" notes="Used without data"/>
   <sprite id="126" name="Bowser and Dry Bowser Battles - Controller">
@@ -797,59 +981,61 @@
     <checkbox nybble="6" title="World 9 specifics" comment="Only checked in 9-16 A3. Must cause all differences from the battle in W6."/>
     <value nybble="7" title="Unknown Value 7" comment="Always 1..."/>
   </sprite>
-  <sprite id="127" name="Bowser Flame" notes="Existing In-Game Sprite Data: Incomplete?"/>
+  <sprite id="127" name="Bowser Flame" notes="Existing In-Game Sprite Data: Incomplete?">
+    <checkbox nybble="6" title="Dry Bowser Flame" comment="If checked, flame is blue instead of orange."/>
+  </sprite>
   <sprite id="128" name="Dry Bowser" notes="Used without data"/>
   <sprite id="129" name="Big Dry Bowser" notes="Used without data"/>
   <sprite id="130" name="Big Bowser"/>
-  <sprite id="131" name="Big Bowser Switch" notes="Tags: Unused sprite"/>
-  <sprite id="132" name="Big Bowser Battles - Down-moving Lift">
+  <sprite id="131" name="Big Bowser Battles - Switch [UNUSED]" notes="Unused, Always spawned by Bowser Lift and Switch Controller(132)"/>
+  <sprite id="132" name="Big Bowser Battles - Lift and Switch Controller" notes="Seems to have unused functionality?">
     <value nybble="1-2" title="Flag" comment="Always 2..."/>
   </sprite>
   <sprite id="133" name="Bowser Shutter"/>
-  <sprite id="134" name="Bowser Bridge">
-    <value nybble="1-2" title="Flag"/>
-    <value nybble="5" title="Unknown Value 5" comment="Checkbox?"/>
-    <value nybble="6" title="Unknown Value 6"/>
-  </sprite>
-  <sprite id="135" name="Goomba" notes="Can be bounced by Trampoline Mushroom Platforms and Invisible Trampoline Block. Gold Ring behaviour; turns gold.">
-    <value nybble="1-2" title="Unknown Flag" comment="Maybe defunct Gold Ring related triggering flag?"/>
-    <list nybble="15" title="Color">
-      <entry value="0">Normal</entry>
-      <entry value="1">Blue</entry>
-    </list>
-    <list nybble="6" title="Spawn Behavior" comment="There is a nybble which defines which pipe direction is used. Nybble 1 is presumably unused. But it is spawned by it's own death animation.">
+  <sprite id="134" name="Bowser Bridge"/>
+  <sprite id="135" name="Goomba" notes="Can be bounced by Bouncy Mushrooms/Invisible Bouncy Blocks. Gold Ring behaviour; turns gold.">
+    <value nybble="1-2" title="Defunct Gold Ring Flag" comment="Defunct Triggering Flag that was presumably required for Gold Ring functionality at one point."/>
+    <value nybble="5" title="Unknown 5"/>
+    <list nybble="6" title="Spawn Behavior" comment="There is a nybble which defines which pipe direction is used. 1 is presumebly a leftover from NSMBDS, where goombas would sometimes spawn from the sky like this when Mega Mario ground pounds">
       <entry value="0">Normal</entry>
       <entry value="1">Spin (Death Animation)</entry>
       <entry value="2">From Pipe</entry>
     </list>
     <value nybble="10" title="Unknown 10"/>
+    <list nybble="15" title="Color">
+      <entry value="0">Normal</entry>
+      <entry value="1">Blue</entry>
+    </list>
+    <value nybble="17" title="Unknown Value 17"/>
+    <checkbox nybble="18" title="Unknown Checkbox 18"/>
   </sprite>
   <sprite id="136" name="Bone Goomba" notes="Gold Ring behaviour; uses gold Goomba model">
     <value nybble="7" title="Unknown Value 7" comment="Checkbox?"/>
     <value nybble="8" title="Unknown Value 8" comment="Checkbox?"/>
     <value nybble="11" title="Unknown Value 11" comment="Checkbox?"/>
+    <checkbox nybble="15" title="Alt Texture" comment="Causes goomba to spawn with unused? texture"/>
   </sprite>
-  <sprite id="137" name="Micro Goomba">
-    <value nybble="7" title="Unknown Value 7" comment="Checkbox?"/>
-    <value nybble="8" title="Unknown Value 8" comment="Checkbox?"/>
-    <value nybble="11" title="Unknown Value 11" comment="Checkbox?"/>
+  <sprite id="137" name="Micro Goomba"/>
+  <sprite id="138" name="Paragoomba">
+    <checkbox nybble="15" title="Crash" comment="Check this to crash the game."/>
   </sprite>
-  <sprite id="138" name="Paragoomba"/>
   <sprite id="139" name="Goomba Tower">
-    <value nybble="5" title="Unknown Value 5" comment="Causes hitbox to widen on odd numbers? Even numbers cause no change"/>
+    <checkbox nybble="5" title="Wider Hitbox"/>
     <list nybble="6" title="Number of Goombas">
+      <entry value="0">Two</entry>
+      <entry value="1">One</entry>
       <entry value="2">Two</entry>
       <entry value="3">Three</entry>
       <entry value="4">Four</entry>
       <entry value="5">Five</entry>
       <entry value="6">Six</entry>
       <entry value="7">Seven</entry>
-      <entry value="8"> Eight</entry>
+      <entry value="8">Eight</entry>
       <entry value="9">Nine</entry>
       <entry value="10">Ten</entry>
       <entry value="11">Elven</entry>
       <entry value="12">Twelve</entry>
-      <entry value="13"> Thirteen</entry>
+      <entry value="13">Thirteen</entry>
       <entry value="14">Fourteen</entry>
       <entry value="15">Fifteen</entry>
     </list>
@@ -870,37 +1056,40 @@
     <value nybble="6" title="Unknown Value 6"/>
   </sprite>
   <sprite id="144" name="Horizontally-moving Lift">
-    <value nybble="6" title="Width" comment="In blocks. Not tested."/>
-    <value nybble="8" title="Distance" comment="In blocks. Not tested."/>
-    <checkbox nybble="10" title="Moves Up OR Moves Down" comment="Starts moving up OR Starts moving down. Not tested."/>
-    <value nybble="12" title="Unknown Value 12" comment="Checkbox?"/>
+    <value nybble="6" title="Width + 1" comment="Value 0 is the same as 1."/>
+    <value nybble="8" title="Distance"/>
+    <list nybble="10" title="Starting Direction" comment="All even numbers are Right, and all odd numbers are Left.">
+      <entry value="0">Right</entry>
+      <entry value="1">Left</entry>
+    </list>
   </sprite>
   <sprite id="145" name="Vertically-moving Lift">
-    <value nybble="1-2" title="Flag"/>
-    <list nybble="6" title="Width" comment="In blocks.">
-      <entry value="0">Unknown</entry>
-      <entry value="1">Unknown</entry>
-      <entry value="2">3</entry>
-    </list>
-    <value nybble="7" title="Increases Speed" comment="?Testing needed"/>
-    <value nybble="12" title="Decreases speed" comment="?Testing needed"/>
-    <checkbox nybble="10" title="Moves Up" comment="Starts moving up."/>
+    <value nybble="6" title="Width + 1" comment="Value 0 is the same as 1."/>
     <value nybble="8" title="Distance" comment="In blocks."/>
+    <list nybble="10" title="Starting Direction" comment="Even values are Up, and odd values are Down.">
+      <entry value="0">Up</entry>
+      <entry value="1">Down</entry>
+    </list>
   </sprite>
-  <sprite id="146" name="Track-controlled Lift" notes="Existing In-Game Sprite Data: Incorrect">
-    <list nybble="7" title="Style" comment="1 is unused. _Tested_. Seems to repeat after 1.">
+  <sprite id="146" name="Track-controlled Lift">
+    <list nybble="7" title="Style" comment="1 is unused, but works.">
       <entry value="0">Wood</entry>
       <entry value="1">Stone</entry>
     </list>
-    <value nybble="8" title="Unknown Nybble 8" comment="_Needs further testing_."/>
-    <checkbox nybble="9" title="Move Only Once Stepped On" comment="_Tested_."/>
-    <list nybble="10" title="Starting Direction" comment="_Tested_.">
-      <entry value="0">Right/Something</entry>
-      <entry value="1">Left/Something</entry>
+    <checkbox nybble="8" title="Round Top Edges" comment="Makes edges rounder, and makes the platform 1 pixel taller."/>
+    <checkbox nybble="9" title="Move Only Once Stepped On"/>
+    <list nybble="10" title="Starting Direction">
+      <entry value="0">Right/Up</entry>
+      <entry value="1">Left/Down</entry>
     </list>
-    <value nybble="11" title="Unknown Nybble 11" comment="Checkbox?"/>
-    <value nybble="13" title="Unknown Nybble 13" comment="Checkbox?"/>
-    <value nybble="16" title="Unknown Nybble 16"/>
+    <value nybble="16" title="Width (0 is 4 blocks)" comment="The width of the platform. Setting it to 0 makes the platform 4 blocks. No other value adds 4 blocks to the width."/>
+    <list nybble="18" title="Speed" comment="Speed of the lift.">
+      <entry value="0">Slower</entry>
+      <entry value="1">Slow</entry>
+      <entry value="2">Medium</entry>
+      <entry value="3">Fast</entry>
+      <entry value="4">Faster</entry>
+    </list>
   </sprite>
   <sprite id="147" name="Three Platform Rickshaw Lift" notes="Existing In-Game Sprite Data: Incorrect">
     <list nybble="6" title="Size">
@@ -909,7 +1098,7 @@
     </list>
     <checkbox nybble="10" title="Spins Clockwise"/>
   </sprite>
-  <sprite id="148" name="Boat Raft Platform" notes="Only moves right.">
+  <sprite id="148" name="Move-when-on Boat Lift" notes="Only moves right.">
     <list nybble="8" title="Movement">
       <entry value="0">Moves Back When Not On It</entry>
       <entry value="1">Continuously Moves Once On It</entry>
@@ -925,25 +1114,22 @@
       <entry value="12">Fastest</entry>
     </list>
   </sprite>
-  <sprite id="149" name="Changeable-direction Lift" notes="It is still at first, it starts moving when landed on. After that it reverses direction when landed on. Values 15 and 4 for Unknown Values 5 and 6 make the platform move up and down. Values 2 and 6 make it move upright-downright.">
-    <value nybble="1-2" title="Flag"/>
-    <value nybble="5" title="Initial Direction"/>
-    <value nybble="6" title="Return Direction"/>
+  <sprite id="149" name="Changeable Direction Platform" notes="It is still at first, it starts moving when landed on. After that it reverses direction when landed on.">
+    <value nybble="1-2" title="Ending Flag" comment="When this flag is triggered, the platform will disappear."/>
+    <value nybble="5" title="Starting Direction" comment="A value of 10 causes platform to move down, Needs more testing."/>
   </sprite>
   <sprite id="150" name="Seesaw Lift">
-    <value nybble="1-2" title="Flag"/>
-    <value nybble="7" title="Unknown Nybble 7" comment="Used as 0 or 1."/>
-    <value nybble="8" title="Unknown Nybble 8"/>
-    <value nybble="11" title="Unknown Nybble 11"/>
-    <value nybble="12" title="Unknown Nybble 12"/>
+    <value nybble="1-2" title="Triggering Event ID"/>
+    <value nybble="21-22" title="Movement ID"/>
   </sprite>
   <sprite id="151" name="Scale Lift">
+    <value nybble="1-2" title="Triggering Flag" comment="Needs an as-of-yet undetermined nybble to be set to 1 for this to work"/>
     <value nybble="5" title="Right side rope height"/>
     <value nybble="6" title="Distance between steps"/>
     <value nybble="8" title="Left side rope height"/>
-    <value nybble="16" title="Length of both steps"/>
+    <value nybble="16" title="Length of steps"/>
   </sprite>
-  <sprite id="152" name="Path-controlled Lift - Peepa">
+  <sprite id="152" name="Path-controlled Lift - with Peepa">
     <value nybble="5" title="Path ID"/>
     <value nybble="6" title="Platform Length" comment="Length of the platform."/>
     <checkbox nybble="7" title="Unknown Checkbox 7"/>
@@ -962,9 +1148,7 @@
     <value nybble="19" title="Unknown Value 19"/>
   </sprite>
   <sprite id="153" name="Lift Spawner" notes="Existing In-Game Sprite Data: Incomplete.">
-    <value nybble="5" title="Spawn distance or speed related"/>
-    <value nybble="8" title="Unknown Value 8" comment="Checkbox?"/>
-    <list nybble="10" title="Direction" comment="_Tested_">
+    <list nybble="10" title="Direction">
       <entry value="0">Up</entry>
       <entry value="1">Down</entry>
       <entry value="2">Right</entry>
@@ -977,162 +1161,165 @@
       <entry value="0">Big</entry>
       <entry value="1">Small</entry>
     </list>
-    <value nybble="9" title="Movement" comment="_Not tested_."/>
+    <list nybble="9" title="Movement" comment="_Not tested_.">
+      <entry value="1">Fixed</entry>
+      <entry value="2">Uses Tracks</entry>
+    </list>
     <value nybble="10" title="Unknown Value 10"/>
     <value nybble="12" title="Unknown Value 12"/>
   </sprite>
   <sprite id="155" name="Ludwig von Koopa" notes="Existing In-Game Sprite Data:&#13;&#10;Incomplete"/>
-  <sprite id="156" name="Vertical Camera Limit Left" notes="This sprite seems to accept an Flag ID to be disabled...">
-    <value nybble="1-2" title="Flag" comment="Maybe disables when or once on."/>
-    <value nybble="5" title="Unknown Value 5" comment="?"/>
-    <value nybble="6" title="Unknown Value 6" comment="?"/>
-    <checkbox nybble="7" title="Permeable Camera Limit" comment="When Set to 1, the camera will scroll past the border if the player passes it."/>
-    <value nybble="8" title="Unknown Value 8"/>
+  <sprite id="156" name="Vertical Camera Limit Left">
+    <value nybble="1-2" title="Unknown 1-2" comment="Maybe disables when or once on."/>
+    <value nybble="5" title="Unknown 5"/>
+    <value nybble="6" title="Unknown 6"/>
+    <checkbox nybble="7" title="Permeable Camera Limit" comment="When Set to 1, the camera will scroll past the border if the player passes it. The interactions with &quot;Camera Stay Above&quot;  and &quot;Camera Stay Below&quot; are unclear."/>
+    <value nybble="8" title="Unknown 8"/>
     <checkbox nybble="10" title="Camera Stays Above" comment="Camera will not go below the sprite when this is equal to 1"/>
     <checkbox nybble="11" title="Camera Stays Below" comment="Camera will not go higer than the sprite when this is equal to 1"/>
-    <value nybble="12" title="Unknown Value 12" comment="..."/>
+    <value nybble="12" title="Unknown 12"/>
   </sprite>
-  <sprite id="157" name="Vertical Camera Limit Right" notes="This sprite seems to accept an Flag ID to be disabled...">
-    <value nybble="1-2" title="Flag" comment="Maybe disables when or once on."/>
-    <value nybble="5" title="Unknown Value 5"/>
-    <value nybble="6" title="Unknown Value 6"/>
-    <checkbox nybble="7" title="Permeable Camera Limit" comment="When Set to 1, the camera will scroll past the border if the player passes it."/>
-    <value nybble="8" title="Unknown Value 8" comment="..."/>
+  <sprite id="157" name="Vertical Camera Limit Right">
+    <value nybble="1-2" title="Unknown 1-2"/>
+    <value nybble="5" title="Unknown 5"/>
+    <value nybble="6" title="Unknown 6"/>
+    <checkbox nybble="7" title="Permeable Camera Limit" comment="When Set to 1, the camera will scroll past the border if the player passes it. The interactions with &quot;Camera Stay Above&quot;  and &quot;Camera Stay Below&quot; are unclear."/>
+    <value nybble="8" title="Unknown 8"/>
     <checkbox nybble="10" title="Camera Stays Above" comment="Camera will not go below the sprite when this is equal to 1"/>
     <checkbox nybble="11" title="Camera Stays Below" comment="Camera will not go higer than the sprite when this is equal to 1"/>
-    <value nybble="12" title="Unknown Value 12" comment="..."/>
+    <value nybble="12" title="Unknown 12"/>
   </sprite>
   <sprite id="158" name="Buzzy Beetle">
-    <value nybble="6" title="Unknown Nybble 6" comment="Used as 0 or 1."/>
-    <value nybble="8" title="Unknown Nybble 8"/>
-    <value nybble="9" title="Unknown Nybble 9" comment="Used as 0 or 1."/>
-    <value nybble="10" title="Unknown Nybble 10" comment="Used as 0 or 1."/>
-    <value nybble="11" title="Unknown Nybble 11" comment="Used as 0 or 1."/>
-    <value nybble="12" title="Unknown Nybble 12" comment="Used as 0 or 1."/>
+    <list nybble="6" title="Type">
+      <entry value="0">Normal</entry>
+      <entry value="1">For Ceiling</entry>
+      <entry value="2">Empty Shell</entry>
+      <entry value="3">Upside-down Empty Shell</entry>
+    </list>
   </sprite>
   <sprite id="159" name="Spike Top">
-    <value nybble="1-2" title="Flag"/>
-    <list nybble="5" title="Starting Orientation" comment="Not tested.">
+    <list nybble="5" title="Starting Orientation" comment="A value higher than 3 causes the game to crash upon loading the sprite.">
       <entry value="0">Up</entry>
-      <entry value="1">Down</entry>
-      <entry value="2">Left</entry>
+      <entry value="1">Left</entry>
+      <entry value="2">Down</entry>
       <entry value="3">Right</entry>
     </list>
-    <value nybble="6" title="Unknown Nybble 6" comment="Only used as 0 or 1 OR only used as 1."/>
-    <value nybble="10" title="Unknown Nybble 10"/>
-    <value nybble="12" title="Unknown Nybble 12"/>
+    <checkbox nybble="6" title="Move Counter Clockwise" comment="When checked, the spike top will move counter clockwise."/>
   </sprite>
-  <sprite id="160" name="Horizontal Camera Limit (?) - Down">
+  <sprite id="160" name="Horizontal Camera Limit - Bottom">
     <value nybble="5" title="Unknown Value 5" comment="..."/>
-    <value nybble="7" title="Unknown Value 7" comment="Checkbox?"/>
+    <checkbox nybble="7" title="Permeable Camera Limit" comment="When Set to 1, the camera will scroll past the border if the player passes it. Needs either &quot;Camera Stays to the Left&quot; or &quot;Camera Stays to the Right&quot; checked."/>
     <value nybble="8" title="Unknown Value 8" comment="Checkbox?"/>
-    <value nybble="10" title="Unknown Value 10" comment="Checkbox?"/>
-    <value nybble="11" title="Unknown Value 11" comment="Checkbox?"/>
+    <list nybble="11" title="Scrolling Limit" comment="If &quot;Permable Camera Limit&quot; is checked, the camera will scroll past the limit.">
+      <entry value="0">Camera Stays to The Left</entry>
+      <entry value="1">Camera Stays to the Right</entry>
+    </list>
     <value nybble="12" title="Unknown Value 12" comment="Checkbox?"/>
     <value nybble="13" title="Unknown Value 13" comment="..."/>
   </sprite>
-  <sprite id="161" name="Horizontal Camera Limit (?) - Up">
+  <sprite id="161" name="Horizontal Camera Limit - Top">
     <value nybble="5" title="Unknown Value 5" comment="..."/>
     <value nybble="6" title="Unknown Value 6" comment="Checkbox?"/>
-    <value nybble="7" title="Unknown Value 7" comment="Checkbox?"/>
-    <value nybble="8" title="Unknown Value 8" comment="Checkbox?"/>
-    <value nybble="11" title="Unknown Value 11" comment="Checkbox?"/>
+    <checkbox nybble="7" title="Permeable Camera Limit" comment="When Set to 1, the camera will scroll past the border if the player passes it. Needs either &quot;Camera Stays to the Left&quot; or &quot;Camera Stays to the Right&quot; checked."/>
+    <list nybble="11" title="Scrolling Limit" comment="If &quot;Permable Camera Limit&quot; is checked, the camera will scroll past the limit.">
+      <entry value="0">Camera Stays to The Left</entry>
+      <entry value="1">Camera Stays to the Right</entry>
+    </list>
   </sprite>
   <sprite id="162" name="Morton Koopa Jr." notes="Used without data"/>
-  <sprite id="163" name="Climbing Koopa - Horizontal">
+  <sprite id="163" name="Climbing Koopa - Horizontal" notes="A koopa that climbs on a fence, horizontally. (left to right, or right to left.)">
     <checkbox nybble="5" title="Start moving left" comment="If unchecked, Starts moving right"/>
-    <value nybble="8" title="Unknown Value 8" comment="Causes koopa to be invisible"/>
+    <list nybble="6" title="Color" comment="Unused.">
+      <entry value="0">Green</entry>
+      <entry value="1">Red</entry>
+    </list>
+    <checkbox nybble="8" title="Is on moving fence" comment="Check this if the koopa is on a moving fence to prevent weird collision. Using this on a normal fence causes koopa to be invisible"/>
   </sprite>
-  <sprite id="164" name="Climbing Koopa - Vertical">
+  <sprite id="164" name="Climbing Koopa - Vertical" notes="A koopa that climbs on a fence, vertically. (up to down, or down to up).">
     <checkbox nybble="5" title="Start behind fence"/>
+    <list nybble="6" title="Color" comment="Unused.">
+      <entry value="0">Green</entry>
+      <entry value="1">Red</entry>
+    </list>
   </sprite>
   <sprite id="165" name="Koopa Troopa" notes="Can be bounced by Trampoline Mushroom Platforms and Invisible Trampoline Block unless in shell. Gold Ring behaviour; turns gold, kicked/thrown shell leaves trail of coins.">
-    <checkbox nybble="5" title="Starts In Shell" comment="Makes the Koopa start in its shell. It will never exit out of the shell."/>
-    <value nybble="1-2" title="Flag" comment="Unknown what this does, if it does anything. Not needed for Gold Ring effect."/>
+    <value nybble="1-2" title="Defunct Gold Ring Flag" comment="Defunct Triggering Flag that was presumably required for Gold Ring functionality at one point."/>
+    <checkbox nybble="5" title="Empty Shell"/>
     <list nybble="6" title="Color">
       <entry value="0">Green</entry>
       <entry value="1">Red</entry>
     </list>
-    <value nybble="8" title="Unknown Value 8"/>
-    <value nybble="9" title="Unknown Value 9"/>
+    <value nybble="8" title="Unknown 8"/>
+    <value nybble="9" title="Unknown 9"/>
   </sprite>
   <sprite id="166" name="Movement Controller - Back and Forth" notes="Actor: 0x01b">
     <value nybble="6" title="Unknown Value 6" comment="Checkbox?"/>
     <value nybble="21-22" title="Movement ID"/>
   </sprite>
   <sprite id="167" name="Pipe Piranha Plant - Down" notes="Used without data"/>
-  <sprite id="168" name="Pipe Fire Piranha Plant - Down">
-    <list nybble="6" title="Amount of Shots" comment="Changes the amount of shots fired.">
+  <sprite id="168" name="Pipe Fire Piranha Plant - Down" notes="A pipe piranha plant that sits in a pipe facing downwards.">
+    <list nybble="6" title="Fireballs per Attack">
+      <entry value="0">One</entry>
+      <entry value="1">Two</entry>
+      <entry value="2">Three</entry>
+      <entry value="3">Six</entry>
+    </list>
+  </sprite>
+  <sprite id="169" name="Pipe Fire Piranha Plant - Left" notes="A pipe piranha plant that sits in a pipe facing left.">
+    <list nybble="6" title="Fireballs per Attack">
+      <entry value="0">One</entry>
+      <entry value="1">Two</entry>
+      <entry value="2">Three</entry>
+      <entry value="3">Six</entry>
+    </list>
+  </sprite>
+  <sprite id="170" name="Pipe Fire Piranha Plant - Right" notes="A pipe piranha plant that sits in a pipe facing right.">
+    <list nybble="6" title="Fireballs per Attack">
+      <entry value="0">One</entry>
+      <entry value="1">Two</entry>
+      <entry value="2">Three</entry>
+      <entry value="3">Six</entry>
+    </list>
+  </sprite>
+  <sprite id="171" name="Pipe Fire Piranha Plant - Up" notes="A pipe piranha plant that sits in a pipe facing upwards.">
+    <list nybble="6" title="Fireballs per Attack">
       <entry value="0">1 Shot</entry>
       <entry value="1">2 Shots</entry>
       <entry value="2">3 Shots</entry>
       <entry value="3">6 Shots</entry>
     </list>
   </sprite>
-  <sprite id="169" name="Pipe Fire Piranha Plant - Left">
-    <list nybble="6" title="Amount of Shots" comment="Changes the amount of shots fired.">
-      <entry value="0">1 Shot</entry>
-      <entry value="1">2 Shots</entry>
-      <entry value="2">3 Shots</entry>
-      <entry value="3">6 Shots</entry>
-    </list>
-    <value nybble="7" title="Unknown Value 7" comment="Checkbox?"/>
-    <value nybble="8" title="Unknown Value 8" comment="..."/>
-  </sprite>
-  <sprite id="170" name="Pipe Fire Piranha Plant - Right">
-    <list nybble="6" title="Amount of Shots" comment="Changes the amount of shots fired.">
-      <entry value="0">1 Shot</entry>
-      <entry value="1">2 Shots</entry>
-      <entry value="2">3 Shots</entry>
-      <entry value="3">6 Shots</entry>
-    </list>
-    <value nybble="7" title="Unknown Value 7" comment="Checkbox?"/>
-    <value nybble="8" title="Unknown Value 8" comment="..."/>
-  </sprite>
-  <sprite id="171" name="Pipe Fire Piranha Plant - Up">
-    <list nybble="6" title="Amount of Shots" comment="Changes the amount of shots fired.">
-      <entry value="0">1 Shot</entry>
-      <entry value="1">2 Shots</entry>
-      <entry value="2">3 Shots</entry>
-      <entry value="3">6 Shots</entry>
-    </list>
-    <value nybble="10" title="Unknown Value 10" comment="Checkbox?"/>
-  </sprite>
-  <sprite id="172" name="Pipe Bone Piranha Plant - Up" notes="Tags: Unused actor&#13;&#10;Notes: Should be placed on top left corner of pipe&#13;&#10;Actor: 0x121"/>
+  <sprite id="172" name="Pipe Bone Piranha Plant - Up [UNUSED]" notes="Tags: Unused actor&#13;&#10;Notes: Should be placed on top left corner of pipe&#13;&#10;Actor: 0x121"/>
   <sprite id="173" name="Pipe Bone Piranha Plant - Left">
     <value nybble="7" title="Unknown Value 7" comment="Checkbox?"/>
     <value nybble="11" title="Unknown Value 11" comment="Checkbox?"/>
   </sprite>
   <sprite id="174" name="Pipe Bone Piranha Plant  - Right"/>
   <sprite id="175" name="Grounded Piranha Plant">
-    <checkbox nybble="6" title="Upside Down"/>
+    <checkbox nybble="6" title="Upside-down"/>
   </sprite>
   <sprite id="176" name="Grounded Big Piranha Plant">
-    <checkbox nybble="6" title="Upside Down"/>
+    <checkbox nybble="6" title="Upside-down"/>
   </sprite>
   <sprite id="177" name="Grounded Fire Piranha Plant">
-    <checkbox nybble="6" title="Upside Down"/>
+    <checkbox nybble="6" title="Upside-down"/>
   </sprite>
   <sprite id="178" name="Grounded Big Fire Piranha Plant">
-    <checkbox nybble="6" title="Upside Down"/>
+    <checkbox nybble="6" title="Upside-down"/>
   </sprite>
   <sprite id="179" name="Grounded Bone Piranha Plant">
-    <value nybble="5" title="Unknown Value 5" comment="Checkbox?"/>
-    <checkbox nybble="6" title="Upside Down"/>
-    <value nybble="10" title="Unknown Value 10" comment="..."/>
+    <checkbox nybble="6" title="Upside-down"/>
   </sprite>
   <sprite id="180" name="Grounded Big Bone Piranha Plant">
-    <value nybble="5" title="Unknown Value 5" comment="Checkbox?"/>
-    <checkbox nybble="6" title="Upside Down"/>
-    <value nybble="12" title="Unknown Value 12" comment="..."/>
-    <value nybble="14" title="Unknown Value 14" comment="..."/>
+    <checkbox nybble="6" title="Upside-down"/>
+    <value nybble="21-22" title="Movement ID"/>
   </sprite>
   <sprite id="181" name="Pipe Piranha Plant - Left"/>
   <sprite id="182" name="Pipe Piranha Plant - Right"/>
   <sprite id="183" name="Pipe Piranha Plant - Up" notes="Notes: Should be placed on top left corner of pipe&#13;&#10;Existing In-Game Sprite Data:&#13;&#10;Incorrect"/>
   <sprite id="184" name="Parabomb"/>
   <sprite id="185" name="Koopa Paratroopa">
-    <value nybble="1-2" title="Flag"/>
+    <value nybble="1-2" title="Defunct Gold Ring Flag" comment="Defunct Triggering Flag that was presumably required for Gold Ring functionality at one point."/>
     <list nybble="5" title="Movement">
       <entry value="0">Jump</entry>
       <entry value="1">Fly Horizontally</entry>
@@ -1142,46 +1329,26 @@
       <entry value="0">Green</entry>
       <entry value="1">Red</entry>
     </list>
-    <value nybble="7" title="Unknown Value 7"/>
-    <value nybble="8" title="Unknown Value 8"/>
-    <value nybble="9" title="Unknown Value 9"/>
-    <value nybble="14" title="Unknown Value 14"/>
   </sprite>
   <sprite id="186" name="Rotating Koopa Paratroopa Controller (spawns Koopa/s)">
-    <value nybble="5" title="Unknown Value 5"/>
     <list nybble="6" title="Color">
       <entry value="0">Green</entry>
       <entry value="1">Red</entry>
     </list>
-    <value nybble="9" title="Unknown Value 9"/>
-    <value nybble="10" title="Unknown Value 10"/>
-    <value nybble="13" title="Unknown Value 13"/>
-    <value nybble="14" title="Unknown Value 14"/>
-    <value nybble="16" title="Unknown Value 16"/>
   </sprite>
   <sprite id="187" name="Path-controlled Rectangle Lift - Normal/Tower">
     <value nybble="7" title="Unknown Nybble 7" comment="Always 1. Not tested."/>
     <value nybble="14" title="Height"/>
     <value nybble="16" title="Width"/>
   </sprite>
-  <sprite id="188" name="Movement Controller - &quot;RailPolyParent&quot;">
+  <sprite id="188" name="Movement Controller - Path">
     <value nybble="1-2" title="Triggering Flag ID"/>
     <value nybble="6" title="Unknown Nybble 6"/>
     <value nybble="8" title="Unknown Nybble 8" comment="Checkbox?"/>
     <value nybble="9" title="Path ID"/>
     <value nybble="21-22" title="Movement ID"/>
   </sprite>
-  <sprite id="189" name="Rectangle Lift - Normal/Tower (Actor 0x45)" notes="Actor: 0x45">
-    <list nybble="18" title="Moving Speed" comment="Values greater then 4 make the lift not move at all. 4 can be glitchy in certain circumstances.">
-      <entry value="0">Slow</entry>
-      <entry value="1">Medium</entry>
-      <entry value="2">Fast</entry>
-      <entry value="3">Very Fast</entry>
-      <entry value="4">Fastest (Glitchy)</entry>
-    </list>
-    <value nybble="20" title="Start delay"/>
-    <value nybble="17" title="Tiles to move"/>
-    <value nybble="19" title="End delay"/>
+  <sprite id="189" name="Rectangle Lift - Normal/Tower (ObjPol)" notes="Actor: 0x45">
     <value nybble="1-2" title="Triggering Flag" comment="Not tested."/>
     <value nybble="5-6" title="Tiles to move (When triggered)"/>
     <list nybble="10" title="Spikes" comment="7/8 produce messed up hitboxes / repeats after 8">
@@ -1193,7 +1360,10 @@
       <entry value="5">Right</entry>
       <entry value="6">Left/Right</entry>
     </list>
-    <value nybble="11" title="Unknown value 11" comment="Not tested. Needs to be set to have a trigger-able lift?"/>
+    <list nybble="11" title="Mode" comment="If 2 it moves the specified tiles to move if the flag is activated and moves back if the flag is deactivated _needs further testing_">
+      <entry value="0">Already moving</entry>
+      <entry value="2">Flag triggered</entry>
+    </list>
     <list nybble="12" title="Direction" comment="Nintendo uses different types for up/down. Values greater than 7 not tested.">
       <entry value="0">Right</entry>
       <entry value="1">Left</entry>
@@ -1206,50 +1376,71 @@
     </list>
     <value nybble="14" title="Height" comment="Value + 1. If it's 0 the game will set it to 1."/>
     <value nybble="16" title="Width" comment="Value + 1. If it's 0 the game will set it to 1."/>
+    <value nybble="17" title="Tiles to move"/>
+    <list nybble="18" title="Moving Speed" comment="Values greater then 4 make the lift not move at all. 4 can be glitchy in certain circumstances.">
+      <entry value="0">Slow</entry>
+      <entry value="1">Medium</entry>
+      <entry value="2">Fast</entry>
+      <entry value="3">Very Fast</entry>
+      <entry value="4">Fastest (Glitchy)</entry>
+    </list>
+    <value nybble="19" title="End delay"/>
+    <value nybble="20" title="Start delay"/>
   </sprite>
-  <sprite id="190" name="Rectangle Lift - Ghost House, Checkered">
-    <value nybble="1-2" title="Triggering Flag" comment="May not exist."/>
-    <value nybble="12" title="Unknown Value 12"/>
-    <value nybble="14" title="Height"/>
-    <value nybble="16" title="Width"/>
+  <sprite id="190" name="Rectangle Lift - Ghost House, Checkered" notes="See 189"/>
+  <sprite id="191" name="Rectangle Lift - Desert" notes="See 189">
+    <value nybble="1-2" title="Triggering Flag"/>
+    <value nybble="5-6" title="Tiles to move (When triggered)"/>
   </sprite>
-  <sprite id="191" name="Rectangle Lift - Desert">
-    <value nybble="1-2" title="Triggering Flag" comment="Values higher than 15 never used, so this may not be a combined value..."/>
-    <value nybble="6" title="Unknown Value 6" comment="..."/>
-    <value nybble="11" title="Unknown Value 11" comment="Always 2..."/>
-    <value nybble="12" title="Unknown Value 12" comment="Always 3..."/>
-    <value nybble="14" title="Width"/>
-    <value nybble="16" title="Height"/>
-  </sprite>
-  <sprite id="192" name="Rectangle Lift - Castle">
-    <value nybble="1-2" title="Triggering Flag" comment="Values higher than 15 never used, so this may not be a combined value..."/>
+  <sprite id="192" name="Rectangle Lift - Castle" notes="See 189">
+    <value nybble="1-2" title="Triggering Flag"/>
+    <value nybble="5-6" title="Tiles to move (When triggered)"/>
     <list nybble="10" title="Spikes">
-      <entry value="0">None?</entry>
+      <entry value="0">None</entry>
       <entry value="1">Top</entry>
       <entry value="2">Bottom</entry>
+      <entry value="3">Top/Bottom</entry>
+      <entry value="4">Left</entry>
+      <entry value="5">Right</entry>
+      <entry value="6">Left/Right</entry>
     </list>
-    <value nybble="12" title="Unknown Value 12" comment="Maybe Move related"/>
-    <value nybble="14" title="Height" comment="Value+1"/>
-    <value nybble="16" title="Width" comment="Value+1"/>
-  </sprite>
-  <sprite id="193" name="Rectangle Lift - Underwater">
-    <value nybble="1-2" title="Triggering Flag"/>
-    <value nybble="6" title="Unknown Value 6"/>
-    <value nybble="11" title="Unknown Value 11"/>
-    <value nybble="12" title="Unknown Value 12"/>
+    <list nybble="11" title="Mode" comment="If 2 it moves the specified tiles to move if the flag is activated and moves back if the flag is deactivated _needs further testing_">
+      <entry value="0">Already moving</entry>
+      <entry value="2">Flag triggered</entry>
+    </list>
+    <list nybble="12" title="Direction">
+      <entry value="0">Right</entry>
+      <entry value="1">Left</entry>
+      <entry value="2">Up</entry>
+      <entry value="3">Down</entry>
+      <entry value="4">Right</entry>
+      <entry value="5">Left</entry>
+      <entry value="6">Up</entry>
+      <entry value="7">Down</entry>
+    </list>
     <value nybble="14" title="Height"/>
     <value nybble="16" title="Width"/>
+    <value nybble="17" title="Tiles to move"/>
+    <list nybble="18" title="Moving Speed">
+      <entry value="0">Slow</entry>
+      <entry value="1">Medium</entry>
+      <entry value="2">Fast</entry>
+      <entry value="3">Very Fast</entry>
+      <entry value="4">Fastest (Glitchy)</entry>
+    </list>
+    <value nybble="19" title="End Delay"/>
+    <value nybble="20" title="Start Delay"/>
   </sprite>
-  <sprite id="194" name="Cheep Cheep">
-    <value nybble="1-2" title="Flag"/>
-    <value nybble="5" title="Unknown Value 5"/>
-    <list nybble="6" title="Type" comment="Some things might not be known about this.">
+  <sprite id="193" name="Rectangle Lift - Underwater" notes="See 189"/>
+  <sprite id="194" name="Cheep Cheep" notes="A fish that lurks the oceans and rivers to attack Mario. Takes 1 fireball shot be killed.">
+    <list nybble="6" title="Type" comment="5 has the same effect as 3, 6 and 7 have the same effect as 4, 8 is unused.">
       <entry value="0">Red</entry>
       <entry value="1">Green</entry>
+      <entry value="2">Frozen</entry>
+      <entry value="3">Swims Right (Short)</entry>
+      <entry value="4">Swims Right</entry>
+      <entry value="8">Yellow/Eep Cheep (Dodges Player)</entry>
     </list>
-    <value nybble="7" title="Unknown Value 7" comment="Checkbox?"/>
-    <value nybble="10" title="Unknown Value 10"/>
-    <value nybble="11" title="Unknown Value 11" comment="Checkbox?"/>
   </sprite>
   <sprite id="195" name="Big Cheep Cheep">
     <list nybble="6" title="Type" comment="May be more to test.">
@@ -1260,15 +1451,7 @@
     <value nybble="11" title="Unknown Value 11" comment="..."/>
   </sprite>
   <sprite id="196" name="Coin Cheep" notes="This appeared in NSMB, and exists unused and incomplete in NSMBW."/>
-  <sprite id="197" name="Jumping Cheep Cheep">
-    <value nybble="1-2" title="Flag" comment="..."/>
-    <value nybble="5" title="Unknown Value 5" comment="..."/>
-    <value nybble="6" title="Unknown Value 6" comment="..."/>
-    <value nybble="8" title="Unknown Value 8" comment="..."/>
-    <value nybble="10" title="Unknown Value 10" comment="..."/>
-    <value nybble="11" title="Unknown Value 11" comment="..."/>
-    <value nybble="12" title="Unknown Value 12" comment="..."/>
-  </sprite>
+  <sprite id="197" name="Jumping Cheep Cheep"/>
   <sprite id="198" name="Jumping Cheep Cheep Spawner OR Spawn Area">
     <value nybble="6" title="Unknown Value 6" comment="Checkbox?"/>
     <value nybble="7" title="Location ID"/>
@@ -1276,82 +1459,74 @@
     <value nybble="11" title="Unknown Value 11" comment="Checkbox?"/>
   </sprite>
   <sprite id="199" name="Cheep Cheep/Coin Circle" notes="Existing In-Game Sprite Data: Incomplete">
-    <checkbox nybble="6" title="Rotate Anticlockwise"/>
+    <checkbox nybble="5" title="Coin Circle" comment="Is this a coin circle?"/>
+    <checkbox nybble="6" title="Rotate Anticlockwise" comment="Makes the circle rotate Anticlockwise."/>
+    <value nybble="7" title="unknown 7"/>
+    <value nybble="8" title="unknown 8"/>
     <value nybble="9" title="Radius" comment="The radius (the amount of space between the edge and the center of the circle). The center of the circle is the sprite location."/>
-    <value nybble="10" title="Amount of Places" comment="Value + 1. This determines the amount of places at which either a Cheep Cheep, a coin or nothing can be spawned."/>
+    <value nybble="10" title="Amount of Cheep Cheeps + 1" comment="How many cheep cheep/coins spawn in the circle."/>
   </sprite>
-  <sprite id="200" name="Spiny Cheep Cheep">
-    <value nybble="1-2" title="Flag"/>
-    <value nybble="5" title="Unknown Value 5" comment="Checkbox?"/>
-    <value nybble="7" title="Unknown Value 7" comment="Checkbox?"/>
-    <value nybble="10" title="Unknown Value 10" comment="Checkbox?"/>
-    <value nybble="11" title="Unknown Value 11" comment="Checkbox?"/>
-    <value nybble="14" title="Unknown Value 14" comment="..."/>
-    <value nybble="16" title="Unknown Value 16" comment="..."/>
-  </sprite>
+  <sprite id="200" name="Spiny Cheep Cheep"/>
   <sprite id="201" name="Cheep Cheep Spawner OR Spawn Area">
     <value nybble="7" title="Unknown Value 7" comment="Always 4..."/>
   </sprite>
   <sprite id="202" name="Camera Controller - Limited to Path" notes="Existing In-Game Sprite Data: Incorrect">
+    <value nybble="5" title="Unknown Value 5"/>
     <value nybble="6" title="Path ID"/>
+    <value nybble="10" title="Unknown Value 10"/>
     <list nybble="11" title="Limit Direction" comment="Other values not tested">
       <entry value="0">Bottom</entry>
       <entry value="1">Top</entry>
     </list>
   </sprite>
-  <sprite id="203" name="Rotation-controlled Brick Block - Rotation Type/s Unknown">
-    <value nybble="21-22" title="Movement ID"/>
-    <list nybble="14" title="Contents">
-      <entry value="0">Nothing</entry>
-      <entry value="1">Coin (as small Mario)</entry>
-      <entry value="2">Fire Flower</entry>
-      <entry value="3">Unused</entry>
-      <entry value="4">Unknown</entry>
-      <entry value="5">Gold Flower</entry>
-      <entry value="6">???</entry>
-      <entry value="7">???</entry>
-      <entry value="8">???</entry>
-      <entry value="9">???</entry>
-      <entry value="10">(UNUSED)</entry>
-      <entry value="11">(UNUSED)</entry>
-      <entry value="12">(UNUSED)</entry>
-      <entry value="13">(UNUSED)</entry>
-      <entry value="14">(UNUSED)</entry>
-      <entry value="15">???</entry>
-    </list>
-  </sprite>
-  <sprite id="204" name="Movement-controlled Brick Block">
-    <value nybble="21-22" title="Movement ID" comment="Checkbox?"/>
-    <list nybble="14" title="Content">
+  <sprite id="203" name="Rotation-controlled Brick Block">
+    <value nybble="1-2" title="Triggering Flag"/>
+    <checkbox nybble="12" title="Upside Down" comment="When checked, the block will appear upside down."/>
+    <list nybble="14" title="Contents" comment="3, 9, 12 and 15 are all empty blocks">
       <entry value="0">Nothing</entry>
       <entry value="1">Coin</entry>
-      <entry value="2">Mushroom</entry>
-      <entry value="3">Nothing</entry>
-      <entry value="5">Super Leaf</entry>
-      <entry value="6">Gold Flower</entry>
-      <entry value="7">Mini Mushroom</entry>
-      <entry value="8">Star</entry>
-      <entry value="9">Coin</entry>
-      <entry value="10">Nothing</entry>
-      <entry value="11">Multiple Coins</entry>
-      <entry value="12">1-Up</entry>
-      <entry value="13">Nothing</entry>
-      <entry value="14">Coin/Mushroom (if small)</entry>
-      <entry value="15">Nothing</entry>
+      <entry value="2">Fire Flower</entry>
+      <entry value="4">Tanooki Leaf</entry>
+      <entry value="5">Gold Flower</entry>
+      <entry value="6">Mini Mushroom</entry>
+      <entry value="7">Star</entry>
+      <entry value="8">Star if invincible</entry>
+      <entry value="10">Multi Coin Block</entry>
+      <entry value="11">1-UP</entry>
+      <entry value="13">Springboard</entry>
+      <entry value="14">Mushroom if small</entry>
     </list>
+    <value nybble="21-22" title="Rotation ID" comment="Match with a Rotation Controller to cause the Block to move."/>
   </sprite>
-  <sprite id="205" name="Red Ring (Red Coin Ring)">
-    <value nybble="1-2" title="Target Flag ID" comment="Use this to link red coins to this ring."/>
-    <list nybble="5" title="Reward" comment="You get a 1-Up if you are big, unless value is 1, then you always get that. Seems to loop.">
+  <sprite id="204" name="Movement-controlled Brick Block">
+    <list nybble="14" title="Content" comment="3, 9, 12 and 15 are all empty blocks">
+      <entry value="0">Nothing</entry>
+      <entry value="1">Coin</entry>
+      <entry value="2">Fire Flower</entry>
+      <entry value="4">Tanooki Leaf</entry>
+      <entry value="5">Gold Flower</entry>
+      <entry value="6">Mini Mushroom</entry>
+      <entry value="7">Star</entry>
+      <entry value="8">Star if invincible</entry>
+      <entry value="10">Multi Coin Block</entry>
+      <entry value="11">1-UP</entry>
+      <entry value="13">Springboard</entry>
+      <entry value="14">Mushroom if small</entry>
+    </list>
+    <value nybble="21-22" title="Movement ID" comment="Checkbox?"/>
+  </sprite>
+  <sprite id="205" name="Red Coin Ring">
+    <value nybble="1-2" title="Target Flag" comment="Use this to link red coins to this ring."/>
+    <list nybble="5" title="Reward" comment="You get a 1-Up if you are big, unless value is 1, then you always get that. Values seem to loop.">
       <entry value="0">Fire Flower</entry>
       <entry value="1">Gold Flower Card</entry>
-      <entry value="2">Gold Fire Flower</entry>
-      <entry value="3">Raccoon Suit</entry>
+      <entry value="2">Gold Flower</entry>
+      <entry value="3">Super Leaf</entry>
     </list>
-    <value nybble="6" title="Unknown 6" comment="Checkbox? Not tested."/>
+    <value nybble="6" title="Unknown 6" comment="Seems to have a different sync than other red coin rings; not much purpose."/>
   </sprite>
   <sprite id="206" name="Gold Ring">
-    <value nybble="1-2" title="Flag" comment="The Gold Ring won't work properly if this is 0 or 255. If you set multiple Gold Rings to the same ID, touching a Gold Ring while the timer is already activated will increase the timer."/>
+    <value nybble="1-2" title="Target Flag" comment="The Gold Ring won't work properly if this is 0 or 255. If you set multiple Gold Rings to the same ID, they will &quot;chain&quot; together, rather than there being a new timer for each Gold Ring."/>
   </sprite>
   <sprite id="207" name="Underwater Rock"/>
   <sprite id="208" name="Big Underwater Rock" notes="Might crash under some circumstances."/>
@@ -1364,9 +1539,9 @@
     <value nybble="11" title="Width" comment="Signed?"/>
     <value nybble="12" title="Height" comment="Signed"/>
   </sprite>
-  <sprite id="211" name="Roy Koopa"/>
+  <sprite id="211" name="Roy Koopa" notes="Requires a castle boss controller to function correctly."/>
   <sprite id="212" name="Roy Battle Walls">
-    <checkbox nybble="6" title="Left Side" comment="0 = right side. _Not tested_."/>
+    <checkbox nybble="6" title="Left Side" comment="Check this if this is the wall on the left."/>
   </sprite>
   <sprite id="213" name="Pokey" notes="Gold Ring Effect: None&#13;&#10;Actor: 0x135">
     <list nybble="6" title="Height" comment="Includes head. Value + 3">
@@ -1400,6 +1575,10 @@
       <entry value="0">Right</entry>
       <entry value="1">Left</entry>
     </list>
+    <list nybble="7" title="Launches" comment="Bob-omb does not work correctly. _needs further testing_">
+      <entry value="0">Bob-omb</entry>
+      <entry value="3">Parabomb</entry>
+    </list>
     <checkbox nybble="8" title="Rotates" comment="Changes direction after every shot."/>
     <list nybble="10" title="Launch Type" comment="Amount of bob-ombs thrown before a break.">
       <entry value="0">Many (Fast)</entry>
@@ -1411,13 +1590,9 @@
       <entry value="10">Three/Short Break (Rotation only)</entry>
       <entry value="11">One/Short Break</entry>
     </list>
-    <list nybble="7" title="Launches" comment="Bob-omb does not work correctly.">
-      <entry value="0">Bob-omb</entry>
-      <entry value="3">Parabomb</entry>
-    </list>
   </sprite>
   <sprite id="216" name="Boss Shutter">
-    <value nybble="6" title="Unknown Value 6" comment="..."/>
+    <checkbox nybble="6" title="Is Right Shutter" mask="2" comment="Check if this shutter is the one on the right."/>
   </sprite>
   <sprite id="217" name="Snake Block">
     <value nybble="1-2" title="Flag" comment="..."/>
@@ -1436,7 +1611,7 @@
     <value nybble="12" title="Group ID" comment="Use this ID to link it to a GroupID (98)"/>
     <value nybble="21-22" title="ID"/>
   </sprite>
-  <sprite id="219" name="Star Coin">
+  <sprite id="219" name="Star Coin" notes="5-12 A2 Z1 has a Star Coin with a nybble 22 of 9 with no linked Rotation Controller. This might be because the sprite ID was changed from that of a Rotation-controlled Star Coin to that of a Star Coin - and the Rotation Controller was deleted.">
     <value nybble="1-2" title="Target Flag ID" comment="When it is collected, this Flag will be switched on."/>
     <list nybble="7" title="Number">
       <entry value="0">One</entry>
@@ -1447,8 +1622,15 @@
     <value nybble="10" title="Unknown Value 10"/>
   </sprite>
   <sprite id="220" name="Rotation-controlled Star Coin">
-    <value nybble="21-22" title="Rotation ID" comment="Not tested."/>
-    <value nybble="13-14" title="Location ID"/>
+    <value nybble="1-2" title="Triggering Flag ID"/>
+    <list nybble="7" title="Number">
+      <entry value="0">One</entry>
+      <entry value="1">Two</entry>
+      <entry value="2">Three</entry>
+    </list>
+    <value nybble="9" title="Unknown Value 9"/>
+    <value nybble="12" title="Unknown Value 12"/>
+    <value nybble="21-22" title="Rotation ID"/>
   </sprite>
   <sprite id="221" name="! Switch" notes="See ? Switch for settings">
     <value nybble="1-2" title="Target Flag ID"/>
@@ -1457,7 +1639,6 @@
     <checkbox nybble="8" title="Reusable" comment="Allows the switch to be used multiple times."/>
     <checkbox nybble="9" title="Not Timed" comment="Disables the timer on the switch."/>
     <checkbox nybble="11" title="Gravity Affected" comment="Causes the switch to fall if nothing is below it."/>
-    <value nybble="13-14" title="Location ID" comment="The ID of the location to trigger events at."/>
   </sprite>
   <sprite id="222" name="Brick Block containing ! Switch" notes="See ? Switch for settings">
     <value nybble="1-2" title="Target Flag ID"/>
@@ -1466,16 +1647,19 @@
     <checkbox nybble="8" title="Reusable" comment="Allows the switch to be used multiple times."/>
     <checkbox nybble="9" title="Not Timed" comment="Disables the timer on the switch."/>
     <checkbox nybble="11" title="Gravity Affected" comment="Causes the switch to fall if nothing is below it."/>
-    <value nybble="13-14" title="Shift Half a Tile Right" comment="Shifts the switch half a tile to the right."/>
   </sprite>
   <sprite id="223" name="? Switch" notes="Doesn't seem to have &quot;Triggering Flag&quot;.">
     <value nybble="1-2" title="Target Flag ID"/>
-    <checkbox nybble="5" title="Shift Half a Tile Right" comment="Shifts the switch half a tile to the right."/>
+    <checkbox nybble="5" title="Shift Half a Tile Right" comment="Shifts the switch half a tile to the right. Unused port from NSMBW."/>
     <checkbox nybble="6" title="Upside Down" comment="Makes the switch upside down."/>
     <checkbox nybble="8" title="Reusable" comment="Allows the switch to be used multiple times."/>
     <checkbox nybble="9" title="Not Timed" comment="Disables the timer on the switch."/>
-    <checkbox nybble="11" title="Gravity Affected" comment="Causes the switch to fall if nothing is below it."/>
-    <value nybble="13-14" title="Location ID" comment="The ID of the location to trigger events at."/>
+    <list nybble="11" title="Behavior">
+      <entry value="0">Normal</entry>
+      <entry value="1">Gravity Affected</entry>
+      <entry value="8">Unknown 8 9</entry>
+      <entry value="10">Gravity Affected and No Music Interrupt</entry>
+    </list>
   </sprite>
   <sprite id="224" name="Brick Block containing ? Switch" notes="See ? Switch for settings">
     <value nybble="1-2" title="Target Flag ID"/>
@@ -1484,16 +1668,15 @@
     <checkbox nybble="8" title="Reusable" comment="Allows the switch to be used multiple times."/>
     <checkbox nybble="9" title="Not Timed" comment="Disables the timer on the switch."/>
     <checkbox nybble="11" title="Gravity Affected" comment="Causes the switch to fall if nothing is below it."/>
-    <value nybble="13-14" title="Location ID" comment="The ID of the location to trigger events at."/>
   </sprite>
-  <sprite id="225" name="P Switch" notes="See ? Switch for settings">
+  <sprite id="225" name="P Switch">
     <value nybble="1-2" title="Target Flag ID"/>
     <checkbox nybble="5" title="Shift Half a Tile Right" comment="Shifts the switch half a tile to the right."/>
     <checkbox nybble="6" title="Upside Down" comment="Makes the switch upside down."/>
     <checkbox nybble="8" title="Reusable" comment="Allows the switch to be used multiple times."/>
     <checkbox nybble="9" title="Not Timed" comment="Disables the timer on the switch."/>
     <checkbox nybble="11" title="Gravity Affected" comment="Causes the switch to fall if nothing is below it."/>
-    <value nybble="13-14" title="Location ID" comment="The ID of the location to trigger events at."/>
+    <value nybble="12" title="Location ID" comment="Used as 3 in 6-16"/>
   </sprite>
   <sprite id="226" name="Brick Block containing P Switch" notes="See ? Switch for settings">
     <value nybble="1-2" title="Target Flag ID"/>
@@ -1502,7 +1685,6 @@
     <checkbox nybble="8" title="Reusable" comment="Allows the switch to be used multiple times."/>
     <checkbox nybble="9" title="Not Timed" comment="Disables the timer on the switch."/>
     <checkbox nybble="11" title="Gravity Affected" comment="Causes the switch to fall if nothing is below it."/>
-    <value nybble="13-14" title="Location ID" comment="The ID of the location to trigger events at."/>
   </sprite>
   <sprite id="227" name="Floating Barrel"/>
   <sprite id="228" name="Boo"/>
@@ -1510,19 +1692,27 @@
     <value nybble="8" title="Unknown Value 8" comment="Checkbox?"/>
   </sprite>
   <sprite id="230" name="Peepa Circle" notes="Possible unused settings:&#13;&#10;* Made up of Boos&#13;&#10;Actor: 0x142">
-    <value nybble="5" title="Unknown Value 5" comment="..."/>
-    <value nybble="6" title="Unknown Value 6" comment="Checkbox?"/>
-    <value nybble="9" title="Unknown Value 9" comment="..."/>
-    <value nybble="10" title="Unknown Value 10" comment="..."/>
-    <value nybble="12" title="Unknown Value 12" comment="Checkbox?"/>
-    <value nybble="13" title="Unknown Value 13" comment="..."/>
-    <value nybble="14" title="Unknown Value 14" comment="..."/>
-    <value nybble="16" title="Unknown Value 16" comment="..."/>
+    <list nybble="5" title="Rotation Speed" comment="The speed of the peepas as they rotate. Any values equal to or above 3 return 0.">
+      <entry value="0">Slow</entry>
+      <entry value="1">Medium</entry>
+      <entry value="2">Fast</entry>
+    </list>
+    <checkbox nybble="6" title="Counterclockwise Movement" comment="Check this to make the Peepas spin in a counterclockwise motion."/>
+    <value nybble="9" title="Gap Position (Bitfield)" comment="The gap where the player can jump through. Is a bitfield."/>
+    <value nybble="10" title="Number Of Peepas" comment="The number of peepas in the circle."/>
+    <checkbox nybble="12" title="Unknown Checkbox 12"/>
+    <value nybble="13" title="Diameter"/>
+    <value nybble="14" title="Sync Related?"/>
+    <value nybble="15" title="Unknown Value 15" comment="Inferred."/>
+    <value nybble="16" title="Unknown Value 16"/>
   </sprite>
   <sprite id="231" name="Boohemoth" notes="Actor: 0x12d">
     <value nybble="1-2" title="Triggering Flag" comment="Spawns with &quot;flourish&quot; when flag is triggered. _Needs further testing_."/>
-    <value nybble="5" title="Unknown Value 5"/>
-    <value nybble="6" title="Unknown Value 6"/>
+    <list nybble="5" title="Direction" comment="Changes the direction of the Boohemoth, with 0 being right, and 1 being left.">
+      <entry value="1">Left</entry>
+      <entry value="0">Right</entry>
+    </list>
+    <checkbox nybble="6" title="Disappear when looked at?" comment="Disappear when looked at permanently until re-activated. ~Needs further testing~"/>
     <value nybble="8" title="Path ID"/>
     <value nybble="9" title="Unknown Value 9"/>
   </sprite>
@@ -1535,16 +1725,16 @@
     </list>
     <value nybble="7" title="Unknown Value 7" comment="Checkbox?"/>
   </sprite>
-  <sprite id="233" name="Upside-down Spiny">
+  <sprite id="233" name="Ceiling Spiny">
     <value nybble="7" title="Unknown Value 7" comment="..."/>
   </sprite>
-  <sprite id="234" name="Spiked Ball" notes="This sprite needs the following things tested:&#13;&#10;- nybble 6: see comment&#13;&#10;- nybble 7: add measurements of blocks per tick on the game clock.&#13;&#10;- nybble 14: see comment">
+  <sprite id="234" name="Spiked Ball">
     <list nybble="5" title="Direction" comment="Sets the starting direction.">
       <entry value="0">Left</entry>
       <entry value="1">Right</entry>
     </list>
-    <list nybble="6" title="Speed" comment="Gotta Go Fast!">
-      <entry value="0">Does Not Move</entry>
+    <list nybble="6" title="Speed">
+      <entry value="0">Only Moves on Slope</entry>
       <entry value="1">Slow</entry>
       <entry value="2">Medium</entry>
       <entry value="3">Fast</entry>
@@ -1557,47 +1747,42 @@
       <entry value="2">Pass Through Walls</entry>
       <entry value="3">Remain at One Height</entry>
     </list>
-    <value nybble="15" title="Unknown Value 15" comment="Checkbox?"/>
+    <value nybble="15" title="Unknown 15"/>
   </sprite>
   <sprite id="235" name="Big Spiked Ball">
-    <value nybble="1-2" title="Flag"/>
     <list nybble="5" title="Direction" comment="Sets the starting direction.">
       <entry value="0">Left</entry>
       <entry value="1">Right</entry>
     </list>
-    <list nybble="6" title="Speed" comment="Gotta Go Fast!">
-      <entry value="0">Does Not Move</entry>
+    <list nybble="6" title="Speed">
+      <entry value="0">Only Moves on Slope</entry>
       <entry value="1">Slow</entry>
       <entry value="2">Medium</entry>
       <entry value="3">Fast</entry>
       <entry value="4">Super Fast</entry>
     </list>
     <checkbox nybble="7" title="Maintain Momentum" comment="Spiked Ball keeps it's momentum when it hits other objects."/>
-    <value nybble="9" title="Unknown Value 9" comment="Checkbox?"/>
-    <value nybble="11" title="Unknown Value 11" comment="..."/>
     <list nybble="14" title="Behaviour" comment="Behaviours loop after value 3">
       <entry value="0">Normal</entry>
       <entry value="1">Stationary</entry>
       <entry value="2">Pass Through Walls</entry>
       <entry value="3">Remain at One Height</entry>
     </list>
-    <value nybble="15" title="Unknown Value 15" comment="Checkbox?"/>
-    <value nybble="16" title="Unknown Value 16" comment="Checkbox?"/>
   </sprite>
   <sprite id="236" name="Mega Spiked Ball">
     <list nybble="5" title="Direction" comment="Sets the starting direction.">
       <entry value="0">Left</entry>
       <entry value="1">Right</entry>
     </list>
-    <list nybble="6" title="Speeds" comment="Gotta Go Fast!">
-      <entry value="0">Does Not Move</entry>
-      <entry value="1">Slow</entry>
-      <entry value="2">Medium</entry>
-      <entry value="3">Fast</entry>
-      <entry value="4">Super Fast</entry>
-    </list>
+    <value nybble="6" title="Speed" comment="Not the same as the other Spiked Balls' speed values"/>
     <checkbox nybble="7" title="Maintain Momentum" comment="Spiked Ball keeps it's momentum when it hits other objects."/>
-    <value nybble="12" title="Unknown Value 12" comment="Always 1..."/>
+    <value nybble="12" title="Unknown 12"/>
+    <list nybble="14" title="Behaviour" comment="Behaviours loop after value 3">
+      <entry value="0">Normal</entry>
+      <entry value="1">Stationary</entry>
+      <entry value="2">Pass Through Walls</entry>
+      <entry value="3">Remain at One Height</entry>
+    </list>
   </sprite>
   <sprite id="237" name="Spiked Ball Spawner" notes="Used in NSMBW, may have similar values to that. Likely to have unused values.">
     <value nybble="7" title="Unknown Value 7" comment="Checkbox?"/>
@@ -1651,7 +1836,7 @@
     <value nybble="10" title="Unknown Value 10" comment="Always 12..."/>
   </sprite>
   <sprite id="244" name="Chain Chomp" notes="Actor: 0x044&#13;&#10;Place the sprite two blocks above where you want the bottom of the pole to be.">
-    <list nybble="6" title="Pole Length" comment="Repeats after 1. _Needs further testing_.">
+    <list nybble="6" title="Pole Length" comment="The length of the pole.">
       <entry value="0">Three</entry>
       <entry value="1">One</entry>
     </list>
@@ -1668,13 +1853,13 @@
   </sprite>
   <sprite id="249" name="Rotation-controlled Rectangle Lift - Normal/Tower">
     <value nybble="12" title="Rotation Speed" comment="Not tested."/>
-    <value nybble="22" title="Rotation ID" comment="Not tested."/>
     <value nybble="14" title="Height"/>
     <value nybble="16" title="Width"/>
+    <value nybble="22" title="Rotation ID" comment="Not tested."/>
   </sprite>
   <sprite id="250" name="Rotation-controlled Rectangle Lift  - Ghost House, Checkered">
-    <value nybble="16" title="Unknown Value 16" comment="..."/>
     <value nybble="14" title="Height"/>
+    <value nybble="16" title="Unknown Value 16" comment="..."/>
     <value nybble="16" title="Width"/>
   </sprite>
   <sprite id="251" name="Treasure Chest" notes="Actor: 0x19e">
@@ -1696,34 +1881,29 @@
     </list>
   </sprite>
   <sprite id="252" name="Item" notes="Mega Mario general info (see individual actors for Mega Mario behaviours relating to them):&#13;&#10;* Can slide down slope if ground pounds onto slope&#13;&#10;* Cannot grab onto horizontal rope&#13;&#10;* Game crashes after exiting level via any method other than pause menu, death, goal pole or defeating renzor&#13;&#10;* Mario's status is back to Super after spawning via entrance">
-    <value nybble="1-2" title="Triggering Flag" comment="Spawns when flag is on. Doesn't despawn when flag is off."/>
-    <value nybble="5" title="Unknown Value 5" comment="Only 0, 1 and 2 are used..."/>
-    <value nybble="6" title="Unknown Value 6" comment="..."/>
-    <value nybble="7" title="Unknown Value 7" comment="Checkbox?"/>
-    <value nybble="8" title="Unknown Value 8" comment="..."/>
-    <checkbox nybble="9" title="Jumps Right" comment="Doesn't work with Item nybble set to 4 or if item is appeared by Toad."/>
-    <list nybble="11" title="Item" comment="Seems to repeat after 15. 1-Up also works when appeared by Toad actor..">
+    <value nybble="1-2" title="Triggering Flag ID" comment="Spawns when flag is on. Doesn't despawn when flag is off."/>
+    <value nybble="5" title="Item Speed" comment="0 = normal"/>
+    <value nybble="6" title="Unknown 6"/>
+    <value nybble="7" title="Unknown 7"/>
+    <value nybble="8" title="No. to spawn"/>
+    <value nybble="9" title="Unknown 9"/>
+    <list nybble="11" title="Item" comment="1,3,8,10,12 seem to be the same as 0">
       <entry value="0">Super Mushroom</entry>
-      <entry value="1">Super Mushroom</entry>
       <entry value="2">Fire Flower</entry>
-      <entry value="3">Super Mushroom</entry>
-      <entry value="4">Super Mushroom if small and Super Leaf if big</entry>
+      <entry value="4">Super Leaf</entry>
       <entry value="5">Gold Flower</entry>
       <entry value="6">Mini Mushroom</entry>
       <entry value="7">Super Star</entry>
-      <entry value="8">Super Mushroom</entry>
       <entry value="9">Mega Mushroom</entry>
-      <entry value="10">Super Mushroom</entry>
       <entry value="11">1-Up</entry>
-      <entry value="12">Super Mushroom</entry>
     </list>
   </sprite>
   <sprite id="253" name="Larry Koopa - &quot;Floor/Stage/Platform&quot;" notes="Existing In-Game Sprite Data: Accurate.">
     <value nybble="11" title="Unknown Nybble 11"/>
   </sprite>
   <sprite id="254" name="Vertically-moving Lift - Totem">
-    <value nybble="6" title="Width"/>
-    <value nybble="8" title="Distance" comment="In blocks."/>
+    <value nybble="6" title="Width" comment="Value + 1"/>
+    <value nybble="8" title="Distance" comment="Distance the platform moves up, in blocks."/>
   </sprite>
   <sprite id="255" name="Bowser Head Statue">
     <value nybble="5" title="Unknown Value 5" comment="..."/>
@@ -1749,8 +1929,8 @@
     <value nybble="6" title="Unknown Value 6" comment="Checkbox? Only checked in W9"/>
   </sprite>
   <sprite id="259" name="Rotation-controlled Hard Block">
-    <checkbox nybble="12" title="Stays level" comment="Rotates normally, except the object does not become unlevel."/>
-    <list nybble="13" title="Type" comment="Seems to repeat after 3.">
+    <checkbox nybble="12" title="Unknown 12" comment="Rotates normally, except the object does not become unlevel."/>
+    <list nybble="13" title="Type" comment="3 only has the appearance of a Brick Block. Seems to repeat after 3.">
       <entry value="0">Stone</entry>
       <entry value="1">Rotation Pivot</entry>
       <entry value="2">Used</entry>
@@ -1765,11 +1945,12 @@
   <sprite id="264" name="Reznor Cutscene Controller - Ludwig von Koopa"/>
   <sprite id="265" name="Reznor Cutscene Controller - No Koopaling" notes="Existing In-Game Sprite Data:&#13;&#10;Used in World 6"/>
   <sprite id="266" name="Flash-attack Koopalings in Clown Car">
-    <value nybble="6" title="Start Location ID" comment="..."/>
     <value nybble="5" title="End Location ID" comment="..."/>
+    <value nybble="6" title="Start Location ID" comment="..."/>
     <value nybble="11" title="Unknown Value 11" comment="..."/>
   </sprite>
   <sprite id="267" name="Long ? Block">
+    <value nybble="1-2" title="Unknown Field 1-2"/>
     <list nybble="14" title="Contents" comment="Always contains two coins plus whatever is selected here. ">
       <entry value="0">Nothing</entry>
       <entry value="1">Coin</entry>
@@ -1799,20 +1980,26 @@
     <value nybble="16" title="Width"/>
   </sprite>
   <sprite id="269" name="Gold Ship" notes="Existing In-Game Sprite Data:&#13;&#10;Incomplete">
-    <value nybble="12" title="Path Controller ID" comment="Use this to link this sprite to 188."/>
-    <value nybble="1" title="Unknown value 22" comment="Set to 1 at start of stage, And 2 at mid point?"/>
+    <value nybble="12" title="Unknown 12"/>
+    <value nybble="22" title="Movement ID" comment="Link with 188"/>
   </sprite>
   <sprite id="270" name="Icy Spiked Ball" notes="Icy version of a regular Spike Ball">
     <list nybble="5" title="Direction" comment="Sets the starting direction.">
       <entry value="0">Left</entry>
       <entry value="1">Right</entry>
     </list>
-    <list nybble="6" title="Speed" comment="Gotta Go Fast!">
-      <entry value="0">Does Not Move</entry>
+    <list nybble="6" title="Speed">
+      <entry value="0">Only Moves on Slope</entry>
       <entry value="1">Slow</entry>
       <entry value="2">Medium</entry>
       <entry value="3">Fast</entry>
       <entry value="4">Super Fast</entry>
+    </list>
+    <list nybble="14" title="Behaviour" comment="Behaviours loop after value 3">
+      <entry value="0">Normal</entry>
+      <entry value="1">Stationary</entry>
+      <entry value="2">Pass Through Walls</entry>
+      <entry value="3">Remain at One Height</entry>
     </list>
   </sprite>
   <sprite id="271" name="Big Icy Spiked Ball" notes="Likely to have identical sprite data to normal Big Spike Ball">
@@ -1820,12 +2007,18 @@
       <entry value="0">Left</entry>
       <entry value="1">Right</entry>
     </list>
-    <list nybble="6" title="Speed" comment="Speeds go in order from slow to fast.">
-      <entry value="0">No movement</entry>
-      <entry value="1">Speed 1</entry>
-      <entry value="2">Speed 2</entry>
-      <entry value="3">Speed 3</entry>
-      <entry value="4">Speed 4</entry>
+    <list nybble="6" title="Speed">
+      <entry value="0">Only Moves on Slope</entry>
+      <entry value="1">Slow</entry>
+      <entry value="2">Medium</entry>
+      <entry value="3">Fast</entry>
+      <entry value="4">Super Fast</entry>
+    </list>
+    <list nybble="14" title="Behaviour" comment="Behaviours loop after value 3">
+      <entry value="0">Normal</entry>
+      <entry value="1">Stationary</entry>
+      <entry value="2">Pass Through Walls</entry>
+      <entry value="3">Remain at One Height</entry>
     </list>
   </sprite>
   <sprite id="272" name="Peach Cage for cutscene OR Peach cage Cutscene-controller"/>
@@ -1835,7 +2028,11 @@
     <value nybble="14" title="Type" comment="Needs more detail, and does it loop after this?"/>
   </sprite>
   <sprite id="274" name="Flying Gold Block Spawn Point" notes="This is similar in function to the Red ? Blocks and the Hammer Bros that appear in NSMB.">
-    <value nybble="5" title="Unknown Value 5"/>
+    <list nybble="5" title="Spawn Position">
+      <entry value="0">Flies Away</entry>
+      <entry value="1">Flies side to side</entry>
+      <entry value="2">Flies in place</entry>
+    </list>
     <list nybble="6" title="Spawn at">
       <entry value="0">Start</entry>
       <entry value="1">Checkpoint</entry>
@@ -1845,42 +2042,34 @@
   </sprite>
   <sprite id="275" name="Long ? Block - Underground" notes="Always contains two coins plus the item selected in Content.">
     <list nybble="14" title="Contents" comment="Always contains two coins plus whatever is selected here. Only 1 and 2 are used.">
-      <entry value="0">Nothing</entry>
+      <entry value=" 0">Empty</entry>
       <entry value="1">Coin</entry>
       <entry value="2">Fire Flower</entry>
-      <entry value="3">Nothing</entry>
-      <entry value="4">Raccoon Leaf</entry>
-      <entry value="5">Golden Flower</entry>
+      <entry value="4">Tanooki Leaf</entry>
+      <entry value="5">Gold Flower</entry>
       <entry value="6">Mini Mushroom</entry>
-      <entry value="7">Super Star</entry>
-      <entry value="8">Coin</entry>
-      <entry value="9">Nothing</entry>
-      <entry value="10">Multi hit lots of coins</entry>
-      <entry value="11">1-UP Mushroom</entry>
-      <entry value="12">Nothing</entry>
-      <entry value="13">Spring</entry>
-      <entry value="14">Coin / Mushroom (if small)</entry>
-      <entry value="15">Nothing</entry>
+      <entry value="7">Star</entry>
+      <entry value="8">Star/Coin</entry>
+      <entry value="10">10 Coins</entry>
+      <entry value="11">1-UP</entry>
+      <entry value="13">Trampoline</entry>
+      <entry value="14">Mushroom/Coin</entry>
     </list>
   </sprite>
   <sprite id="276" name="Long ? Block - lava">
     <list nybble="14" title="Contents" comment="Always contains two coins plus whatever is selected here. Only 1 and 4 are used.">
-      <entry value="0">Nothing</entry>
+      <entry value=" 0">Empty</entry>
       <entry value="1">Coin</entry>
       <entry value="2">Fire Flower</entry>
-      <entry value="3">Nothing</entry>
-      <entry value="4">Raccoon Leaf</entry>
-      <entry value="5">Golden Flower</entry>
+      <entry value="4">Tanooki Leaf</entry>
+      <entry value="5">Gold Flower</entry>
       <entry value="6">Mini Mushroom</entry>
-      <entry value="7">Super Star</entry>
-      <entry value="8">Coin</entry>
-      <entry value="9">Nothing</entry>
-      <entry value="10">Multi hit lots of coins</entry>
-      <entry value="11">1-UP Mushroom</entry>
-      <entry value="12">Nothing</entry>
-      <entry value="13">Spring</entry>
-      <entry value="14">Coin / Mushroom (if small)</entry>
-      <entry value="15">Nothing</entry>
+      <entry value="7">Star</entry>
+      <entry value="8">Star/Coin</entry>
+      <entry value="10">10 Coins</entry>
+      <entry value="11">1-UP</entry>
+      <entry value="13">Trampoline</entry>
+      <entry value="14">Mushroom/Coin</entry>
     </list>
   </sprite>
   <sprite id="277" name="Switchable Conveyor Belt">
@@ -1891,7 +2080,7 @@
     <checkbox nybble="6" title="Spawns if Mario Spawned From Checkpoint" comment="Only spawns if Mario spawned from a Checkpoint."/>
   </sprite>
   <sprite id="279" name="Lemmy Ball - Non-boss">
-    <value nybble="5" title="Unknown Value 5" comment="Always 1..."/>
+    <checkbox nybble="5" title="Unknown Checkbox 5" comment="Always 1..."/>
   </sprite>
   <sprite id="280" name="+ Clock" notes="Actor: 0x192&#13;&#10;Notes: Only spawns in Coin Rush.&#13;&#10;Todo: check for unused nybbles and values.">
     <list nybble="6" title="Type">
@@ -1901,8 +2090,6 @@
   </sprite>
   <sprite id="281" name="Path-controlled Rectangle Lift - Ice">
     <value nybble="21-22" title="Movement ID"/>
-    <value nybble="14" title="Height"/>
-    <value nybble="16" title="Width"/>
   </sprite>
   <sprite id="282" name="Rectangle Lift - Ghost House" notes="See Rectangle Lift - Normal/Tower (Actor 0x45)."/>
   <sprite id="283" name="Rectangle Lift - Larry Battle">
@@ -1912,9 +2099,15 @@
     <value nybble="14" title="Height"/>
     <value nybble="16" title="Width"/>
   </sprite>
-  <sprite id="284" name="Chandelier Lift - Small"/>
-  <sprite id="285" name="Chandelier Lift - Medium"/>
-  <sprite id="286" name="Chandelier Lift - Big"/>
+  <sprite id="284" name="Chandelier Lift - Small">
+    <value nybble="22" title="Rotation ID"/>
+  </sprite>
+  <sprite id="285" name="Chandelier Lift - Medium">
+    <value nybble="22" title="Rotation ID"/>
+  </sprite>
+  <sprite id="286" name="Chandelier Lift - Big">
+    <value nybble="22" title="Rotation ID"/>
+  </sprite>
   <sprite id="287" name="Door - Toad House" notes="Existing In-Game Sprite Data: Incomplete"/>
   <sprite id="288" name="Resources Loader - Mega Mario"/>
   <sprite id="289" name="Bouncy Mushroom - Castle">
@@ -1940,11 +2133,32 @@
   <sprite id="296" name="Toad">
     <value nybble="1-2" title="Flag"/>
   </sprite>
-  <sprite id="297" name="Track-controlled, Switchable Climbable Fence">
-    <value nybble="5" title="Unknown Value 5" comment="..."/>
-    <value nybble="6" title="Unknown Value 6" comment="..."/>
-    <value nybble="8" title="Speed?" comment="..."/>
-    <value nybble="9" title="Move when on?" comment="Checkbox with mask 2?"/>
+  <sprite id="297" name="Horizontal Rail-controlled Switchable Fence" notes="Painted red. Switches when hit. The actor is WireLineSlide.">
+    <list nybble="5" title="Speed" comment="Speed of the fence.">
+      <entry value="0">Fastest</entry>
+      <entry value="1">Fast</entry>
+      <entry value="2">Medium Fast</entry>
+      <entry value="3">Medium Slow</entry>
+      <entry value="4">Slow</entry>
+      <entry value="5">Slowest</entry>
+    </list>
+    <list nybble="6" title="Size" comment="The size of the fence.">
+      <entry value="0">3x3</entry>
+      <entry value="1">3x6</entry>
+      <entry value="2">6x3</entry>
+      <entry value="3">Unused 6x6 with 3x3 model</entry>
+    </list>
+    <list nybble="8" title="Side of Rail" comment="Side of the rail that the fence starts on.">
+      <entry value="2">Bottom</entry>
+      <entry value="3">Top</entry>
+    </list>
+    <checkbox nybble="9" title="Move when Touched" mask="2" comment="Nybble with mask 2. Makes the fence so Mario has to activate it before it starts moving."/>
+    <list nybble="10" title="Direction" comment="The direction the fence starts moving in.">
+      <entry value="0">Right</entry>
+      <entry value="1">Left</entry>
+      <entry value="2">Right</entry>
+      <entry value="3">Left</entry>
+    </list>
   </sprite>
   <sprite id="298" name="Resources Loader - Applause Coin" notes="Needed for the applause coin to work, place at the start of the level.">
     <value nybble="12" title="Unknown Value 12" comment="Always 1..."/>
@@ -1968,7 +2182,7 @@
     <value nybble="7" title="Unknown Value 7" comment="Always 2..."/>
     <value nybble="12" title="Unknown Value 12" comment="Always 1..."/>
   </sprite>
-  <sprite id="304" name="&quot;KoopaLastFire&quot;" notes="I assume this is spawned by some actor in or before the battle with Giant Bowser or Giant Dry Bowser."/>
+  <sprite id="304" name="&quot;KoopaLastFire&quot; [UNUSED]" notes="I assume this is spawned by some actor in or before the battle with Giant Bowser or Giant Dry Bowser."/>
   <sprite id="305" name="Path-controlled Funny-shaped Ice Lift">
     <value nybble="1-2" title="Unknown Flag ID" comment="_Not tested_."/>
     <value nybble="5" title="Path ID" comment="_Not tested_."/>
@@ -1986,15 +2200,15 @@
     <value nybble="1-2" title="Triggering Flag"/>
     <value nybble="6" title="Tiles to move"/>
     <value nybble="11" title="Strange Field" comment="Only moves on flag trigger if this=2"/>
-    <value nybble="14" title="Useless" comment="Probably meant to be width, but does nothing"/>
-    <value nybble="16" title="Useless" comment="Probably meant to be height, but does nothing"/>
-    <value nybble="18" title="New Field 18"/>
     <list nybble="12" title="Direction">
       <entry value="0">Right</entry>
       <entry value="1">Left</entry>
       <entry value="2">Up</entry>
       <entry value="3">Down</entry>
     </list>
+    <value nybble="14" title="Useless" comment="Probably meant to be width, but does nothing"/>
+    <value nybble="16" title="Useless" comment="Probably meant to be height, but does nothing"/>
+    <value nybble="18" title="New Field 18"/>
   </sprite>
   <sprite id="308" name="Rectangle Lift - Sand">
     <value nybble="1-2" title="Triggering Flag"/>
@@ -2016,10 +2230,18 @@
     <value nybble="6" title="Unknown Value 6" comment="..."/>
   </sprite>
   <sprite id="311" name="Big Coin Meteor" notes="The large coin flying in all rainbow levels">
-    <value nybble="1-2" title="Flag"/>
-    <value nybble="6" title="Unknown Value 6" comment="Checkbox?"/>
-    <value nybble="9" title="Unknown Value 9" comment="..."/>
-    <value nybble="10" title="Unknown Value 10" comment="..."/>
+    <value nybble="1-2" title="Triggering Flag"/>
+    <list nybble="6" title="Coin Value" comment="Determines the value of the coin. Values after 1 are repeated.">
+      <entry value="0">10</entry>
+      <entry value="1">100</entry>
+    </list>
+    <list nybble="7" title="Direction Of Movement" comment="Determines the direction the coin will move in.">
+      <entry value="0">Left</entry>
+      <entry value="1">Right</entry>
+    </list>
+    <value nybble="8" title="Y Position Offset" comment="Offsets the Y position by +2 blocks for each value."/>
+    <value nybble="9" title="Speed (Horizontal)" comment="0 Is slowest, 15 is fastest."/>
+    <value nybble="10" title="Speed (Vertical)" comment="0 Is slowest, 15 is fastest."/>
   </sprite>
   <sprite id="312" name="Disabler - Inventory" notes="Existing In-Game Sprite Data:&#13;&#10;Incomplete"/>
   <sprite id="313" name="Rectangle Lift - Underwater, Tall">
@@ -2041,13 +2263,20 @@
     <value nybble="6" title="Location ID"/>
   </sprite>
   <sprite id="317" name="Spore Effect" notes="Makes spores appear in front of the level, like the lava and snow effects."/>
-  <sprite id="318" name="Rectangle Lift - Normal/Tower (Actor 0x50)" notes="Actor: 0x50">
-    <value nybble="1-2" title="Triggering Flag ID" comment="..."/>
-    <value nybble="6" title="Unknown Value 6" comment="..."/>
-    <value nybble="11" title="Unknown Value 11" comment="..."/>
-    <value nybble="12" title="Unknown Value 12" comment="..."/>
-    <value nybble="14" title="Height"/>
-    <value nybble="16" title="Width"/>
+  <sprite id="318" name="Event Activated Rectangle Lift - Normal/Tower" notes="Actor: 0x50">
+    <value nybble="1-2" title="Triggering Event ID" comment="This is a required field in order to make this move."/>
+    <value nybble="6" title="Distance" comment="The distance the block moves after activating."/>
+    <value nybble="11" title="Unknown Value 11"/>
+    <list nybble="12" title="Direction" comment="The direction the block moves after activating.">
+      <entry value="0">???</entry>
+      <entry value="1">???</entry>
+      <entry value="2">Down</entry>
+      <entry value="3">???</entry>
+      <entry value="4">???</entry>
+      <entry value="5">Left</entry>
+    </list>
+    <value nybble="14" title="Height" comment="Seems to be reversed. The smaller the value, the bigger."/>
+    <value nybble="18" title="Unknown Value 18"/>
   </sprite>
   <sprite id="319" name="Staff Credits - Koopa Clown Car" notes="Actor: 0x15a&#13;&#10;Existing In-Game Sprite Data: Incorrect"/>
   <sprite id="320" name="Move-once-on Path-controlled Lift">
@@ -2056,18 +2285,11 @@
     <value nybble="15" title="Unknown Value 15" comment="Always 3"/>
     <value nybble="16" title="Unknown Value 16" comment="Always 1"/>
   </sprite>
-  <sprite id="321" name="Mushroom Platform - Snow" notes="Actor: 0x02f">
-    <value nybble="5" title="Unknown Value 5" comment="..."/>
-    <value nybble="6" title="Unknown Value 6" comment="..."/>
-    <value nybble="7" title="Unknown Value 7" comment="..."/>
-    <value nybble="8" title="Unknown Value 8" comment="..."/>
-    <value nybble="9" title="Unknown Value 9" comment="..."/>
-    <value nybble="10" title="Unknown Value 10" comment="..."/>
-  </sprite>
+  <sprite id="321" name="Mushroom Platform - Snow" notes="Actor: 0x02f"/>
   <sprite id="322" name="Big Grinder" notes="Actor: 0x148">
     <value nybble="2" title="Triggering Flag" comment="Appeared if on. No &quot;flourish&quot; for appearing/disappearing."/>
     <value nybble="5" title="Speed"/>
-    <value nybble="6" title="Unknown Value 6"/>
+    <value nybble="6" title="Unknown Value 6" comment="Used in 3-16 as 0 or 1"/>
   </sprite>
   <sprite id="323" name="Ending Birds" notes="Existing In-Game Sprite Data:&#13;&#10;Incomplete&#13;&#10;No nybbles set&#13;&#10;&#13;&#10;How does this act in a normal level?"/>
   <sprite id="324" name="Solid &quot;Beam&quot;"/>

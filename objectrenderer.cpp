@@ -88,7 +88,7 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
         ret = new BurnerRenderer(spr, "!burner_up");
         break;
     case 44: // Track-controlled Burner - Four Directions
-        ret = new FourBurnerRenderer(spr, "four_track_controlled_burner/");
+        ret = new FourBurnerRenderer(spr);
         break;
     case 45: // Track Controlled Burner Right
         ret = new BurnerRenderer(spr, "track_burner_right");
@@ -247,13 +247,13 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
         ret = new BanzaiBillRenderer(spr);
         break;
     case 120: // Up Down Mushroom
-        ret = new UpDownMushroomRenderer(spr, "up_down_mushroom/");
+        ret = new UpDownMushroomRenderer(spr);
         break;
     case 123: // Bouncy Mushroom
         ret = new BouncyMushroomRenderer(spr);
         break;
     case 124: // Mushroom Platform
-        ret = new MushroomPlatformRenderer(spr, "mushroom_platform/");
+        ret = new MushroomPlatformRenderer(spr);
         break;
     case 125: // Bowser
         ret = new NormalImageRenderer(spr, "bowser.png");
@@ -295,13 +295,13 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
         ret = new NormalImageRenderer(spr, "conveyor_belt_switch.png");
         break;
     case 144: // Horizontal Lift
-        ret = new LiftRenderer(spr, "lift_platform/");
+        ret = new LiftRenderer(spr);
         break;
     case 145: // Vertical Lift
-        ret = new LiftRenderer(spr, "lift_platform/");
+        ret = new LiftRenderer(spr);
         break;
     case 146: // Track Controlled Lift
-        ret = new TrackLiftRenderer(spr, "track_controlled_lift/");
+        ret = new TrackLiftRenderer(spr);
         break;
     case 147: // 3 Plat rickshaw
         ret = new ThreePlatRickRenderer(spr);
@@ -316,7 +316,7 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
         ret = new NormalImageRenderer(spr, "seesaw_lift.png");
         break;
     case 151: // Scale Lift
-        ret = new ScalePlatformRenderer(spr, "scale_lift/");
+        ret = new ScalePlatformRenderer(spr);
         break;
     case 154: // 3 Plat rickshaw
         ret = new FourPlatRickRenderer(spr);
@@ -685,16 +685,16 @@ void CircleRenderer::render(QPainter *painter, QRect *)
 // Sprite Renderers
 
 // Sprite 4/5/6/7: Burner Right/Down/Left/Up
-BurnerRenderer::BurnerRenderer(const Sprite *spr, QString basePath)
+BurnerRenderer::BurnerRenderer(const Sprite *spr, QString name)
 {
     this->spr = spr;
-    this->basePath = basePath;
+    this->name = name;
 }
 
 void BurnerRenderer::render(QPainter *painter, QRect *)
 {
-    if (spr->getNybble(4) == 1) painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), QPixmap(basePath + "_big.png"));
-    else painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), QPixmap(basePath + ".png"));
+    if (spr->getNybble(4) == 1) painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), ImageCache::getInstance()->get(SpriteImg, name + "_big.png"));
+    else painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), ImageCache::getInstance()->get(SpriteImg, name + ".png"));
 }
 
 
@@ -853,27 +853,26 @@ void ReznorBlockRenderer::render(QPainter *painter, QRect *)
 }
 
 // Sprite 44: Track-controlled Burner - Four Directions
-FourBurnerRenderer::FourBurnerRenderer(const Sprite *spr, QString basePath)
+FourBurnerRenderer::FourBurnerRenderer(const Sprite *spr)
 {
     this->spr = spr;
-    this->basePath = basePath;
 
-    if(spr->getNybble(4) == 0)
-    {
-        big = "";
+    QString name = "four_track_controlled_burner/";
+    int size;
+
+    if(spr->getNybble(4) % 2 == 0)
         size = 60;
-    }
     else
     {
-        big = "big_";
+        name.append("big_");
         size = 120;
     }
 
-    up = new NormalImageRenderer(QRect(spr->getx(),spr->gety()-(size), 22, size), basePath + big + "up.png");
-    down = new NormalImageRenderer(QRect(spr->getx(),spr->gety()+21, 22, size), basePath + big + "down.png");
-    left = new NormalImageRenderer(QRect(spr->getx()-(size),spr->gety(), size, 22), basePath + big + "left.png");
-    right = new NormalImageRenderer(QRect(spr->getx()+21,spr->gety(), size, 22), basePath + big + "right.png");
-    center = new NormalImageRenderer(QRect(spr->getx(),spr->gety(), 21, 21), basePath + "center.png");
+    up = new NormalImageRenderer(QRect(spr->getx(),spr->gety()-(size), 22, size), name + "up.png");
+    down = new NormalImageRenderer(QRect(spr->getx(),spr->gety()+21, 22, size), name + "down.png");
+    left = new NormalImageRenderer(QRect(spr->getx()-(size),spr->gety(), size, 22), name + "left.png");
+    right = new NormalImageRenderer(QRect(spr->getx()+21,spr->gety(), size, 22), name + "right.png");
+    center = new NormalImageRenderer(QRect(spr->getx(),spr->gety(), 21, 21), "four_track_controlled_burner/center.png");
 
 }
 void FourBurnerRenderer::render(QPainter *painter, QRect *drawrect)
@@ -892,10 +891,8 @@ void FourBurnerRenderer::render(QPainter *painter, QRect *drawrect)
 // Sprite 51: Fuzzy
 FuzzyRenderer::FuzzyRenderer(const Sprite *spr)
 {
-    QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/");
-
-    if (spr->getNybble(7) == 1) img = new NormalImageRenderer(spr, basePath + "fuzzy_big.png");
-    else img = new NormalImageRenderer(spr, basePath + "fuzzy.png");
+    if ((spr->getNybble(7) % 2)== 1) img = new NormalImageRenderer(spr, "fuzzy_big.png");
+    else img = new NormalImageRenderer(spr, "fuzzy.png");
 }
 
 void FuzzyRenderer::render(QPainter *painter, QRect *drawrect)
@@ -1050,14 +1047,14 @@ FlipperRenderer::FlipperRenderer(const Sprite *spr)
 {
     QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/");
 
-    if (spr->getNybble(5) == 1) img = new NormalImageRenderer(spr, basePath + "Flipper_Left_Down.png");
-    else if (spr->getNybble(5) == 2) img = new NormalImageRenderer(spr, basePath + "Flipper_Right_Up.png");
-    else if (spr->getNybble(5) == 3) img = new NormalImageRenderer(spr, basePath + "Flipper_Left_Up.png");
-    else if (spr->getNybble(5) == 4) img = new NormalImageRenderer(spr, basePath + "Flipper_Up_Left.png");
-    else if (spr->getNybble(5) == 5) img = new NormalImageRenderer(spr, basePath + "Flipper_Down_Left.png");
-    else if (spr->getNybble(5) == 6) img = new NormalImageRenderer(spr, basePath + "Flipper_Up_Right.png");
-    else if (spr->getNybble(5) == 7) img = new NormalImageRenderer(spr, basePath + "Flipper_Down_Right.png");
-    else img = new NormalImageRenderer(spr, basePath + "Flipper_Right_Down.png");
+    if (spr->getNybble(5) == 1) img = new NormalImageRenderer(spr, "Flipper_Left_Down.png");
+    else if (spr->getNybble(5) == 2) img = new NormalImageRenderer(spr, "Flipper_Right_Up.png");
+    else if (spr->getNybble(5) == 3) img = new NormalImageRenderer(spr, "Flipper_Left_Up.png");
+    else if (spr->getNybble(5) == 4) img = new NormalImageRenderer(spr, "Flipper_Up_Left.png");
+    else if (spr->getNybble(5) == 5) img = new NormalImageRenderer(spr, "Flipper_Down_Left.png");
+    else if (spr->getNybble(5) == 6) img = new NormalImageRenderer(spr, "Flipper_Up_Right.png");
+    else if (spr->getNybble(5) == 7) img = new NormalImageRenderer(spr, "Flipper_Down_Right.png");
+    else img = new NormalImageRenderer(spr, "Flipper_Right_Down.png");
 }
 
 void FlipperRenderer::render(QPainter *painter, QRect *drawrect)
@@ -1068,17 +1065,15 @@ void FlipperRenderer::render(QPainter *painter, QRect *drawrect)
 // Sprite 97: End of Level Flag
 GoalRenderer::GoalRenderer(const Sprite *spr)
 {
-    QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/");
-
     if (spr->getNybble(10) == 1)
     {
-        pole = new NormalImageRenderer(spr, basePath + "flagpole_secret.png");
-        fort = new NormalImageRenderer(QRect(spr->getx()+200, spr->gety()+80, 120, 120), basePath + "castle_secret.png");
+        pole = new NormalImageRenderer(spr, "flagpole_secret.png");
+        fort = new NormalImageRenderer(QRect(spr->getx()+200, spr->gety()+80, 120, 120), "castle_secret.png");
     }
     else
     {
-        pole = new NormalImageRenderer(spr, basePath + "flagpole.png");
-        fort = new NormalImageRenderer(QRect(spr->getx()+200, spr->gety()+80, 120, 120), basePath + "castle.png");
+        pole = new NormalImageRenderer(spr, "flagpole.png");
+        fort = new NormalImageRenderer(QRect(spr->getx()+200, spr->gety()+80, 120, 120), "castle.png");
     }
 }
 
@@ -1093,57 +1088,55 @@ void GoalRenderer::render(QPainter *painter, QRect *drawrect)
 PathContFenceRenderer::PathContFenceRenderer(const Sprite *spr)
 {
     this->spr = spr;
-    basePath = (QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/");
-
 }
+
 void PathContFenceRenderer::render(QPainter *painter, QRect *)
 {
     //Row 1
     if((spr->getNybble(14) % 2))
-        painter->drawPixmap(spr->getx()+spr->getOffsetX()+180, spr->gety(), 60, 60, QPixmap(basePath + "path_fence.png"));
+        painter->drawPixmap(spr->getx()+spr->getOffsetX()+180, spr->gety(), 60, 60, ImageCache::getInstance()->get(SpriteImg, "path_fence.png"));
     if((spr->getNybble(14) == 2)||(spr->getNybble(14) == 3)||(spr->getNybble(14) == 6)||(spr->getNybble(14) == 7)||(spr->getNybble(14) == 10)||(spr->getNybble(14) == 11)||(spr->getNybble(14) >= 14))
-        painter->drawPixmap(spr->getx()+spr->getOffsetX()+120, spr->gety(), 60, 60, QPixmap(basePath + "path_fence.png"));
+        painter->drawPixmap(spr->getx()+spr->getOffsetX()+120, spr->gety(), 60, 60, ImageCache::getInstance()->get(SpriteImg, "path_fence.png"));
     if((spr->getNybble(14) == 4)||(spr->getNybble(14) == 5)||(spr->getNybble(14) == 6)||(spr->getNybble(14) == 7)||(spr->getNybble(14) >= 12))
-        painter->drawPixmap(spr->getx()+spr->getOffsetX()+60, spr->gety(), 60, 60, QPixmap(basePath + "path_fence.png"));
+        painter->drawPixmap(spr->getx()+spr->getOffsetX()+60, spr->gety(), 60, 60, ImageCache::getInstance()->get(SpriteImg, "path_fence.png"));
     if((spr->getNybble(14) >= 8))
-        painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety(), 60, 60, QPixmap(basePath + "path_fence.png"));
+        painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety(), 60, 60, ImageCache::getInstance()->get(SpriteImg, "path_fence.png"));
     //Row 2
     if((spr->getNybble(15) % 2))
-        painter->drawPixmap(spr->getx()+spr->getOffsetX()+180, spr->gety()+spr->getOffsetY()+60, 60, 60, QPixmap(basePath + "path_fence.png"));
+        painter->drawPixmap(spr->getx()+spr->getOffsetX()+180, spr->gety()+spr->getOffsetY()+60, 60, 60, ImageCache::getInstance()->get(SpriteImg, "path_fence.png"));
     if((spr->getNybble(15) == 2)||(spr->getNybble(15) == 3)||(spr->getNybble(15) == 6)||(spr->getNybble(15) == 7)||(spr->getNybble(15) == 10)||(spr->getNybble(15) == 11)||(spr->getNybble(15) >= 14))
-        painter->drawPixmap(spr->getx()+spr->getOffsetX()+120, spr->gety()+spr->getOffsetY()+60, 60, 60, QPixmap(basePath + "path_fence.png"));
+        painter->drawPixmap(spr->getx()+spr->getOffsetX()+120, spr->gety()+spr->getOffsetY()+60, 60, 60, ImageCache::getInstance()->get(SpriteImg, "path_fence.png"));
     if((spr->getNybble(15) == 4)||(spr->getNybble(15) == 5)||(spr->getNybble(15) == 6)||(spr->getNybble(15) == 7)||(spr->getNybble(15) >= 12))
-        painter->drawPixmap(spr->getx()+spr->getOffsetX()+60, spr->gety()+spr->getOffsetY()+60, 60, 60, QPixmap(basePath + "path_fence.png"));
+        painter->drawPixmap(spr->getx()+spr->getOffsetX()+60, spr->gety()+spr->getOffsetY()+60, 60, 60, ImageCache::getInstance()->get(SpriteImg, "path_fence.png"));
     if((spr->getNybble(15) >= 8))
-        painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY()+60, 60, 60, QPixmap(basePath + "path_fence.png"));
+        painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY()+60, 60, 60, ImageCache::getInstance()->get(SpriteImg, "path_fence.png"));
     //Row 3
     if((spr->getNybble(12) % 2))
-        painter->drawPixmap(spr->getx()+spr->getOffsetX()+180, spr->gety()+spr->getOffsetY()+120, 60, 60, QPixmap(basePath + "path_fence.png"));
+        painter->drawPixmap(spr->getx()+spr->getOffsetX()+180, spr->gety()+spr->getOffsetY()+120, 60, 60, ImageCache::getInstance()->get(SpriteImg, "path_fence.png"));
     if((spr->getNybble(12) == 2)||(spr->getNybble(12) == 3)||(spr->getNybble(12) == 6)||(spr->getNybble(12) == 7)||(spr->getNybble(12) == 10)||(spr->getNybble(12) == 11)||(spr->getNybble(12) >= 14))
-        painter->drawPixmap(spr->getx()+spr->getOffsetX()+120, spr->gety()+spr->getOffsetY()+120, 60, 60, QPixmap(basePath + "path_fence.png"));
+        painter->drawPixmap(spr->getx()+spr->getOffsetX()+120, spr->gety()+spr->getOffsetY()+120, 60, 60, ImageCache::getInstance()->get(SpriteImg, "path_fence.png"));
     if((spr->getNybble(12) == 4)||(spr->getNybble(12) == 5)||(spr->getNybble(12) == 6)||(spr->getNybble(12) == 7)||(spr->getNybble(12) >= 12))
-        painter->drawPixmap(spr->getx()+spr->getOffsetX()+60, spr->gety()+spr->getOffsetY()+120, 60, 60, QPixmap(basePath + "path_fence.png"));
+        painter->drawPixmap(spr->getx()+spr->getOffsetX()+60, spr->gety()+spr->getOffsetY()+120, 60, 60,ImageCache::getInstance()->get(SpriteImg, "path_fence.png"));
     if((spr->getNybble(12) >= 8))
-        painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY()+120, 60, 60, QPixmap(basePath + "path_fence.png"));
+        painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY()+120, 60, 60, ImageCache::getInstance()->get(SpriteImg, "path_fence.png"));
     //Row 4
     if((spr->getNybble(13) % 2))
-        painter->drawPixmap(spr->getx()+spr->getOffsetX()+180, spr->gety()+spr->getOffsetY()+180, 60, 60, QPixmap(basePath + "path_fence.png"));
+        painter->drawPixmap(spr->getx()+spr->getOffsetX()+180, spr->gety()+spr->getOffsetY()+180, 60, 60, ImageCache::getInstance()->get(SpriteImg, "path_fence.png"));
     if((spr->getNybble(13) == 2)||(spr->getNybble(13) == 3)||(spr->getNybble(13) == 6)||(spr->getNybble(13) == 7)||(spr->getNybble(13) == 10)||(spr->getNybble(13) == 11)||(spr->getNybble(13) >= 14))
-        painter->drawPixmap(spr->getx()+spr->getOffsetX()+120, spr->gety()+spr->getOffsetY()+180, 60, 60, QPixmap(basePath + "path_fence.png"));
+        painter->drawPixmap(spr->getx()+spr->getOffsetX()+120, spr->gety()+spr->getOffsetY()+180, 60, 60, ImageCache::getInstance()->get(SpriteImg, "path_fence.png"));
     if((spr->getNybble(13) == 4)||(spr->getNybble(13) == 5)||(spr->getNybble(13) == 6)||(spr->getNybble(13) == 7)||(spr->getNybble(13) >= 12))
-        painter->drawPixmap(spr->getx()+spr->getOffsetX()+60, spr->gety()+spr->getOffsetY()+180, 60, 60, QPixmap(basePath + "path_fence.png"));
+        painter->drawPixmap(spr->getx()+spr->getOffsetX()+60, spr->gety()+spr->getOffsetY()+180, 60, 60, ImageCache::getInstance()->get(SpriteImg, "path_fence.png"));
     if((spr->getNybble(13) >= 8))
-        painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY()+180, 60, 60, QPixmap(basePath + "path_fence.png"));
+        painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY()+180, 60, 60, ImageCache::getInstance()->get(SpriteImg, "path_fence.png"));
 }
 
 // Sprite 109: Signboard
 SignboardRenderer::SignboardRenderer(const Sprite *spr)
 {
-    QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/");
-    QString signboardPath("sign_%1");
+    QString signboardPath("sign_%1.png");
 
-    if (spr->getNybble(5) < 10) img = new NormalImageRenderer(spr, basePath + signboardPath.arg(spr->getNybble(5)));
-    else img = new NormalImageRenderer(spr, basePath + signboardPath.arg(7));
+    if (spr->getNybble(5) < 10) img = new NormalImageRenderer(spr, signboardPath.arg(spr->getNybble(5)));
+    else img = new NormalImageRenderer(spr, signboardPath.arg(7));
 }
 
 void SignboardRenderer::render(QPainter *painter, QRect *drawrect)
@@ -1157,8 +1150,8 @@ FloatingBoxRenderer::FloatingBoxRenderer(const Sprite *spr)
 {
     QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/");
 
-    if (spr->getNybble(5) == 1) img = new NormalImageRenderer(spr, basePath + "floating_box_big.png");
-    else img = new NormalImageRenderer(spr, basePath + "floating_box_small.png");
+    if (spr->getNybble(5) == 1) img = new NormalImageRenderer(spr, "floating_box_big.png");
+    else img = new NormalImageRenderer(spr, "floating_box_small.png");
 }
 
 void FloatingBoxRenderer::render(QPainter *painter, QRect *drawrect)
@@ -1179,29 +1172,27 @@ void BulletBillLauncherRenderer::render(QPainter *painter, QRect *)
 
     if (spr->getNybble(10) == 1)
     {
-        painter->drawPixmap(spr->getx(), spr->gety()+spr->getheight()-40, 20, 40, QPixmap(basePath + "bullet_bill_launcher_flipped.png"));
-        for (int i = 0; i < spr->getNybble(4); i++) painter->drawPixmap(spr->getx(), spr->gety()+i*20, 20, 20, QPixmap(basePath + "bullet_bill_launcher_middle.png"));
+        painter->drawPixmap(spr->getx(), spr->gety()+spr->getheight()-40, 20, 40, ImageCache::getInstance()->get(SpriteImg, "bullet_bill_launcher_flipped.png"));
+        for (int i = 0; i < spr->getNybble(4); i++) painter->drawPixmap(spr->getx(), spr->gety()+i*20, 20, 20, ImageCache::getInstance()->get(SpriteImg, "bullet_bill_launcher_middle.png"));
     }
     else
     {
-        painter->drawPixmap(spr->getx(), spr->gety()+spr->getOffsetY(), 20, 40, QPixmap(basePath + "bullet_bill_launcher.png"));
-        for (int i = 0; i < spr->getNybble(4); i++) painter->drawPixmap(spr->getx(), spr->gety()+spr->getOffsetY()+40+i*20, 20, 20, QPixmap(basePath + "bullet_bill_launcher_middle.png"));
+        painter->drawPixmap(spr->getx(), spr->gety()+spr->getOffsetY(), 20, 40, ImageCache::getInstance()->get(SpriteImg, "bullet_bill_launcher.png"));
+        for (int i = 0; i < spr->getNybble(4); i++) painter->drawPixmap(spr->getx(), spr->gety()+spr->getOffsetY()+40+i*20, 20, 20, ImageCache::getInstance()->get(SpriteImg, "bullet_bill_launcher_middle.png"));
     }
 }
 
 // Sprite 118: Bullet Bill
 BulletBillRenderer::BulletBillRenderer(const Sprite *spr)
 {
-    QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/");
-
-    if (spr->getNybble(5) == 1) img = new NormalImageRenderer(spr, basePath + "bullet_bill_left.png");
-    else if (spr->getNybble(5) == 2) img = new NormalImageRenderer(spr, basePath + "bullet_bill_down.png");
-    else if (spr->getNybble(5) == 3) img = new NormalImageRenderer(spr, basePath + "bullet_bill_up.png");
-    else if (spr->getNybble(5) == 4) img = new NormalImageRenderer(spr, basePath + "bullet_bill_down_left.png");
-    else if (spr->getNybble(5) == 5) img = new NormalImageRenderer(spr, basePath + "bullet_bill_down_right.png");
-    else if (spr->getNybble(5) == 6) img = new NormalImageRenderer(spr, basePath + "bullet_bill_up_right.png");
-    else if (spr->getNybble(5) == 7) img = new NormalImageRenderer(spr, basePath + "bullet_bill_up_left.png");
-    else img = new NormalImageRenderer(spr, basePath + "bullet_bill_right.png");
+    if (spr->getNybble(5) == 1) img = new NormalImageRenderer(spr, "bullet_bill_left.png");
+    else if (spr->getNybble(5) == 2) img = new NormalImageRenderer(spr, "bullet_bill_down.png");
+    else if (spr->getNybble(5) == 3) img = new NormalImageRenderer(spr, "bullet_bill_up.png");
+    else if (spr->getNybble(5) == 4) img = new NormalImageRenderer(spr, "bullet_bill_down_left.png");
+    else if (spr->getNybble(5) == 5) img = new NormalImageRenderer(spr, "bullet_bill_down_right.png");
+    else if (spr->getNybble(5) == 6) img = new NormalImageRenderer(spr, "bullet_bill_up_right.png");
+    else if (spr->getNybble(5) == 7) img = new NormalImageRenderer(spr, "bullet_bill_up_left.png");
+    else img = new NormalImageRenderer(spr, "bullet_bill_right.png");
 }
 
 void BulletBillRenderer::render(QPainter *painter, QRect *drawrect)
@@ -1212,10 +1203,8 @@ void BulletBillRenderer::render(QPainter *painter, QRect *drawrect)
 // Sprite 119: Banzai Bill
 BanzaiBillRenderer::BanzaiBillRenderer(const Sprite *spr)
 {
-    QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/");
-
-    if (spr->getNybble(5) == 1) img = new NormalImageRenderer(spr, basePath + "banzai_bill_left.png");
-    else img = new NormalImageRenderer(spr, basePath + "banzai_bill_right.png");
+    if (spr->getNybble(5) == 1) img = new NormalImageRenderer(spr, "banzai_bill_left.png");
+    else img = new NormalImageRenderer(spr, "banzai_bill_right.png");
 }
 
 void BanzaiBillRenderer::render(QPainter *painter, QRect *drawrect)
@@ -1224,15 +1213,15 @@ void BanzaiBillRenderer::render(QPainter *painter, QRect *drawrect)
 }
 
 // Sprite 120: Up-Down Mushroom
-UpDownMushroomRenderer::UpDownMushroomRenderer(const Sprite *spr, QString basePath)
+UpDownMushroomRenderer::UpDownMushroomRenderer(const Sprite *spr)
 {
     this->spr = spr;
-    this->basePath = basePath;
 }
 
 void UpDownMushroomRenderer::render(QPainter *painter, QRect *)
 {
     QString color;
+    int offset;
     if((spr->getNybble(7)) < (spr->getNybble(4)))
     {
         color = "blue";
@@ -1245,33 +1234,34 @@ void UpDownMushroomRenderer::render(QPainter *painter, QRect *)
 
     }
 
+
     // Inital Position
     for (int i = 0; i < spr->getNybble(4); i++)
-        painter->drawPixmap(QRect(spr->getx(), spr->gety()+spr->getOffsetY()+20+i*20, 20, 30), QPixmap(basePath + "stem.png"));
-    painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX(), spr->gety(), 30, 30), QPixmap(basePath + color + "_l.png"));
-    painter->drawPixmap(QRect(spr->getx()-spr->getOffsetX()-10, spr->gety(), 30, 30), QPixmap(basePath + color + "_r.png"));
+        painter->drawPixmap(QRect(spr->getx(), spr->gety()+spr->getOffsetY()+20+i*20, 20, 30), ImageCache::getInstance()->get(SpriteImg, "up_down_mushroom/stem.png"));
+    painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX(), spr->gety(), 30, 30), ImageCache::getInstance()->get(SpriteImg, "up_down_mushroom/" + color + "_l.png"));
+    painter->drawPixmap(QRect(spr->getx()-spr->getOffsetX()-10, spr->gety(), 30, 30), ImageCache::getInstance()->get(SpriteImg, "up_down_mushroom/" + color + "_r.png"));
     for (int i = 30; i < spr->getwidth()-30; i += 20)
-        painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()+i, spr->gety(), 20, 30), QPixmap(basePath + color + "_m.png"));
+        painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()+i, spr->gety(), 20, 30), ImageCache::getInstance()->get(SpriteImg, "up_down_mushroom/" + color + "_m.png"));
 
     // Final Position
     if (spr->getNybble(7) < spr->getNybble(4))
     {
         painter->setOpacity(0.3);
-        painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX(), spr->gety()+offset, 30, 30), QPixmap(basePath + color + "_l.png"));
-        painter->drawPixmap(QRect(spr->getx()-spr->getOffsetX()-10, spr->gety()+offset, 30, 30), QPixmap(basePath + color + "_r.png"));
+        painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX(), spr->gety()+offset, 30, 30), ImageCache::getInstance()->get(SpriteImg, "up_down_mushroom/" + color + "_l.png"));
+        painter->drawPixmap(QRect(spr->getx()-spr->getOffsetX()-10, spr->gety()+offset, 30, 30), ImageCache::getInstance()->get(SpriteImg, "up_down_mushroom/" + color + "_r.png"));
         for (int i = 30; i < spr->getwidth()-30; i += 20)
-            painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()+i, spr->gety()+offset, 20, 30), QPixmap(basePath + color + "_m.png"));
+            painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()+i, spr->gety()+offset, 20, 30), ImageCache::getInstance()->get(SpriteImg, "up_down_mushroom/" + color + "_m.png"));
         painter->setOpacity(1);
     }
     else
     {
         painter->setOpacity(0.3);
         for (int i = 0; i < spr->getNybble(7); i++)
-            painter->drawPixmap(QRect(spr->getx(), spr->gety()-offset-20+((i+2)*20), 20, 30), QPixmap(basePath + "stem.png"));
-        painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX(), spr->gety()-offset, 30, 30), QPixmap(basePath + color + "_l.png"));
-        painter->drawPixmap(QRect(spr->getx()-spr->getOffsetX()-10, spr->gety()-offset, 30, 30), QPixmap(basePath + color + "_r.png"));
+            painter->drawPixmap(QRect(spr->getx(), spr->gety()-offset-20+((i+2)*20), 20, 30), ImageCache::getInstance()->get(SpriteImg, "up_down_mushroom/stem.png"));
+        painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX(), spr->gety()-offset, 30, 30), ImageCache::getInstance()->get(SpriteImg, "up_down_mushroom/" + color + "_l.png"));
+        painter->drawPixmap(QRect(spr->getx()-spr->getOffsetX()-10, spr->gety()-offset, 30, 30), ImageCache::getInstance()->get(SpriteImg, "up_down_mushroom/" + color + "_r.png"));
         for (int i = 30; i < spr->getwidth()-30; i += 20)
-            painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()+i, spr->gety()-offset, 20, 30), QPixmap(basePath + color + "_m.png"));
+            painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()+i, spr->gety()-offset, 20, 30), ImageCache::getInstance()->get(SpriteImg, "up_down_mushroom/" + color + "_m.png"));
         painter->setOpacity(1);
     }
 }
@@ -1280,33 +1270,34 @@ void UpDownMushroomRenderer::render(QPainter *painter, QRect *)
 BouncyMushroomRenderer::BouncyMushroomRenderer(const Sprite *spr)
 {
     this->spr = spr;
+
+    if (spr->getNybble(15) == 1)
+        img = new NormalImageRenderer(spr, "bouncy_mushroom_big.png");
+    else
+        img = new NormalImageRenderer(spr, "bouncy_mushroom.png");
 }
 
-void BouncyMushroomRenderer::render(QPainter *painter, QRect *)
+void BouncyMushroomRenderer::render(QPainter* painter, QRect* drawrect)
 {
-    QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/");
-
-    if (spr->getNybble(15) == 1) painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), QPixmap(basePath + "bouncy_mushroom_big.png"));
-    else painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), QPixmap(basePath + "bouncy_mushroom.png"));
+    img->render(painter, drawrect);
 }
 
 
 // Sprite 124: Mushroom Platform Renderer
-MushroomPlatformRenderer::MushroomPlatformRenderer(const Sprite *spr, QString basePath)
+MushroomPlatformRenderer::MushroomPlatformRenderer(const Sprite *spr)
 {
     this->spr = spr;
-    this->basePath = basePath;
 }
 
 void MushroomPlatformRenderer::render(QPainter *painter, QRect *)
 {
-    painter->drawPixmap(QRect(spr->getx()-10, spr->gety()+spr->getOffsetY()+20, 20, 80), QPixmap(basePath + "stem_top.png"));
+    painter->drawPixmap(QRect(spr->getx()-10, spr->gety()+spr->getOffsetY()+20, 20, 80), ImageCache::getInstance()->get(SpriteImg, "mushroom_platform/stem_top.png"));
     for (int i = 0; i < spr->getNybble(10); i++)
-        painter->drawPixmap(QRect(spr->getx()-10, spr->gety()+spr->getOffsetY()+100+i*20, 20, 20), QPixmap(basePath + "stem.png"));
-    painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX(), spr->gety(), 24, 20), QPixmap(basePath + "l.png"));
-    painter->drawPixmap(QRect(spr->getx()-spr->getOffsetX()-24, spr->gety(), 24, 20), QPixmap(basePath + "r.png"));
+        painter->drawPixmap(QRect(spr->getx()-10, spr->gety()+spr->getOffsetY()+100+i*20, 20, 20), ImageCache::getInstance()->get(SpriteImg, "mushroom_platform/stem.png"));
+    painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX(), spr->gety(), 24, 20), ImageCache::getInstance()->get(SpriteImg, "mushroom_platform/l.png"));
+    painter->drawPixmap(QRect(spr->getx()-spr->getOffsetX()-24, spr->gety(), 24, 20), ImageCache::getInstance()->get(SpriteImg, "mushroom_platform/r.png"));
     for (int i = 24; i < spr->getwidth()-24; i += 20)
-        painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()+i, spr->gety(), 20, 20), QPixmap(basePath + "m.png"));
+        painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()+i, spr->gety(), 20, 20), ImageCache::getInstance()->get(SpriteImg, "mushroom_platform/m.png"));
 
 }
 
@@ -1315,14 +1306,13 @@ void MushroomPlatformRenderer::render(QPainter *painter, QRect *)
 GoombaRenderer::GoombaRenderer(const Sprite *spr)
 {
     this->spr = spr;
+    if (spr->getNybble(14) % 2 == 0) img = new NormalImageRenderer(spr, "goomba.png");
+    else img = new NormalImageRenderer(spr, "goomba_blue.png");
 }
 
-void GoombaRenderer::render(QPainter *painter, QRect *)
+void GoombaRenderer::render(QPainter *painter, QRect *drawrect)
 {
-    QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/");
-
-    if (spr->getNybble(14) % 2 == 0) painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), QPixmap(basePath + "goomba.png"));
-    else painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), QPixmap(basePath + "goomba_blue.png"));
+    img->render(painter, drawrect);
 }
 
 
@@ -1330,24 +1320,21 @@ void GoombaRenderer::render(QPainter *painter, QRect *)
 BoneGoombaRenderer::BoneGoombaRenderer(const Sprite *spr)
 {
     this->spr = spr;
+    if (spr->getNybble(14) % 2 == 0) img = new NormalImageRenderer(spr, "bone_goomba.png");
+    else img = new NormalImageRenderer(spr, "bone_goomba_alt.png");
 }
 
-void BoneGoombaRenderer::render(QPainter *painter, QRect *)
+void BoneGoombaRenderer::render(QPainter *painter, QRect *drawrect)
 {
-    QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/");
-
-    if (spr->getNybble(14) % 2 == 0) painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), QPixmap(basePath + "bone_goomba.png"));
-    else painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), QPixmap(basePath + "bone_goomba_alt.png"));
+    img->render(painter, drawrect);
 }
 
 
 // Sprite 127: Bowser Flame
 BowserFlameRenderer::BowserFlameRenderer(const Sprite *spr)
 {
-    QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/");
-
-    if (spr->getNybble(5) == 1) img = new NormalImageRenderer(spr, basePath + "dry_bowser_flame.png");
-    else img = new NormalImageRenderer(spr, basePath + "bowser_flame.png");
+    if (spr->getNybble(5) == 1) img = new NormalImageRenderer(spr, "dry_bowser_flame.png");
+    else img = new NormalImageRenderer(spr, "bowser_flame.png");
 }
 
 void BowserFlameRenderer::render(QPainter *painter, QRect *drawrect)
@@ -1361,12 +1348,12 @@ GoombaTowerRenderer::GoombaTowerRenderer(const Sprite *spr)
 {
     QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/");
 
-    top = new NormalImageRenderer(QRect(spr->getx(), spr->gety()+spr->getOffsetY(), spr->getwidth(), 25), basePath + "goomba_tower_top.png");
-    bottom = new NormalImageRenderer(QRect(spr->getx(), spr->gety(), spr->getwidth(), 21), basePath + "goomba_tower_bottom.png");
+    top = new NormalImageRenderer(QRect(spr->getx(), spr->gety()+spr->getOffsetY(), spr->getwidth(), 25), "goomba_tower_top.png");
+    bottom = new NormalImageRenderer(QRect(spr->getx(), spr->gety(), spr->getwidth(), 21), "goomba_tower_bottom.png");
 
     if (spr->getNybble(5) < 3) return;
     if (spr->getNybble(5) == 0)
-        middle.append(new NormalImageRenderer(QRect(spr->getx(), spr->gety()+spr->getOffsetY()+46, spr->getwidth(), 21), basePath + "goomba_tower_middle.png"));
+        middle.append(new NormalImageRenderer(QRect(spr->getx(), spr->gety()+spr->getOffsetY()+46, spr->getwidth(), 21), "goomba_tower_middle.png"));
     else
     for (int i = 0; i < spr->getNybble(5)-2; i++) middle.append(new NormalImageRenderer(QRect(spr->getx(), spr->gety()+spr->getOffsetY()+25+i*21, spr->getwidth(), 21), basePath + "goomba_tower_middle.png"));
 }
@@ -1380,10 +1367,9 @@ void GoombaTowerRenderer::render(QPainter *painter, QRect *drawrect)
 
 
 // Sprite 144/145: Horizontal/Vertical Moving Lift
-LiftRenderer::LiftRenderer(const Sprite *spr, QString basePath)
+LiftRenderer::LiftRenderer(const Sprite *spr)
 {
     this->spr = spr;
-    this->basePath = basePath;
 }
 
 void LiftRenderer::render(QPainter *painter, QRect *)
@@ -1411,50 +1397,44 @@ void LiftRenderer::render(QPainter *painter, QRect *)
         }
     }
 
-    painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX(), spr->gety(), 20, 22), QPixmap(basePath + "l.png"));
+    painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX(), spr->gety(), 20, 22), ImageCache::getInstance()->get(SpriteImg, "lift_platform/l.png"));
     if(spr->getNybble(5) == 0)
-        painter->drawPixmap(QRect(spr->getx()-spr->getOffsetX()+(spr->getNybble(5))*20+20, spr->gety(), 22, 22), QPixmap(basePath + "r.png"));
+        painter->drawPixmap(QRect(spr->getx()-spr->getOffsetX()+(spr->getNybble(5))*20+20, spr->gety(), 22, 22), ImageCache::getInstance()->get(SpriteImg, "lift_platform/r.png"));
     else
-        painter->drawPixmap(QRect(spr->getx()-spr->getOffsetX()+(spr->getNybble(5)-1)*20+20, spr->gety(), 22, 22), QPixmap(basePath + "r.png"));
+        painter->drawPixmap(QRect(spr->getx()-spr->getOffsetX()+(spr->getNybble(5)-1)*20+20, spr->gety(), 22, 22), ImageCache::getInstance()->get(SpriteImg, "lift_platform/r.png"));
     for (int i = 20; i < spr->getwidth()-20; i += 20)
-        painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()+i, spr->gety(), 20, 22), QPixmap(basePath + "m.png"));
+        painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()+i, spr->gety(), 20, 22), ImageCache::getInstance()->get(SpriteImg, "lift_platform/m.png"));
 }
 
 
 // Sprite 146: Track Controlled Lift
-TrackLiftRenderer::TrackLiftRenderer(const Sprite *spr, QString basePath)
+TrackLiftRenderer::TrackLiftRenderer(const Sprite *spr)
 {
     this->spr = spr;
-    this->basePath = basePath;
 }
 
 void TrackLiftRenderer::render(QPainter *painter, QRect *)
 {
-    QString type;
+    QString name = "track_controlled_lift/";
     if((spr->getNybble(6) != 1))
-        type = "wood";
+        name.append("wood");
     else
-        type = "stone";
+        name.append("stone");
 
-    QString rounded;
-    if((spr->getNybble(7) != 1))
-        rounded = "";
-    else
-        rounded = "_rounded";
+    if((spr->getNybble(7) == 1))
+        name.append("_rounded");
 
-    painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), 22, 22), QPixmap(basePath + type + rounded + "_l.png"));
-    painter->drawPixmap(QRect(spr->getx()-spr->getOffsetX()+58, spr->gety()+spr->getOffsetY(), 22, 22), QPixmap(basePath + type + rounded + "_r.png"));
+    painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), 22, 22), ImageCache::getInstance()->get(SpriteImg, name + "_l.png"));
+    painter->drawPixmap(QRect(spr->getx()-spr->getOffsetX()+58, spr->gety()+spr->getOffsetY(), 22, 22), ImageCache::getInstance()->get(SpriteImg, name + "_r.png"));
     for (int i = 22; i < spr->getwidth()-22; i += 20)
-        painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()+i, spr->gety()+spr->getOffsetY(), 20, 22), QPixmap(basePath + type + rounded + "_m.png"));
+        painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()+i, spr->gety()+spr->getOffsetY(), 20, 22), ImageCache::getInstance()->get(SpriteImg, name + "_m.png"));
 }
 
 // Sprite 147: 3 Plat Rickshaw
 ThreePlatRickRenderer::ThreePlatRickRenderer(const Sprite *spr)
 {
-    QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/");
-
-    if (spr->getNybble(5) == 1) img = new NormalImageRenderer(spr, basePath + "3Plat_Rickshaw_Big.png");
-    else img = new NormalImageRenderer(spr, basePath + "3Plat_Rickshaw.png");
+    if (spr->getNybble(5) == 1) img = new NormalImageRenderer(spr, "3Plat_Rickshaw_Big.png");
+    else img = new NormalImageRenderer(spr, "3Plat_Rickshaw.png");
 }
 
 void ThreePlatRickRenderer::render(QPainter *painter, QRect *drawrect)
@@ -1463,69 +1443,67 @@ void ThreePlatRickRenderer::render(QPainter *painter, QRect *drawrect)
 }
 
 // Sprite 151: Scale Platform Renderer
-ScalePlatformRenderer::ScalePlatformRenderer(const Sprite *spr, QString basePath)
+ScalePlatformRenderer::ScalePlatformRenderer(const Sprite *spr)
 {
     this->spr = spr;
-    this->basePath = basePath;
-
-    //used to keep platforms centered
-    if (spr->getNybble(15) == 0)
-        poffset = 28;
-    else
-        poffset = 28 + ((spr->getNybble(15)-1)*10);
 }
 
 void ScalePlatformRenderer::render(QPainter *painter, QRect *)
 {
-    //Rope
-    painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), 17, 16), QPixmap(basePath + "left.png"));
-    for (int i = 0; i < spr->getNybble(5); i++)
-        painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()+17, spr->gety()+spr->getOffsetY()+1, 20*i, 4), QPixmap(basePath + "top.png"));
-    if (spr->getNybble(5) == 0)
-        painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()+10, spr->gety()+spr->getOffsetY(), 17, 16), QPixmap(basePath + "right.png"));
+    //used to keep platforms centered
+    int poffset;
+    if (spr->getNybble(15) == 0)
+        poffset = 28;
     else
-        painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()+(spr->getNybble(5)*20-10), spr->gety()+spr->getOffsetY(), 17, 16), QPixmap(basePath + "right.png"));
+        poffset = 28 + ((spr->getNybble(15)-1)*10);
+
+    //Rope
+    painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), 17, 16), ImageCache::getInstance()->get(SpriteImg, "scale_lift/left.png"));
+    for (int i = 0; i < spr->getNybble(5); i++)
+        painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()+17, spr->gety()+spr->getOffsetY()+1, 20*i, 4), ImageCache::getInstance()->get(SpriteImg, "scale_lift/top.png"));
+    if (spr->getNybble(5) == 0)
+        painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()+10, spr->gety()+spr->getOffsetY(), 17, 16), ImageCache::getInstance()->get(SpriteImg, "scale_lift/right.png"));
+    else
+        painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()+(spr->getNybble(5)*20-10), spr->gety()+spr->getOffsetY(), 17, 16), ImageCache::getInstance()->get(SpriteImg, "scale_lift/right.png"));
     for (int i = 0; i < spr->getNybble(7); i++)
-        painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()+2, spr->gety()+spr->getOffsetY()+16, 4, (20*i)+7), QPixmap(basePath + "down.png"));
+        painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()+2, spr->gety()+spr->getOffsetY()+16, 4, (20*i)+7), ImageCache::getInstance()->get(SpriteImg, "scale_lift/down.png"));
     for (int i = 0; i < spr->getNybble(4); i++)
         if (spr->getNybble(5) == 0)
-            painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()+22, spr->gety()+spr->getOffsetY()+16, 4, (20*i)+7), QPixmap(basePath + "down.png"));
+            painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()+22, spr->gety()+spr->getOffsetY()+16, 4, (20*i)+7), ImageCache::getInstance()->get(SpriteImg, "scale_lift/down.png"));
         else
-            painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()+(spr->getNybble(5)*20+2), spr->gety()+spr->getOffsetY()+16, 4, (20*i)+7), QPixmap(basePath + "down.png"));
+            painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()+(spr->getNybble(5)*20+2), spr->gety()+spr->getOffsetY()+16, 4, (20*i)+7), ImageCache::getInstance()->get(SpriteImg, "scale_lift/down.png"));
     //Platforms
     if ((spr->getNybble(15) == 0))
     {
         //Left Platform
-        painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()-poffset, spr->gety()+spr->getOffsetY()+(20*spr->getNybble(7))+3, 22, 22), QPixmap(basePath + "platform_l.png"));
-        painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()-poffset+22, spr->gety()+spr->getOffsetY()+(20*spr->getNybble(7))+3, 20, 22), QPixmap(basePath + "platform_m.png"));
-        painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()-poffset+42, spr->gety()+spr->getOffsetY()+(20*spr->getNybble(7))+3, 22, 22), QPixmap(basePath + "platform_r.png"));
+        painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()-poffset, spr->gety()+spr->getOffsetY()+(20*spr->getNybble(7))+3, 22, 22), ImageCache::getInstance()->get(SpriteImg, "scale_lift/platform_l.png"));
+        painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()-poffset+22, spr->gety()+spr->getOffsetY()+(20*spr->getNybble(7))+3, 20, 22), ImageCache::getInstance()->get(SpriteImg, "scale_lift/platform_m.png"));
+        painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()-poffset+42, spr->gety()+spr->getOffsetY()+(20*spr->getNybble(7))+3, 22, 22), ImageCache::getInstance()->get(SpriteImg, "scale_lift/platform_r.png"));
         //Right Platform
-        painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()-poffset+(spr->getNybble(5)*20), spr->gety()+spr->getOffsetY()+(20*spr->getNybble(4))+3, 22, 22), QPixmap(basePath + "platform_l.png"));
-        painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()-poffset+22+(spr->getNybble(5)*20), spr->gety()+spr->getOffsetY()+(20*spr->getNybble(4))+3, 20, 22), QPixmap(basePath + "platform_m.png"));
-        painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()-poffset+42+(spr->getNybble(5)*20), spr->gety()+spr->getOffsetY()+(20*spr->getNybble(4))+3, 22, 22), QPixmap(basePath + "platform_r.png"));
+        painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()-poffset+(spr->getNybble(5)*20), spr->gety()+spr->getOffsetY()+(20*spr->getNybble(4))+3, 22, 22), ImageCache::getInstance()->get(SpriteImg, "scale_lift/platform_l.png"));
+        painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()-poffset+22+(spr->getNybble(5)*20), spr->gety()+spr->getOffsetY()+(20*spr->getNybble(4))+3, 20, 22), ImageCache::getInstance()->get(SpriteImg, "scale_lift/platform_m.png"));
+        painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()-poffset+42+(spr->getNybble(5)*20), spr->gety()+spr->getOffsetY()+(20*spr->getNybble(4))+3, 22, 22), ImageCache::getInstance()->get(SpriteImg, "scale_lift/platform_r.png"));
     }
     else
     {
         //Left Platform
-        painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()-poffset, spr->gety()+spr->getOffsetY()+(20*spr->getNybble(7))+3, 22, 22), QPixmap(basePath + "platform_l.png"));
+        painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()-poffset, spr->gety()+spr->getOffsetY()+(20*spr->getNybble(7))+3, 22, 22), ImageCache::getInstance()->get(SpriteImg, "scale_lift/platform_l.png"));
         for (int i = 0; i < spr->getNybble(15); i++)
-            painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()-poffset+22+(20*i), spr->gety()+spr->getOffsetY()+(20*spr->getNybble(7))+3, 20, 22), QPixmap(basePath + "platform_m.png"));
-        painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()-poffset+22+(20*(spr->getNybble(15))), spr->gety()+spr->getOffsetY()+(20*spr->getNybble(7))+3, 22, 22), QPixmap(basePath + "platform_r.png"));
+            painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()-poffset+22+(20*i), spr->gety()+spr->getOffsetY()+(20*spr->getNybble(7))+3, 20, 22), ImageCache::getInstance()->get(SpriteImg, "scale_lift/platform_m.png"));
+        painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()-poffset+22+(20*(spr->getNybble(15))), spr->gety()+spr->getOffsetY()+(20*spr->getNybble(7))+3, 22, 22), ImageCache::getInstance()->get(SpriteImg, "scale_lift/platform_r.png"));
         //Right Platform
-        painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()-poffset+(spr->getNybble(5)*20), spr->gety()+spr->getOffsetY()+(20*spr->getNybble(4))+3, 22, 22), QPixmap(basePath + "platform_l.png"));
+        painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()-poffset+(spr->getNybble(5)*20), spr->gety()+spr->getOffsetY()+(20*spr->getNybble(4))+3, 22, 22), ImageCache::getInstance()->get(SpriteImg, "scale_lift/platform_l.png"));
         for (int i = 0; i < spr->getNybble(15); i++)
-            painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()-poffset+22+(20*i)+(spr->getNybble(5)*20), spr->gety()+spr->getOffsetY()+(20*spr->getNybble(4))+3, 20, 22), QPixmap(basePath + "platform_m.png"));
-        painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()-poffset+22+(20*(spr->getNybble(15)))+(spr->getNybble(5)*20), spr->gety()+spr->getOffsetY()+(20*spr->getNybble(4))+3, 22, 22), QPixmap(basePath + "platform_r.png"));
+            painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()-poffset+22+(20*i)+(spr->getNybble(5)*20), spr->gety()+spr->getOffsetY()+(20*spr->getNybble(4))+3, 20, 22), ImageCache::getInstance()->get(SpriteImg, "scale_lift/platform_m.png"));
+        painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()-poffset+22+(20*(spr->getNybble(15)))+(spr->getNybble(5)*20), spr->gety()+spr->getOffsetY()+(20*spr->getNybble(4))+3, 22, 22), ImageCache::getInstance()->get(SpriteImg, "scale_lift/platform_r.png"));
     }
 }
 
 // Sprite 154: 4 Plat Rickshaw
 FourPlatRickRenderer::FourPlatRickRenderer(const Sprite *spr)
 {
-    QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/");
-
-    if (spr->getNybble(5) == 1) img = new NormalImageRenderer(spr, basePath + "4Plat_Rickshaw.png");
-    else img = new NormalImageRenderer(spr, basePath + "4Plat_Rickshaw_Big.png");
+    if (spr->getNybble(5) == 1) img = new NormalImageRenderer(spr, "4Plat_Rickshaw.png");
+    else img = new NormalImageRenderer(spr, "4Plat_Rickshaw_Big.png");
 }
 
 void FourPlatRickRenderer::render(QPainter *painter, QRect *drawrect)
@@ -1537,17 +1515,14 @@ void FourPlatRickRenderer::render(QPainter *painter, QRect *drawrect)
 // Sprite 159: Spike Top
 SpikeTopRenderer::SpikeTopRenderer(const Sprite *spr)
 {
-    QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/");
-
+    QString flipped;
     if (spr->getNybble(5) == 1)
         flipped = "flipped_";
-    else
-        flipped = "";
 
-    if (spr->getNybble(4) == 1) img = new NormalImageRenderer(spr, basePath + flipped + "spiketop_left.png");
-    else if (spr->getNybble(4) == 2) img = new NormalImageRenderer(spr, basePath + flipped +"spiketop_ceiling.png");
-    else if (spr->getNybble(4) == 3) img = new NormalImageRenderer(spr, basePath + flipped + "spiketop_right.png");
-    else img = new NormalImageRenderer(spr, basePath + flipped + "spiketop.png");
+    if (spr->getNybble(4) == 1) img = new NormalImageRenderer(spr, flipped + "spiketop_left.png");
+    else if (spr->getNybble(4) == 2) img = new NormalImageRenderer(spr, flipped +"spiketop_ceiling.png");
+    else if (spr->getNybble(4) == 3) img = new NormalImageRenderer(spr, flipped + "spiketop_right.png");
+    else img = new NormalImageRenderer(spr, flipped + "spiketop.png");
 }
 
 void SpikeTopRenderer::render(QPainter *painter, QRect *drawrect)
@@ -1558,10 +1533,8 @@ void SpikeTopRenderer::render(QPainter *painter, QRect *drawrect)
 // Sprite 163: Climbing Koopa - Horizontal
 ClimbKoopaHorRenderer::ClimbKoopaHorRenderer(const Sprite *spr)
 {
-    QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/");
-
-    if (spr->getNybble(5) == 1) img = new NormalImageRenderer(spr, basePath + "climbing_koopa_red.png");
-    else img = new NormalImageRenderer(spr, basePath + "climbing_koopa.png");
+    if (spr->getNybble(5) == 1) img = new NormalImageRenderer(spr, "climbing_koopa_red.png");
+    else img = new NormalImageRenderer(spr, "climbing_koopa.png");
 }
 
 void ClimbKoopaHorRenderer::render(QPainter *painter, QRect *drawrect)
@@ -1572,15 +1545,12 @@ void ClimbKoopaHorRenderer::render(QPainter *painter, QRect *drawrect)
 // Sprite 164: Climbing Koopa - vertical
 ClimbKoopaVertRenderer::ClimbKoopaVertRenderer(const Sprite *spr)
 {
-    QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/");
-
+    QString behind;
     if(spr->getNybble(4) == 1)
          behind = "behind_";
-    else
-         behind = "";
 
-    if (spr->getNybble(5) == 1) img = new NormalImageRenderer(spr, basePath + behind + "climbing_koopa_red.png");
-    else img = new NormalImageRenderer(spr, basePath + behind + "climbing_koopa.png");
+    if (spr->getNybble(5) == 1) img = new NormalImageRenderer(spr, behind + "climbing_koopa_red.png");
+    else img = new NormalImageRenderer(spr, behind + "climbing_koopa.png");
 }
 
 void ClimbKoopaVertRenderer::render(QPainter *painter, QRect *drawrect)
@@ -1592,10 +1562,8 @@ void ClimbKoopaVertRenderer::render(QPainter *painter, QRect *drawrect)
 // Sprite 165: Koopa Troopa
 KoopaTroopaRenderer::KoopaTroopaRenderer(const Sprite *spr)
 {
-    QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/");
-
-    if (spr->getNybble(5) == 1) img = new NormalImageRenderer(spr, basePath + "koopa_troopa_red.png");
-    else img = new NormalImageRenderer(spr, basePath + "koopa_troopa_green.png");
+    if (spr->getNybble(5) == 1) img = new NormalImageRenderer(spr, "koopa_troopa_red.png");
+    else img = new NormalImageRenderer(spr, "koopa_troopa_green.png");
 }
 
 void KoopaTroopaRenderer::render(QPainter *painter, QRect *drawrect)
@@ -1620,10 +1588,8 @@ void PlantRenderer::render(QPainter *painter, QRect *drawrect)
 // Sprite 185: Koopa Paratroopa
 KoopaParatroopaRenderer::KoopaParatroopaRenderer(const Sprite *spr)
 {
-    QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/");
-
-    if (spr->getNybble(5) == 1) img = new NormalImageRenderer(spr, basePath + "koopa_paratroopa_red.png");
-    else img = new NormalImageRenderer(spr, basePath + "koopa_paratroopa_green.png");
+    if (spr->getNybble(5) == 1) img = new NormalImageRenderer(spr, "koopa_paratroopa_red.png");
+    else img = new NormalImageRenderer(spr, "koopa_paratroopa_green.png");
 }
 
 void KoopaParatroopaRenderer::render(QPainter *painter, QRect *drawrect)
@@ -1721,28 +1687,28 @@ void RecLiftRenderer::render(QPainter *painter, QRect *)
     int blockWidth = spr->getNybble(15) > 0 ? spr->getNybble(15)*20 : 20;
     int blockHeight = spr->getNybble(13) > 0 ? spr->getNybble(13)*20 : 20;
 
-    painter->drawPixmap(QRect(spr->getx()-sideOffset, spr->gety(), 20+sideOffset, 20), QPixmap(path + "tl.png"));
-    painter->drawPixmap(QRect(spr->getx()-sideOffset, spr->gety()+blockHeight, 20+sideOffset, 20), QPixmap(path + "bl.png"));
-    painter->drawPixmap(QRect(spr->getx()+blockWidth, spr->gety(), 20+sideOffset, 20), QPixmap(path + "tr.png"));
-    painter->drawPixmap(QRect(spr->getx()+blockWidth, spr->gety()+blockHeight, 20+sideOffset, 20), QPixmap(path + "br.png"));
+    painter->drawPixmap(QRect(spr->getx()-sideOffset, spr->gety(), 20+sideOffset, 20), ImageCache::getInstance()->get(SpriteImg, path + "tl.png"));
+    painter->drawPixmap(QRect(spr->getx()-sideOffset, spr->gety()+blockHeight, 20+sideOffset, 20), ImageCache::getInstance()->get(SpriteImg, path + "bl.png"));
+    painter->drawPixmap(QRect(spr->getx()+blockWidth, spr->gety(), 20+sideOffset, 20), ImageCache::getInstance()->get(SpriteImg, path + "tr.png"));
+    painter->drawPixmap(QRect(spr->getx()+blockWidth, spr->gety()+blockHeight, 20+sideOffset, 20), ImageCache::getInstance()->get(SpriteImg, path + "br.png"));
 
     for (int i = 0; i < spr->getNybble(15)-1; i++)
     {
-        painter->drawPixmap(QRect(spr->getx() + i*20+20, spr->gety(), 20, 20), QPixmap(path + "t.png"));
-        painter->drawPixmap(QRect(spr->getx() + i*20+20, spr->gety()+blockHeight, 20, 20), QPixmap(path + "b.png"));
+        painter->drawPixmap(QRect(spr->getx() + i*20+20, spr->gety(), 20, 20), ImageCache::getInstance()->get(SpriteImg, path + "t.png"));
+        painter->drawPixmap(QRect(spr->getx() + i*20+20, spr->gety()+blockHeight, 20, 20), ImageCache::getInstance()->get(SpriteImg, path + "b.png"));
     }
     for (int i = 0; i < spr->getNybble(13)-1; i++)
     {
-        painter->drawPixmap(QRect(spr->getx(), spr->gety() + i*20+20, 20, 20), QPixmap(path + "l.png"));
-        painter->drawPixmap(QRect(spr->getx()+blockWidth, spr->gety() + i*20+20, 20, 20), QPixmap(path + "r.png"));
+        painter->drawPixmap(QRect(spr->getx(), spr->gety() + i*20+20, 20, 20), ImageCache::getInstance()->get(SpriteImg, path + "l.png"));
+        painter->drawPixmap(QRect(spr->getx()+blockWidth, spr->gety() + i*20+20, 20, 20), ImageCache::getInstance()->get(SpriteImg, path + "r.png"));
     }
     for (int x = 20; x < blockWidth; x+=20)
         for (int y = 20; y < blockHeight; y+=20)
-            painter->drawPixmap(QRect(spr->getx()+x, spr->gety()+y, 20, 20), QPixmap(path + "c.png"));
-    if (spr->getNybble(9) == 1 || spr->getNybble(9) == 3) for (int x = 0; x < blockWidth+20; x+=20) painter->drawPixmap(QRect(spr->getx()+x, spr->gety()-20, 20, 20), QPixmap(path + "s_t.png"));
-    if (spr->getNybble(9) == 2 || spr->getNybble(9) == 3) for (int x = 0; x < blockWidth+20; x+=20) painter->drawPixmap(QRect(spr->getx()+x, spr->gety()+blockHeight+20, 20, 20), QPixmap(path + "s_b.png"));
-    if (spr->getNybble(9) == 4 || spr->getNybble(9) == 6) for (int y = 0; y < blockHeight+20; y+=20) painter->drawPixmap(QRect(spr->getx()-20, spr->gety()+y, 20, 20), QPixmap(path + "s_l.png"));
-    if (spr->getNybble(9) == 5 || spr->getNybble(9) == 6) for (int y = 0; y < blockHeight+20; y+=20) painter->drawPixmap(QRect(spr->getx()+blockWidth+20, spr->gety()+y, 20, 20), QPixmap(path + "s_r.png"));
+            painter->drawPixmap(QRect(spr->getx()+x, spr->gety()+y, 20, 20), ImageCache::getInstance()->get(SpriteImg, path + "c.png"));
+    if (spr->getNybble(9) == 1 || spr->getNybble(9) == 3) for (int x = 0; x < blockWidth+20; x+=20) painter->drawPixmap(QRect(spr->getx()+x, spr->gety()-20, 20, 20), ImageCache::getInstance()->get(SpriteImg, path + "s_t.png"));
+    if (spr->getNybble(9) == 2 || spr->getNybble(9) == 3) for (int x = 0; x < blockWidth+20; x+=20) painter->drawPixmap(QRect(spr->getx()+x, spr->gety()+blockHeight+20, 20, 20), ImageCache::getInstance()->get(SpriteImg, path + "s_b.png"));
+    if (spr->getNybble(9) == 4 || spr->getNybble(9) == 6) for (int y = 0; y < blockHeight+20; y+=20) painter->drawPixmap(QRect(spr->getx()-20, spr->gety()+y, 20, 20), ImageCache::getInstance()->get(SpriteImg, path + "s_l.png"));
+    if (spr->getNybble(9) == 5 || spr->getNybble(9) == 6) for (int y = 0; y < blockHeight+20; y+=20) painter->drawPixmap(QRect(spr->getx()+blockWidth+20, spr->gety()+y, 20, 20), ImageCache::getInstance()->get(SpriteImg, path + "s_r.png"));
 
 }
 
@@ -1751,14 +1717,16 @@ void RecLiftRenderer::render(QPainter *painter, QRect *)
 BobOmbCannonRenderer::BobOmbCannonRenderer(const Sprite *spr)
 {
     this->spr = spr;
+
+    if (spr->getNybble(5) != 1)
+        img = new NormalImageRenderer(spr, "cannon_right.png");
+    else
+        img = new NormalImageRenderer(spr, "cannon_left.png");
 }
 
-void BobOmbCannonRenderer::render(QPainter *painter, QRect *)
+void BobOmbCannonRenderer::render(QPainter *painter, QRect *drawrect)
 {
-    QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/");
-
-    if (spr->getNybble(5) != 1) painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), QPixmap(basePath + "cannon_right.png"));
-    else painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), QPixmap(basePath + "cannon_left.png"));
+    img->render(painter, drawrect);
 }
 
 
@@ -1771,10 +1739,10 @@ SpinyRenderer::SpinyRenderer(const Sprite *spr, QString basePath)
 
 void SpinyRenderer::render(QPainter *painter, QRect *)
 {
-    if (spr->getNybble(5) == 1) painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), QPixmap(basePath + "_ceiling.png"));
-    else if (spr->getNybble(5) == 2) painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), QPixmap(basePath + "_shell.png"));
-    else if (spr->getNybble(5) == 3) painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), QPixmap(basePath + "_shell_ceiling.png"));
-    else painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), QPixmap(basePath + ".png"));
+    if (spr->getNybble(5) == 1) painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), ImageCache::getInstance()->get(SpriteImg, basePath + "_ceiling.png"));
+    else if (spr->getNybble(5) == 2) painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), ImageCache::getInstance()->get(SpriteImg, basePath + "_shell.png"));
+    else if (spr->getNybble(5) == 3) painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), ImageCache::getInstance()->get(SpriteImg, basePath + "_shell_ceiling.png"));
+    else painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), ImageCache::getInstance()->get(SpriteImg, basePath + ".png"));
 }
 
 
@@ -1782,14 +1750,16 @@ void SpinyRenderer::render(QPainter *painter, QRect *)
 UrchinRenderer::UrchinRenderer(const Sprite *spr)
 {
     this->spr = spr;
+
+    if (spr->getNybble(5) != 1)
+        img = new NormalImageRenderer(spr, "urchin.png");
+    else
+        img = new NormalImageRenderer(spr, "urchin_big.png");
 }
 
-void UrchinRenderer::render(QPainter *painter, QRect *)
+void UrchinRenderer::render(QPainter *painter, QRect *drawrect)
 {
-    QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/");
-
-    if (spr->getNybble(5) != 1) painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), QPixmap(basePath + "urchin.png"));
-    else painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), QPixmap(basePath + "urchin_big.png"));
+    img->render(painter, drawrect);
 }
 
 
@@ -1797,14 +1767,16 @@ void UrchinRenderer::render(QPainter *painter, QRect *)
 ChainChompRenderer::ChainChompRenderer(const Sprite *spr)
 {
     this->spr = spr;
+
+    if (spr->getNybble(5)%2 == 0)
+        img = new NormalImageRenderer(spr, "chain_chomp_3.png");
+    else
+        img = new NormalImageRenderer(spr, "chain_chomp_1.png");
 }
 
-void ChainChompRenderer::render(QPainter *painter, QRect *)
+void ChainChompRenderer::render(QPainter *painter, QRect *drawrect)
 {
-    QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/");
-
-    if (spr->getNybble(5)%2 == 0) painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), QPixmap(basePath + "chain_chomp_3.png"));
-    else painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), QPixmap(basePath + "chain_chomp_1.png"));
+    img->render(painter, drawrect);
 }
 
 // Sprites 100/101/203/204/267/275/276: Item Blocks
@@ -1835,7 +1807,7 @@ void ItemBlockRenderer::render(QPainter *painter, QRect *drawrect)
         case 11: overlay = "1up_mushroom.png"; break;
         case 13: overlay = "trampoline.png"; break;
         case 14: overlay = "coin_super_mushroom.png"; break;
-        default: return; break;
+        default: return;
     }
 
     if ((spr->getheight() == 20) && (spr->getwidth() == 20))
@@ -1904,20 +1876,16 @@ RailContFenceRenderer::RailContFenceRenderer(const Sprite *spr)
 }
 void RailContFenceRenderer::render(QPainter *painter, QRect *)
 {
-    QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/rail_fence");
-
-    if (spr->getNybble(5) == 1) painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), QPixmap(basePath + "_3x6.png"));
-    else if (spr->getNybble(5) == 2) painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), QPixmap(basePath + "_6x3.png"));
-    else painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), QPixmap(basePath + "_3x3.png"));
+    if (spr->getNybble(5) == 1) painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), ImageCache::getInstance()->get(SpriteImg, "rail_fence_3x6.png"));
+    else if (spr->getNybble(5) == 2) painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), ImageCache::getInstance()->get(SpriteImg, "rail_fence_6x3.png"));
+    else painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), ImageCache::getInstance()->get(SpriteImg, "rail_fence_3x3.png"));
 }
 
 // Sprite 134: 3 Plat Rickshaw ruins
 RuinsRickRenderer::RuinsRickRenderer(const Sprite *spr)
 {
-    QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/");
-
-    if (spr->getNybble(5) == 1) img = new NormalImageRenderer(spr, basePath + "3Plat_Rickshaw_Ruins_Big.png");
-    else img = new NormalImageRenderer(spr, basePath + "3Plat_Rickshaw_Ruins.png");
+    if (spr->getNybble(5) == 1) img = new NormalImageRenderer(spr, "3Plat_Rickshaw_Ruins_Big.png");
+    else img = new NormalImageRenderer(spr, "3Plat_Rickshaw_Ruins.png");
 }
 
 void RuinsRickRenderer::render(QPainter *painter, QRect *drawrect)
@@ -1928,10 +1896,8 @@ void RuinsRickRenderer::render(QPainter *painter, QRect *drawrect)
 // Sprite 311: Coin Meteor
 CoinMeteorRenderer::CoinMeteorRenderer(const Sprite *spr)
 {
-    QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/");
-
-    if (spr->getNybble(5) == 1) img = new NormalImageRenderer(spr, basePath + "coin_meteor_big.png");
-    else img = new NormalImageRenderer(spr, basePath + "coin_meteor.png");
+    if (spr->getNybble(5) == 1) img = new NormalImageRenderer(spr, "coin_meteor_big.png");
+    else img = new NormalImageRenderer(spr, "coin_meteor.png");
 }
 
 void CoinMeteorRenderer::render(QPainter *painter, QRect *drawrect)

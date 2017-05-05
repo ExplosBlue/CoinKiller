@@ -86,11 +86,11 @@ protected:
 class BurnerRenderer: public SpriteRenderer
 {
 public:
-    BurnerRenderer(const Sprite *spr, QString basePath);
+    BurnerRenderer(const Sprite *spr, QString name);
     void render(QPainter *painter, QRect *drawrect);
 protected:
     const Sprite *spr;
-    QString basePath;
+    QString name;
 };
 
 // Sprite 18: Tile God
@@ -165,13 +165,10 @@ protected:
 class FourBurnerRenderer: public SpriteRenderer
 {
 public:
-    FourBurnerRenderer(const Sprite *spr, QString basePath);
+    FourBurnerRenderer(const Sprite *spr);
     void render(QPainter *painter, QRect *drawrect);
 protected:
     const Sprite *spr;
-    QString basePath;
-    QString big;
-    int size = 0;
     NormalImageRenderer *up;
     NormalImageRenderer *down;
     NormalImageRenderer *left;
@@ -266,8 +263,6 @@ public:
     void render(QPainter *painter, QRect *drawrect);
 protected:
     const Sprite *spr;
-    QString basePath;
-
 };
 
 // Sprite 109: Signboard
@@ -328,12 +323,10 @@ protected:
 class UpDownMushroomRenderer: public ObjectRenderer
 {
 public:
-    UpDownMushroomRenderer(const Sprite *spr, QString basePath);
+    UpDownMushroomRenderer(const Sprite *spr);
     void render(QPainter *painter, QRect *drawrect);
 protected:
     const Sprite *spr;
-    QString basePath;
-    int offset = 0;
 };
 
 // Sprite 123: Boucny Mushroom
@@ -341,9 +334,10 @@ class BouncyMushroomRenderer: public SpriteRenderer
 {
 public:
     BouncyMushroomRenderer(const Sprite *spr);
-    void render(QPainter *painter, QRect *drawrect);
+    void render(QPainter* painter, QRect* drawrect);
 protected:
     const Sprite *spr;
+    NormalImageRenderer *img;
 };
 
 
@@ -351,11 +345,10 @@ protected:
 class MushroomPlatformRenderer: public ObjectRenderer
 {
 public:
-    MushroomPlatformRenderer(const Sprite *spr, QString basePath);
+    MushroomPlatformRenderer(const Sprite *spr);
     void render(QPainter *painter, QRect *drawrect);
 protected:
     const Sprite *spr;
-    QString basePath;
 };
 
 // Sprite 127: Bowser Flame
@@ -388,6 +381,7 @@ public:
     void render(QPainter *painter, QRect *drawrect);
 protected:
     const Sprite *spr;
+    NormalImageRenderer *img;
 };
 
 // Sprite 136: Bone Goomba
@@ -398,6 +392,7 @@ public:
     void render(QPainter *painter, QRect *drawrect);
 protected:
     const Sprite *spr;
+    NormalImageRenderer *img;
 };
 
 // Sprite 139: Goomba Tower
@@ -417,22 +412,20 @@ protected:
 class LiftRenderer: public ObjectRenderer
 {
 public:
-    LiftRenderer(const Sprite *spr, QString basePath);
+    LiftRenderer(const Sprite *spr);
     void render(QPainter *painter, QRect *drawrect);
 protected:
     const Sprite *spr;
-    QString basePath;
 };
 
 // Sprite 146: Track Controlled Lift
 class TrackLiftRenderer: public ObjectRenderer
 {
 public:
-    TrackLiftRenderer(const Sprite *spr, QString basePath);
+    TrackLiftRenderer(const Sprite *spr);
     void render(QPainter *painter, QRect *drawrect);
 protected:
     const Sprite *spr;
-    QString basePath;
 };
 
 // Sprite 147: 3 Plat Rickshaw
@@ -450,12 +443,10 @@ protected:
 class ScalePlatformRenderer: public ObjectRenderer
 {
 public:
-    ScalePlatformRenderer(const Sprite *spr, QString basePath);
+    ScalePlatformRenderer(const Sprite *spr);
     void render(QPainter *painter, QRect *drawrect);
 protected:
     const Sprite *spr;
-    QString basePath;
-    int poffset;
 };
 
 // Sprite 154: 4 Plat Rickshaw
@@ -478,7 +469,6 @@ public:
 protected:
     const Object *obj;
     NormalImageRenderer *img;
-    QString flipped;
 };
 
 // Sprite 163: Climbing Koopa - Horizontal
@@ -501,7 +491,6 @@ public:
 protected:
     const Object *obj;
     NormalImageRenderer *img;
-    QString behind;
 };
 
 // Sprite 165: Koopa Troopa
@@ -591,6 +580,7 @@ public:
     void render(QPainter *painter, QRect *drawrect);
 protected:
     const Sprite *spr;
+    NormalImageRenderer *img;
 };
 
 // Sprite 221/223/225: Switches
@@ -624,6 +614,7 @@ public:
     void render(QPainter *painter, QRect *drawrect);
 protected:
     const Sprite *spr;
+    NormalImageRenderer* img;
 };
 
 // Sprite 244: Chain Chomp
@@ -634,6 +625,7 @@ public:
     void render(QPainter *painter, QRect *drawrect);
 protected:
     const Sprite *spr;
+    NormalImageRenderer* img;
 };
 
 // Sprites 100/101/203/204/267/275/276: Item Blocks
