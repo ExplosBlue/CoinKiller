@@ -576,6 +576,12 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
     case 289: // Bouncy Mushroom Platform - Castle
         ret = new NormalImageRenderer(spr, "bouncy_mushroom_castle.png");
         break;
+    case 290: // Path Controlled Fence(Small)
+        ret = new NormalImageRenderer(spr, "small_path_fence.png");
+        break;
+    case 291: // Path Controlled Fence(Big)
+        ret = new NormalImageRenderer(spr, "big_path_fence.png");
+        break;
     case 293: // Punching Glove
         ret = new NormalImageRenderer(spr, "punching_glove.png");
         break;

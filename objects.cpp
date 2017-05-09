@@ -1071,6 +1071,18 @@ void Sprite::setRect()
             offsetx -= 3;
         }
         break;
+    case 290: // Path Controlled Fence(Small)
+        width = 60;
+        height = 60;
+        offsetx = -20;
+        offsety = -20;
+        break;
+    case 291: // Path Controlled Fence(Big)
+        width = 120;
+        height = 120;
+        offsetx = -50;
+        offsety = -50;
+        break;
     case 194: // Cheep Cheep
         if(getNybble(5) == 1 || getNybble(5) == 8)
         {
