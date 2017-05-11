@@ -1352,8 +1352,6 @@ void BowserFlameRenderer::render(QPainter *painter, QRect *drawrect)
 // Sprite 139: Goomba Tower
 GoombaTowerRenderer::GoombaTowerRenderer(const Sprite *spr)
 {
-    QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/sprites/");
-
     top = new NormalImageRenderer(QRect(spr->getx(), spr->gety()+spr->getOffsetY(), spr->getwidth(), 25), "goomba_tower_top.png");
     bottom = new NormalImageRenderer(QRect(spr->getx(), spr->gety(), spr->getwidth(), 21), "goomba_tower_bottom.png");
 
@@ -1361,7 +1359,7 @@ GoombaTowerRenderer::GoombaTowerRenderer(const Sprite *spr)
     if (spr->getNybble(5) == 0)
         middle.append(new NormalImageRenderer(QRect(spr->getx(), spr->gety()+spr->getOffsetY()+46, spr->getwidth(), 21), "goomba_tower_middle.png"));
     else
-    for (int i = 0; i < spr->getNybble(5)-2; i++) middle.append(new NormalImageRenderer(QRect(spr->getx(), spr->gety()+spr->getOffsetY()+25+i*21, spr->getwidth(), 21), basePath + "goomba_tower_middle.png"));
+    for (int i = 0; i < spr->getNybble(5)-2; i++) middle.append(new NormalImageRenderer(QRect(spr->getx(), spr->gety()+spr->getOffsetY()+25+i*21, spr->getwidth(), 21), "goomba_tower_middle.png"));
 }
 
 void GoombaTowerRenderer::render(QPainter *painter, QRect *drawrect)
