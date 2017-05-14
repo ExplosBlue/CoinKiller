@@ -1,4 +1,4 @@
-﻿<?xml version="1.0"?>
+<?xml version="1.0"?>
 <sprites>
   <sprite id="0" name="Autoscrolling Controller" notes="Actor: 0x1a5">
     <value nybble="1-2" title="Triggering Event ID"/>
@@ -13,7 +13,7 @@
     <value nybble="15" title="Unknown Value 15"/>
     <value nybble="16" title="Unknown Value 16"/>
   </sprite>
-  <sprite id="1" name="Water Flow for Pipe">
+  <sprite id="1" name="Water Flow for Pipe" notes="Actor: 0x056">
     <value nybble="1-2" title="Disabling Flag" comment="Turns off while the specified flag is activated."/>
     <list nybble="6" title="Orientation" comment="Which way the pipe its placed on is facing.">
       <entry value="0">Pipe Up</entry>
@@ -33,20 +33,22 @@
   <sprite id="4" name="Burner - Right" notes="A burner that spits out a fire that faces right.&#13;&#10;Actor: 0x05c">
     <checkbox nybble="5" title="Longer Flame" comment="Makes the fire longer."/>
     <checkbox nybble="11" title="Pauses" comment="When checked, the burner does not stay on constantly."/>
+    <value nybble="12" title="Pause Time" comment="Incremetaly increases how long the burner pauses for. (Requires Nybble 11 to have a value of 1))"/>
   </sprite>
   <sprite id="5" name="Burner - Down" notes="Actor: 0x05f">
     <checkbox nybble="5" title="Longer Flame" comment="Makes the fire longer."/>
     <checkbox nybble="11" title="Pauses" comment="When checked, the burner does not stay on constantly."/>
+    <value nybble="12" title="Pause Time" comment="Incremetaly increases how long the burner pauses for. (Requires Nybble 11 to have a value of 1))"/>
   </sprite>
   <sprite id="6" name="Burner - Left" notes="Actor: 0x05d">
     <checkbox nybble="5" title="Longer Flame" comment="Makes the fire longer."/>
     <checkbox nybble="11" title="Pauses" comment="When checked, the burner does not stay on constantly."/>
+    <value nybble="12" title="Pause Time" comment="Incremetaly increases how long the burner pauses for. (Requires Nybble 11 to have a value of 1))"/>
   </sprite>
   <sprite id="7" name="Burner - Up" notes="Actor: 0x05e">
     <checkbox nybble="5" title="Longer Flame" comment="Makes the fire longer."/>
     <checkbox nybble="11" title="Pauses" comment="When checked, the burner does not stay on constantly."/>
     <value nybble="12" title="Pause Time" comment="Incremetaly increases how long the burner pauses for. (Requires Nybble 11 to have a value of 1))"/>
-    <value nybble="14" title="Unknown Value 14"/>
   </sprite>
   <sprite id="8" name="Swooper" notes="Actor: 0x100&#13;&#10;Existing In-Game Sprite Data in final-sprite-table levels: ????&#13;&#10;&#13;&#10;This enemy flies towards Mario when activated.">
     <list nybble="6" title="Behavior" comment="Used in coin rush level 14-1">
@@ -276,9 +278,10 @@
     <value nybble="6" title="Time Between Jumps" comment="In seconds"/>
   </sprite>
   <sprite id="36" name="Arch-movement Lava Bubbles">
+    <value nybble="1-2" title="Triggering ID"/>
     <value nybble="7" title="Delay" comment="Delay between fire balls"/>
   </sprite>
-  <sprite id="37" name="Tower Boss Controller (Reznor Only) [UNUSED]" notes="Notes: Judging by the name, this is an unused early version of sprite 265, or it is spawned by something.&#13;&#10;Actor: 0x023"/>
+  <sprite id="37" name="Tower Boss Controller (Reznor Only)" notes="Notes: Judging by the name, this is an unused early version of sprite 265, or it is spawned by something.&#13;&#10;Actor: 0x023"/>
   <sprite id="38" name="Reznor Wheel" notes="Actor: 0x18f">
     <value nybble="5" title="Location ID" comment="Sets the location used to initialise the fight."/>
     <list nybble="6" title="Amount &amp; Position" comment="Sets the amount and positions of the reznors.">
@@ -358,27 +361,32 @@
     </list>
     <checkbox nybble="11" title="Pauses" comment="When checked, the flame will pause every 5 seconds."/>
   </sprite>
-  <sprite id="45" name="Track-controlled Burner - Right" notes="Actor: 0x060">
-    <checkbox nybble="5" title="Long flame??" comment="_not tested_"/>
-    <value nybble="7" title="Unknown Value 7" comment="..."/>
-    <value nybble="8" title="Unknown Value 8" comment="..."/>
+  <sprite id="45" name="Track-controlled Burner - Right" notes="A burner that moves on a rail.">
+    <checkbox nybble="5" title="Long flame" comment="Has a longer flame when checked."/>
+    <value nybble="7" title="Slowdown Amount" comment="Making this value higher slows the burner down."/>
+    <checkbox nybble="8" title="Moves Clockwise" comment="When checked, makes the burner move clockwise rather than counterclockwise."/>
+    <checkbox nybble="11" title="Pauses" comment="When this is checked, the burner will stop emitting a flame for a constant amount of time."/>
+    <value nybble="20" title="Location ID"/>
   </sprite>
   <sprite id="46" name="Track-controlled Burner - Down" notes="Actor: 0x063">
-    <checkbox nybble="5" title="Long flame??" comment="Checkbox?"/>
-    <value nybble="7" title="Unknown Value 7" comment="..."/>
-    <value nybble="8" title="Unknown Value 8" comment="Checkbox?"/>
-    <value nybble="11" title="Unknown Value 11" comment="Checkbox?"/>
+    <checkbox nybble="5" title="Long flame" comment="When checked, the flame will be longer."/>
+    <value nybble="7" title="Slowdown Amount" comment="The larger this value, the slower the burner moves."/>
+    <checkbox nybble="8" title="Moves Clockwise" comment="When checked, the burner will move clockwise."/>
+    <checkbox nybble="11" title="Pauses" comment="When this is checked, the burner will stop emitting a flame for a constant amount of time."/>
+    <value nybble="20" title="Location ID"/>
   </sprite>
   <sprite id="47" name="Track-controlled Burner - Left" notes="Notes: It is left, like the Actor Name says.&#13;&#10;Actor: 0x061.">
-    <checkbox nybble="5" title="Long flame??" comment="..."/>
-    <value nybble="7" title="Unknown Value 7" comment="..."/>
-    <value nybble="8" title="Unknown Value 8" comment="..."/>
+    <checkbox nybble="5" title="Long Flame" comment="When checked, the flame will be longer."/>
+    <value nybble="7" title="Slowdown Amount" comment="The higher this value, the slower the burner moves."/>
+    <checkbox nybble="8" title="Move Clockwise" comment="When checked, the burner will move clockwise."/>
+    <checkbox nybble="11" title="Pauses" comment="When this is checked, the burner will stop emitting a flame for a constant amount of time."/>
+    <value nybble="20" title="Location ID"/>
   </sprite>
   <sprite id="48" name="Track-controlled Burner - Up" notes="Actor: 0x062">
-    <checkbox nybble="5" title="Long flame" comment="..."/>
-    <value nybble="6" title="Unknown Value 6" comment="..."/>
-    <value nybble="9" title="Unknown Value 9" comment="..."/>
-    <value nybble="11" title="Unknown Value 11" comment="..."/>
+    <checkbox nybble="5" title="Longer Flame" comment="When checked, the burner will have a longer flame."/>
+    <value nybble="7" title="Slowdown Amount" comment="The higher this value, the slower the burner moves."/>
+    <checkbox nybble="8" title="Move Clockwise" comment="When this is checked, the burner will move clockwise."/>
+    <checkbox nybble="11" title="Pauses" comment="When this is checked, the burner will stop emitting a flame for a constant amount of time."/>
     <value nybble="20" title="Location ID"/>
   </sprite>
   <sprite id="49" name="Ludwig von Koopa Battle - Chain" notes="Actor: 0x06c"/>
@@ -659,10 +667,10 @@
   </sprite>
   <sprite id="85" name="Flag Controller - Uses Locations (&quot;IF&quot;)">
     <value nybble="1-2" title="Target Flag ID" comment="The flag that will activate when the player/enemy is in the location."/>
-    <list nybble="5" title="Usage Mode">
+    <list nybble="5" title="Usage Mode" comment="Sets the mode the flag will work in.">
       <entry value="0">Single Use</entry>
-      <entry value="1">Multi Use?</entry>
-      <entry value="2">Only when Status is satisfied</entry>
+      <entry value="1">Multi-Use</entry>
+      <entry value="2">Only When Status Is Satisfied</entry>
     </list>
     <list nybble="7" title="Required Player Form" comment="The item/power-up state that the player needs to be in to activate the event.">
       <entry value="0">No Requirement</entry>
@@ -934,7 +942,10 @@
       <entry value="0">Colored Stem</entry>
       <entry value="1">Gray Stem</entry>
     </list>
-    <value nybble="8" title="Expansion Related"/>
+    <list nybble="8" title="Expanded Width">
+      <entry value="0">10 Blocks</entry>
+      <entry value="1">5 Blocks</entry>
+    </list>
   </sprite>
   <sprite id="122" name="Expanding and contracting Mushroom Platform Synchronizer">
     <value nybble="6" title="Unknown Value 6" comment="Checkbox?"/>
@@ -987,7 +998,7 @@
   <sprite id="128" name="Dry Bowser" notes="Used without data"/>
   <sprite id="129" name="Big Dry Bowser" notes="Used without data"/>
   <sprite id="130" name="Big Bowser"/>
-  <sprite id="131" name="Big Bowser Battles - Switch [UNUSED]" notes="Unused, Always spawned by Bowser Lift and Switch Controller(132)"/>
+  <sprite id="131" name="Big Bowser Battles - Switch" notes="Unused, Always spawned by Bowser Lift and Switch Controller(132)"/>
   <sprite id="132" name="Big Bowser Battles - Lift and Switch Controller" notes="Seems to have unused functionality?">
     <value nybble="1-2" title="Flag" comment="Always 2..."/>
   </sprite>
@@ -1001,7 +1012,7 @@
       <entry value="1">Spin (Death Animation)</entry>
       <entry value="2">From Pipe</entry>
     </list>
-    <value nybble="10" title="Unknown 10"/>
+    <checkbox nybble="10" title="Z-Order Change" comment="When Checked, The goomba spawns on Layer 2"/>
     <list nybble="15" title="Color">
       <entry value="0">Normal</entry>
       <entry value="1">Blue</entry>
@@ -1017,7 +1028,7 @@
   </sprite>
   <sprite id="137" name="Micro Goomba"/>
   <sprite id="138" name="Paragoomba">
-    <checkbox nybble="15" title="Crash" comment="Check this to crash the game."/>
+    <checkbox nybble="15" title="Crash" comment="Will crash the game for unknown reason/s."/>
   </sprite>
   <sprite id="139" name="Goomba Tower">
     <checkbox nybble="5" title="Wider Hitbox"/>
@@ -1243,7 +1254,6 @@
     </list>
   </sprite>
   <sprite id="165" name="Koopa Troopa" notes="Can be bounced by Trampoline Mushroom Platforms and Invisible Trampoline Block unless in shell. Gold Ring behaviour; turns gold, kicked/thrown shell leaves trail of coins.">
-    <value nybble="1-2" title="Defunct Gold Ring Flag" comment="Defunct Triggering Flag that was presumably required for Gold Ring functionality at one point."/>
     <checkbox nybble="5" title="Empty Shell"/>
     <list nybble="6" title="Color">
       <entry value="0">Green</entry>
@@ -1251,6 +1261,7 @@
     </list>
     <value nybble="8" title="Unknown 8"/>
     <value nybble="9" title="Unknown 9"/>
+    <checkbox nybble="10" title="Z-Order Change" comment="When Checked, The Koopa appears on layer 2"/>
   </sprite>
   <sprite id="166" name="Movement Controller - Back and Forth" notes="Actor: 0x01b">
     <value nybble="6" title="Unknown Value 6" comment="Checkbox?"/>
@@ -1289,7 +1300,7 @@
       <entry value="3">6 Shots</entry>
     </list>
   </sprite>
-  <sprite id="172" name="Pipe Bone Piranha Plant - Up [UNUSED]" notes="Tags: Unused actor&#13;&#10;Notes: Should be placed on top left corner of pipe&#13;&#10;Actor: 0x121"/>
+  <sprite id="172" name="Pipe Bone Piranha Plant - Up" notes="Tags: Unused actor&#13;&#10;Notes: Should be placed on top left corner of pipe&#13;&#10;Actor: 0x121"/>
   <sprite id="173" name="Pipe Bone Piranha Plant - Left">
     <value nybble="7" title="Unknown Value 7" comment="Checkbox?"/>
     <value nybble="11" title="Unknown Value 11" comment="Checkbox?"/>
@@ -1392,9 +1403,9 @@
     <value nybble="1-2" title="Triggering Flag"/>
     <value nybble="5-6" title="Tiles to move (When triggered)"/>
   </sprite>
-  <sprite id="192" name="Rectangle Lift - Castle" notes="See 189">
+  <sprite id="192" name="Rectangle Lift - Castle">
     <value nybble="1-2" title="Triggering Flag"/>
-    <value nybble="5-6" title="Tiles to move (When triggered)"/>
+    <value nybble="5-6" title="Tiles to move(When Triggered)"/>
     <list nybble="10" title="Spikes">
       <entry value="0">None</entry>
       <entry value="1">Top</entry>
@@ -1405,7 +1416,7 @@
       <entry value="6">Left/Right</entry>
     </list>
     <list nybble="11" title="Mode" comment="If 2 it moves the specified tiles to move if the flag is activated and moves back if the flag is deactivated _needs further testing_">
-      <entry value="0">Already moving</entry>
+      <entry value="0">Already Moving</entry>
       <entry value="2">Flag triggered</entry>
     </list>
     <list nybble="12" title="Direction">
@@ -1426,7 +1437,7 @@
       <entry value="1">Medium</entry>
       <entry value="2">Fast</entry>
       <entry value="3">Very Fast</entry>
-      <entry value="4">Fastest (Glitchy)</entry>
+      <entry value="4">Fastest(Glitchy)</entry>
     </list>
     <value nybble="19" title="End Delay"/>
     <value nybble="20" title="Start Delay"/>
@@ -1915,9 +1926,8 @@
     <value nybble="11" title="Unknown Value 11" comment="Checkbox?"/>
   </sprite>
   <sprite id="257" name="Spine Coaster">
-    <value nybble="1-2" title="Unknown Flag ID"/>
-    <value nybble="3" title="Unknown Value 3"/>
-    <value nybble="4" title="Target Flag ID" comment="Activated on ground-pound"/>
+    <value nybble="1-2" title="Triggering Flag ID"/>
+    <value nybble="3-4" title="Target Flag ID" comment="Activated on ground-pound"/>
     <value nybble="8" title="Unknown Value 8" comment="Checkbox?"/>
     <value nybble="12" title="Unknown Value 12" comment="Always 1."/>
     <value nybble="14" title="Unknown Value 14" comment="..."/>
@@ -2114,12 +2124,24 @@
     <checkbox nybble="16" title="Longer Platform" comment="todo: Give detail on sizes."/>
   </sprite>
   <sprite id="290" name="Path-controlled Climbable Fence (small)">
-    <value nybble="5" title="Unknown Value 5" comment="Always 2..."/>
-    <value nybble="12" title="Unknown Value 12" comment="Always 2..."/>
+    <value nybble="5" title="Path ID" comment="may have an overflow nybble(maybe?)"/>
+    <value nybble="12" title="Unknown Value 12"/>
+    <list nybble="17" title="Ending Behaviour" comment="How the fence should act when it gets to the end of it's path">
+      <entry value="0">Falls Off</entry>
+      <entry value="1">Go Back</entry>
+      <entry value="2">Stop</entry>
+    </list>
+    <checkbox nybble="19" title="Already Moving" comment="If checked, the fence will be moving without mario touching it"/>
   </sprite>
   <sprite id="291" name="Path-controlled Climbable Fence (medium)">
-    <value nybble="5" title="Unknown Value 5" comment="Always 1..."/>
-    <value nybble="12" title="Unknown Value 12" comment="Always 1..."/>
+    <value nybble="5" title="Path ID" comment="may have an overflow nybble(maybe?)"/>
+    <value nybble="12" title="Unknown Value 12"/>
+    <list nybble="17" title="Ending Behaviour" comment="How the fence should act when it gets to the end of it's path">
+      <entry value="0">Falls Off</entry>
+      <entry value="1">Go Back</entry>
+      <entry value="2">Stop</entry>
+    </list>
+    <value nybble="19" title="Already Moving" comment="If checked, the fence will be moving without mario touching it"/>
   </sprite>
   <sprite id="292" name="Warp Cannon Signboard" notes="A big signboard facing right, used at the end of cannon levels.&#13;&#10;Existing In-Game Sprite Data:&#13;&#10;No spritedata used."/>
   <sprite id="293" name="Boxing Glove">
@@ -2182,7 +2204,7 @@
     <value nybble="7" title="Unknown Value 7" comment="Always 2..."/>
     <value nybble="12" title="Unknown Value 12" comment="Always 1..."/>
   </sprite>
-  <sprite id="304" name="&quot;KoopaLastFire&quot; [UNUSED]" notes="I assume this is spawned by some actor in or before the battle with Giant Bowser or Giant Dry Bowser."/>
+  <sprite id="304" name="&quot;KoopaLastFire&quot;" notes="I assume this is spawned by some actor in or before the battle with Giant Bowser or Giant Dry Bowser."/>
   <sprite id="305" name="Path-controlled Funny-shaped Ice Lift">
     <value nybble="1-2" title="Unknown Flag ID" comment="_Not tested_."/>
     <value nybble="5" title="Path ID" comment="_Not tested_."/>

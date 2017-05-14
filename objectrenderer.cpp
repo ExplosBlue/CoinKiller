@@ -249,6 +249,9 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
     case 120: // Up Down Mushroom
         ret = new UpDownMushroomRenderer(spr);
         break;
+    case 121: // Expanding Mushroom
+        ret = new ExpandMushroomRenderer(spr);
+        break;
     case 123: // Bouncy Mushroom
         ret = new BouncyMushroomRenderer(spr);
         break;
@@ -1240,15 +1243,6 @@ void UpDownMushroomRenderer::render(QPainter *painter, QRect *)
 
     }
 
-
-    // Inital Position
-    for (int i = 0; i < spr->getNybble(4); i++)
-        painter->drawPixmap(QRect(spr->getx(), spr->gety()+spr->getOffsetY()+20+i*20, 20, 30), ImageCache::getInstance()->get(SpriteImg, "up_down_mushroom/stem.png"));
-    painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX(), spr->gety(), 30, 30), ImageCache::getInstance()->get(SpriteImg, "up_down_mushroom/" + color + "_l.png"));
-    painter->drawPixmap(QRect(spr->getx()-spr->getOffsetX()-10, spr->gety(), 30, 30), ImageCache::getInstance()->get(SpriteImg, "up_down_mushroom/" + color + "_r.png"));
-    for (int i = 30; i < spr->getwidth()-30; i += 20)
-        painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()+i, spr->gety(), 20, 30), ImageCache::getInstance()->get(SpriteImg, "up_down_mushroom/" + color + "_m.png"));
-
     // Final Position
     if (spr->getNybble(7) < spr->getNybble(4))
     {
@@ -1263,12 +1257,70 @@ void UpDownMushroomRenderer::render(QPainter *painter, QRect *)
     {
         painter->setOpacity(0.3);
         for (int i = 0; i < spr->getNybble(7); i++)
-            painter->drawPixmap(QRect(spr->getx(), spr->gety()-offset-20+((i+2)*20), 20, 30), ImageCache::getInstance()->get(SpriteImg, "up_down_mushroom/stem.png"));
+            painter->drawPixmap(QRect(spr->getx(), spr->gety()-offset-30+((i+2)*20), 20, 20), ImageCache::getInstance()->get(SpriteImg, "up_down_mushroom/stem.png"));
         painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX(), spr->gety()-offset, 30, 30), ImageCache::getInstance()->get(SpriteImg, "up_down_mushroom/" + color + "_l.png"));
         painter->drawPixmap(QRect(spr->getx()-spr->getOffsetX()-10, spr->gety()-offset, 30, 30), ImageCache::getInstance()->get(SpriteImg, "up_down_mushroom/" + color + "_r.png"));
         for (int i = 30; i < spr->getwidth()-30; i += 20)
             painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()+i, spr->gety()-offset, 20, 30), ImageCache::getInstance()->get(SpriteImg, "up_down_mushroom/" + color + "_m.png"));
         painter->setOpacity(1);
+    }
+    // Inital Position
+    for (int i = 0; i < spr->getNybble(4); i++)
+        painter->drawPixmap(QRect(spr->getx(), spr->gety()+spr->getOffsetY()+30+i*20, 20, 20), ImageCache::getInstance()->get(SpriteImg, "up_down_mushroom/stem.png"));
+    painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX(), spr->gety(), 30, 30), ImageCache::getInstance()->get(SpriteImg, "up_down_mushroom/" + color + "_l.png"));
+    painter->drawPixmap(QRect(spr->getx()-spr->getOffsetX()-10, spr->gety(), 30, 30), ImageCache::getInstance()->get(SpriteImg, "up_down_mushroom/" + color + "_r.png"));
+    for (int i = 30; i < spr->getwidth()-30; i += 20)
+        painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()+i, spr->gety(), 20, 30), ImageCache::getInstance()->get(SpriteImg, "up_down_mushroom/" + color + "_m.png"));
+}
+
+// Sprite 121: Expanding Mushroom
+ExpandMushroomRenderer::ExpandMushroomRenderer(const Sprite *spr)
+{
+    this-> spr = spr;
+}
+
+void ExpandMushroomRenderer::render(QPainter *painter, QRect *)
+{
+    // Stem
+    QString color;
+    if (spr->getNybble(6) %2 == 0)
+        color = "";
+    else
+        color = "grey_";
+
+    painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()+spr->getwidth()/2-10, spr->gety()+20, 20, 40), ImageCache::getInstance()->get(SpriteImg, "expand_mushroom/" + color + "stem_top.png"));
+    for (int i = 0; i < spr->getNybble(5); i++)
+        painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()+spr->getwidth()/2-10, spr->gety()+60+i*20, 20, 20), ImageCache::getInstance()->get(SpriteImg, "expand_mushroom/" + color + "stem.png"));
+
+    // Platform
+    if (spr->getNybble(4) %2 == 0)
+    {
+        // Start Contracted
+        painter->drawPixmap(QRect(spr->getx()-spr->getOffsetX()-20, spr->gety(), 40, 20), ImageCache::getInstance()->get(SpriteImg, "expand_mushroom/contracted.png"));
+
+        //Transparent Guides
+        if (spr->getNybble(7) %2 == 0)
+        {
+            // 10 Block Expantion
+            painter->setOpacity(0.3);
+            painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()-80, spr->gety(), 200, 20), ImageCache::getInstance()->get(SpriteImg, "expand_mushroom/big.png"));
+            painter->setOpacity(1);
+        }
+        else
+        {
+            // 5 Block Expansion
+            painter->setOpacity(0.3);
+            painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()-40, spr->gety(), 120, 20), ImageCache::getInstance()->get(SpriteImg, "expand_mushroom/small.png"));
+            painter->setOpacity(1);
+        }
+    }
+    else
+    {
+        // Start Expanded
+        if (spr->getNybble(7) %2 == 0)
+            painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX(), spr->gety(), 200, 20), ImageCache::getInstance()->get(SpriteImg, "expand_mushroom/big.png"));
+        else
+            painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX(), spr->gety(), 120, 20), ImageCache::getInstance()->get(SpriteImg, "expand_mushroom/small.png"));
     }
 }
 

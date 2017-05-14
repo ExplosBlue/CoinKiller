@@ -676,6 +676,38 @@ void Sprite::setRect()
         height = getNybble(4)*20 + 30;
         offsetx = 10-(width / 2);
         break;
+    case 121: // Expanding Mushroom
+        height = getNybble(5)*20 + 60;
+        if(getNybble(4) %2 == 0)
+        {
+            width = 40;
+            offsetx = -10;
+
+            if(getNybble(7) %2 == 0)
+            {
+                renderOffsetW = 200;
+                renderOffsetX = -90;
+            }
+            else
+            {
+                renderOffsetW = 120;
+                renderOffsetX = -50;
+            }
+        }
+        else
+        {
+            if(getNybble(7) %2 == 0)
+            {
+                width = 200;
+                offsetx = -90;
+            }
+            else
+            {
+                width = 120;
+                offsetx = -50;
+            }
+        }
+        break;
     case 123: // Bouncy Mushroom Platform
         if(getNybble(15) == 1)
         {

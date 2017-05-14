@@ -329,6 +329,16 @@ protected:
     const Sprite *spr;
 };
 
+// Sprite 121: Expanding Mushroom
+class ExpandMushroomRenderer: public ObjectRenderer
+{
+public:
+    ExpandMushroomRenderer(const Sprite *spr);
+    void render(QPainter *painter, QRect *drawrect);
+protected:
+    const Sprite *spr;
+};
+
 // Sprite 123: Boucny Mushroom
 class BouncyMushroomRenderer: public SpriteRenderer
 {
