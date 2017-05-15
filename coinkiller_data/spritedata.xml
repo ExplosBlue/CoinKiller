@@ -1359,21 +1359,21 @@
     <value nybble="9" title="Path ID"/>
     <value nybble="21-22" title="Movement ID"/>
   </sprite>
-  <sprite id="189" name="Rectangle Lift - Normal/Tower (ObjPol)" notes="Actor: 0x45">
-    <value nybble="1-2" title="Triggering Flag" comment="Not tested."/>
-    <value nybble="5-6" title="Tiles to move (When triggered)"/>
+  <sprite id="189" name="Rectangle Lift - Tower" notes="Actor: 0x45">
+    <value nybble="1-2" title="Triggering Flag"/>
+    <value nybble="5-6" title="Tiles to Move (When triggered)"/>
     <list nybble="10" title="Spikes" comment="7/8 produce messed up hitboxes / repeats after 8">
       <entry value="0">None</entry>
       <entry value="1">Top</entry>
       <entry value="2">Bottom</entry>
-      <entry value="3">Top/Bottom</entry>
+      <entry value="3">Top and Bottom</entry>
       <entry value="4">Left</entry>
       <entry value="5">Right</entry>
-      <entry value="6">Left/Right</entry>
+      <entry value="6">Left and Right</entry>
     </list>
     <list nybble="11" title="Mode" comment="If 2 it moves the specified tiles to move if the flag is activated and moves back if the flag is deactivated _needs further testing_">
       <entry value="0">Already moving</entry>
-      <entry value="2">Flag triggered</entry>
+      <entry value="2">Flag Triggered</entry>
     </list>
     <list nybble="12" title="Direction" comment="Nintendo uses different types for up/down. Values greater than 7 not tested.">
       <entry value="0">Right</entry>
@@ -1387,7 +1387,7 @@
     </list>
     <value nybble="14" title="Height" comment="Value + 1. If it's 0 the game will set it to 1."/>
     <value nybble="16" title="Width" comment="Value + 1. If it's 0 the game will set it to 1."/>
-    <value nybble="17" title="Tiles to move"/>
+    <value nybble="17" title="Tiles to Move"/>
     <list nybble="18" title="Moving Speed" comment="Values greater then 4 make the lift not move at all. 4 can be glitchy in certain circumstances.">
       <entry value="0">Slow</entry>
       <entry value="1">Medium</entry>
@@ -1395,31 +1395,26 @@
       <entry value="3">Very Fast</entry>
       <entry value="4">Fastest (Glitchy)</entry>
     </list>
-    <value nybble="19" title="End delay"/>
-    <value nybble="20" title="Start delay"/>
+    <value nybble="19" title="End Delay"/>
+    <value nybble="20" title="Start Delay"/>
   </sprite>
-  <sprite id="190" name="Rectangle Lift - Ghost House, Checkered" notes="See 189"/>
-  <sprite id="191" name="Rectangle Lift - Desert" notes="See 189">
+  <sprite id="190" name="Rectangle Lift - Checkered" notes="See 189">
     <value nybble="1-2" title="Triggering Flag"/>
-    <value nybble="5-6" title="Tiles to move (When triggered)"/>
-  </sprite>
-  <sprite id="192" name="Rectangle Lift - Castle">
-    <value nybble="1-2" title="Triggering Flag"/>
-    <value nybble="5-6" title="Tiles to move(When Triggered)"/>
-    <list nybble="10" title="Spikes">
+    <value nybble="5-6" title="Tiles to Move (When triggered)"/>
+    <list nybble="10" title="Spikes" comment="7/8 produce messed up hitboxes / repeats after 8">
       <entry value="0">None</entry>
       <entry value="1">Top</entry>
       <entry value="2">Bottom</entry>
-      <entry value="3">Top/Bottom</entry>
+      <entry value="3">Top and Bottom</entry>
       <entry value="4">Left</entry>
       <entry value="5">Right</entry>
-      <entry value="6">Left/Right</entry>
+      <entry value="6">Left and Right</entry>
     </list>
     <list nybble="11" title="Mode" comment="If 2 it moves the specified tiles to move if the flag is activated and moves back if the flag is deactivated _needs further testing_">
       <entry value="0">Already Moving</entry>
-      <entry value="2">Flag triggered</entry>
+      <entry value="2">Flag Triggered</entry>
     </list>
-    <list nybble="12" title="Direction">
+    <list nybble="12" title="Direction" comment="Nintendo uses different types for up/down. Values greater than 7 not tested.">
       <entry value="0">Right</entry>
       <entry value="1">Left</entry>
       <entry value="2">Up</entry>
@@ -1429,20 +1424,130 @@
       <entry value="6">Up</entry>
       <entry value="7">Down</entry>
     </list>
-    <value nybble="14" title="Height"/>
-    <value nybble="16" title="Width"/>
-    <value nybble="17" title="Tiles to move"/>
-    <list nybble="18" title="Moving Speed">
+    <value nybble="14" title="Height" comment="Value + 1. If it's 0 the game will set it to 1."/>
+    <value nybble="16" title="Width" comment="Value + 1. If it's 0 the game will set it to 1."/>
+    <value nybble="17" title="Tiles to Move"/>
+    <list nybble="18" title="Moving Speed" comment="Values greater then 4 make the lift not move at all. 4 can be glitchy in certain circumstances.">
       <entry value="0">Slow</entry>
       <entry value="1">Medium</entry>
       <entry value="2">Fast</entry>
       <entry value="3">Very Fast</entry>
-      <entry value="4">Fastest(Glitchy)</entry>
+      <entry value="4">Fastest (Glitchy)</entry>
     </list>
     <value nybble="19" title="End Delay"/>
     <value nybble="20" title="Start Delay"/>
   </sprite>
-  <sprite id="193" name="Rectangle Lift - Underwater" notes="See 189"/>
+  <sprite id="191" name="Rectangle Lift - Desert" notes="See 189">
+    <value nybble="1-2" title="Triggering Flag"/>
+    <value nybble="5-6" title="Tiles to Move (When triggered)"/>
+    <list nybble="10" title="Spikes" comment="7/8 produce messed up hitboxes / repeats after 8">
+      <entry value="0">None</entry>
+      <entry value="1">Top</entry>
+      <entry value="2">Bottom</entry>
+      <entry value="3">Top and Bottom</entry>
+      <entry value="4">Left</entry>
+      <entry value="5">Right</entry>
+      <entry value="6">Left and Right</entry>
+    </list>
+    <list nybble="11" title="Mode" comment="If 2 it moves the specified tiles to move if the flag is activated and moves back if the flag is deactivated _needs further testing_">
+      <entry value="0">Already Moving</entry>
+      <entry value="2">Flag Triggered</entry>
+    </list>
+    <list nybble="12" title="Direction" comment="Nintendo uses different types for up/down. Values greater than 7 not tested.">
+      <entry value="0">Right</entry>
+      <entry value="1">Left</entry>
+      <entry value="2">Up</entry>
+      <entry value="3">Down</entry>
+      <entry value="4">Right</entry>
+      <entry value="5">Left</entry>
+      <entry value="6">Up</entry>
+      <entry value="7">Down</entry>
+    </list>
+    <value nybble="14" title="Height" comment="Value + 1. If it's 0 the game will set it to 1."/>
+    <value nybble="16" title="Width" comment="Value + 1. If it's 0 the game will set it to 1."/>
+    <value nybble="17" title="Tiles to Move"/>
+    <list nybble="18" title="Moving Speed" comment="Values greater then 4 make the lift not move at all. 4 can be glitchy in certain circumstances.">
+      <entry value="0">Slow</entry>
+      <entry value="1">Medium</entry>
+      <entry value="2">Fast</entry>
+      <entry value="3">Very Fast</entry>
+      <entry value="4">Fastest (Glitchy)</entry>
+    </list>
+    <value nybble="19" title="End Delay"/>
+    <value nybble="20" title="Start Delay"/>
+  </sprite>
+  <sprite id="192" name="Rectangle Lift - Castle">
+    <value nybble="1-2" title="Triggering Flag"/>
+    <value nybble="5-6" title="Tiles to Move (When triggered)"/>
+    <list nybble="10" title="Spikes" comment="7/8 produce messed up hitboxes / repeats after 8">
+      <entry value="0">None</entry>
+      <entry value="1">Top</entry>
+      <entry value="2">Bottom</entry>
+      <entry value="3">Top and Bottom</entry>
+      <entry value="4">Left</entry>
+      <entry value="5">Right</entry>
+      <entry value="6">Left and Right</entry>
+    </list>
+    <list nybble="11" title="Mode" comment="If 2 it moves the specified tiles to move if the flag is activated and moves back if the flag is deactivated _needs further testing_">
+      <entry value="0">Already Moving</entry>
+      <entry value="2">Flag Triggered</entry>
+    </list>
+    <list nybble="12" title="Direction" comment="Nintendo uses different types for up/down. Values greater than 7 not tested.">
+      <entry value="0">Right</entry>
+      <entry value="1">Left</entry>
+      <entry value="2">Up</entry>
+      <entry value="3">Down</entry>
+      <entry value="4">Right</entry>
+      <entry value="5">Left</entry>
+      <entry value="6">Up</entry>
+      <entry value="7">Down</entry>
+    </list>
+    <value nybble="14" title="Height" comment="Value + 1. If it's 0 the game will set it to 1."/>
+    <value nybble="16" title="Width" comment="Value + 1. If it's 0 the game will set it to 1."/>
+    <value nybble="17" title="Tiles to Move"/>
+    <list nybble="18" title="Moving Speed" comment="Values greater then 4 make the lift not move at all. 4 can be glitchy in certain circumstances.">
+      <entry value="0">Slow</entry>
+      <entry value="1">Medium</entry>
+      <entry value="2">Fast</entry>
+      <entry value="3">Very Fast</entry>
+      <entry value="4">Fastest (Glitchy)</entry>
+    </list>
+    <value nybble="19" title="End Delay"/>
+    <value nybble="20" title="Start Delay"/>
+  </sprite>
+  <sprite id="193" name="Rectangle Lift - Underwater" notes="See 189">
+    <value nybble="1-2" title="Triggering Flag"/>
+    <value nybble="5-6" title="Tiles to Move (When triggered)"/>
+    <list nybble="10" title="Spikes" comment="7/8 produce messed up hitboxes / repeats after 8">
+      <entry value="0">None</entry>
+      <entry value="1">Top</entry>
+      <entry value="2">Bottom</entry>
+      <entry value="3">Top and Bottom</entry>
+      <entry value="4">Left</entry>
+      <entry value="5">Right</entry>
+      <entry value="6">Left and Right</entry>
+    </list>
+    <list nybble="11" title="Mode" comment="If 2 it moves the specified tiles to move if the flag is activated and moves back if the flag is deactivated _needs further testing_">
+      <entry value="0">Already Moving</entry>
+      <entry value="2">Flag Triggered</entry>
+    </list>
+    <list nybble="12" title="Direction" comment="Nintendo uses different types for up/down. Values greater than 7 not tested.">
+      <entry value="0">Right</entry>
+      <entry value="1">Left</entry>
+      <entry value="2">Up</entry>
+      <entry value="3">Down</entry>
+      <entry value="4">Right</entry>
+      <entry value="5">Left</entry>
+      <entry value="6">Up</entry>
+      <entry value="7">Down</entry>
+    </list>
+    <value nybble="14" title="Height" comment="Value + 1. If it's 0 the game will set it to 1."/>
+    <value nybble="16" title="Width" comment="Value + 1. If it's 0 the game will set it to 1."/>
+    <value nybble="17" title="Tiles to Move"/>
+    <value nybble="18" title="Moving Speed" comment="Values greater then 4 make the lift not move at all. 4 can be glitchy in certain circumstances."/>
+    <value nybble="19" title="End Delay"/>
+    <value nybble="20" title="Start Delay"/>
+  </sprite>
   <sprite id="194" name="Cheep Cheep" notes="A fish that lurks the oceans and rivers to attack Mario. Takes 1 fireball shot be killed.">
     <list nybble="6" title="Type" comment="5 has the same effect as 3, 6 and 7 have the same effect as 4, 8 is unused.">
       <entry value="0">Red</entry>
@@ -1650,6 +1755,7 @@
     <checkbox nybble="8" title="Reusable" comment="Allows the switch to be used multiple times."/>
     <checkbox nybble="9" title="Not Timed" comment="Disables the timer on the switch."/>
     <checkbox nybble="11" title="Gravity Affected" comment="Causes the switch to fall if nothing is below it."/>
+    <value nybble="12" title="Location ID"/>
   </sprite>
   <sprite id="222" name="Brick Block containing ! Switch" notes="See ? Switch for settings">
     <value nybble="1-2" title="Target Flag ID"/>
@@ -1658,6 +1764,7 @@
     <checkbox nybble="8" title="Reusable" comment="Allows the switch to be used multiple times."/>
     <checkbox nybble="9" title="Not Timed" comment="Disables the timer on the switch."/>
     <checkbox nybble="11" title="Gravity Affected" comment="Causes the switch to fall if nothing is below it."/>
+    <value nybble="12" title="Location ID"/>
   </sprite>
   <sprite id="223" name="? Switch" notes="Doesn't seem to have &quot;Triggering Flag&quot;.">
     <value nybble="1-2" title="Target Flag ID"/>
@@ -1671,6 +1778,7 @@
       <entry value="8">Unknown 8 9</entry>
       <entry value="10">Gravity Affected and No Music Interrupt</entry>
     </list>
+    <value nybble="12" title="Location ID"/>
   </sprite>
   <sprite id="224" name="Brick Block containing ? Switch" notes="See ? Switch for settings">
     <value nybble="1-2" title="Target Flag ID"/>
@@ -1679,6 +1787,7 @@
     <checkbox nybble="8" title="Reusable" comment="Allows the switch to be used multiple times."/>
     <checkbox nybble="9" title="Not Timed" comment="Disables the timer on the switch."/>
     <checkbox nybble="11" title="Gravity Affected" comment="Causes the switch to fall if nothing is below it."/>
+    <value nybble="12" title="Location ID"/>
   </sprite>
   <sprite id="225" name="P Switch">
     <value nybble="1-2" title="Target Flag ID"/>
@@ -1696,6 +1805,7 @@
     <checkbox nybble="8" title="Reusable" comment="Allows the switch to be used multiple times."/>
     <checkbox nybble="9" title="Not Timed" comment="Disables the timer on the switch."/>
     <checkbox nybble="11" title="Gravity Affected" comment="Causes the switch to fall if nothing is below it."/>
+    <value nybble="12" title="Location ID" comment="Location of blue coins for applause effect."/>
   </sprite>
   <sprite id="227" name="Floating Barrel"/>
   <sprite id="228" name="Boo"/>
@@ -2121,6 +2231,7 @@
   <sprite id="287" name="Door - Toad House" notes="Existing In-Game Sprite Data: Incomplete"/>
   <sprite id="288" name="Resources Loader - Mega Mario"/>
   <sprite id="289" name="Bouncy Mushroom - Castle">
+    <checkbox nybble="5" title="Solid on top only"/>
     <checkbox nybble="16" title="Longer Platform" comment="todo: Give detail on sizes."/>
   </sprite>
   <sprite id="290" name="Path-controlled Climbable Fence (small)">

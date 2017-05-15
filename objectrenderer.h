@@ -124,7 +124,6 @@ public:
     void render(QPainter *painter, QRect *drawrect);
 protected:
     const Sprite *spr;
-    QString basePath;
     QString contents;
 };
 
@@ -136,7 +135,6 @@ public:
     void render(QPainter *painter, QRect *drawrect);
 protected:
     const Sprite* spr;
-    QString basePath;
 };
 
 // Sprite 28/60/101/204: Movement Controlled Sprites
@@ -158,7 +156,6 @@ public:
     void render(QPainter *painter, QRect *drawrect);
 protected:
     const Sprite* spr;
-    QString basePath;
 };
 
 // Sprite 44: Track-controlled Burner - Four Directions
@@ -553,11 +550,10 @@ protected:
 class CheepCheepRenderer: public SpriteRenderer
 {
 public:
-    CheepCheepRenderer(const Sprite *spr, QString basePath);
+    CheepCheepRenderer(const Sprite *spr, QString filename);
     void render(QPainter *painter, QRect *drawrect);
 protected:
     const Sprite *spr;
-    QString basePath;
     QString filename;
     NormalImageRenderer *img;
 };
@@ -609,11 +605,11 @@ protected:
 class SpinyRenderer: public SpriteRenderer
 {
 public:
-    SpinyRenderer(const Sprite *spr, QString basePath);
+    SpinyRenderer(const Sprite *spr, QString filename);
     void render(QPainter *painter, QRect *drawrect);
 protected:
     const Sprite *spr;
-    QString basePath;
+    QString filename;
 };
 
 // Sprite 240: Urchin
