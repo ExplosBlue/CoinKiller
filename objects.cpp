@@ -1103,6 +1103,32 @@ void Sprite::setRect()
             offsetx -= 3;
         }
         break;
+    case 210: // Tightrope
+        if (getNybble(10) == 0)
+        {
+            width = 16;
+        }
+        else
+        {
+            width = 20 + getNybble(10)*20;
+        }
+        int offset;
+        if (getNybble(11) == 0)
+            height = 20;
+        else if (getNybble(11) <= 7)
+        {
+            for(offset = 0; offset < getNybble(11); offset++)
+                height = (offset*20)+40;
+                offsety = -(offset*20);
+        }
+        else
+        {
+            offset = 160;
+            for (int i = 8; i != getNybble(11); i++) offset -= 20;
+            height = offset+20;
+        }
+        offsetx = -10;
+        break;
     case 290: // Path Controlled Fence(Small)
         width = 60;
         height = 60;

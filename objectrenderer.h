@@ -568,6 +568,16 @@ protected:
     NormalImageRenderer *img;
 };
 
+// Sprite 210: Tightrope
+class TightropeRenderer: public SpriteRenderer
+{
+public:
+    TightropeRenderer(const Sprite *spr);
+    void render(QPainter *painter, QRect *drawrect);
+protected:
+    const Sprite *spr;
+};
+
 // Sprite 213: Pokey
 class PokeyRenderer: public SpriteRenderer
 {

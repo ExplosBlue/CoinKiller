@@ -432,6 +432,9 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
     case 206: // Gold Ring
         ret = new NormalImageRenderer(spr, "gold_ring.png");
         break;
+    case 210: // Tightrope
+        ret = new TightropeRenderer(spr);
+        break;
     case 211: // Roy Koopa
         ret = new NormalImageRenderer(spr, "boss_roy.png");
         break;
@@ -1674,6 +1677,38 @@ BigCheepRenderer::BigCheepRenderer(const Sprite *spr)
 void BigCheepRenderer::render(QPainter *painter, QRect *drawrect)
 {
     img->render(painter, drawrect);
+}
+
+// Sprite 210: Tightrope
+TightropeRenderer::TightropeRenderer(const Sprite *spr)
+{
+    this->spr = spr;
+}
+void TightropeRenderer::render(QPainter *painter, QRect *)
+{
+    int ropelength = 20*(spr->getNybble(10));
+    int heightoffset = 0;
+
+    QPen rope;
+    rope.setWidth(6);
+    rope.setColor(QColor(184,172,120));
+    painter->setPen(rope);
+
+    if (spr->getNybble(11) <=7)
+    {
+        for(heightoffset = 0; heightoffset < spr->getNybble(11); heightoffset++);
+        painter->drawLine(spr->getx(), spr->gety()+10, spr->getx()+ropelength-4, spr->gety()+10-(heightoffset*20));
+        painter->drawPixmap(QRect(spr->getx()-8+ropelength,spr->gety()+2-(heightoffset*20), 16, 16), ImageCache::getInstance()->get(SpriteImg, "rope_joint.png"));
+    }
+    else
+    {
+        heightoffset = 160;
+        for (int i = 8; i != spr->getNybble(11); i++) heightoffset -= 20;
+        painter->drawLine(spr->getx(), spr->gety()+10, spr->getx()+ropelength-4, spr->gety()+10+heightoffset);
+        painter->drawPixmap(QRect(spr->getx()-8+ropelength,spr->gety()+2+heightoffset, 16, 16), ImageCache::getInstance()->get(SpriteImg, "rope_joint.png"));
+    }
+
+    painter->drawPixmap(QRect(spr->getx()-8,spr->gety()+2, 16, 16), ImageCache::getInstance()->get(SpriteImg, "rope_joint.png"));
 }
 
 // Sprite 213: Pokey
