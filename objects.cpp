@@ -487,6 +487,11 @@ void Sprite::setRect()
         offsety = -2;
         break;
     case 78: // Firebar
+        if (getNybble(8) == 1)
+        {
+            width = 40;
+            offsetx = -10;
+        }
         renderOffsetH = (getNybble(5)*40) + 20;
         renderOffsetW = (getNybble(5)*40) + 20;
         renderOffsetX = offsetx - (getNybble(5)*20);

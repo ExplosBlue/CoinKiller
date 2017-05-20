@@ -946,14 +946,17 @@ FireBarRenderer::FireBarRenderer(const Sprite *spr)
     size = (spr->getNybble(5)*40) + 20;
     posoff = (spr->getNybble(5)*20);
 
-    center = new NormalImageRenderer(spr, "firebar_center.png");
     radius = new CircleRenderer(spr->getx()-posoff, spr->gety()-posoff, size, size, "", QColor(0,0,0));
 
 }
 
 void FireBarRenderer::render(QPainter *painter, QRect *drawrect)
 {
-    center->render(painter, drawrect);
+    if (spr->getNybble(8) == 1)
+        painter->drawPixmap(QRect(spr->getx()-10, spr->gety(), 40, 20), ImageCache::getInstance()->get(SpriteImg, "firebar_center_wide.png"));
+    else
+        painter->drawPixmap(QRect(spr->getx(), spr->gety(), 20, 20), ImageCache::getInstance()->get(SpriteImg, "firebar_center.png"));
+
     if(spr->getNybble(5) > 0)
         radius->render(painter, drawrect);
 
