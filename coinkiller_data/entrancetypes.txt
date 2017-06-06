@@ -12,8 +12,8 @@ Swimming
 Normal (Mispositioned)
 Normal (Mispositioned)
 Normal (Mispositioned)
-Unknown
-Boss Door
+Unknown 1
+Tower Boss Door Exit
 Mini Pipe Facing Up
 Mini Pipe Facing Down
 Mini Pipe Facing Left
@@ -26,5 +26,7 @@ Jumping (Facing Left)
 Boss Entrance (Jumping Right)
 Boss Entrance (Falling Right)
 Door Entrance
-Unknown (Crash)
-Unknown (Freeze)
+Unknown 3 (Crash)
+Unknown 4 (Freeze)
+Walking Right (from 4 blocks behind entrance pos. to entrance pos.)
+Walking Left (from 4 blocks behind entrance pos. to entrance pos.)
