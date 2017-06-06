@@ -149,6 +149,42 @@ void Sprite::setRect()
     renderOffsetH = 0;
 
     switch (id) {
+    case 1: // Water Flow For Pipe
+        if (getNybble(5) == 0)
+        {
+            height = 80;
+            width = 40;
+            offsety = -80;
+        }
+        else if (getNybble(5) == 1)
+        {
+            height = 80;
+            width = 40;
+            offsety = 20;
+        }
+        else if (getNybble(5) == 2)
+        {
+            height = 40;
+            width = 80;
+            offsetx = 20;
+            offsety = -20;
+        }
+        else
+        {
+            height = 40;
+            width = 80;
+            offsetx = -80;
+            offsety = -20;
+        }
+        break;
+    case 2: // Downwards Water Pull
+        height = 180;
+        if (getNybble(10) == 1)
+            width = 110;
+        else
+            width = 210;
+        offsetx = -5;
+        break;
     case 3: // Cheep Chomp
         width = 79;
         height = 67;

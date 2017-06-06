@@ -9,6 +9,12 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
     this->spr = spr;
 
     switch (spr->getid()) {
+    case 1: // Water Flow For Pipe
+        ret = new PipeFlowRenderer(spr);
+        break;
+    case 2: // Downwards Water Pull
+        ret = new DownWaterPullRenderer(spr);
+        break;
     case 3: // Cheep Chomp
         ret = new NormalImageRenderer(spr, "cheep_chomp.png");
         break;
@@ -695,6 +701,46 @@ void CircleRenderer::render(QPainter *painter, QRect *)
 
 
 // Sprite Renderers
+
+// Sprite 1: Water Flow For Pipe
+PipeFlowRenderer::PipeFlowRenderer(const Sprite *spr)
+{
+    this->spr = spr;
+}
+
+void PipeFlowRenderer::render(QPainter *painter, QRect *)
+{
+    QString dir = "pipe_water_flow/";
+
+    QString direction;
+    switch (spr->getNybble(5))
+    {
+        case 1: direction = "down"; break;
+        case 2: direction = "right"; break;
+        case 3: direction = "left"; break;
+        default: direction = "up"; break;
+    }
+
+    if (spr->getNybble(10) != 1)
+        painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), ImageCache::getInstance()->get(SpriteImg, dir + "air_" + direction + ".png"));
+    painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), ImageCache::getInstance()->get(SpriteImg, dir + "bubbles_" + direction + ".png"));
+
+
+}
+
+// Sprite 2: Downwards Water Pull
+DownWaterPullRenderer::DownWaterPullRenderer(const Sprite *spr)
+{
+    this->spr = spr;
+}
+
+void DownWaterPullRenderer::render(QPainter *painter, QRect *)
+{
+    if (spr->getNybble(10) == 1)
+        painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), ImageCache::getInstance()->get(SpriteImg, "down_water_pull.png"));
+    else
+        painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), ImageCache::getInstance()->get(SpriteImg, "down_water_pull_big.png"));
+}
 
 // Sprite 4/5/6/7: Burner Right/Down/Left/Up
 BurnerRenderer::BurnerRenderer(const Sprite *spr, QString name)

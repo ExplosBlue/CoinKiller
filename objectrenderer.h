@@ -82,6 +82,26 @@ protected:
 
 // Special Sprite Renderers
 
+// Sprite 1: Water Flow For Pipe
+class PipeFlowRenderer: public SpriteRenderer
+{
+public:
+    PipeFlowRenderer(const Sprite *spr);
+    void render(QPainter *painter, QRect *drawrect);
+protected:
+    const Sprite *spr;
+};
+
+// Sprite 2: Downwards Water Pull
+class DownWaterPullRenderer: public SpriteRenderer
+{
+public:
+    DownWaterPullRenderer(const Sprite *spr);
+    void render(QPainter *painter, QRect *drawrect);
+protected:
+    const Sprite *spr;
+};
+
 // Sprite 4/5/6/7: Burner Right/Down/Left/Up
 class BurnerRenderer: public SpriteRenderer
 {
