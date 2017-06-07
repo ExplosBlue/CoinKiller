@@ -22,7 +22,7 @@
       <entry value="2">Pipe Right</entry>
       <entry value="3">Pipe Left</entry>
     </list>
-    <checkbox nybble="11" title="Just Bubbles" comment="When checked only the bubbles will be shown."/>
+    <checkbox nybble="11" title="Just Bubbles" comment="When checked only the bubbles will be shown. (Nothing will be visible if placed outside water.)"/>
   </sprite>
   <sprite id="2" name="Downwards Water Pull" notes="Actor: 0x058">
     <value nybble="6" title="Unknown Value 6" comment="Unknown."/>
@@ -64,15 +64,14 @@
       <entry value="1">Still</entry>
     </list>
     <checkbox nybble="6" title="Big" comment="Also increases amount of coins, if Object is is set to Coins."/>
-    <value nybble="9" title="Roulette Block Contents"/>
-    <list nybble="10" title="Whomp Contents" comment="If Movement = Walks, this object appears when the Whomp is KO'd. If Movement = Still, it is appeared when the Whomp is down.">
-      <entry value="0">Nothing</entry>
-      <entry value="1">Roulette Block</entry>
-      <entry value="2">Star Coin (Unused)</entry>
-      <entry value="3">Red Coin Ring</entry>
-      <entry value="4">Coins</entry>
-      <entry value="5">Moon Coin</entry>
+    <list nybble="9" title="Roulette Block Contents" comment="This powerup will be in-between the Super Mushroom (first item) and 1-Up Mushroom (last item). 3 is unused.">
+      <entry value="0">Fire Flower and Star</entry>
+      <entry value="1">Gold Flower and Super Leaf</entry>
+      <entry value="2">Super Leaf and Star</entry>
+      <entry value="3">Super Star</entry>
+      <entry value="4">Fire Flower and Gold Flower</entry>
     </list>
+    <value nybble="10" title="Whomp Contents" comment="If Movement = Walks, this object appears when the Whomp is KO'd. If Movement = Still, it is appeared when the Whomp is down."/>
     <list nybble="12" title="Star/Moon Coin Number">
       <entry value="0">One</entry>
       <entry value="1">Two</entry>
@@ -148,7 +147,7 @@
     <value nybble="13" title="Unknown Value 13" comment="..."/>
     <value nybble="14" title="Unknown Value 14" comment="..."/>
   </sprite>
-  <sprite id="18" name="TIle God" notes="Actor: 0x1b2&#13;&#10;Can destroy anything, the setting is used for particle effects if the action is set to Destroy.">
+  <sprite id="18" name="Tile God" notes="Actor: 0x1b2&#13;&#10;Can destroy anything, the setting is used for particle effects if the action is set to Destroy.">
     <value nybble="1-2" title="Triggering Event ID" comment="What Event ID triggers the action."/>
     <checkbox nybble="6" title="Smoke Effect" comment="Adds a smoke &quot;poof&quot; effect when a tile is created or destroyed."/>
     <list nybble="7" title="Tile" comment="The kind of block that gets destroyed or created.">
@@ -546,6 +545,7 @@
     <value nybble="8" title="Unknown Value 8" comment="..."/>
     <value nybble="10" title="Unknown Value 10" comment="..."/>
     <value nybble="11" title="Unknown Value 11" comment="..."/>
+    <value nybble="21-22" title="Movement ID"/>
   </sprite>
   <sprite id="61" name="Red Coin" notes="Actor: 0x0d6">
     <value nybble="1-2" title="Triggering Event ID" comment="What triggers the coin activating."/>
@@ -1025,7 +1025,9 @@
     <value nybble="1-2" title="Flag" comment="Always 2..."/>
   </sprite>
   <sprite id="133" name="Bowser Shutter"/>
-  <sprite id="134" name="Bowser Bridge"/>
+  <sprite id="134" name="Bowser Bridge">
+    <value nybble="1-2" title="Triggering Event ID" comment="The event that will trigger the bridge distruction."/>
+  </sprite>
   <sprite id="135" name="Goomba" notes="Can be bounced by Bouncy Mushrooms/Invisible Bouncy Blocks. Gold Ring behaviour; turns gold.">
     <value nybble="1-2" title="Defunct Triggering Event ID" comment="Defunct Triggering Flag that was presumably required for Gold Ring functionality at one point."/>
     <value nybble="5" title="Unknown 5"/>
@@ -2457,7 +2459,30 @@
     <value nybble="15" title="Unknown Value 15" comment="Always 3"/>
     <value nybble="16" title="Unknown Value 16" comment="Always 1"/>
   </sprite>
-  <sprite id="321" name="Mushroom Platform - Snow" notes="Actor: 0x02f"/>
+  <sprite id="321" name="Mushroom Platform - Snow" notes="Actor: 0x02f">
+    <value nybble="5-6" title="Tilt Speed" comment="Value Modulo 64. Speed increases for values 1-32, then decreases for values 33-63."/>
+    <value nybble="7" title="Length" comment="(value+3)"/>
+    <list nybble="8" title="Starting Tilt/Tilt Angle">
+      <entry value="0">No Tilt</entry>
+      <entry value="1">Left - 11.25 Degrees</entry>
+      <entry value="2">Left - 22.5 Degrees</entry>
+      <entry value="3">Left - 33.75 Degrees</entry>
+      <entry value="4">Left - 45 Degrees</entry>
+      <entry value="5">Left - 56.25 Degrees</entry>
+      <entry value="6">Left - 67.5 Degrees</entry>
+      <entry value="7">Left - 78.75 Degrees</entry>
+      <entry value="8">No Tilt</entry>
+      <entry value="9">Right - 11.25 Degrees</entry>
+      <entry value="10">Right - 22.5 Degrees</entry>
+      <entry value="11">Right - 33.75 Degrees</entry>
+      <entry value="12">Right - 45 Degrees</entry>
+      <entry value="13">Right - 56.25 Degrees</entry>
+      <entry value="14">Right - 67.5 Degrees</entry>
+      <entry value="15">Right - 78.75 Degrees</entry>
+    </list>
+    <value nybble="9" title="Unknown Value 9"/>
+    <value nybble="10" title="Stem Length" comment="(value+4)"/>
+  </sprite>
   <sprite id="322" name="Big Grinder" notes="Actor: 0x148">
     <value nybble="2" title="Triggering Event ID" comment="Appeared if on. No &quot;flourish&quot; for appearing/disappearing."/>
     <value nybble="5" title="Speed"/>

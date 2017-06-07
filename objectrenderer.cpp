@@ -36,6 +36,9 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
     case 9: // Whomp
         ret = new NormalImageRenderer(spr, "whomp.png");
         break;
+    case 16: // Amp
+        ret = new NormalImageRenderer(spr, "amp.png");
+        break;
     case 18: // Tile God
         ret = new TileGodRenderer(spr, tilesets[0]);
         break;
@@ -174,6 +177,9 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
     case 81: // Fireball Pipe - ! Junction
         ret = new NormalImageRenderer(spr, "fireballpipe_junction.png");
         break;
+    case 82: // Fire Snake
+        ret = new NormalImageRenderer(spr, "fire_snake.png");
+        break;
     case 83: // Fish Bone
         ret = new NormalImageRenderer(spr, "fish_bone.png");
         break;
@@ -236,6 +242,9 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
         break;
     case 111: // Giant Dry Bones
         ret = new NormalImageRenderer(spr, "giant_dry_bones.png");
+        break;
+    case 113: // Flame Chomp
+        ret = new NormalImageRenderer(spr, "flame_chomp.png");
         break;
     case 114: // Floating Box
         ret = new FloatingBoxRenderer(spr);
@@ -593,6 +602,9 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
         break;
     case 291: // Path Controlled Fence(Big)
         ret = new NormalImageRenderer(spr, "big_path_fence.png");
+        break;
+    case 292: // Warp Cannon Signboard
+        ret = new NormalImageRenderer(spr, "sign_big.png");
         break;
     case 293: // Punching Glove
         ret = new NormalImageRenderer(spr, "punching_glove.png");
@@ -2046,23 +2058,27 @@ void EntranceRenderer::render(QPainter *painter, QRect *drawrect)
 
     switch (entr->getEntrType())
     {
-    case 0: case 1:
+    case 0:
         painter->drawText(textRect, "N", Qt::AlignLeft | Qt::AlignBottom);
+        painter->drawPixmap(imgRect, QPixmap(basePath + "normal.png"));
+        break;
+    case 1:
+        painter->drawText(textRect, "C", Qt::AlignLeft | Qt::AlignBottom);
         painter->drawPixmap(imgRect, QPixmap(basePath + "normal.png"));
         break;
     case 2:
         painter->drawPixmap(imgRect, QPixmap(basePath + "door_exit.png"));
         break;
-    case 3:
+    case 3: case 16:
         painter->drawPixmap(imgRect, QPixmap(basePath + "pipe_up.png"));
         break;
-    case 4:
+    case 4: case 17:
         painter->drawPixmap(imgRect, QPixmap(basePath + "pipe_down.png"));
         break;
-    case 5:
+    case 5: case 18:
         painter->drawPixmap(imgRect, QPixmap(basePath + "pipe_left.png"));
         break;
-    case 6:
+    case 6: case 19:
         painter->drawPixmap(imgRect, QPixmap(basePath + "pipe_right.png"));
         break;
     case 7:
@@ -2080,6 +2096,9 @@ void EntranceRenderer::render(QPainter *painter, QRect *drawrect)
     case 10:
         painter->drawText(textRect, "S", Qt::AlignLeft | Qt::AlignBottom);
         painter->drawPixmap(imgRect, QPixmap(basePath + "swimming.png"));
+        break;
+    case 15:
+        painter->drawPixmap(imgRect, QPixmap(basePath + "boss_door_entrance.png"));
         break;
     case 20:
         painter->drawText(textRect, "J", Qt::AlignLeft | Qt::AlignBottom);
@@ -2099,6 +2118,14 @@ void EntranceRenderer::render(QPainter *painter, QRect *drawrect)
         break;
     case 27:
         painter->drawPixmap(imgRect, QPixmap(basePath + "door_entrance.png"));
+        break;
+    case 30:
+        painter->drawText(textRect, "W", Qt::AlignLeft | Qt::AlignBottom);
+        painter->drawPixmap(imgRect, QPixmap(basePath + "normal.png"));
+        break;
+    case 31:
+        painter->drawText(textRect, "W", Qt::AlignLeft | Qt::AlignBottom);
+        painter->drawPixmap(imgRect, QPixmap(basePath + "left.png"));
         break;
     default:painter->drawText(textRect, "?", Qt::AlignLeft | Qt::AlignBottom);
         painter->drawPixmap(imgRect, QPixmap(basePath + "unknown.png"));

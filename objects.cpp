@@ -242,6 +242,14 @@ void Sprite::setRect()
         offsetx = -18;
         offsety = 3;
         break;
+    case 16: // Amp
+        width = 60;
+        height = 60;
+        offsetx = -20;
+        offsety = -20;
+        if (getNybble(4) == 1)
+            offsetx = -10;
+        break;
     case 18: // Tile God
         width = qMax(getNybble(15) * 20, 20);
         height = qMax(getNybble(13) * 20, 20);
@@ -537,6 +545,11 @@ void Sprite::setRect()
         width = 40;
         height = 40;
         break;
+    case 82: // Fire Snake
+        width = 19;
+        height = 26;
+        offsety = -5;
+        break;
     case 83: // Fish Bone
         width = 33;
         height = 21;
@@ -624,6 +637,12 @@ void Sprite::setRect()
         height = 55;
         offsetx = -8;
         offsety = 7;
+        break;
+    case 113: // Flame Chomp
+        width = 55;
+        height = 55;
+        offsetx = -4;
+        offsety = -32;
         break;
     case 114: // Floating Box
         if (getNybble(5) == 1) // Big
@@ -1475,6 +1494,12 @@ void Sprite::setRect()
         height = 35;
         offsetx = -49;
         offsety = 15;
+        break;
+    case 292: // Warp Cannon Signboard
+        width = 62;
+        height = 86;
+        offsetx = -20;
+        offsety = -46;
         break;
     case 293: // Punching Glove
         width = 32;

@@ -1,5 +1,5 @@
 Normal
-Normal?
+Checkpoint
 Door Exit
 Pipe Facing Up
 Pipe Facing Down
@@ -13,7 +13,7 @@ Normal (Mispositioned)
 Normal (Mispositioned)
 Normal (Mispositioned)
 Unknown 1
-Tower Boss Door Exit
+Boss Door Exit
 Mini Pipe Facing Up
 Mini Pipe Facing Down
 Mini Pipe Facing Left
@@ -26,7 +26,7 @@ Jumping (Facing Left)
 Boss Entrance (Jumping Right)
 Boss Entrance (Falling Right)
 Door Entrance
-Unknown 3 (Crash)
-Unknown 4 (Freeze)
+Unknown 2 (Crash)
+Unknown 3 (Freeze)
 Walking Right (from 4 blocks behind entrance pos. to entrance pos.)
 Walking Left (from 4 blocks behind entrance pos. to entrance pos.)
