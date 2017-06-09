@@ -123,7 +123,7 @@ ZoneEditorWidget::ZoneEditorWidget(QList<Zone*> *zones)
     spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
     bgAlign->addWidget(spacer);
     bgAlign->addWidget(backgroundPreview, 1);
-    subLayout->addLayout(bgAlign, 12, 0, 1, 2);
+    subLayout->addLayout(bgAlign, 13, 0, 1, 2);
 
     updateList();
     updateInfo();
