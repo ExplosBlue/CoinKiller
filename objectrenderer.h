@@ -82,26 +82,6 @@ protected:
 
 // Special Sprite Renderers
 
-// Sprite 1: Water Flow For Pipe
-class PipeFlowRenderer: public SpriteRenderer
-{
-public:
-    PipeFlowRenderer(const Sprite *spr);
-    void render(QPainter *painter, QRect *drawrect);
-protected:
-    const Sprite *spr;
-};
-
-// Sprite 2: Downwards Water Pull
-class DownWaterPullRenderer: public SpriteRenderer
-{
-public:
-    DownWaterPullRenderer(const Sprite *spr);
-    void render(QPainter *painter, QRect *drawrect);
-protected:
-    const Sprite *spr;
-};
-
 // Sprite 4/5/6/7: Burner Right/Down/Left/Up
 class BurnerRenderer: public SpriteRenderer
 {
@@ -144,6 +124,7 @@ public:
     void render(QPainter *painter, QRect *drawrect);
 protected:
     const Sprite *spr;
+    QString basePath;
     QString contents;
 };
 
@@ -155,6 +136,7 @@ public:
     void render(QPainter *painter, QRect *drawrect);
 protected:
     const Sprite* spr;
+    QString basePath;
 };
 
 // Sprite 28/60/101/204: Movement Controlled Sprites
@@ -176,6 +158,7 @@ public:
     void render(QPainter *painter, QRect *drawrect);
 protected:
     const Sprite* spr;
+    QString basePath;
 };
 
 // Sprite 44: Track-controlled Burner - Four Directions
@@ -341,16 +324,6 @@ class UpDownMushroomRenderer: public ObjectRenderer
 {
 public:
     UpDownMushroomRenderer(const Sprite *spr);
-    void render(QPainter *painter, QRect *drawrect);
-protected:
-    const Sprite *spr;
-};
-
-// Sprite 121: Expanding Mushroom
-class ExpandMushroomRenderer: public ObjectRenderer
-{
-public:
-    ExpandMushroomRenderer(const Sprite *spr);
     void render(QPainter *painter, QRect *drawrect);
 protected:
     const Sprite *spr;
@@ -570,10 +543,11 @@ protected:
 class CheepCheepRenderer: public SpriteRenderer
 {
 public:
-    CheepCheepRenderer(const Sprite *spr, QString filename);
+    CheepCheepRenderer(const Sprite *spr, QString basePath);
     void render(QPainter *painter, QRect *drawrect);
 protected:
     const Sprite *spr;
+    QString basePath;
     QString filename;
     NormalImageRenderer *img;
 };
@@ -586,16 +560,6 @@ public:
     void render(QPainter *painter, QRect *drawrect);
 protected:
     NormalImageRenderer *img;
-};
-
-// Sprite 210: Tightrope
-class TightropeRenderer: public SpriteRenderer
-{
-public:
-    TightropeRenderer(const Sprite *spr);
-    void render(QPainter *painter, QRect *drawrect);
-protected:
-    const Sprite *spr;
 };
 
 // Sprite 213: Pokey
@@ -635,11 +599,11 @@ protected:
 class SpinyRenderer: public SpriteRenderer
 {
 public:
-    SpinyRenderer(const Sprite *spr, QString filename);
+    SpinyRenderer(const Sprite *spr, QString basePath);
     void render(QPainter *painter, QRect *drawrect);
 protected:
     const Sprite *spr;
-    QString filename;
+    QString basePath;
 };
 
 // Sprite 240: Urchin

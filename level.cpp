@@ -120,6 +120,9 @@ Level::Level(Game *game, SarcFilesystem* archive, int area, QString lvlName)
         header->skip(2);
         header->readStringASCII(background.name, 16);
         background.unk1 = header->read16();
+
+        qDebug("Value of %d found.", background.unk1);
+
         header->skip(2);
         backgrounds.append(background);
     }

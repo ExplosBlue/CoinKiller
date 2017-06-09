@@ -149,42 +149,6 @@ void Sprite::setRect()
     renderOffsetH = 0;
 
     switch (id) {
-    case 1: // Water Flow For Pipe
-        if (getNybble(5) == 0)
-        {
-            height = 80;
-            width = 40;
-            offsety = -80;
-        }
-        else if (getNybble(5) == 1)
-        {
-            height = 80;
-            width = 40;
-            offsety = 20;
-        }
-        else if (getNybble(5) == 2)
-        {
-            height = 40;
-            width = 80;
-            offsetx = 20;
-            offsety = -20;
-        }
-        else
-        {
-            height = 40;
-            width = 80;
-            offsetx = -80;
-            offsety = -20;
-        }
-        break;
-    case 2: // Downwards Water Pull
-        height = 180;
-        if (getNybble(10) == 1)
-            width = 110;
-        else
-            width = 210;
-        offsetx = -5;
-        break;
     case 3: // Cheep Chomp
         width = 79;
         height = 67;
@@ -241,14 +205,6 @@ void Sprite::setRect()
         height = 57;
         offsetx = -18;
         offsety = 3;
-        break;
-    case 16: // Amp
-        width = 60;
-        height = 60;
-        offsetx = -20;
-        offsety = -20;
-        if (getNybble(4) == 1)
-            offsetx = -10;
         break;
     case 18: // Tile God
         width = qMax(getNybble(15) * 20, 20);
@@ -531,11 +487,6 @@ void Sprite::setRect()
         offsety = -2;
         break;
     case 78: // Firebar
-        if (getNybble(8) == 1)
-        {
-            width = 40;
-            offsetx = -10;
-        }
         renderOffsetH = (getNybble(5)*40) + 20;
         renderOffsetW = (getNybble(5)*40) + 20;
         renderOffsetX = offsetx - (getNybble(5)*20);
@@ -544,11 +495,6 @@ void Sprite::setRect()
     case 81: // Fireball Pipe - ! Junction
         width = 40;
         height = 40;
-        break;
-    case 82: // Fire Snake
-        width = 19;
-        height = 26;
-        offsety = -5;
         break;
     case 83: // Fish Bone
         width = 33;
@@ -637,12 +583,6 @@ void Sprite::setRect()
         height = 55;
         offsetx = -8;
         offsety = 7;
-        break;
-    case 113: // Flame Chomp
-        width = 55;
-        height = 55;
-        offsetx = -4;
-        offsety = -32;
         break;
     case 114: // Floating Box
         if (getNybble(5) == 1) // Big
@@ -735,38 +675,6 @@ void Sprite::setRect()
         width = getNybble(5)*20 + 40;
         height = getNybble(4)*20 + 30;
         offsetx = 10-(width / 2);
-        break;
-    case 121: // Expanding Mushroom
-        height = getNybble(5)*20 + 60;
-        if(getNybble(4) %2 == 0)
-        {
-            width = 40;
-            offsetx = -10;
-
-            if(getNybble(7) %2 == 0)
-            {
-                renderOffsetW = 200;
-                renderOffsetX = -90;
-            }
-            else
-            {
-                renderOffsetW = 120;
-                renderOffsetX = -50;
-            }
-        }
-        else
-        {
-            if(getNybble(7) %2 == 0)
-            {
-                width = 200;
-                offsetx = -90;
-            }
-            else
-            {
-                width = 120;
-                offsetx = -50;
-            }
-        }
         break;
     case 123: // Bouncy Mushroom Platform
         if(getNybble(15) == 1)
@@ -1163,32 +1071,6 @@ void Sprite::setRect()
             offsetx -= 3;
         }
         break;
-    case 210: // Tightrope
-        if (getNybble(10) == 0)
-        {
-            width = 16;
-        }
-        else
-        {
-            width = 20 + getNybble(10)*20;
-        }
-        int offset;
-        if (getNybble(11) == 0)
-            height = 20;
-        else if (getNybble(11) <= 7)
-        {
-            for(offset = 0; offset < getNybble(11); offset++)
-                height = (offset*20)+40;
-                offsety = -(offset*20);
-        }
-        else
-        {
-            offset = 160;
-            for (int i = 8; i != getNybble(11); i++) offset -= 20;
-            height = offset+20;
-        }
-        offsetx = -10;
-        break;
     case 290: // Path Controlled Fence(Small)
         width = 60;
         height = 60;
@@ -1494,12 +1376,6 @@ void Sprite::setRect()
         height = 35;
         offsetx = -49;
         offsety = 15;
-        break;
-    case 292: // Warp Cannon Signboard
-        width = 62;
-        height = 86;
-        offsetx = -20;
-        offsety = -46;
         break;
     case 293: // Punching Glove
         width = 32;

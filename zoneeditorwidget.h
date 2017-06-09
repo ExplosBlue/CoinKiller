@@ -66,6 +66,7 @@ private:
     QSpinBox* unkUpperBound;
     QSpinBox* unkLowerBound;
     QCheckBox* upScrolling;
+    QSpinBox* bgRelated;
 
     QList<Zone*> *zones;
     Zone* editZone;
@@ -94,6 +95,7 @@ private slots:
     void handleUnkUpperBoundChange(int val);
     void handleUnkLowerBoundChange(int val);
     void handleBackgroundChange(QString text);
+    void handleUnk1Change(int val);
     void handleSelectContentsClicked();
 };
 

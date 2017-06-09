@@ -59,6 +59,10 @@ ZoneEditorWidget::ZoneEditorWidget(QList<Zone*> *zones)
     unkLowerBound->setRange(-2147483648, 2147483647);
     connect(unkLowerBound, SIGNAL(valueChanged(int)), this, SLOT(handleUnkLowerBoundChange(int)));
 
+    bgRelated = new QSpinBox();
+    bgRelated->setRange(0, 99);
+    connect(bgRelated, SIGNAL(valueChanged(int)), this, SLOT(handleUnk1Change(int)));
+
     background = new QComboBox();
     loadBackgrounds();
     connect(background, SIGNAL(currentIndexChanged(QString)), this, SLOT(handleBackgroundChange(QString)));
@@ -106,10 +110,13 @@ ZoneEditorWidget::ZoneEditorWidget(QList<Zone*> *zones)
     subLayout->addWidget(new QLabel("Unknown Lower Bound:"), 9, 0, 1, 1, Qt::AlignRight);
     subLayout->addWidget(unkLowerBound, 9, 1);
 
-    subLayout->addWidget(new HorLine(), 10, 0, 1, 2);
+    subLayout->addWidget(new QLabel("Background Related:"), 10, 0, 1, 1, Qt::AlignRight);
+    subLayout->addWidget(bgRelated, 10, 1);
 
-    subLayout->addWidget(new QLabel("Background:"), 11, 0, 1, 1, Qt::AlignRight);
-    subLayout->addWidget(background, 11, 1);
+    subLayout->addWidget(new HorLine(), 11, 0, 1, 2);
+
+    subLayout->addWidget(new QLabel("Background:"), 12, 0, 1, 1, Qt::AlignRight);
+    subLayout->addWidget(background, 12, 1);
 
     QHBoxLayout* bgAlign = new QHBoxLayout();
     QWidget* spacer = new QWidget();
@@ -241,6 +248,7 @@ void ZoneEditorWidget::updateInfo()
     unkUpperBound->setValue(editZone->getUnkUpperBound());
     unkLowerBound->setValue(editZone->getUnkLowerBound());
     background->setCurrentText(backgrounds.value(editZone->getBgName()));
+    bgRelated->setValue(editZone->getBgUnk1());
     updateBgPreview();
     handleChanges = true;
 }
@@ -308,6 +316,12 @@ void ZoneEditorWidget::handleUnkLowerBoundChange(int val)
 {
     if (!handleChanges) return;
     editZone->setUnkLowerBound(val);
+}
+
+void ZoneEditorWidget::handleUnk1Change(int val)
+{
+    if (!handleChanges) return;
+    editZone->setUnk1(val);
 }
 
 void ZoneEditorWidget::handleBackgroundChange(QString text)

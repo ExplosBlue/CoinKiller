@@ -175,7 +175,7 @@ struct tempZoneBackground
     quint8 xPos;
     quint8 yPos;
     QString name;
-    quint8 unk1;
+    qint8 unk1;
 };
 
 class Zone: public Object
@@ -205,7 +205,7 @@ public:
     quint8 getBgXPos() const { return bgXPos; }
     quint8 getBgYPos() const { return bgYPos; }
     QString getBgName() const { return bgName; }
-    quint8 getBgUnk1() const { return bgUnk1; }
+    quint8 getBgUnk1() const { return unk1; }
     void setID(quint8 id) { this->id = id; }
     void setProgPathId(quint8 progPathId) { this->progPathId = progPathId; }
     void setMusicID(quint8 musicId) { this->musicId = musicId; }
@@ -216,6 +216,8 @@ public:
     void setLowerBound(qint32 lowerBound) { this->lowerBound = lowerBound; }
     void setUnkUpperBound(qint32 unkUpperBound) { this->unkUpperBound = unkUpperBound; }
     void setUnkLowerBound(qint32 unkLowerBound) { this->unkLowerBound = unkLowerBound; }
+    void setUnk1(quint32 unk1) { this->unk1 = unk1; }
+
 protected:
     quint8 id;
     quint8 progPathId;
