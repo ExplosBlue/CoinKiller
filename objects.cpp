@@ -193,43 +193,47 @@ void Sprite::setRect()
         break;
     case 4: // Burner Right
         if(getNybble(4) == 1)
-            width = 110;
+            width = 140;
         else
-            width = 65;
-        height = 20;
+            width = 80;
+        height = 22;
+        offsety = -1;
         break;
     case 5: // Burner Down
         if(getNybble(4) == 1)
-            height = 110;
+            height = 140;
         else
-            height = 65;
-        width = 20;
+            height = 80;
+        width = 22;
+        offsetx = -1;
         break;
     case 6: // Burner Left
         if(getNybble(4) == 1)
         {
-            width = 110;
-            offsetx = -90;
+            width = 140;
+            offsetx = -120;
         }
         else
         {
-            width = 65;
-            offsetx = -45;
+            width = 80;
+            offsetx = -60;
         }
-        height = 20;
+        height = 22;
+        offsety = -1;
         break;
     case 7: // Burner Up
         if(getNybble(4) == 1)
         {
-            height = 110;
-            offsety = -90;
+            height = 140;
+            offsety = -120;
         }
         else
         {
-            height = 65;
-            offsety = -45;
+            height = 80;
+            offsety = -60;
         }
-        width = 20;
+        width = 22;
+        offsetx = -1;
         break;
     case 8: // Swoop
         width = 13;
@@ -311,43 +315,47 @@ void Sprite::setRect()
         break;
     case 40: // !Burner Right
         if(getNybble(4) == 1)
-            width = 116;
+            width = 140;
         else
-            width = 71;
-        height = 20;
+            width = 80;
+        height = 22;
+        offsety = -1;
         break;
     case 41: // !Burner Down
         if(getNybble(4) == 1)
-            height = 115;
+            height = 140;
         else
-            height = 69;
-        width = 20;
+            height = 80;
+        width = 22;
+        offsetx = -1;
         break;
     case 42: // !Burner Left
         if(getNybble(4) == 1)
         {
-            width = 116;
-            offsetx = -94;
+            width = 140;
+            offsetx = -120;
         }
         else
         {
-            width = 71;
-            offsetx = -49;
+            width = 80;
+            offsetx = -60;
         }
-        height = 20;
+        height = 22;
+        offsety = -1;
         break;
     case 43: // !Burner Up
         if(getNybble(4) == 1)
         {
-            height = 115;
-            offsety = -95;
+            height = 140;
+            offsety = -120;
         }
         else
         {
-            height = 69;
-            offsety = -51;
+            height = 80;
+            offsety = -60;
         }
-        width = 20;
+        width = 22;
+        offsetx = -1;
         break;
     case 44: // Track-controlled Burner - Four Directions
         width = 21;
@@ -395,43 +403,47 @@ void Sprite::setRect()
         break;
     case 45: // Track Controlled Burner Right
         if(getNybble(4) == 1)
-            width = 110;
+            width = 140;
         else
-            width = 65;
-        height = 20;
+            width = 80;
+        height = 22;
+        offsety = -1;
         break;
     case 46: // Track Controlled Burner Down
         if(getNybble(4) == 1)
-            height = 110;
+            height = 140;
         else
-            height = 65;
-        width = 20;
+            height = 80;
+        width = 22;
+        offsetx = -1;
         break;
     case 47: // Track Controlled Burner Left
         if(getNybble(4) == 1)
         {
-            width = 110;
-            offsetx = -90;
+            width = 140;
+            offsetx = -120;
         }
         else
         {
-            width = 65;
-            offsetx = -45;
+            width = 80;
+            offsetx = -60;
         }
-        height = 20;
+        height = 22;
+        offsety = -1;
         break;
     case 48: // Track Controlled Burner Up
         if(getNybble(4) == 1)
         {
-            height = 110;
-            offsety = -90;
+            height = 140;
+            offsety = -120;
         }
         else
         {
-            height = 65;
-            offsety = -45;
+            height = 80;
+            offsety = -60;
         }
-        width = 20;
+        width = 22;
+        offsetx = -1;
         break;
     case 51: // Fuzzy
         if(getNybble(7) == 1)
