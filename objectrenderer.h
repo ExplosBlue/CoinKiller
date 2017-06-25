@@ -113,6 +113,18 @@ protected:
     QString name;
 };
 
+// Sprite 9: Whomp
+class WhompRenderer: public SpriteRenderer
+{
+public:
+    WhompRenderer(const Sprite *spr);
+    void render(QPainter *painter, QRect *drawrect);
+protected:
+    const Sprite *spr;
+    NormalImageRenderer *img;
+    QString filename;
+};
+
 // Sprite 18: Tile God
 class TileGodRenderer: public SpriteRenderer
 {

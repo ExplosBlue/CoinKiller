@@ -34,7 +34,7 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
         ret = new NormalImageRenderer(spr, "swoop.png");
         break;
     case 9: // Whomp
-        ret = new NormalImageRenderer(spr, "whomp.png");
+        ret = new WhompRenderer(spr);
         break;
     case 16: // Amp
         ret = new NormalImageRenderer(spr, "amp.png");
@@ -265,6 +265,9 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
         ret = new UpDownMushroomRenderer(spr);
         break;
     case 121: // Expanding Mushroom
+        ret = new ExpandMushroomRenderer(spr);
+        break;
+    case 122: // Synchronized Expanding Mushroom
         ret = new ExpandMushroomRenderer(spr);
         break;
     case 123: // Bouncy Mushroom
@@ -591,6 +594,15 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
     case 281: // Rectangle Ice Lift
         ret = new NormalImageRenderer(spr, "ice_lift_rectangle.png");
         break;
+    case 284: // Chandelier Lift - Small
+        ret = new NormalImageRenderer(spr, "chandelier_small.png");
+        break;
+    case 285: // Chandelier Lift - Medium
+        ret = new NormalImageRenderer(spr, "chandelier_medium.png");
+        break;
+    case 286: // Chandelier Lift - Big
+        ret = new NormalImageRenderer(spr, "chandelier_big.png");
+        break;
     case 287: // Toad House Door
         ret = new NormalImageRenderer(spr, "door_toadhouse.png");
         break;
@@ -767,6 +779,23 @@ void BurnerRenderer::render(QPainter *painter, QRect *)
     else painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), ImageCache::getInstance()->get(SpriteImg, name + ".png"));
 }
 
+// Sprite 9: Whomp
+WhompRenderer::WhompRenderer(const Sprite *spr)
+{
+    this->spr = spr;
+
+    if (spr->getNybble(5) == 1)
+        filename  = "whomp_big.png";
+    else
+        filename = "whomp.png";
+
+    img = new NormalImageRenderer(spr, filename);
+}
+
+void WhompRenderer::render(QPainter *painter, QRect *drawrect)
+{
+    img->render(painter, drawrect);
+}
 
 // Sprite 18: Tile God
 TileGodRenderer::TileGodRenderer(const Sprite *spr, Tileset *tileset)
@@ -1325,7 +1354,7 @@ void UpDownMushroomRenderer::render(QPainter *painter, QRect *)
         painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()+i, spr->gety(), 20, 30), ImageCache::getInstance()->get(SpriteImg, "up_down_mushroom/" + color + "_m.png"));
 }
 
-// Sprite 121: Expanding Mushroom
+// Sprite 121/122: Expanding Mushroom Platforms
 ExpandMushroomRenderer::ExpandMushroomRenderer(const Sprite *spr)
 {
     this-> spr = spr;
@@ -1401,13 +1430,13 @@ MushroomPlatformRenderer::MushroomPlatformRenderer(const Sprite *spr)
 
 void MushroomPlatformRenderer::render(QPainter *painter, QRect *)
 {
-    painter->drawPixmap(QRect(spr->getx()-10, spr->gety()+spr->getOffsetY()+20, 20, 80), ImageCache::getInstance()->get(SpriteImg, "mushroom_platform/stem_top.png"));
+    painter->drawPixmap(QRect(spr->getx(), spr->gety()+20, 20, 80), ImageCache::getInstance()->get(SpriteImg, "mushroom_platform/stem_top.png"));
     for (int i = 0; i < spr->getNybble(10); i++)
-        painter->drawPixmap(QRect(spr->getx()-10, spr->gety()+spr->getOffsetY()+100+i*20, 20, 20), ImageCache::getInstance()->get(SpriteImg, "mushroom_platform/stem.png"));
+        painter->drawPixmap(QRect(spr->getx(), spr->gety()+100+i*20, 20, 20), ImageCache::getInstance()->get(SpriteImg, "mushroom_platform/stem.png"));
     painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX(), spr->gety(), 24, 20), ImageCache::getInstance()->get(SpriteImg, "mushroom_platform/l.png"));
-    painter->drawPixmap(QRect(spr->getx()-spr->getOffsetX()-24, spr->gety(), 24, 20), ImageCache::getInstance()->get(SpriteImg, "mushroom_platform/r.png"));
-    for (int i = 24; i < spr->getwidth()-24; i += 20)
+    for (int i = 20; i < spr->getwidth()-20; i += 20)
         painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()+i, spr->gety(), 20, 20), ImageCache::getInstance()->get(SpriteImg, "mushroom_platform/m.png"));
+    painter->drawPixmap(QRect(spr->getx()-spr->getOffsetX()-4, spr->gety(), 24, 20), ImageCache::getInstance()->get(SpriteImg, "mushroom_platform/r.png"));
 
 }
 

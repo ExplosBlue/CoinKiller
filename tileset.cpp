@@ -273,12 +273,11 @@ void Tileset::drawTile(QPainter& painter, TileGrid& grid, int num, int x, int y,
             case 1: painter.drawPixmap(rdst, QPixmap(basePath + "coin.png")); break;
             case 2: painter.drawPixmap(rdst, QPixmap(basePath + "10_coins.png")); break;
             case 3: painter.drawPixmap(rdst, QPixmap(basePath + "fire_flower.png")); break;
-            case 4: painter.drawPixmap(rdst, QPixmap(basePath + "mega_mushroom.png")); break;
+            case 4: case 9: painter.drawPixmap(rdst, QPixmap(basePath + "super_star.png")); break;
             case 5: painter.drawPixmap(rdst, QPixmap(basePath + "1up_mushroom.png")); break;
             case 6: painter.drawPixmap(rdst, QPixmap(basePath + "beanstalk.png")); break;
             case 7: painter.drawPixmap(rdst, QPixmap(basePath + "mini_mushroom.png")); break;
-            case 8: painter.drawPixmap(rdst, QPixmap(basePath + "super_mushroom.png")); break;
-            case 9: painter.drawPixmap(rdst, QPixmap(basePath + "super_star.png")); break;
+            case 8: painter.drawPixmap(rdst, QPixmap(basePath + "coin_super_mushroom.png")); break;
             case 10: painter.drawPixmap(rdst, QPixmap(basePath + "super_leaf.png")); break;
             case 11: painter.drawPixmap(rdst, QPixmap(basePath + "trampoline.png")); break;
             case 12: painter.drawPixmap(rdst, QPixmap(basePath + "gold_flower.png")); break;
@@ -297,7 +296,7 @@ void Tileset::drawTile(QPainter& painter, TileGrid& grid, int num, int x, int y,
             case 4: painter.drawPixmap(rdst, QPixmap(basePath + "beanstalk.png")); break;
             case 5: painter.drawPixmap(rdst, QPixmap(basePath + "trampoline.png")); break;
             case 6: painter.drawPixmap(rdst, QPixmap(basePath + "mini_mushroom.png")); break;
-            case 7: painter.drawPixmap(rdst, QPixmap(basePath + "super_mushroom.png")); break;
+            case 7: painter.drawPixmap(rdst, QPixmap(basePath + "coin_super_mushroom.png")); break;
             case 8: painter.drawPixmap(rdst, QPixmap(basePath + "mega_mushroom.png")); break;
             case 9: painter.drawPixmap(rdst, QPixmap(basePath + "super_leaf.png")); break;
             case 10: painter.drawPixmap(rdst, QPixmap(basePath + "gold_flower.png")); break;

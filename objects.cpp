@@ -241,10 +241,19 @@ void Sprite::setRect()
         offsetx = 3;
         break;
     case 9: // Whomp
-        width = 75;
-        height = 57;
-        offsetx = -18;
-        offsety = 3;
+        if (getNybble(5) == 1)
+        {
+            width = 140;
+            height = 100;
+            offsetx = -50;
+            offsety = -40;
+        }
+        else
+        {
+            width = 80;
+            height = 60;
+            offsetx = -20;
+        }
         break;
     case 16: // Amp
         width = 60;
@@ -748,7 +757,7 @@ void Sprite::setRect()
         height = getNybble(4)*20 + 30;
         offsetx = 10-(width / 2);
         break;
-    case 121: // Expanding Mushroom
+    case 121: case 122: // Expanding Mushroom Platforms
         height = getNybble(5)*20 + 60;
         if(getNybble(4) %2 == 0)
         {
@@ -798,9 +807,9 @@ void Sprite::setRect()
 
         break;
     case 124: // Mushroom Platform
-        width = getNybble(6)*20 + 68;
-        height = getNybble(10)*20 + 100;
-        offsetx = -(width / 2);
+        width = 60 + 20*getNybble(6);
+        height = 100 + 20*getNybble(10);
+        offsetx = 10 - (width / 2);
         break;
     case 125: // Bowser
         width = 138;
@@ -1408,38 +1417,26 @@ void Sprite::setRect()
     case 260: // Tower cutscene Roy
         width = 65;
         height = 131;
-        offsetx = 368;
-        offsety = -200;
         break;
     case 261: // Tower cutscene Iggy
         width = 47;
         height = 126;
-        offsetx = 375;
-        offsety = -200;
         break;
     case 262: // Tower cutscene Wendy
         width = 46;
         height = 123;
-        offsetx = 376;
-        offsety = -200;
         break;
     case 263: // Tower cutscene Morton
         width = 67;
         height = 125;
-        offsetx = 560;
-        offsety = -160;
         break;
     case 264: // Tower cutscene Ludwig
         width = 50;
         height = 125;
-        offsetx = 300;
-        offsety = -240;
         break;
     case 265: // Tower cutscene No Koopa
         width = 46;
         height = 123;
-        offsetx = 376;
-        offsety = -200;
         break;
     case 267: case 275: case 276: // Long Question Blocks
         width = 60;
@@ -1493,9 +1490,27 @@ void Sprite::setRect()
         offsetx = -3;
         offsety = -1;
         break;
-    case 281: //Rectangle Ice Lift
+    case 281: // Rectangle Ice Lift
         width = 280;
         height = 60;
+        break;
+    case 284: // Chandelier Lift - Small
+        width = 170;
+        height = 50;
+        offsetx = -75;
+        offsety = -25;
+        break;
+    case 285: // Chandelier Lift - Medium
+        width = 270;
+        height = 110;
+        offsetx = -125;
+        offsety = -45;
+        break;
+    case 286: // Chandelier Lift - Big
+        width = 410;
+        height = 310;
+        offsetx = -195;
+        offsety = -165;
         break;
     case 287: // Toad House Door
         width = 40;
