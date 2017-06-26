@@ -414,6 +414,9 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
     case 185: // Koopa Paratroopa
         ret = new KoopaParatroopaRenderer(spr);
         break;
+    case 186: // Paratroopa Circle
+        ret = new CoinCircleRenderer(spr);
+        break;
     case 189: // Rectangle Lift - Tower
         ret = new RecLiftRenderer(spr, "tower_rectangle_lift/");
         break;
@@ -434,6 +437,9 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
         break;
     case 195: // Big Cheep Cheep
         ret = new BigCheepRenderer(spr);
+        break;
+    case 199: // Cheep Cheep Circle
+        ret = new CoinCircleRenderer(spr);
         break;
     case 200: // Spiny Cheep Cheep
         ret = new NormalImageRenderer(spr, "spiny_cheep_cheep.png");
@@ -500,6 +506,9 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
         break;
     case 229: // Big Boo
         ret = new NormalImageRenderer(spr, "big_boo.png");
+        break;
+    case 230: // Peepa Circle
+        ret = new CoinCircleRenderer(spr);
         break;
     case 232: // Spiny
         ret = new SpinyRenderer(spr, "spiny");
@@ -1896,6 +1905,96 @@ BobOmbCannonRenderer::BobOmbCannonRenderer(const Sprite *spr)
 void BobOmbCannonRenderer::render(QPainter *painter, QRect *drawrect)
 {
     img->render(painter, drawrect);
+}
+
+
+// Sprite 230: Peepa Circle
+CoinCircleRenderer::CoinCircleRenderer(const Sprite *spr)
+{
+    this->spr = spr;
+    radius = new CircleRenderer(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), "", QColor(0,0,0));
+}
+
+void CoinCircleRenderer::render(QPainter *painter, QRect *drawrect)
+{
+    QString img;
+    if ((spr->getNybble(17) == 2))
+        img = "peepa_coin.png";
+    else
+        if (spr->getid() == 186)
+            img = "paratroopa_circle.png";
+        else if (spr->getid() == 199)
+            img = "cheepcheep_circle.png";
+        else
+            img = "peepa.png";
+
+    radius->render(painter, drawrect);
+
+    //peepa 1
+    if(spr->getNybble(12) % 2)
+        ;else painter->drawPixmap(spr->getx()-spr->getwidth()/2, spr->gety()-spr->getheight()/4 -10, 40, 40, ImageCache::getInstance()->get(SpriteImg, img));
+    //peepa 2
+    if(spr->getNybble(13) % 2)
+        ;else if (spr->getNybble(9) >= 1)
+            painter->drawPixmap(spr->getx()+spr->getwidth()/4 -10, spr->gety()-spr->getheight()/2, 40, 40, ImageCache::getInstance()->get(SpriteImg, img));
+    //peepa 3
+    if(spr->getNybble(14) % 2)
+        ;else if (spr->getNybble(9) >= 2)
+            painter->drawPixmap(spr->getx()+spr->getwidth()/2 -20, spr->gety()+spr->getheight()/4 -10, 40, 40, ImageCache::getInstance()->get(SpriteImg, img));
+    //peepa 4
+    if(spr->getNybble(15) % 2)
+        ;else if (spr->getNybble(9) >= 3)
+            painter->drawPixmap(spr->getx()-spr->getwidth()/4 -10, spr->gety()+spr->getheight()/2 -15, 40, 40, ImageCache::getInstance()->get(SpriteImg, img));
+
+    //peepa 5
+    if((spr->getNybble(12) == 2)||(spr->getNybble(12) == 3)||(spr->getNybble(12) == 6)||(spr->getNybble(12) == 7)||(spr->getNybble(12) == 10)||(spr->getNybble(12) == 11)||(spr->getNybble(12) >= 14))
+        ;else if (spr->getNybble(9) >= 4)
+            painter->drawPixmap(spr->getx()-spr->getwidth()/3, spr->gety()-spr->getheight()/2.5 -10, 40, 40, ImageCache::getInstance()->get(SpriteImg, img));
+    //peepa 6
+    if((spr->getNybble(13) == 2)||(spr->getNybble(13) == 3)||(spr->getNybble(13) == 6)||(spr->getNybble(13) == 7)||(spr->getNybble(13) == 10)||(spr->getNybble(13) == 11)||(spr->getNybble(13) >= 14))
+        ;else if (spr->getNybble(9) >= 5)
+            painter->drawPixmap(spr->getx()+spr->getwidth()/2.5 -10, spr->gety()-spr->getheight()/3, 40, 40, ImageCache::getInstance()->get(SpriteImg, img));
+    //peepa 7
+    if((spr->getNybble(14) == 2)||(spr->getNybble(14) == 3)||(spr->getNybble(14) == 6)||(spr->getNybble(14) == 7)||(spr->getNybble(14) == 10)||(spr->getNybble(14) == 11)||(spr->getNybble(14) >= 14))
+        ;else if (spr->getNybble(9) >= 6)
+            painter->drawPixmap(spr->getx()+spr->getwidth()/3 -20, spr->gety()+spr->getheight()/2.5 -10, 40, 40, ImageCache::getInstance()->get(SpriteImg, img));
+    //peepa 8
+    if((spr->getNybble(15) == 2)||(spr->getNybble(15) == 3)||(spr->getNybble(15) == 6)||(spr->getNybble(15) == 7)||(spr->getNybble(15) == 10)||(spr->getNybble(15) == 11)||(spr->getNybble(15) >= 14))
+        ;else if (spr->getNybble(9) >= 7)
+        painter->drawPixmap(spr->getx()-spr->getwidth()/2.5 -10, spr->gety()+spr->getheight()/3 -15, 40, 40, ImageCache::getInstance()->get(SpriteImg, img));
+
+    //peepa 9
+    if((spr->getNybble(12) == 4)||(spr->getNybble(12) == 5)||(spr->getNybble(12) == 6)||(spr->getNybble(12) == 7)||(spr->getNybble(12) >= 12))
+        ;else if (spr->getNybble(9) >= 8)
+            painter->drawPixmap(spr->getx()-spr->getwidth()/6, spr->gety()-spr->getheight()/2, 40, 40, ImageCache::getInstance()->get(SpriteImg, img));
+    //peepa 10
+    if((spr->getNybble(13) == 4)||(spr->getNybble(13) == 5)||(spr->getNybble(13) == 6)||(spr->getNybble(13) == 7)||(spr->getNybble(13) >= 12))
+        ;else if (spr->getNybble(9) >= 9)
+        painter->drawPixmap(spr->getx()+spr->getwidth()/2.2, spr->gety()-spr->getheight()/6, 40, 40, ImageCache::getInstance()->get(SpriteImg, img));
+    //peepa 11
+    if((spr->getNybble(14) == 4)||(spr->getNybble(14) == 5)||(spr->getNybble(14) == 6)||(spr->getNybble(14) == 7)||(spr->getNybble(14) >= 12))
+        ;else if (spr->getNybble(9) >= 10)
+        painter->drawPixmap(spr->getx()+spr->getwidth()/6 -10, spr->gety()+spr->getheight()/2 -15, 40, 40, ImageCache::getInstance()->get(SpriteImg, img));
+    //peepa 12
+    if((spr->getNybble(15) == 4)||(spr->getNybble(15) == 5)||(spr->getNybble(15) == 6)||(spr->getNybble(15) == 7)||(spr->getNybble(15) >= 12))
+        ;else if (spr->getNybble(9) >= 11)
+        painter->drawPixmap(spr->getx()-spr->getwidth()/2.2, spr->gety()+spr->getheight()/6, 40, 40, ImageCache::getInstance()->get(SpriteImg, img));
+
+    //Peepa 13
+    if((spr->getNybble(12) >= 8))
+        ;else if (spr->getNybble(9) >= 12)
+            painter->drawPixmap(spr->getx()-10, spr->gety()-spr->getheight()/2 -10, 40, 40, ImageCache::getInstance()->get(SpriteImg, img));
+    if((spr->getNybble(13) >= 8))
+        ;else if (spr->getNybble(9) >= 13)
+            painter->drawPixmap(spr->getx()+spr->getwidth()/2 -10, spr->gety()-10, 40, 40, ImageCache::getInstance()->get(SpriteImg, img));
+    //Peepa 15
+    if((spr->getNybble(14) >= 8))
+        ;else if (spr->getNybble(9) >= 14)
+            painter->drawPixmap(spr->getx()-10, spr->gety()+spr->getheight()/2 -10, 40, 40, ImageCache::getInstance()->get(SpriteImg, img));
+    //Peepa 16
+    if((spr->getNybble(15) >= 8))
+        ;else if (spr->getNybble(9) >= 15)
+            painter->drawPixmap(spr->getx()-spr->getwidth()/2 -10, spr->gety()-10, 40, 40, ImageCache::getInstance()->get(SpriteImg, img));
 }
 
 

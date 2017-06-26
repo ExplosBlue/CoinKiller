@@ -643,6 +643,17 @@ protected:
     NormalImageRenderer *img;
 };
 
+// Sprite 230: Peepa Circle
+class CoinCircleRenderer: public SpriteRenderer
+{
+public:
+    CoinCircleRenderer(const Sprite *spr);
+    void render(QPainter *painter, QRect *drawrect);
+protected:
+    const Sprite *spr;
+    CircleRenderer *radius;
+};
+
 // Sprite 232: Spiny
 class SpinyRenderer: public SpriteRenderer
 {

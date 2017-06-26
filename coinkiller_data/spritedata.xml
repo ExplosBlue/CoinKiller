@@ -436,8 +436,7 @@
     <value nybble="17" title="Unknown 17"/>
     <value nybble="18" title="Unknown 18"/>
     <value nybble="19" title="Unknown 19"/>
-    <value nybble="21" title="Unknown 21"/>
-    <value nybble="22" title="Rotation ID"/>
+    <value nybble="21-22" title="Rotation ID"/>
   </sprite>
   <sprite id="54" name="Rotation Controller - Spinning" notes="Actor: 0x01e">
     <value nybble="1-2" title="Triggering Event ID"/>
@@ -592,11 +591,11 @@
   </sprite>
   <sprite id="67" name="Pipe Cannon - Ludwig von Koopa Battle"/>
   <sprite id="68" name="Enemy Generator for Pipe">
-    <list nybble="5" title="Enemy" comment="Seems to repeat after 2.">
+    <list nybble="5" title="Enemy" comment="Values greater than 3 repeat.">
       <entry value="0">Goomba</entry>
       <entry value="1">Bob-omb</entry>
       <entry value="2">Bone Goomba</entry>
-      <entry value="3">Same as 2?</entry>
+      <entry value="3">Bone Goomba</entry>
     </list>
     <list nybble="6" title="Spawn Direction">
       <entry value="0">Up</entry>
@@ -911,11 +910,10 @@
     <checkbox nybble="11" title="Upside Down"/>
   </sprite>
   <sprite id="116" name="Bill Blaster Turret  (Direction-changing Bullet Bill Launcher)">
-    <list nybble="8" title="Firing Direction" comment="If the other sprites are anything to go by. _Not tested_.">
-      <entry value="0">Both</entry>
-      <entry value="1">Left</entry>
-      <entry value="2">Right</entry>
-    </list>
+    <value nybble="6" title="Unknown Value 6"/>
+    <value nybble="7" title="Unknown Value 7"/>
+    <value nybble="8" title="Unknown Value 8"/>
+    <value nybble="10" title="Unknown Value 10"/>
   </sprite>
   <sprite id="117" name="Banzai Bill Blaster (Banzai Bill Launcher)">
     <list nybble="8" title="Firing Direction" comment="_Tested_.">
@@ -1392,7 +1390,7 @@
     <checkbox nybble="6" title="Counterclockwise Movement" comment="Causes the circle to spin counter clockwise."/>
     <value nybble="9" title="Unknown Value 9"/>
     <value nybble="10" title="Total Amount Of Koopas/Coins" comment="Value +1"/>
-    <value nybble="13" title="Radius"/>
+    <value nybble="13" title="Diameter"/>
     <value nybble="14" title="Unknown Value 14"/>
     <value nybble="16" title="Unknown Value 16"/>
     <value nybble="18" title="Unknown Value 18"/>
@@ -1874,14 +1872,22 @@
       <entry value="1">Medium</entry>
       <entry value="2">Fast</entry>
     </list>
-    <checkbox nybble="6" title="Counterclockwise Movement" comment="Check this to make the Peepas spin in a counterclockwise motion."/>
-    <value nybble="9" title="Gap Position (Bitfield)" comment="The gap where the player can jump through. Is a bitfield."/>
-    <value nybble="10" title="Number Of Peepas" comment="The number of peepas in the circle."/>
+    <list nybble="6" title="Movement Direction" comment="Check this to make the Peepas spin in a counterclockwise motion.">
+      <entry value="0">Clockwise</entry>
+      <entry value="1">Counterclockwise</entry>
+    </list>
+    <value nybble="9" title="Circle Radius" comment="Value +1.5"/>
+    <value nybble="10" title="Number Of Peepas" comment="The number of peepas in the circle. Value +1"/>
     <checkbox nybble="12" title="Unknown Checkbox 12"/>
-    <value nybble="13" title="Diameter"/>
-    <value nybble="14" title="Sync Related?"/>
-    <value nybble="15" title="Unknown Value 15" comment="Inferred."/>
-    <value nybble="16" title="Unknown Value 16"/>
+    <value nybble="13" title="Peepa 1-4 Gap Position (Bitfield)" comment="The gap where the player can jump through. Is a bitfield."/>
+    <value nybble="14" title="Peepa 5-8 Gap Position (Bitfield)" comment="The gap where the player can jump through. Is a bitfield."/>
+    <value nybble="15" title="Peepa 9-12 Gap Position (Bitfield)" comment="The gap where the player can jump through. Is a bitfield."/>
+    <value nybble="16" title="Peepa 13-16 Gap Position (Bitfield)" comment="The gap where the player can jump through. Is a bitfield."/>
+    <list nybble="18" title="Gap Replacement" comment="Coins in circle jump up 1 tile after level fade-in.">
+      <entry value="0">Empty</entry>
+      <entry value="1">Coins (mispositioned)</entry>
+      <entry value="2">Entire Circle is Coins (mispositioned)</entry>
+    </list>
   </sprite>
   <sprite id="231" name="Boohemoth" notes="Actor: 0x12d">
     <value nybble="1-2" title="Triggering Event ID" comment="Spawns with &quot;flourish&quot; when flag is triggered. _Needs further testing_."/>
@@ -2272,13 +2278,13 @@
     <value nybble="16" title="Width"/>
   </sprite>
   <sprite id="284" name="Chandelier Lift - Small">
-    <value nybble="22" title="Rotation ID"/>
+    <value nybble="21-22" title="Rotation ID"/>
   </sprite>
   <sprite id="285" name="Chandelier Lift - Medium">
-    <value nybble="22" title="Rotation ID"/>
+    <value nybble="21-22" title="Rotation ID"/>
   </sprite>
   <sprite id="286" name="Chandelier Lift - Big">
-    <value nybble="22" title="Rotation ID"/>
+    <value nybble="21-22" title="Rotation ID"/>
   </sprite>
   <sprite id="287" name="Door - Toad House" notes="Existing In-Game Sprite Data: Incomplete"/>
   <sprite id="288" name="Resources Loader - Mega Mario"/>
