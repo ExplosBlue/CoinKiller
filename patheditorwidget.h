@@ -35,6 +35,7 @@ private:
     QListWidget* pathList;
 
     QSpinBox* id;
+    QSpinBox* unk1;
     QDoubleSpinBox* speed;
     QDoubleSpinBox* acceleration;
 
@@ -46,6 +47,7 @@ private:
 private slots:
     void handlePathListIndexChanged(QListWidgetItem *item);
     void handleIDChanged(int idVal);
+    void handleunk1Changed(int unk1Val);
     void handleSpeedChanged(double speedVal);
     void handleAccelChanged(double accelVal);
 

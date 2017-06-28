@@ -298,6 +298,7 @@ public:
     PathNode* getNode(qint32 id) const { return nodes[id]; }
     qint32 getIndexOfNode(PathNode* node) { return nodes.indexOf(node); }
     void setId(qint32 id) { this->id = id; }
+    void setUnk1(qint32 unk1) {this->unk1 = unk1; }
 protected:
     quint16 id;
     quint16 unk1;

@@ -23,22 +23,28 @@ PathEditorWidget::PathEditorWidget(QList<Path*> *paths)
     id->setRange(0, 255);
     editsLayout->addWidget(id, 0, 1);
 
-    editsLayout->addWidget(new HorLine(), 1, 0, 1, 2);
+    editsLayout->addWidget(new QLabel("Unknown:"), 1, 0, 1, 1, Qt::AlignRight);
 
-    editsLayout->addWidget(new QLabel("Speed:"), 2, 0, 1, 1, Qt::AlignRight);
+    unk1 = new QSpinBox();
+    unk1->setRange(0, 255);
+    editsLayout->addWidget(unk1, 1, 1);
+
+    editsLayout->addWidget(new HorLine(), 2, 0, 1, 2);
+
+    editsLayout->addWidget(new QLabel("Speed:"), 3, 0, 1, 1, Qt::AlignRight);
 
     speed = new QDoubleSpinBox();
     speed->setRange(-1000000, 1000000);
     speed->setDecimals(8);
     speed->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-    editsLayout->addWidget(speed, 2, 1);
+    editsLayout->addWidget(speed, 3, 1);
 
-    editsLayout->addWidget(new QLabel("Acceleration:"), 3, 0, 1, 1, Qt::AlignRight);
+    editsLayout->addWidget(new QLabel("Acceleration:"), 4, 0, 1, 1, Qt::AlignRight);
 
     acceleration = new QDoubleSpinBox();
     acceleration->setRange(-1000000, 1000000);
     acceleration->setDecimals(8);
-    editsLayout->addWidget(acceleration, 3, 1);
+    editsLayout->addWidget(acceleration, 4, 1);
 
     edits->setLayout(editsLayout);
     layout->addWidget(edits);
@@ -46,6 +52,7 @@ PathEditorWidget::PathEditorWidget(QList<Path*> *paths)
 
     connect(pathList, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(handlePathListIndexChanged(QListWidgetItem*)));
     connect(id, SIGNAL(valueChanged(int)), this, SLOT(handleIDChanged(int)));
+    connect(unk1, SIGNAL(valueChanged(int)), this, SLOT(handleunk1Changed(int)));
     connect(speed, SIGNAL(valueChanged(double)), this, SLOT(handleSpeedChanged(double)));
     connect(acceleration, SIGNAL(valueChanged(double)), this, SLOT(handleAccelChanged(double)));
 
@@ -84,6 +91,7 @@ void PathEditorWidget::updateInfo()
 
     handleChanges = false;
     id->setValue(editPath->getid());
+    unk1->setValue(editPath->getUnk1());
     speed->setValue(editNode->getSpeed());
     acceleration->setValue(editNode->getAccel());
     handleChanges = true;
@@ -123,6 +131,12 @@ void PathEditorWidget::handleIDChanged(int idVal)
     editPath->setId(idVal);
     updateList();
     emit updateLevelView();
+}
+
+void PathEditorWidget::handleunk1Changed(int unk1Val)
+{
+    if (!handleChanges) return;
+    editPath->setUnk1(unk1Val);
 }
 
 void PathEditorWidget::handleSpeedChanged(double speedVal)
