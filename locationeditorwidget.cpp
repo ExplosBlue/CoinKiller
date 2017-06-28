@@ -54,7 +54,7 @@ void LocationEditorWidget::updateList()
 
     locationList->clear();
     foreach (Location* location, *locations)
-        locationList->addItem(QString("%1 (at %2,%3)").arg(location->getid()).arg(to16(location->getx())).arg(to16(location->gety())));
+        locationList->addItem(QString("%1 (at %2,%3) (W: %4 H: %5)").arg(location->getid()).arg(to16(location->getx())).arg(to16(location->gety())).arg(to16(location->getwidth())).arg(to16(location->getheight())));
 
     locationList->setCurrentIndex(index);
 }
