@@ -1327,7 +1327,7 @@ void Sprite::setRect()
         width = 45;
         height = 44;
         offsetx = -12;
-        offsety = 5;
+        offsety = 15;
         break;
     case 229: //Big Boo
         width = 132;
