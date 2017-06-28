@@ -1170,10 +1170,10 @@ void Sprite::setRect()
         offsety = -15;
         break;
     case 186: // Paratroopa Circle
-        width = 80 + getNybble(8)*20;
-        height = 80 + getNybble(8)*20;
+        width = 30 + getNybble(8)*40;
+        height = 30 + getNybble(8)*40;
         offsetx = 10 - width/2;
-        offsety = 10 - height/2;
+        offsety = -10 - height/2;
         break;
     case 189: case 190: case 191: case 192: case 193: // Rect Blocks
         width = getNybble(15)*20+20;
@@ -1254,10 +1254,10 @@ void Sprite::setRect()
         }
         break;
     case 199: // Cheep Cheep Circle
-        width = 80 + getNybble(8)*20;
-        height = 80 + getNybble(8)*20;
+        width = 30 + getNybble(8)*40;
+        height = 30 + getNybble(8)*40;
         offsetx = 10 - width/2;
-        offsety = 10 - height/2;
+        offsety = -10 - height/2;
         break;
     case 200: // Spiny Cheep Cheep
         width = 20;
@@ -1336,10 +1336,10 @@ void Sprite::setRect()
         offsety = 15;
         break;
     case 230: // Peepa Circle
-        width = 80 + getNybble(8)*20;
-        height = 80 + getNybble(8)*20;
+        width = 30 + getNybble(8)*40;
+        height = 30 + getNybble(8)*40;
         offsetx = 10 - width/2;
-        offsety = 10 - height/2;
+        offsety = -10 - height/2;
         break;
     case 232: // Spiny
         if(getNybble(5) == 1)

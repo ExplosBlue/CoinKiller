@@ -643,7 +643,7 @@ protected:
     NormalImageRenderer *img;
 };
 
-// Sprite 230: Peepa Circle
+// Sprite 186/199/230: Paratroopa/CheepCheep/Peepa Circle
 class CoinCircleRenderer: public SpriteRenderer
 {
 public:
@@ -651,7 +651,7 @@ public:
     void render(QPainter *painter, QRect *drawrect);
 protected:
     const Sprite *spr;
-    CircleRenderer *radius;
+    CircleRenderer *circle;
 };
 
 // Sprite 232: Spiny

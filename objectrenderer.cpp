@@ -1908,93 +1908,120 @@ void BobOmbCannonRenderer::render(QPainter *painter, QRect *drawrect)
 }
 
 
-// Sprite 230: Peepa Circle
+// Sprite 186/199/230: Paratroopa/CheepCheep/Peepa Circle
 CoinCircleRenderer::CoinCircleRenderer(const Sprite *spr)
 {
     this->spr = spr;
-    radius = new CircleRenderer(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), "", QColor(0,0,0));
+    circle = new CircleRenderer(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), "", QColor(0,0,0));
 }
 
 void CoinCircleRenderer::render(QPainter *painter, QRect *drawrect)
 {
+    circle->render(painter, drawrect);
+
     QString img;
-    if ((spr->getNybble(17) == 2))
+    QString coinImg;
+
+    if (spr->getid() == 186)
+        img = "paratroopa_circle.png";
+    else if (spr->getid() == 199)
+        img = "cheepcheep_circle.png";
+    else
+        img = "peepa.png";
+
+    if (spr->getNybble(17) == 1)
+        coinImg = "peepa_coin.png";
+    else if (spr->getNybble(17) == 2)
         img = "peepa_coin.png";
     else
-        if (spr->getid() == 186)
-            img = "paratroopa_circle.png";
-        else if (spr->getid() == 199)
-            img = "cheepcheep_circle.png";
-        else
-            img = "peepa.png";
+        coinImg = "";
 
-    radius->render(painter, drawrect);
+    int missingImgWeight = 0;
+    float angle = 0;
+    int x = 0;
+    int y = 0;
 
-    //peepa 1
-    if(spr->getNybble(12) % 2)
-        ;else painter->drawPixmap(spr->getx()-spr->getwidth()/2, spr->gety()-spr->getheight()/4 -10, 40, 40, ImageCache::getInstance()->get(SpriteImg, img));
-    //peepa 2
-    if(spr->getNybble(13) % 2)
-        ;else if (spr->getNybble(9) >= 1)
-            painter->drawPixmap(spr->getx()+spr->getwidth()/4 -10, spr->gety()-spr->getheight()/2, 40, 40, ImageCache::getInstance()->get(SpriteImg, img));
-    //peepa 3
-    if(spr->getNybble(14) % 2)
-        ;else if (spr->getNybble(9) >= 2)
-            painter->drawPixmap(spr->getx()+spr->getwidth()/2 -20, spr->gety()+spr->getheight()/4 -10, 40, 40, ImageCache::getInstance()->get(SpriteImg, img));
-    //peepa 4
-    if(spr->getNybble(15) % 2)
-        ;else if (spr->getNybble(9) >= 3)
-            painter->drawPixmap(spr->getx()-spr->getwidth()/4 -10, spr->gety()+spr->getheight()/2 -15, 40, 40, ImageCache::getInstance()->get(SpriteImg, img));
+    int radius = spr->getNybble(8)+1;
+    int imgCount = 1+spr->getNybble(9);
 
-    //peepa 5
-    if((spr->getNybble(12) == 2)||(spr->getNybble(12) == 3)||(spr->getNybble(12) == 6)||(spr->getNybble(12) == 7)||(spr->getNybble(12) == 10)||(spr->getNybble(12) == 11)||(spr->getNybble(12) >= 14))
-        ;else if (spr->getNybble(9) >= 4)
-            painter->drawPixmap(spr->getx()-spr->getwidth()/3, spr->gety()-spr->getheight()/2.5 -10, 40, 40, ImageCache::getInstance()->get(SpriteImg, img));
-    //peepa 6
-    if((spr->getNybble(13) == 2)||(spr->getNybble(13) == 3)||(spr->getNybble(13) == 6)||(spr->getNybble(13) == 7)||(spr->getNybble(13) == 10)||(spr->getNybble(13) == 11)||(spr->getNybble(13) >= 14))
-        ;else if (spr->getNybble(9) >= 5)
-            painter->drawPixmap(spr->getx()+spr->getwidth()/2.5 -10, spr->gety()-spr->getheight()/3, 40, 40, ImageCache::getInstance()->get(SpriteImg, img));
-    //peepa 7
-    if((spr->getNybble(14) == 2)||(spr->getNybble(14) == 3)||(spr->getNybble(14) == 6)||(spr->getNybble(14) == 7)||(spr->getNybble(14) == 10)||(spr->getNybble(14) == 11)||(spr->getNybble(14) >= 14))
-        ;else if (spr->getNybble(9) >= 6)
-            painter->drawPixmap(spr->getx()+spr->getwidth()/3 -20, spr->gety()+spr->getheight()/2.5 -10, 40, 40, ImageCache::getInstance()->get(SpriteImg, img));
-    //peepa 8
-    if((spr->getNybble(15) == 2)||(spr->getNybble(15) == 3)||(spr->getNybble(15) == 6)||(spr->getNybble(15) == 7)||(spr->getNybble(15) == 10)||(spr->getNybble(15) == 11)||(spr->getNybble(15) >= 14))
-        ;else if (spr->getNybble(9) >= 7)
-        painter->drawPixmap(spr->getx()-spr->getwidth()/2.5 -10, spr->gety()+spr->getheight()/3 -15, 40, 40, ImageCache::getInstance()->get(SpriteImg, img));
+    for (int i = 0; i < imgCount; i++)
+    {
+        missingImgWeight = 0.75 - (1 / imgCount);
+        angle = -360 * i / (imgCount + missingImgWeight);
+        angle = qDegreesToRadians(angle)+ 89.6;
 
-    //peepa 9
-    if((spr->getNybble(12) == 4)||(spr->getNybble(12) == 5)||(spr->getNybble(12) == 6)||(spr->getNybble(12) == 7)||(spr->getNybble(12) >= 12))
-        ;else if (spr->getNybble(9) >= 8)
-            painter->drawPixmap(spr->getx()-spr->getwidth()/6, spr->gety()-spr->getheight()/2, 40, 40, ImageCache::getInstance()->get(SpriteImg, img));
-    //peepa 10
-    if((spr->getNybble(13) == 4)||(spr->getNybble(13) == 5)||(spr->getNybble(13) == 6)||(spr->getNybble(13) == 7)||(spr->getNybble(13) >= 12))
-        ;else if (spr->getNybble(9) >= 9)
-        painter->drawPixmap(spr->getx()+spr->getwidth()/2.2, spr->gety()-spr->getheight()/6, 40, 40, ImageCache::getInstance()->get(SpriteImg, img));
-    //peepa 11
-    if((spr->getNybble(14) == 4)||(spr->getNybble(14) == 5)||(spr->getNybble(14) == 6)||(spr->getNybble(14) == 7)||(spr->getNybble(14) >= 12))
-        ;else if (spr->getNybble(9) >= 10)
-        painter->drawPixmap(spr->getx()+spr->getwidth()/6 -10, spr->gety()+spr->getheight()/2 -15, 40, 40, ImageCache::getInstance()->get(SpriteImg, img));
-    //peepa 12
-    if((spr->getNybble(15) == 4)||(spr->getNybble(15) == 5)||(spr->getNybble(15) == 6)||(spr->getNybble(15) == 7)||(spr->getNybble(15) >= 12))
-        ;else if (spr->getNybble(9) >= 11)
-        painter->drawPixmap(spr->getx()-spr->getwidth()/2.2, spr->gety()+spr->getheight()/6, 40, 40, ImageCache::getInstance()->get(SpriteImg, img));
+        x = qSin(angle) * ((radius * 20)) - 10;
+        y = -(qCos(angle) * ((radius * 20))) - 30;
 
-    //Peepa 13
-    if((spr->getNybble(12) >= 8))
-        ;else if (spr->getNybble(9) >= 12)
-            painter->drawPixmap(spr->getx()-10, spr->gety()-spr->getheight()/2 -10, 40, 40, ImageCache::getInstance()->get(SpriteImg, img));
-    if((spr->getNybble(13) >= 8))
-        ;else if (spr->getNybble(9) >= 13)
-            painter->drawPixmap(spr->getx()+spr->getwidth()/2 -10, spr->gety()-10, 40, 40, ImageCache::getInstance()->get(SpriteImg, img));
-    //Peepa 15
-    if((spr->getNybble(14) >= 8))
-        ;else if (spr->getNybble(9) >= 14)
-            painter->drawPixmap(spr->getx()-10, spr->gety()+spr->getheight()/2 -10, 40, 40, ImageCache::getInstance()->get(SpriteImg, img));
-    //Peepa 16
-    if((spr->getNybble(15) >= 8))
-        ;else if (spr->getNybble(9) >= 15)
-            painter->drawPixmap(spr->getx()-spr->getwidth()/2 -10, spr->gety()-10, 40, 40, ImageCache::getInstance()->get(SpriteImg, img));
+        //Some derp shit to make shit not draw if nybbles 12-16 have values set
+        if (i == 0 && (spr->getNybble(12)& 0x1) == 0x1)
+            painter->drawPixmap(spr->getx()+x, spr->gety()+y, 40, 40, ImageCache::getInstance()->get(SpriteImg, coinImg));
+        else if (i == 0)
+            painter->drawPixmap(spr->getx()+x, spr->gety()+y, 40, 40, ImageCache::getInstance()->get(SpriteImg, img));
+        if (i == 1 && (spr->getNybble(12)& 0x2) == 0x2)
+            painter->drawPixmap(spr->getx()+x, spr->gety()+y, 40, 40, ImageCache::getInstance()->get(SpriteImg, coinImg));
+        else if (i == 1)
+            painter->drawPixmap(spr->getx()+x, spr->gety()+y, 40, 40, ImageCache::getInstance()->get(SpriteImg, img));
+        if (i == 2 && (spr->getNybble(12)& 0x4) == 0x4)
+            painter->drawPixmap(spr->getx()+x, spr->gety()+y, 40, 40, ImageCache::getInstance()->get(SpriteImg, coinImg));
+        else if (i == 2)
+            painter->drawPixmap(spr->getx()+x, spr->gety()+y, 40, 40, ImageCache::getInstance()->get(SpriteImg, img));
+        if (i == 3 && (spr->getNybble(12)& 0x8) == 0x8)
+            painter->drawPixmap(spr->getx()+x, spr->gety()+y, 40, 40, ImageCache::getInstance()->get(SpriteImg, coinImg));
+        else if (i == 3)
+            painter->drawPixmap(spr->getx()+x, spr->gety()+y, 40, 40, ImageCache::getInstance()->get(SpriteImg, img));
+
+        if (i == 4 && (spr->getNybble(13)& 0x1) == 0x1)
+            painter->drawPixmap(spr->getx()+x, spr->gety()+y, 40, 40, ImageCache::getInstance()->get(SpriteImg, coinImg));
+        else if (i == 4)
+            painter->drawPixmap(spr->getx()+x, spr->gety()+y, 40, 40, ImageCache::getInstance()->get(SpriteImg, img));
+        if (i == 5 && (spr->getNybble(13)& 0x2) == 0x2)
+            painter->drawPixmap(spr->getx()+x, spr->gety()+y, 40, 40, ImageCache::getInstance()->get(SpriteImg, coinImg));
+        else if (i == 5)
+            painter->drawPixmap(spr->getx()+x, spr->gety()+y, 40, 40, ImageCache::getInstance()->get(SpriteImg, img));
+        if (i == 6 && (spr->getNybble(13)& 0x4) == 0x4)
+            painter->drawPixmap(spr->getx()+x, spr->gety()+y, 40, 40, ImageCache::getInstance()->get(SpriteImg, coinImg));
+        else if (i == 6)
+            painter->drawPixmap(spr->getx()+x, spr->gety()+y, 40, 40, ImageCache::getInstance()->get(SpriteImg, img));
+        if (i == 7 && (spr->getNybble(13)& 0x8) == 0x8)
+            painter->drawPixmap(spr->getx()+x, spr->gety()+y, 40, 40, ImageCache::getInstance()->get(SpriteImg, coinImg));
+        else if (i == 7)
+            painter->drawPixmap(spr->getx()+x, spr->gety()+y, 40, 40, ImageCache::getInstance()->get(SpriteImg, img));
+
+        if (i == 8 && (spr->getNybble(14)& 0x1) == 0x1)
+            painter->drawPixmap(spr->getx()+x, spr->gety()+y, 40, 40, ImageCache::getInstance()->get(SpriteImg, coinImg));
+        else if (i == 8)
+            painter->drawPixmap(spr->getx()+x, spr->gety()+y, 40, 40, ImageCache::getInstance()->get(SpriteImg, img));
+        if (i == 9 && (spr->getNybble(14)& 0x2) == 0x2)
+            painter->drawPixmap(spr->getx()+x, spr->gety()+y, 40, 40, ImageCache::getInstance()->get(SpriteImg, coinImg));
+        else if (i == 9)
+            painter->drawPixmap(spr->getx()+x, spr->gety()+y, 40, 40, ImageCache::getInstance()->get(SpriteImg, img));
+        if (i == 10 && (spr->getNybble(14)& 0x4) == 0x4)
+            painter->drawPixmap(spr->getx()+x, spr->gety()+y, 40, 40, ImageCache::getInstance()->get(SpriteImg, coinImg));
+        else if (i == 10)
+            painter->drawPixmap(spr->getx()+x, spr->gety()+y, 40, 40, ImageCache::getInstance()->get(SpriteImg, img));
+        if (i == 11 && (spr->getNybble(14)& 0x8) == 0x8)
+            painter->drawPixmap(spr->getx()+x, spr->gety()+y, 40, 40, ImageCache::getInstance()->get(SpriteImg, coinImg));
+        else if (i == 11)
+            painter->drawPixmap(spr->getx()+x, spr->gety()+y, 40, 40, ImageCache::getInstance()->get(SpriteImg, img));
+
+        if (i == 12 && (spr->getNybble(15)& 0x1) == 0x1)
+            painter->drawPixmap(spr->getx()+x, spr->gety()+y, 40, 40, ImageCache::getInstance()->get(SpriteImg, coinImg));
+        else if (i == 12)
+            painter->drawPixmap(spr->getx()+x, spr->gety()+y, 40, 40, ImageCache::getInstance()->get(SpriteImg, img));
+        if (i == 13 && (spr->getNybble(15)& 0x2) == 0x2)
+            painter->drawPixmap(spr->getx()+x, spr->gety()+y, 40, 40, ImageCache::getInstance()->get(SpriteImg, coinImg));
+        else if (i == 13)
+            painter->drawPixmap(spr->getx()+x, spr->gety()+y, 40, 40, ImageCache::getInstance()->get(SpriteImg, img));
+        if (i == 14 && (spr->getNybble(15)& 0x4) == 0x4)
+            painter->drawPixmap(spr->getx()+x, spr->gety()+y, 40, 40, ImageCache::getInstance()->get(SpriteImg, coinImg));
+        else if (i == 14)
+            painter->drawPixmap(spr->getx()+x, spr->gety()+y, 40, 40, ImageCache::getInstance()->get(SpriteImg, img));
+        if (i == 15 && (spr->getNybble(15)& 0x8) == 0x8)
+            painter->drawPixmap(spr->getx()+x, spr->gety()+y, 40, 40, ImageCache::getInstance()->get(SpriteImg, coinImg));
+        else if (i == 15)
+            painter->drawPixmap(spr->getx()+x, spr->gety()+y, 40, 40, ImageCache::getInstance()->get(SpriteImg, img));
+    }
 }
 
 

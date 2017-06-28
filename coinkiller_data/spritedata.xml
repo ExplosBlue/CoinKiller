@@ -1382,18 +1382,27 @@
     </list>
   </sprite>
   <sprite id="186" name="Koopa Paratroopa Circle">
-    <list nybble="5" title="Rotation Speed" comment="The speed of the Circle rotates. Any values greater than 3 are the slowest setting.">
+    <list nybble="5" title="Rotation Speed" comment="The speed of the Koopa Paratroopas as they rotate. Any values equal to or above 3 return 0.">
       <entry value="0">Slow</entry>
       <entry value="1">Medium</entry>
       <entry value="2">Fast</entry>
     </list>
-    <checkbox nybble="6" title="Counterclockwise Movement" comment="Causes the circle to spin counter clockwise."/>
-    <value nybble="9" title="Unknown Value 9"/>
-    <value nybble="10" title="Total Amount Of Koopas/Coins" comment="Value +1"/>
-    <value nybble="13" title="Diameter"/>
-    <value nybble="14" title="Unknown Value 14"/>
-    <value nybble="16" title="Unknown Value 16"/>
-    <value nybble="18" title="Unknown Value 18"/>
+    <list nybble="6" title="Movement Direction" comment="The direction the Koopa Paratroopas spin in.">
+      <entry value="0">Clockwise</entry>
+      <entry value="1">Counterclockwise</entry>
+    </list>
+    <value nybble="9" title="Circle Radius" comment="Value +1.5"/>
+    <value nybble="10" title="Number Of  Koopa Paratroopas" comment="The number of Koopa Paratroopas in the circle. Value +1"/>
+    <value nybble="12" title="Unknown Value 12"/>
+    <value nybble="13" title="Peepa 1-4 Gap Position" comment="The gap where the player can jump through. Is a bitfield."/>
+    <value nybble="14" title="Peepa 5-8 Gap Position" comment="The gap where the player can jump through. Is a bitfield."/>
+    <value nybble="15" title="Peepa 9-12 Gap Position" comment="The gap where the player can jump through. Is a bitfield."/>
+    <value nybble="16" title="Peepa 13-16 Gap Position" comment="The gap where the player can jump through. Is a bitfield."/>
+    <list nybble="18" title="Gap Replacement" comment="Coins in circle jump up 1 tile after level fade-in.">
+      <entry value="0">Empty</entry>
+      <entry value="1">Coins</entry>
+      <entry value="2">Entire Circle is Coins</entry>
+    </list>
     <value nybble="20" title="Unknown Value 20"/>
   </sprite>
   <sprite id="187" name="Path-controlled Rectangle Lift - Normal/Tower">
@@ -1625,17 +1634,28 @@
     <value nybble="11" title="Unknown Value 11" comment="Checkbox?"/>
   </sprite>
   <sprite id="199" name="Cheep Cheep/Coin Circle" notes="Existing In-Game Sprite Data: Incomplete">
-    <value nybble="5" title="Unknown 5"/>
-    <value nybble="6" title="Unknown 6"/>
-    <value nybble="9" title="Unknown 9"/>
-    <value nybble="10" title="Unknown 10"/>
-    <value nybble="13" title="Unknown 13"/>
-    <value nybble="14" title="Unknown 14"/>
-    <value nybble="15" title="Unknown 15"/>
-    <value nybble="16" title="Unknown 16"/>
-    <value nybble="18" title="Unknown 18"/>
-    <value nybble="20" title="Unknown 20"/>
-    <value nybble="22" title="Unknown 22"/>
+    <list nybble="5" title="Rotation Speed" comment="The speed of the Cheep Cheeps as they rotate. Any values equal to or above 3 return 0.">
+      <entry value="0">Slow</entry>
+      <entry value="1">Medium</entry>
+      <entry value="2">Fast</entry>
+    </list>
+    <list nybble="6" title="Movement Direction" comment="The direction the Cheep Cheeps spin in.">
+      <entry value="0">Clockwise</entry>
+      <entry value="1">Counterclockwise</entry>
+    </list>
+    <value nybble="9" title="Circle Radius" comment="Value +1.5"/>
+    <value nybble="10" title="Number Of Cheep Cheeps" comment="The number of Cheep Cheeps in the circle. Value +1"/>
+    <value nybble="12" title="Unknown Value 12"/>
+    <value nybble="13" title="Peepa 1-4 Gap Position" comment="The gap where the player can jump through. Is a bitfield."/>
+    <value nybble="14" title="Peepa 5-8 Gap Position" comment="The gap where the player can jump through. Is a bitfield."/>
+    <value nybble="15" title="Peepa 9-12 Gap Position" comment="The gap where the player can jump through. Is a bitfield."/>
+    <value nybble="16" title="Peepa 13-16 Gap Position" comment="The gap where the player can jump through. Is a bitfield."/>
+    <list nybble="18" title="Gap Replacement" comment="Coins in circle jump up 1 tile after level fade-in.">
+      <entry value="0">Empty</entry>
+      <entry value="1">Coins</entry>
+      <entry value="2">Entire Circle is Coins</entry>
+    </list>
+    <value nybble="20" title="Unknown Value 20"/>
   </sprite>
   <sprite id="200" name="Spiny Cheep Cheep"/>
   <sprite id="201" name="Cheep Cheep Spawner OR Spawn Area">
@@ -1867,27 +1887,28 @@
     <value nybble="8" title="Unknown Value 8" comment="Checkbox?"/>
   </sprite>
   <sprite id="230" name="Peepa Circle" notes="Possible unused settings:&#13;&#10;* Made up of Boos&#13;&#10;Actor: 0x142">
-    <list nybble="5" title="Rotation Speed" comment="The speed of the peepas as they rotate. Any values equal to or above 3 return 0.">
+    <list nybble="5" title="Rotation Speed" comment="The speed of the Peepas as they rotate. Any values equal to or above 3 return 0.">
       <entry value="0">Slow</entry>
       <entry value="1">Medium</entry>
       <entry value="2">Fast</entry>
     </list>
-    <list nybble="6" title="Movement Direction" comment="Check this to make the Peepas spin in a counterclockwise motion.">
+    <list nybble="6" title="Movement Direction" comment="The direction the Peepas spin in.">
       <entry value="0">Clockwise</entry>
       <entry value="1">Counterclockwise</entry>
     </list>
     <value nybble="9" title="Circle Radius" comment="Value +1.5"/>
-    <value nybble="10" title="Number Of Peepas" comment="The number of peepas in the circle. Value +1"/>
-    <checkbox nybble="12" title="Unknown Checkbox 12"/>
-    <value nybble="13" title="Peepa 1-4 Gap Position (Bitfield)" comment="The gap where the player can jump through. Is a bitfield."/>
-    <value nybble="14" title="Peepa 5-8 Gap Position (Bitfield)" comment="The gap where the player can jump through. Is a bitfield."/>
-    <value nybble="15" title="Peepa 9-12 Gap Position (Bitfield)" comment="The gap where the player can jump through. Is a bitfield."/>
-    <value nybble="16" title="Peepa 13-16 Gap Position (Bitfield)" comment="The gap where the player can jump through. Is a bitfield."/>
+    <value nybble="10" title="Number Of Peepas" comment="The number of Peepas in the circle. Value +1"/>
+    <value nybble="12" title="Unknown Value 12"/>
+    <value nybble="13" title="Peepa 1-4 Gap Position" comment="The gap where the player can jump through. Is a bitfield."/>
+    <value nybble="14" title="Peepa 5-8 Gap Position" comment="The gap where the player can jump through. Is a bitfield."/>
+    <value nybble="15" title="Peepa 9-12 Gap Position" comment="The gap where the player can jump through. Is a bitfield."/>
+    <value nybble="16" title="Peepa 13-16 Gap Position" comment="The gap where the player can jump through. Is a bitfield."/>
     <list nybble="18" title="Gap Replacement" comment="Coins in circle jump up 1 tile after level fade-in.">
       <entry value="0">Empty</entry>
-      <entry value="1">Coins (mispositioned)</entry>
-      <entry value="2">Entire Circle is Coins (mispositioned)</entry>
+      <entry value="1">Coins</entry>
+      <entry value="2">Entire Circle is Coins</entry>
     </list>
+    <value nybble="20" title="Unknown Value 20"/>
   </sprite>
   <sprite id="231" name="Boohemoth" notes="Actor: 0x12d">
     <value nybble="1-2" title="Triggering Event ID" comment="Spawns with &quot;flourish&quot; when flag is triggered. _Needs further testing_."/>
