@@ -255,6 +255,10 @@ void Sprite::setRect()
             offsetx = -20;
         }
         break;
+    case 10: // Switchable Conveyor Belt - Lemmy Battle
+        width = 280;
+        height = 20;
+        break;
     case 16: // Amp
         width = 60;
         height = 60;
@@ -262,6 +266,12 @@ void Sprite::setRect()
         offsety = -20;
         if (getNybble(4) == 1)
             offsetx = -10;
+        break;
+    case 17: // Amp Circle
+        width = 30 + getNybble(8)*40;
+        height = 30 + getNybble(8)*40;
+        offsetx = 10 - width/2;
+        offsety = +10 - height/2;
         break;
     case 18: // Tile God
         width = qMax(getNybble(15) * 20, 20);
@@ -529,6 +539,11 @@ void Sprite::setRect()
         offsety = -45;
         break;
     case 73: // Ghost House Door
+        width = 41;
+        height = 60;
+        offsety = -1;
+        break;
+    case 74: // Ghost House Door - Event triggered
         width = 41;
         height = 60;
         offsety = -1;
@@ -966,15 +981,33 @@ void Sprite::setRect()
         break;
     case 151: // Scale Lift
         if(getNybble(5) == 0)
-            width = 27;
+        {
+            width = 64;
+            offsetx = -(width/2);
+        }
         else
-            width = 17+(getNybble(5)*20-10);
+        {
+            if(getNybble(15) < 2)
+            {
+                width = 64+((getNybble(5))*20);
+                offsetx = -32;
+            }
+            else
+            {
+                for (int i = 0; i < getNybble(15); i++)
+                {
+                    width = 64+((getNybble(5))*20)+(i*20);
+                    offsetx = -32-(i*10);
+                }
+            }
+        }
+
         if(getNybble(7) >= getNybble(4))
-            height = 16+(getNybble(7)*20);
+            height = 40+(getNybble(7)*20);
         else
-            height = 16+(getNybble(4)*20);
-        offsety = -13;
-        offsetx = -4;
+            height = 40+(getNybble(4)*20);
+
+        offsety = -20;
         break;
     case 154: // 4 plat rickshaw
         if (getNybble(5) == 1)
@@ -1096,6 +1129,8 @@ void Sprite::setRect()
         offsetx = -8;
         if (getNybble(5) == 1)
             offsety = -3;
+        else
+            offsety = 10;
         break;
     case 176: // Big Grounded Piranha plant
         width = 110;
@@ -1112,6 +1147,8 @@ void Sprite::setRect()
         offsetx = -8;
         if (getNybble(5) == 1)
             offsety = -3;
+        else
+            offsety = 10;
         break;
     case 178: // Big Grounded Fire Piranha plant
         width = 110;
@@ -1173,7 +1210,7 @@ void Sprite::setRect()
         width = 30 + getNybble(8)*40;
         height = 30 + getNybble(8)*40;
         offsetx = 10 - width/2;
-        offsety = -10 - height/2;
+        offsety = +10 - height/2;
         break;
     case 189: case 190: case 191: case 192: case 193: // Rect Blocks
         width = getNybble(15)*20+20;
@@ -1257,7 +1294,7 @@ void Sprite::setRect()
         width = 30 + getNybble(8)*40;
         height = 30 + getNybble(8)*40;
         offsetx = 10 - width/2;
-        offsety = -10 - height/2;
+        offsety = +10 - height/2;
         break;
     case 200: // Spiny Cheep Cheep
         width = 20;
@@ -1339,7 +1376,7 @@ void Sprite::setRect()
         width = 30 + getNybble(8)*40;
         height = 30 + getNybble(8)*40;
         offsetx = 10 - width/2;
-        offsety = -10 - height/2;
+        offsety = +10 - height/2;
         break;
     case 232: // Spiny
         if(getNybble(5) == 1)
@@ -1591,6 +1628,10 @@ void Sprite::setRect()
                 offsety = -11;
         }
 
+        break;
+    case 299: // Rectangle Lift - Lemmy Battle
+        width = 40;
+        height = 40;
         break;
     case 302: case 303: // Moon Coin
         width = 40;

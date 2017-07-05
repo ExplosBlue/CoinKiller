@@ -36,8 +36,14 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
     case 9: // Whomp
         ret = new WhompRenderer(spr);
         break;
+    case 10: // Switchable Conveyor Belt - Lemmy Battle
+        ret = new NormalImageRenderer(spr, "switchable_conveyor_belt_lemmy.png");
+        break;
     case 16: // Amp
         ret = new NormalImageRenderer(spr, "amp.png");
+        break;
+    case 17: // Amp Circle
+        ret = new CoinCircleRenderer(spr);
         break;
     case 18: // Tile God
         ret = new TileGodRenderer(spr, tilesets[0]);
@@ -162,6 +168,9 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
     case 73: // Ghost House Door
         ret = new NormalImageRenderer(spr, "door_ghosthouse.png");
         break;
+    case 74: // Ghost House Door - Event triggered
+        ret = new NormalImageRenderer(spr, "door_ghosthouse_event.png");
+        break;
     case 75: // Tower Boss Door
         ret = new NormalImageRenderer(spr, "door_tower.png");
         break;
@@ -204,11 +213,11 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
     case 92: // Grinder
         ret = new NormalImageRenderer(spr, "grinder.png");
         break;
-    case 94: // Flipper (One way gate)
-        ret = new FlipperRenderer(spr);
-        break;
     case 93: // Scuttlebug
         ret = new NormalImageRenderer(spr, "scuttlebug.png");
+        break;
+    case 94: // Flipper (One way gate)
+        ret = new FlipperRenderer(spr);
         break;
     case 95: // Blooper
         ret = new NormalImageRenderer(spr, "blooper.png");
@@ -639,6 +648,9 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
     case 297: // Horizontal Rail Controlled Fence
         ret = new RailContFenceRenderer(spr);
         break;
+    case 299: // Rectangle Lift Lemmy Battle
+        ret = new NormalImageRenderer(spr, "rect_lift_lemmy.png");
+        break;
     case 302: // Moon Coin
         ret = new NormalImageRenderer(spr, "moon_coin.png");
         break;
@@ -1039,66 +1051,51 @@ FireBarRenderer::FireBarRenderer(const Sprite *spr)
 {
     this->spr = spr;
 
-    size = (spr->getNybble(5)*40) + 20;
-    posoff = (spr->getNybble(5)*20);
-
+    int size = (spr->getNybble(5)*40) + 20;
+    int posoff = (spr->getNybble(5)*20);
     radius = new CircleRenderer(spr->getx()-posoff, spr->gety()-posoff, size, size, "", QColor(0,0,0));
-
 }
 
 void FireBarRenderer::render(QPainter *painter, QRect *drawrect)
 {
+    // Draw Center tile first
     if (spr->getNybble(8) == 1)
         painter->drawPixmap(QRect(spr->getx()-10, spr->gety(), 40, 20), ImageCache::getInstance()->get(SpriteImg, "firebar_center_wide.png"));
     else
         painter->drawPixmap(QRect(spr->getx(), spr->gety(), 20, 20), ImageCache::getInstance()->get(SpriteImg, "firebar_center.png"));
 
+    // Draw Firebar radius
     if(spr->getNybble(5) > 0)
         radius->render(painter, drawrect);
 
-    //Center flame
-    painter->drawPixmap(QRect(spr->getx(), spr->gety(), 20, 20), ImageCache::getInstance()->get(SpriteImg, "firebar_fire.png"));
+    int gap = 0;
+    float angle = 0;
+    int x = 0;
+    int y = 0;
 
-    //Right side bar
-    if ((spr->getNybble(4) == 0) || (spr->getNybble(4) == 1) || (spr->getNybble(4) == 3))
+    int rad = spr->getNybble(5);
+    int barCount = spr->getNybble(4)+1;
+
+    int rads = 0;
+
+    // Calc Positions on a circle
+    for (int i = 0; i < barCount; i++)
     {
-        for (int i = 0; i < spr->getNybble(5); i++)
-            painter->drawPixmap(QRect(spr->getx()+20+i*20, spr->gety(), 20, 20), ImageCache::getInstance()->get(SpriteImg, "firebar_fire.png"));
-    }
-    //Left side bar
-    if ((spr->getNybble(4) == 1) ||(spr->getNybble(4) == 3))
-    {
-        for (int i = 0; i < spr->getNybble(5); i++)
-            painter->drawPixmap(QRect(spr->getx()-20-i*20, spr->gety(), 20, 20), ImageCache::getInstance()->get(SpriteImg, "firebar_fire.png"));
-    }
-    //Top bar
-    if ((spr->getNybble(4) == 2) || (spr->getNybble(4) == 3))
-    {
-        for (int i = 0; i < spr->getNybble(5); i++)
-            painter->drawPixmap(QRect(spr->getx(), spr->gety()-20-i*20, 20, 20), ImageCache::getInstance()->get(SpriteImg, "firebar_fire.png"));
-    }
-    //Bottom bar
-    if ((spr->getNybble(4) == 3))
-    {
-        for (int i = 0; i < spr->getNybble(5); i++)
-            painter->drawPixmap(QRect(spr->getx(), spr->gety()+20+i*20, 20, 20), ImageCache::getInstance()->get(SpriteImg, "firebar_fire.png"));
-    }
-    //Bottom Left Bar
-    if ((spr->getNybble(4) == 2))
-    {
-        for (int i = 0; i < spr->getNybble(5); i++)
-            painter->drawPixmap(QRect(spr->getx()-15-i*15, spr->gety()+15+i*15, 20, 20), ImageCache::getInstance()->get(SpriteImg, "firebar_fire.png"));
-    }
-    //Bottom Right Bar
-    if ((spr->getNybble(4) == 2))
-    {
-        for (int i = 0; i < spr->getNybble(5); i++)
-            painter->drawPixmap(QRect(spr->getx()+15+i*15, spr->gety()+15+i*15, 20, 20), ImageCache::getInstance()->get(SpriteImg, "firebar_fire.png"));
-    }
-    if(spr->getNybble(4) >= 4)
-    {
-        painter->setFont(QFont("Arial", 8, QFont::Bold));
-        painter->drawText(QRect(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), 20, 20), QString::number(spr->getNybble(4) + 1), Qt::AlignHCenter | Qt::AlignVCenter);
+        gap = 0.75 - (1 / barCount);
+        angle = -360 * i / (barCount + gap);
+        angle = qDegreesToRadians(angle)+1.5708;
+
+        // Draw Firebar flame
+        while (rads <= rad)
+        {
+            x = qSin(angle) * ((rads * 20));
+            y = -(qCos(angle) * ((rads * 20)));
+
+            painter->drawPixmap(spr->getx()+x, spr->gety()+y, 20, 20, ImageCache::getInstance()->get(SpriteImg, "firebar_fire.png"));
+
+            rads++;
+        }
+        rads = 0;
     }
 
 }
@@ -1145,6 +1142,23 @@ void FlagRenderer::render(QPainter *painter, QRect *drawrect)
         painter->setFont(QFont("Arial", 7, QFont::Normal));
         painter->drawText(textRect, QString("Ons"), Qt::AlignLeft | Qt::AlignBottom);
     }
+}
+
+// Sprite 93: Scuttlebug
+ScuttlebugRenderer::ScuttlebugRenderer(const Sprite *spr, const Zone *zone)
+{
+    this->spr = spr;
+    this->zone = zone;
+}
+
+void ScuttlebugRenderer::render(QPainter *painter, QRect *)
+{
+    QPen stringpen;
+    stringpen.setColor(QColor(255,255,255,125));
+    stringpen.setWidth(2);
+    painter->setPen(stringpen);
+    painter->drawLine(spr->getx()+10, spr->gety(), spr->getx()+10, zone->gety());
+    painter->setPen(Qt::NoPen);
 }
 
 // Sprite 94: Flipper (One Way Gate)
@@ -1599,49 +1613,49 @@ void ScalePlatformRenderer::render(QPainter *painter, QRect *)
     //used to keep platforms centered
     int poffset;
     if (spr->getNybble(15) == 0)
-        poffset = 28;
+        poffset = 32;
     else
-        poffset = 28 + ((spr->getNybble(15)-1)*10);
+        poffset = 32 + ((spr->getNybble(15)-1)*10);
 
     //Rope
-    painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), 17, 16), ImageCache::getInstance()->get(SpriteImg, "scale_lift/left.png"));
+    painter->drawPixmap(QRect(spr->getx()-4, spr->gety()-13, 17, 16), ImageCache::getInstance()->get(SpriteImg, "scale_lift/left.png"));
     for (int i = 0; i < spr->getNybble(5); i++)
-        painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()+17, spr->gety()+spr->getOffsetY()+1, 20*i, 4), ImageCache::getInstance()->get(SpriteImg, "scale_lift/top.png"));
+        painter->drawPixmap(QRect(spr->getx()+13, spr->gety()-12, 20*i, 4), ImageCache::getInstance()->get(SpriteImg, "scale_lift/top.png"));
     if (spr->getNybble(5) == 0)
-        painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()+10, spr->gety()+spr->getOffsetY(), 17, 16), ImageCache::getInstance()->get(SpriteImg, "scale_lift/right.png"));
+        painter->drawPixmap(QRect(spr->getx()+6, spr->gety()-13, 17, 16), ImageCache::getInstance()->get(SpriteImg, "scale_lift/right.png"));
     else
-        painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()+(spr->getNybble(5)*20-10), spr->gety()+spr->getOffsetY(), 17, 16), ImageCache::getInstance()->get(SpriteImg, "scale_lift/right.png"));
+        painter->drawPixmap(QRect(spr->getx()-4+(spr->getNybble(5)*20-10), spr->gety()-13, 17, 16), ImageCache::getInstance()->get(SpriteImg, "scale_lift/right.png"));
     for (int i = 0; i < spr->getNybble(7); i++)
-        painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()+2, spr->gety()+spr->getOffsetY()+16, 4, (20*i)+7), ImageCache::getInstance()->get(SpriteImg, "scale_lift/down.png"));
+        painter->drawPixmap(QRect(spr->getx()-2, spr->gety()+3, 4, (20*i)+7), ImageCache::getInstance()->get(SpriteImg, "scale_lift/down.png"));
     for (int i = 0; i < spr->getNybble(4); i++)
         if (spr->getNybble(5) == 0)
-            painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()+22, spr->gety()+spr->getOffsetY()+16, 4, (20*i)+7), ImageCache::getInstance()->get(SpriteImg, "scale_lift/down.png"));
+            painter->drawPixmap(QRect(spr->getx()+18, spr->gety()+3, 4, (20*i)+7), ImageCache::getInstance()->get(SpriteImg, "scale_lift/down.png"));
         else
-            painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()+(spr->getNybble(5)*20+2), spr->gety()+spr->getOffsetY()+16, 4, (20*i)+7), ImageCache::getInstance()->get(SpriteImg, "scale_lift/down.png"));
+            painter->drawPixmap(QRect(spr->getx()-4+(spr->getNybble(5)*20+2), spr->gety()+3, 4, (20*i)+7), ImageCache::getInstance()->get(SpriteImg, "scale_lift/down.png"));
     //Platforms
     if ((spr->getNybble(15) == 0))
     {
         //Left Platform
-        painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()-poffset, spr->gety()+spr->getOffsetY()+(20*spr->getNybble(7))+3, 22, 22), ImageCache::getInstance()->get(SpriteImg, "scale_lift/platform_l.png"));
-        painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()-poffset+22, spr->gety()+spr->getOffsetY()+(20*spr->getNybble(7))+3, 20, 22), ImageCache::getInstance()->get(SpriteImg, "scale_lift/platform_m.png"));
-        painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()-poffset+42, spr->gety()+spr->getOffsetY()+(20*spr->getNybble(7))+3, 22, 22), ImageCache::getInstance()->get(SpriteImg, "scale_lift/platform_r.png"));
+        painter->drawPixmap(QRect(spr->getx()-poffset, spr->gety()-13+(20*spr->getNybble(7))+3, 22, 22), ImageCache::getInstance()->get(SpriteImg, "scale_lift/platform_l.png"));
+        painter->drawPixmap(QRect(spr->getx()-poffset+22, spr->gety()-13+(20*spr->getNybble(7))+3, 20, 22), ImageCache::getInstance()->get(SpriteImg, "scale_lift/platform_m.png"));
+        painter->drawPixmap(QRect(spr->getx()-poffset+42, spr->gety()-13+(20*spr->getNybble(7))+3, 22, 22), ImageCache::getInstance()->get(SpriteImg, "scale_lift/platform_r.png"));
         //Right Platform
-        painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()-poffset+(spr->getNybble(5)*20), spr->gety()+spr->getOffsetY()+(20*spr->getNybble(4))+3, 22, 22), ImageCache::getInstance()->get(SpriteImg, "scale_lift/platform_l.png"));
-        painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()-poffset+22+(spr->getNybble(5)*20), spr->gety()+spr->getOffsetY()+(20*spr->getNybble(4))+3, 20, 22), ImageCache::getInstance()->get(SpriteImg, "scale_lift/platform_m.png"));
-        painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()-poffset+42+(spr->getNybble(5)*20), spr->gety()+spr->getOffsetY()+(20*spr->getNybble(4))+3, 22, 22), ImageCache::getInstance()->get(SpriteImg, "scale_lift/platform_r.png"));
+        painter->drawPixmap(QRect(spr->getx()-poffset+(spr->getNybble(5)*20), spr->gety()-13+(20*spr->getNybble(4))+3, 22, 22), ImageCache::getInstance()->get(SpriteImg, "scale_lift/platform_l.png"));
+        painter->drawPixmap(QRect(spr->getx()-poffset+22+(spr->getNybble(5)*20), spr->gety()-13+(20*spr->getNybble(4))+3, 20, 22), ImageCache::getInstance()->get(SpriteImg, "scale_lift/platform_m.png"));
+        painter->drawPixmap(QRect(spr->getx()-poffset+42+(spr->getNybble(5)*20), spr->gety()-13+(20*spr->getNybble(4))+3, 22, 22), ImageCache::getInstance()->get(SpriteImg, "scale_lift/platform_r.png"));
     }
     else
     {
         //Left Platform
-        painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()-poffset, spr->gety()+spr->getOffsetY()+(20*spr->getNybble(7))+3, 22, 22), ImageCache::getInstance()->get(SpriteImg, "scale_lift/platform_l.png"));
+        painter->drawPixmap(QRect(spr->getx()-poffset, spr->gety()-13+(20*spr->getNybble(7))+3, 22, 22), ImageCache::getInstance()->get(SpriteImg, "scale_lift/platform_l.png"));
         for (int i = 0; i < spr->getNybble(15); i++)
-            painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()-poffset+22+(20*i), spr->gety()+spr->getOffsetY()+(20*spr->getNybble(7))+3, 20, 22), ImageCache::getInstance()->get(SpriteImg, "scale_lift/platform_m.png"));
-        painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()-poffset+22+(20*(spr->getNybble(15))), spr->gety()+spr->getOffsetY()+(20*spr->getNybble(7))+3, 22, 22), ImageCache::getInstance()->get(SpriteImg, "scale_lift/platform_r.png"));
+            painter->drawPixmap(QRect(spr->getx()-poffset+22+(20*i), spr->gety()-13+(20*spr->getNybble(7))+3, 20, 22), ImageCache::getInstance()->get(SpriteImg, "scale_lift/platform_m.png"));
+        painter->drawPixmap(QRect(spr->getx()-poffset+22+(20*(spr->getNybble(15))), spr->gety()-13+(20*spr->getNybble(7))+3, 22, 22), ImageCache::getInstance()->get(SpriteImg, "scale_lift/platform_r.png"));
         //Right Platform
-        painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()-poffset+(spr->getNybble(5)*20), spr->gety()+spr->getOffsetY()+(20*spr->getNybble(4))+3, 22, 22), ImageCache::getInstance()->get(SpriteImg, "scale_lift/platform_l.png"));
+        painter->drawPixmap(QRect(spr->getx()-poffset+(spr->getNybble(5)*20), spr->gety()-13+(20*spr->getNybble(4))+3, 22, 22), ImageCache::getInstance()->get(SpriteImg, "scale_lift/platform_l.png"));
         for (int i = 0; i < spr->getNybble(15); i++)
-            painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()-poffset+22+(20*i)+(spr->getNybble(5)*20), spr->gety()+spr->getOffsetY()+(20*spr->getNybble(4))+3, 20, 22), ImageCache::getInstance()->get(SpriteImg, "scale_lift/platform_m.png"));
-        painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()-poffset+22+(20*(spr->getNybble(15)))+(spr->getNybble(5)*20), spr->gety()+spr->getOffsetY()+(20*spr->getNybble(4))+3, 22, 22), ImageCache::getInstance()->get(SpriteImg, "scale_lift/platform_r.png"));
+            painter->drawPixmap(QRect(spr->getx()-poffset+22+(20*i)+(spr->getNybble(5)*20), spr->gety()-13+(20*spr->getNybble(4))+3, 20, 22), ImageCache::getInstance()->get(SpriteImg, "scale_lift/platform_m.png"));
+        painter->drawPixmap(QRect(spr->getx()-poffset+22+(20*(spr->getNybble(15)))+(spr->getNybble(5)*20), spr->gety()-13+(20*spr->getNybble(4))+3, 22, 22), ImageCache::getInstance()->get(SpriteImg, "scale_lift/platform_r.png"));
     }
 }
 
@@ -1907,8 +1921,7 @@ void BobOmbCannonRenderer::render(QPainter *painter, QRect *drawrect)
     img->render(painter, drawrect);
 }
 
-
-// Sprite 186/199/230: Paratroopa/CheepCheep/Peepa Circle
+// Sprite 17/186/199/230: Amp/Paratroopa/CheepCheep/Peepa Circle
 CoinCircleRenderer::CoinCircleRenderer(const Sprite *spr)
 {
     this->spr = spr;
@@ -1922,7 +1935,9 @@ void CoinCircleRenderer::render(QPainter *painter, QRect *drawrect)
     QString img;
     QString coinImg;
 
-    if (spr->getid() == 186)
+    if (spr->getid() == 17)
+        img = "amp_circle.png";
+    else if (spr->getid() == 186)
         img = "paratroopa_circle.png";
     else if (spr->getid() == 199)
         img = "cheepcheep_circle.png";
@@ -1948,12 +1963,12 @@ void CoinCircleRenderer::render(QPainter *painter, QRect *drawrect)
     {
         missingImgWeight = 0.75 - (1 / imgCount);
         angle = -360 * i / (imgCount + missingImgWeight);
-        angle = qDegreesToRadians(angle)+ 89.6;
+        angle = qDegreesToRadians(angle)+1.5708;
 
         x = qSin(angle) * ((radius * 20)) - 10;
-        y = -(qCos(angle) * ((radius * 20))) - 30;
+        y = -(qCos(angle) * ((radius * 20))) - 10;
 
-        //Some derp shit to make shit not draw if nybbles 12-16 have values set
+        //Make stuff not draw if nybbles 12-16 have values set
         if (i == 4 && (spr->getNybble(12)& 0x1) == 0x1)
             painter->drawPixmap(spr->getx()+x, spr->gety()+y, 40, 40, ImageCache::getInstance()->get(SpriteImg, coinImg));
         else if (i == 4)
@@ -2319,39 +2334,61 @@ LiquidRenderer::LiquidRenderer(const Sprite *liquid, const Zone *zone)
         filename = "lava";
     else if (liquid->getid() == 13)
         filename = "poison";
+    else if (liquid->getid() == 14)
+        filename = "cloud";
     else
         filename = "water";
 }
 
 void LiquidRenderer::render(QPainter *painter, QRect *drawrect)
 {
-    QPixmap top = ImageCache::getInstance()->get(SpriteImg, filename + "_top.png");
-    QPixmap base = ImageCache::getInstance()->get(SpriteImg, filename + ".png");
-
-    int currY = liquid->gety() - 20;
-
-    for (int x = zone->getx(); x < zone->getx() + zone->getwidth(); x += top.width())
+    if (liquid->getid() != 14)
     {
-        QRect rect = QRect(x, currY, qMin(zone->getx() + zone->getwidth() - x, top.width()), qMin(zone->gety() + zone->getheight() - currY, top.height()));
+        QPixmap top = ImageCache::getInstance()->get(SpriteImg, filename + "_top.png");
+        QPixmap base = ImageCache::getInstance()->get(SpriteImg, filename + ".png");
 
-        if (!drawrect->intersects(rect))
-            continue;
+        int currY = liquid->gety() - 20;
 
-        painter->drawPixmap(rect, top, QRect(0, 0, rect.right()-rect.left(), rect.bottom()-rect.top()));
-    }
-
-    currY += top.height();
-
-    for (; currY < zone->gety() + zone->getheight(); currY += base.height())
-    {
-        for (int x = zone->getx(); x < zone->getx() + zone->getwidth(); x += base.width())
+        for (int x = zone->getx(); x < zone->getx() + zone->getwidth(); x += top.width())
         {
-            QRect rect = QRect(x, currY, qMin(zone->getx() + zone->getwidth() - x, base.width()), qMin(zone->gety() + zone->getheight() - currY, base.height()));
+            QRect rect = QRect(x, currY, qMin(zone->getx() + zone->getwidth() - x, top.width()), qMin(zone->gety() + zone->getheight() - currY, top.height()));
 
             if (!drawrect->intersects(rect))
                 continue;
 
-            painter->drawPixmap(rect, base, QRect(0, 0, rect.right()-rect.left(), rect.bottom()-rect.top()));
+            painter->drawPixmap(rect, top, QRect(0, 0, rect.right()-rect.left(), rect.bottom()-rect.top()));
+        }
+
+        currY += top.height();
+
+        for (; currY < zone->gety() + zone->getheight(); currY += base.height())
+        {
+            for (int x = zone->getx(); x < zone->getx() + zone->getwidth(); x += base.width())
+            {
+                QRect rect = QRect(x, currY, qMin(zone->getx() + zone->getwidth() - x, base.width()), qMin(zone->gety() + zone->getheight() - currY, base.height()));
+
+                if (!drawrect->intersects(rect))
+                    continue;
+
+                painter->drawPixmap(rect, base, QRect(0, 0, rect.right()-rect.left(), rect.bottom()-rect.top()));
+            }
+        }
+    }
+    else
+    {
+        QPixmap cloud = ImageCache::getInstance()->get(SpriteImg, filename + ".png");
+
+        int currY = liquid->gety();
+
+        for (int x = zone->getx(); x < zone->getx() + zone->getwidth(); x += cloud.width())
+        {
+            QRect rect = QRect(x, currY, qMin(zone->getx() + zone->getwidth() - x, cloud.width()), qMin(zone->gety() + zone->getheight() - currY, cloud.height()));
+
+            if (!drawrect->intersects(rect))
+                continue;
+
+            painter->drawPixmap(rect, cloud, QRect(0, 0, rect.right()-rect.left(), rect.bottom()-rect.top()));
         }
     }
 }
+

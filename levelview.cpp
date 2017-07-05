@@ -132,7 +132,7 @@ void LevelView::paintEvent(QPaintEvent* evt)
 
             foreach (Sprite* s, level->sprites)
             {
-                if (s->getid() != 12 && s->getid() != 13 && s->getid() != 15)
+                if (s->getid() != 12 && s->getid() != 13 && s->getid() != 14 && s->getid() != 15 && s->getid() != 246)
                     continue;
 
                 if (zonerect.contains(s->getx(), s->gety(), false))
@@ -140,6 +140,29 @@ void LevelView::paintEvent(QPaintEvent* evt)
                     LiquidRenderer liquidRend(s, zone);
                     liquidRend.render(&painter, &drawrect);
                 }
+            }
+        }
+    }
+
+    // Render Scuttlebug Strings
+    for (int i = 0; i < level->zones.size(); i++)
+    {
+        const Zone* zone = level->zones.at(i);
+
+        QRect zonerect(zone->getx(), zone->gety()+30, zone->getwidth(), zone->getheight());
+
+        if (!drawrect.intersects(zonerect))
+            continue;
+
+        foreach (Sprite* s, level->sprites)
+        {
+            if (s->getid() != 93)
+                continue;
+
+            if (zonerect.contains(s->getx(), s->gety(), false))
+            {
+                ScuttlebugRenderer ScuttleRender(s, zone);
+                ScuttleRender.render(&painter, &drawrect);
             }
         }
     }

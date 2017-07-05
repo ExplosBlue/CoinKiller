@@ -245,10 +245,7 @@ public:
     void render(QPainter *painter, QRect *drawrect);
 protected:
     const Sprite* spr;
-    NormalImageRenderer *center;
     CircleRenderer *radius;
-    int size;
-    int posoff;
 };
 
 // Sprites 84/85/86/87/88: Flags
@@ -260,6 +257,17 @@ public:
 private:
     RoundedRectRenderer *rect;
     const Sprite* spr;
+};
+
+// Sprite 93: Scuttlebug
+class ScuttlebugRenderer: public ObjectRenderer
+{
+public:
+    ScuttlebugRenderer(const Sprite *spr, const Zone *zone);
+    void render(QPainter *painter, QRect *);
+protected:
+    const Sprite *spr;
+    const Zone *zone;
 };
 
 // Sprite 94: Flipper (One way gate)

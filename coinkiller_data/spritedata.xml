@@ -88,9 +88,6 @@
   <sprite id="10" name="Switchable Conveyor Belt - Lemmy Koopa Battle" notes="Actor: 0x084">
     <value nybble="1-2" title="Triggering Event ID" comment="What Event ID triggers the conveyor belt."/>
     <value nybble="6" title="Unknown 6"/>
-    <value nybble="7" title="Unknown 7"/>
-    <value nybble="16" title="Unknown 16"/>
-    <value nybble="18" title="Unknown 18"/>
   </sprite>
   <sprite id="11" name="Water Flow" notes="Actor: 0x057">
     <value nybble="1-2" title="Triggering Event ID" comment="What Event ID triggers the flow turning off."/>
@@ -106,26 +103,7 @@
   <sprite id="12" name="Lava" notes="Actor: 0x040">
     <value nybble="1-2" title="Triggering Event ID (Rising)" comment="This Flag ID makes the liquid rise."/>
     <value nybble="7" title="Rising Height" comment="In blocks."/>
-    <checkbox nybble="8" title="Already Moving" comment="Makes the liquid automatically start moving."/>
-    <value nybble="9" title="Rising Delay" comment="In seconds."/>
-    <checkbox nybble="10" title="Fills Entire Screen" comment="If checked, the liquid fills the entire screen."/>
-    <value nybble="11" title="Movement Time" comment="In seconds."/>
-    <value nybble="12" title="Lowering Delay" comment="In seconds."/>
-  </sprite>
-  <sprite id="13" name="Poison Water" notes="Actor: 0x041">
-    <value nybble="1-2" title="Triggering Event ID (Rising)" comment="This Flag ID makes the liquid rise."/>
-    <value nybble="7" title="Rising Height" comment="In blocks."/>
-    <checkbox nybble="8" title="Already Moving" comment="Makes the liquid automatically start moving."/>
-    <value nybble="9" title="Rising Delay" comment="In seconds."/>
-    <checkbox nybble="10" title="Fills Entire Screen" comment="If checked, the liquid fills the entire screen."/>
-    <value nybble="11" title="Movement Time" comment="In seconds."/>
-    <value nybble="12" title="Lowering Delay" comment="In seconds."/>
-  </sprite>
-  <sprite id="14" name="Cloud FG Effect" notes="Notes: Creates an horizontal line of clouds.&#13;&#10;Actor: 0x042&#13;&#10;Existing In-Game Sprite Data: Inaccurate."/>
-  <sprite id="15" name="Water" notes="Actor: 0x03f">
-    <value nybble="1-2" title="Triggering Event ID (Rising)" comment="This Flag ID makes the liquid rise."/>
-    <value nybble="7" title="Rising Height" comment="In blocks."/>
-    <list nybble="8" title="Liquid Behavior" comment="Makes the liquid automatically start moving.">
+    <list nybble="8" title="Liquid Behavior" comment="The behavior of this liquid.">
       <entry value="0">Nothing/Event Triggered</entry>
       <entry value="1">Already Moving</entry>
       <entry value="2">Unknown 2</entry>
@@ -137,22 +115,75 @@
       <entry value="8">Underwater Lighting</entry>
       <entry value="9">Unknown 9</entry>
     </list>
-    <value nybble="9" title="Rising Delay" comment="In seconds."/>
+    <value nybble="9" title="Rising Delay" comment="In ticks."/>
     <checkbox nybble="10" title="Fills Entire Screen" comment="If checked, the liquid fills the entire screen."/>
-    <value nybble="11" title="Movement Time" comment="In seconds."/>
-    <value nybble="12" title="Lowering Delay" comment="In seconds."/>
+    <value nybble="11" title="Movement Time" comment="In ticks."/>
+    <value nybble="12" title="Lowering Delay" comment="In ticks."/>
+  </sprite>
+  <sprite id="13" name="Poison Water" notes="Actor: 0x041">
+    <value nybble="1-2" title="Triggering Event ID (Rising)" comment="This Flag ID makes the liquid rise."/>
+    <value nybble="7" title="Rising Height" comment="In blocks."/>
+    <list nybble="8" title="Already Moving" comment="The behavior of this liquid.">
+      <entry value="0">Nothing/Event Triggered</entry>
+      <entry value="1">Already Moving</entry>
+      <entry value="2">Unknown 2</entry>
+      <entry value="3"> Unknown 3</entry>
+      <entry value="4">Unknown 4</entry>
+      <entry value="5">Unknown 5</entry>
+      <entry value="6">Unknown 6</entry>
+      <entry value="7">Unknown 7</entry>
+      <entry value="8">Underwater Lighting</entry>
+      <entry value="9">Unknown 9</entry>
+    </list>
+    <value nybble="9" title="Rising Delay" comment="In ticks."/>
+    <checkbox nybble="10" title="Fills Entire Screen" comment="If checked, the liquid fills the entire screen."/>
+    <value nybble="11" title="Movement Time" comment="In ticks."/>
+    <value nybble="12" title="Lowering Delay" comment="In ticks."/>
+  </sprite>
+  <sprite id="14" name="Cloud FG Effect" notes="Notes: Creates an horizontal line of clouds.&#13;&#10;Actor: 0x042&#13;&#10;"/>
+  <sprite id="15" name="Water" notes="Actor: 0x03f">
+    <value nybble="1-2" title="Triggering Event ID (Rising)" comment="This Flag ID makes the liquid rise."/>
+    <value nybble="7" title="Rising Height" comment="In blocks."/>
+    <list nybble="8" title="Liquid Behavior" comment="The behavior of this liquid.">
+      <entry value="0">Nothing/Event Triggered</entry>
+      <entry value="1">Already Moving</entry>
+      <entry value="2">Unknown 2</entry>
+      <entry value="3"> Unknown 3</entry>
+      <entry value="4">Unknown 4</entry>
+      <entry value="5">Unknown 5</entry>
+      <entry value="6">Unknown 6</entry>
+      <entry value="7">Unknown 7</entry>
+      <entry value="8">Underwater Lighting</entry>
+      <entry value="9">Unknown 9</entry>
+    </list>
+    <value nybble="9" title="Rising Delay" comment="In ticks."/>
+    <checkbox nybble="10" title="Fills Entire Screen" comment="If checked, the liquid fills the entire screen."/>
+    <value nybble="11" title="Movement Time" comment="In ticks."/>
+    <value nybble="12" title="Lowering Delay" comment="In ticks."/>
   </sprite>
   <sprite id="16" name="Amp" notes="Actor: 0x131">
     <checkbox nybble="5" title="Shift 1/2 Block Right" comment="Useless."/>
   </sprite>
-  <sprite id="17" name="Rotating Amp Controller (spawns Amp/s)" notes="Actor: 0x133">
-    <value nybble="5" title="Unknown Value 5" comment="..."/>
-    <value nybble="6" title="Unknown Value 6" comment="..."/>
-    <value nybble="8" title="Unknown Value 8" comment="..."/>
-    <value nybble="9" title="Unknown Value 9" comment="..."/>
-    <value nybble="10" title="Unknown Value 10" comment="..."/>
-    <value nybble="13" title="Unknown Value 13" comment="..."/>
-    <value nybble="14" title="Unknown Value 14" comment="..."/>
+  <sprite id="17" name="Amp Circle" notes="Actor: 0x133">
+    <list nybble="5" title="Rotation Speed" comment="The speed of the Amps as they rotate. Any values equal to or above 3 return 0.">
+      <entry value="0">Slow</entry>
+      <entry value="1">Medium</entry>
+      <entry value="2">Fast</entry>
+    </list>
+    <value nybble="6" title="Movement Direction" comment="The direction the Amps spin in."/>
+    <value nybble="9" title="Circle Radius" comment="Value +1.5"/>
+    <value nybble="10" title="Number Of  Amps" comment="The number of Amps in the circle. Value +1"/>
+    <value nybble="12" title="Unknown Value 12"/>
+    <value nybble="13" title="Amp 5-8 Gap Position" comment="The gap where the player can jump through. Is a bitfield."/>
+    <value nybble="14" title="Amp 1-4 Gap Position" comment="The gap where the player can jump through. Is a bitfield."/>
+    <value nybble="15" title="Koopa 13-16 Gap Position" comment="The gap where the player can jump through. Is a bitfield."/>
+    <value nybble="16" title="Koopa 9-12 Gap Position" comment="The gap where the player can jump through. Is a bitfield."/>
+    <list nybble="16" title="Gap Replacement" comment="Coins in circle jump up 1 tile after level fade-in.">
+      <entry value="0">Empty</entry>
+      <entry value="1">Coins</entry>
+      <entry value="2">Entire Circle is Coins</entry>
+    </list>
+    <value nybble="20" title="Unknown Value 20"/>
   </sprite>
   <sprite id="18" name="Tile God" notes="Actor: 0x1b2&#13;&#10;Can destroy anything, the setting is used for particle effects if the action is set to Destroy.">
     <value nybble="1-2" title="Triggering Event ID" comment="What Event ID triggers the action."/>
@@ -393,28 +424,28 @@
     <value nybble="7" title="Slowdown Amount" comment="Making this value higher slows the burner down."/>
     <checkbox nybble="8" title="Moves Clockwise" comment="When checked, makes the burner move clockwise rather than counterclockwise."/>
     <checkbox nybble="11" title="Pauses" comment="When this is checked, the burner will stop emitting a flame for a constant amount of time."/>
-    <value nybble="20" title="Location ID"/>
+    <value nybble="19-20" title="Location ID"/>
   </sprite>
   <sprite id="46" name="Track-controlled Burner - Down" notes="Actor: 0x063">
     <checkbox nybble="5" title="Long flame" comment="When checked, the flame will be longer."/>
     <value nybble="7" title="Slowdown Amount" comment="The larger this value, the slower the burner moves."/>
     <checkbox nybble="8" title="Moves Clockwise" comment="When checked, the burner will move clockwise."/>
     <checkbox nybble="11" title="Pauses" comment="When this is checked, the burner will stop emitting a flame for a constant amount of time."/>
-    <value nybble="20" title="Location ID"/>
+    <value nybble="19-20" title="Location ID"/>
   </sprite>
   <sprite id="47" name="Track-controlled Burner - Left" notes="Notes: It is left, like the Actor Name says.&#13;&#10;Actor: 0x061.">
     <checkbox nybble="5" title="Long Flame" comment="When checked, the flame will be longer."/>
     <value nybble="7" title="Slowdown Amount" comment="The higher this value, the slower the burner moves."/>
     <checkbox nybble="8" title="Move Clockwise" comment="When checked, the burner will move clockwise."/>
     <checkbox nybble="11" title="Pauses" comment="When this is checked, the burner will stop emitting a flame for a constant amount of time."/>
-    <value nybble="20" title="Location ID"/>
+    <value nybble="19-20" title="Location ID"/>
   </sprite>
   <sprite id="48" name="Track-controlled Burner - Up" notes="Actor: 0x062">
     <checkbox nybble="5" title="Longer Flame" comment="When checked, the burner will have a longer flame."/>
     <value nybble="7" title="Slowdown Amount" comment="The higher this value, the slower the burner moves."/>
     <checkbox nybble="8" title="Move Clockwise" comment="When this is checked, the burner will move clockwise."/>
     <checkbox nybble="11" title="Pauses" comment="When this is checked, the burner will stop emitting a flame for a constant amount of time."/>
-    <value nybble="20" title="Location ID"/>
+    <value nybble="19-20" title="Location ID"/>
   </sprite>
   <sprite id="49" name="Ludwig von Koopa Battle - Chain" notes="Actor: 0x06c"/>
   <sprite id="50" name="Ludgwig Battle Chain Controller" notes="Actor: 0x06b"/>
@@ -430,12 +461,49 @@
     <value nybble="9-10" title="Entrance ID"/>
   </sprite>
   <sprite id="53" name="Rotation Controller - Swaying" notes="Actor: 0x020">
-    <value nybble="1-2" title="Triggering Event ID"/>
-    <value nybble="7" title="Unknown 7"/>
-    <value nybble="8" title="Unknown 8"/>
-    <value nybble="17" title="Unknown 17"/>
-    <value nybble="18" title="Unknown 18"/>
-    <value nybble="19" title="Unknown 19"/>
+    <value nybble="1-2" title="Triggering Event ID" comment="Defunct; sprites sway even if event isn't triggered."/>
+    <list nybble="7" title="Initial Movement">
+      <entry value="0">Counterclockwise</entry>
+      <entry value="1">Clockwise</entry>
+    </list>
+    <list nybble="8" title="Pre-Rotation" comment="On level load, sprites will jump to a position as if they had already rotated this many degrees, then they will start rotating.">
+      <entry value="0">None</entry>
+      <entry value="1">22.5&#xB0;</entry>
+      <entry value="2">45&#xB0;</entry>
+      <entry value="3">67.5&#xB0;</entry>
+      <entry value="4">90&#xB0;</entry>
+      <entry value="5">112.5&#xB0;</entry>
+      <entry value="6">135&#xB0;</entry>
+      <entry value="7">157.5&#xB0;</entry>
+      <entry value="8">180&#xB0;</entry>
+      <entry value="9">202.5&#xB0;</entry>
+      <entry value="10">225&#xB0;</entry>
+      <entry value="11">247.5&#xB0;</entry>
+      <entry value="12">270&#xB0;</entry>
+      <entry value="13">292.5&#xB0;</entry>
+      <entry value="14">315&#xB0;</entry>
+      <entry value="15">337.5&#xB0;</entry>
+    </list>
+    <list nybble="17" title="Swing Arc (Rotation Distance)">
+      <entry value="0">No Arc</entry>
+      <entry value="1">22.5&#xB0;</entry>
+      <entry value="2">45&#xB0;</entry>
+      <entry value="3">67.5&#xB0;</entry>
+      <entry value="4">90&#xB0;</entry>
+      <entry value="5">112.5&#xB0;</entry>
+      <entry value="6">135&#xB0;</entry>
+      <entry value="7">157.5&#xB0;</entry>
+      <entry value="8">180&#xB0;</entry>
+      <entry value="9">202.5&#xB0;</entry>
+      <entry value="10">225&#xB0;</entry>
+      <entry value="11">247.5&#xB0;</entry>
+      <entry value="12">270&#xB0;</entry>
+      <entry value="13">292.5&#xB0;</entry>
+      <entry value="14">315&#xB0;</entry>
+      <entry value="15">337.5&#xB0;</entry>
+    </list>
+    <value nybble="18" title="Speed of Rotation" comment="0 doesn't sway. Higher values are faster."/>
+    <value nybble="19" title="Delay" comment="Delay between swaying clockwise and counterclockwise. 0 is no delay. Higher values take longer."/>
     <value nybble="21-22" title="Rotation ID"/>
   </sprite>
   <sprite id="54" name="Rotation Controller - Spinning" notes="Actor: 0x01e">
@@ -1122,8 +1190,8 @@
       <entry value="1">Down</entry>
     </list>
   </sprite>
-  <sprite id="146" name="Track-controlled Lift">
-    <list nybble="7" title="Style" comment="1 is unused, but works.">
+  <sprite id="146" name="Track-controlled Lift" notes="lift_han_stone.bcres">
+    <list nybble="7" title="Style" comment="1 is unused and uses the unused model &quot;lift_han_stone.bcres&quot;">
       <entry value="0">Wood</entry>
       <entry value="1">Stone</entry>
     </list>
@@ -1394,10 +1462,10 @@
     <value nybble="9" title="Circle Radius" comment="Value +1.5"/>
     <value nybble="10" title="Number Of  Koopa Paratroopas" comment="The number of Koopa Paratroopas in the circle. Value +1"/>
     <value nybble="12" title="Unknown Value 12"/>
-    <value nybble="13" title="Peepa 1-4 Gap Position" comment="The gap where the player can jump through. Is a bitfield."/>
-    <value nybble="14" title="Peepa 5-8 Gap Position" comment="The gap where the player can jump through. Is a bitfield."/>
-    <value nybble="15" title="Peepa 9-12 Gap Position" comment="The gap where the player can jump through. Is a bitfield."/>
-    <value nybble="16" title="Peepa 13-16 Gap Position" comment="The gap where the player can jump through. Is a bitfield."/>
+    <value nybble="13" title="Koopa 5-8 Gap Position" comment="The gap where the player can jump through. Is a bitfield."/>
+    <value nybble="14" title="Koopa 1-4 Gap Position" comment="The gap where the player can jump through. Is a bitfield."/>
+    <value nybble="15" title="Koopa 13-16 Gap Position" comment="The gap where the player can jump through. Is a bitfield."/>
+    <value nybble="16" title="Koopa 9-12 Gap Position" comment="The gap where the player can jump through. Is a bitfield."/>
     <list nybble="18" title="Gap Replacement" comment="Coins in circle jump up 1 tile after level fade-in.">
       <entry value="0">Empty</entry>
       <entry value="1">Coins</entry>
@@ -1633,7 +1701,7 @@
     <value nybble="9" title="Unknown Value 9" comment="..."/>
     <value nybble="11" title="Unknown Value 11" comment="Checkbox?"/>
   </sprite>
-  <sprite id="199" name="Cheep Cheep/Coin Circle" notes="Existing In-Game Sprite Data: Incomplete">
+  <sprite id="199" name="Cheep Cheep/Coin Circle">
     <list nybble="5" title="Rotation Speed" comment="The speed of the Cheep Cheeps as they rotate. Any values equal to or above 3 return 0.">
       <entry value="0">Slow</entry>
       <entry value="1">Medium</entry>
@@ -1646,10 +1714,10 @@
     <value nybble="9" title="Circle Radius" comment="Value +1.5"/>
     <value nybble="10" title="Number Of Cheep Cheeps" comment="The number of Cheep Cheeps in the circle. Value +1"/>
     <value nybble="12" title="Unknown Value 12"/>
-    <value nybble="13" title="Peepa 1-4 Gap Position" comment="The gap where the player can jump through. Is a bitfield."/>
-    <value nybble="14" title="Peepa 5-8 Gap Position" comment="The gap where the player can jump through. Is a bitfield."/>
-    <value nybble="15" title="Peepa 9-12 Gap Position" comment="The gap where the player can jump through. Is a bitfield."/>
-    <value nybble="16" title="Peepa 13-16 Gap Position" comment="The gap where the player can jump through. Is a bitfield."/>
+    <value nybble="13" title="Koopa 5-8 Gap Position" comment="The gap where the player can jump through. Is a bitfield."/>
+    <value nybble="14" title="Koopa 1-4 Gap Position" comment="The gap where the player can jump through. Is a bitfield."/>
+    <value nybble="15" title="Koopa 13-16 Gap Position" comment="The gap where the player can jump through. Is a bitfield."/>
+    <value nybble="16" title="Koopa 9-12 Gap Position" comment="The gap where the player can jump through. Is a bitfield."/>
     <list nybble="18" title="Gap Replacement" comment="Coins in circle jump up 1 tile after level fade-in.">
       <entry value="0">Empty</entry>
       <entry value="1">Coins</entry>
@@ -1886,7 +1954,7 @@
   <sprite id="229" name="Big Boo">
     <value nybble="8" title="Unknown Value 8" comment="Checkbox?"/>
   </sprite>
-  <sprite id="230" name="Peepa Circle" notes="Possible unused settings:&#13;&#10;* Made up of Boos&#13;&#10;Actor: 0x142">
+  <sprite id="230" name="Peepa/Coin Circle" notes="Actor: 0x142">
     <list nybble="5" title="Rotation Speed" comment="The speed of the Peepas as they rotate. Any values equal to or above 3 return 0.">
       <entry value="0">Slow</entry>
       <entry value="1">Medium</entry>
@@ -1899,10 +1967,10 @@
     <value nybble="9" title="Circle Radius" comment="Value +1.5"/>
     <value nybble="10" title="Number Of Peepas" comment="The number of Peepas in the circle. Value +1"/>
     <value nybble="12" title="Unknown Value 12"/>
-    <value nybble="13" title="Peepa 1-4 Gap Position" comment="The gap where the player can jump through. Is a bitfield."/>
-    <value nybble="14" title="Peepa 5-8 Gap Position" comment="The gap where the player can jump through. Is a bitfield."/>
-    <value nybble="15" title="Peepa 9-12 Gap Position" comment="The gap where the player can jump through. Is a bitfield."/>
-    <value nybble="16" title="Peepa 13-16 Gap Position" comment="The gap where the player can jump through. Is a bitfield."/>
+    <value nybble="13" title="Peepa 5-8 Gap Position" comment="The gap where the player can jump through. Is a bitfield."/>
+    <value nybble="14" title="Peepa 1-5 Gap Position" comment="The gap where the player can jump through. Is a bitfield."/>
+    <value nybble="15" title="Peepa 13-16 Gap Position" comment="The gap where the player can jump through. Is a bitfield."/>
+    <value nybble="16" title="Peepa 9-12 Gap Position" comment="The gap where the player can jump through. Is a bitfield."/>
     <list nybble="18" title="Gap Replacement" comment="Coins in circle jump up 1 tile after level fade-in.">
       <entry value="0">Empty</entry>
       <entry value="1">Coins</entry>
