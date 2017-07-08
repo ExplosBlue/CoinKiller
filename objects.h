@@ -292,16 +292,16 @@ public:
     void insertNode(PathNode* node, qint32 index = -1);
     void removeNode(PathNode* node);
     quint16 getid() const { return id; }
-    quint16 getUnk1() const { return unk1; }
+    quint16 getLoop() const { return loop; }
     qint32 getNumberOfNodes() const { return nodes.size(); }
     QList<PathNode*> getNodes() const;
     PathNode* getNode(qint32 id) const { return nodes[id]; }
     qint32 getIndexOfNode(PathNode* node) { return nodes.indexOf(node); }
     void setId(qint32 id) { this->id = id; }
-    void setUnk1(qint32 unk1) {this->unk1 = unk1; }
+    void setLoop(qint32 loop) {this->loop = loop; }
 protected:
     quint16 id;
-    quint16 unk1;
+    quint16 loop;
     QList<PathNode*> nodes;
 };
 

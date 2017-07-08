@@ -44,6 +44,7 @@ LevelView::LevelView(QWidget *parent, Level* level) : QWidget(parent)
 
     zoom = 1;
     grid = false;
+    checkerboard = false;
     renderLiquids = false;
 }
 
@@ -64,6 +65,81 @@ void LevelView::paintEvent(QPaintEvent* evt)
 
     painter.fillRect(drawrect, QColor(119,136,153));
     tileGrid.clear();
+
+    // Render Checkerboard
+    if (checkerboard)
+    {
+        painter.setRenderHint(QPainter::Antialiasing, false);
+
+        int startx = drawrect.x() - drawrect.x() %160;
+        int endx = startx + drawrect.width() + 160;
+
+        int starty = drawrect.y() - drawrect.y() %160;
+        int endy = starty + drawrect.height() + 160;
+
+        int x = startx - 80;
+        int y = starty - 80;
+
+        int county = 0;
+        bool xoffset = 0;
+
+        painter.setPen(Qt::NoPen);
+        QBrush brush(Qt::SolidPattern);
+        brush.setColor(QColor(50,50,50));
+        painter.setBrush(brush);
+
+
+        // Big Squares
+        while (y <= endy)
+        {
+            while (x <= endx)
+            {
+                if (xoffset == false)
+                {
+                    painter.setOpacity(0.2);
+                    painter.drawRect(x, y, 80, 80);
+                    x += 80;
+                }
+                x += 80;
+                xoffset = false;
+            }
+            x = 0;
+            y += 80;
+            county += 1;
+            if (county %2)
+                xoffset = true;
+        }
+        x = 0;
+        y = 0;
+        // Small Squares
+        if (zoom  < 0.5)
+            return;
+        else
+        {
+            while (y <= endy)
+            {
+                while (x <= endx)
+                {
+                    if (xoffset == false)
+                    {
+                        painter.setOpacity(0.1);
+                        painter.drawRect(x, y, 20, 20);
+                        x += 20;
+                    }
+                    x += 20;
+                    xoffset = false;
+                }
+                x = 0;
+                y += 20;
+                county += 1;
+                if (county %2)
+                    xoffset = true;
+            }
+        }
+        painter.setRenderHint(QPainter::Antialiasing);
+        painter.setBrush(Qt::NoBrush);
+        painter.setOpacity(1);
+    }
 
     // Render Tiles
     for (int l = 1; l >= 0; l--)

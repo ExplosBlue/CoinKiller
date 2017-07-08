@@ -1227,44 +1227,6 @@ void Sprite::setRect()
             offsetx -= 3;
         }
         break;
-    case 210: // Tightrope
-        if (getNybble(10) == 0)
-        {
-            width = 16;
-        }
-        else
-        {
-            width = 20 + getNybble(10)*20;
-        }
-        int offset;
-        if (getNybble(11) == 0)
-            height = 20;
-        else if (getNybble(11) <= 7)
-        {
-            for(offset = 0; offset < getNybble(11); offset++)
-                height = (offset*20)+40;
-                offsety = -(offset*20);
-        }
-        else
-        {
-            offset = 160;
-            for (int i = 8; i != getNybble(11); i++) offset -= 20;
-            height = offset+20;
-        }
-        offsetx = -10;
-        break;
-    case 290: // Path Controlled Fence(Small)
-        width = 60;
-        height = 60;
-        offsetx = -20;
-        offsety = -20;
-        break;
-    case 291: // Path Controlled Fence(Big)
-        width = 120;
-        height = 120;
-        offsetx = -50;
-        offsety = -50;
-        break;
     case 194: // Cheep Cheep
         if(getNybble(5) == 1 || getNybble(5) == 8)
         {
@@ -1310,6 +1272,34 @@ void Sprite::setRect()
         width = 40;
         height = 56;
         offsety = 2;
+        break;
+    case 210: // Tightrope
+        if (getNybble(10) == 0)
+        {
+            width = 20;
+        }
+        else
+        {
+            width = 20 + getNybble(10)*20;
+        }
+        int offset;
+        if (getNybble(11) == 0)
+            height = 20;
+        else if (getNybble(11) <= 7)
+        {
+            for(offset = 0; offset < getNybble(11); offset++)
+            {
+                height = (offset*20)+40;
+                offsety = -(offset*20);
+            }
+        }
+        else
+        {
+            offset = 160;
+            for (int i = 8; i != getNybble(11); i++) offset -= 20;
+            height = offset+20;
+        }
+        offsetx = -10;
         break;
     case 211: // Roy Koopa
         width = 78;
@@ -1572,10 +1562,30 @@ void Sprite::setRect()
         height = 60;
         break;
     case 289: // Bouncy Mushroom Platform - Castle
-        width = 98;
-        height = 35;
-        offsetx = -49;
+        if (getNybble(15) == 1)
+        {
+            width = 40;
+            offsetx = -10;
+        }
+        else
+        {
+            width = 100;
+            offsetx = -50;
+        }
+        height = 30;
         offsety = 15;
+        break;
+    case 290: // Path Controlled Fence(Small)
+        width = 60;
+        height = 60;
+        offsetx = -20;
+        offsety = -20;
+        break;
+    case 291: // Path Controlled Fence(Big)
+        width = 120;
+        height = 120;
+        offsetx = -50;
+        offsety = -50;
         break;
     case 292: // Warp Cannon Signboard
         width = 62;
@@ -1880,16 +1890,16 @@ QString Location::toString(qint32 xOffset, qint32 yOffset) const { return QStrin
 
 
 // Path
-Path::Path(quint16 id, quint16 unk1)
+Path::Path(quint16 id, quint16 loop)
 {
     this->id = id;
-    this->unk1 = unk1;
+    this->loop = loop;
 }
 
 Path::Path(Path *path)
 {
     id = path->getid();
-    unk1 = path->getUnk1();
+    loop = path->getLoop();
     foreach (PathNode* node, path->getNodes())
         nodes.append(new PathNode(node, this));
 }

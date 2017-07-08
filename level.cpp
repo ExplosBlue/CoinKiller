@@ -675,7 +675,7 @@ void Level::save()
         header->write8(0);
         header->write16(actualNodeCount1);
         header->write16(p->getNumberOfNodes());
-        header->write16(p->getUnk1());
+        header->write16(p->getLoop());
         header->write32(0);
 
         foreach (PathNode* pNode, p->getNodes())

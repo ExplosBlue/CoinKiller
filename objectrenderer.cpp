@@ -625,7 +625,7 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
         ret = new NormalImageRenderer(spr, "door_toadhouse.png");
         break;
     case 289: // Bouncy Mushroom Platform - Castle
-        ret = new NormalImageRenderer(spr, "bouncy_mushroom_castle.png");
+        ret = new BounceMushCastleRenderer(spr);
         break;
     case 290: // Path Controlled Fence(Small)
         ret = new NormalImageRenderer(spr, "small_path_fence.png");
@@ -2184,6 +2184,20 @@ void RailContFenceRenderer::render(QPainter *painter, QRect *)
     if (spr->getNybble(5) == 1) painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), ImageCache::getInstance()->get(SpriteImg, "rail_fence_3x6.png"));
     else if (spr->getNybble(5) == 2) painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), ImageCache::getInstance()->get(SpriteImg, "rail_fence_6x3.png"));
     else painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), ImageCache::getInstance()->get(SpriteImg, "rail_fence_3x3.png"));
+}
+
+// Sprite 298: Bouncy Mushroom - Castle
+BounceMushCastleRenderer::BounceMushCastleRenderer(const Sprite *spr)
+{
+    this->spr = spr;
+    if (spr->getNybble(15) == 1)
+        img = new NormalImageRenderer(spr, "bouncy_mushroom_castle_small.png");
+    else
+        img = new NormalImageRenderer(spr, "bouncy_mushroom_castle.png");
+}
+void BounceMushCastleRenderer::render(QPainter *painter, QRect *drawrect)
+{
+    img->render(painter, drawrect);
 }
 
 // Sprite 134: 3 Plat Rickshaw ruins

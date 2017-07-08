@@ -62,6 +62,7 @@ LevelEditorWindow::LevelEditorWindow(LevelManager* lvlMgr, int initialArea) :
     ui->actionLowerLayer->setIcon(QIcon(basePath + "layer_down.png"));
     ui->actionFullscreen->setIcon(QIcon(basePath + "expand.png"));
     ui->actionGrid->setIcon(QIcon(basePath + "grid.png"));
+    ui->actionCheckerboard->setIcon(QIcon(basePath + "checkerboard.png"));
     ui->actionRenderLiquids->setIcon(QIcon(basePath + "render_liquids.png"));
     ui->actionAddArea->setIcon(QIcon(basePath + "add.png"));
     ui->actionDeleteCurrentArea->setIcon(QIcon(basePath + "remove.png"));
@@ -79,6 +80,7 @@ LevelEditorWindow::LevelEditorWindow(LevelManager* lvlMgr, int initialArea) :
 
     updateAreaSelector(initialArea);
     ui->actionGrid->setChecked(settings->get("grid", false).toBool());
+    ui->actionCheckerboard->setChecked(settings->get("checkerboard", false).toBool());
     ui->actionRenderLiquids->setChecked(settings->get("renderLiquids", true).toBool());
 }
 
@@ -147,6 +149,9 @@ void LevelEditorWindow::loadTranslations()
 
     ui->actionGrid->setText(settings->getTranslation("LevelEditor", "grid"));
     ui->actionGrid->setToolTip(settings->getTranslation("LevelEditor", "grid"));
+
+    ui->actionCheckerboard->setText(settings->getTranslation("LevelEditor", "checkerboard"));
+    ui->actionCheckerboard->setToolTip(settings->getTranslation("LevelEditor", "checkerboard"));
 
     ui->actionRenderLiquids->setText(settings->getTranslation("LevelEditor", "renderLiquids"));
     ui->actionRenderLiquids->setToolTip(settings->getTranslation("LevelEditor", "renderLiquids"));
@@ -294,6 +299,12 @@ void LevelEditorWindow::on_actionGrid_toggled(bool toggle)
 {
     levelView->toggleGrid(toggle);
     settings->set("grid", toggle);
+}
+
+void LevelEditorWindow::on_actionCheckerboard_toggled(bool toggle)
+{
+    levelView->toggleCheckerboard(toggle);
+    settings->set("checkerboard", toggle);
 }
 
 void LevelEditorWindow::on_actionRenderLiquids_toggled(bool toggle)
@@ -459,6 +470,7 @@ void LevelEditorWindow::loadArea(int id, bool closeLevel, bool init)
     ui->actionToggleLayer2->setChecked(true);
     levelView->setLayerMask(layerMask);
     levelView->toggleGrid(ui->actionGrid->isChecked());
+    levelView->toggleCheckerboard(ui->actionCheckerboard->isChecked());
     levelView->toggleRenderLiquids(ui->actionRenderLiquids->isChecked());
 
     zoom = 1.0;

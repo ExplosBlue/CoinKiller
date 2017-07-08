@@ -747,6 +747,17 @@ protected:
     const Sprite *spr;
 };
 
+// Sprite 298: Bouncy Mushroom - Castle
+class BounceMushCastleRenderer: public SpriteRenderer
+{
+public:
+    BounceMushCastleRenderer(const Sprite *spr);
+    void render(QPainter *painter, QRect *drawrect);
+protected:
+    const Sprite *spr;
+    NormalImageRenderer *img;
+};
+
 // Sprite 305: Path Controlled Ice Lift
 class IceLiftRenderer: public SpriteRenderer
 {

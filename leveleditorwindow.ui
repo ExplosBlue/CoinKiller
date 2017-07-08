@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1541</width>
+    <width>1549</width>
     <height>700</height>
    </rect>
   </property>
@@ -62,8 +62,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>1445</width>
-              <height>86</height>
+              <width>1448</width>
+              <height>156</height>
              </rect>
             </property>
            </widget>
@@ -81,8 +81,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>69</width>
-          <height>634</height>
+          <width>80</width>
+          <height>597</height>
          </rect>
         </property>
        </widget>
@@ -96,19 +96,19 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1541</width>
-     <height>21</height>
+     <width>1549</width>
+     <height>34</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
     <property name="title">
-     <string>&lt;File&gt;</string>
+     <string>&lt;Fi&amp;le&gt;</string>
     </property>
     <addaction name="actionSave"/>
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
-     <string>&lt;View&gt;</string>
+     <string>&lt;&amp;View&gt;</string>
     </property>
     <addaction name="actionToggleLayer1"/>
     <addaction name="actionToggleLayer2"/>
@@ -174,6 +174,7 @@
    <addaction name="separator"/>
    <addaction name="actionFullscreen"/>
    <addaction name="actionGrid"/>
+   <addaction name="actionCheckerboard"/>
    <addaction name="actionRenderLiquids"/>
    <addaction name="separator"/>
    <addaction name="actionToggleLayer1"/>
@@ -188,7 +189,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>&lt;Layer 1&gt;</string>
+    <string>&lt;&amp;Layer 1&gt;</string>
    </property>
    <property name="toolTip">
     <string>&lt;Layer 1&gt;</string>
@@ -199,7 +200,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>&lt;Layer 2&gt;</string>
+    <string>&lt;Layer &amp;2&gt;</string>
    </property>
    <property name="toolTip">
     <string>&lt;Layer 2&gt;</string>
@@ -207,7 +208,7 @@
   </action>
   <action name="actionZoom_In">
    <property name="text">
-    <string>&lt;Zoom In&gt;</string>
+    <string>&lt;&amp;Zoom In&gt;</string>
    </property>
    <property name="toolTip">
     <string>&lt;Zoom In&gt;</string>
@@ -218,7 +219,7 @@
   </action>
   <action name="actionZoom_Out">
    <property name="text">
-    <string>&lt;Zoom Out&gt;</string>
+    <string>&lt;Zoom &amp;Out&gt;</string>
    </property>
    <property name="toolTip">
     <string>&lt;Zoom Out&gt;</string>
@@ -229,7 +230,7 @@
   </action>
   <action name="actionZoom_100">
    <property name="text">
-    <string>&lt;Zoom 100%&gt;</string>
+    <string>&lt;Zoom &amp;100%&gt;</string>
    </property>
    <property name="toolTip">
     <string>&lt;Zoom 100%&gt;</string>
@@ -240,7 +241,7 @@
   </action>
   <action name="actionZoom_Maximum">
    <property name="text">
-    <string>&lt;Maximum Zoom&gt;</string>
+    <string>&lt;&amp;Maximum Zoom&gt;</string>
    </property>
    <property name="toolTip">
     <string>&lt;Maximum Zoom&gt;</string>
@@ -251,7 +252,7 @@
   </action>
   <action name="actionZoom_Minimum">
    <property name="text">
-    <string>&lt;Minimum Zoom&gt;</string>
+    <string>&lt;M&amp;inimum Zoom&gt;</string>
    </property>
    <property name="toolTip">
     <string>&lt;Minimum Zoom&gt;</string>
@@ -262,7 +263,7 @@
   </action>
   <action name="actionSave">
    <property name="text">
-    <string>&lt;Save&gt;</string>
+    <string>&lt;&amp;Save&gt;</string>
    </property>
    <property name="toolTip">
     <string>&lt;Save&gt;</string>
@@ -273,7 +274,7 @@
   </action>
   <action name="actionPaste">
    <property name="text">
-    <string>&lt;Paste&gt;</string>
+    <string>&lt;&amp;Paste&gt;</string>
    </property>
    <property name="toolTip">
     <string>&lt;Paste&gt;</string>
@@ -284,7 +285,7 @@
   </action>
   <action name="actionCut">
    <property name="text">
-    <string>&lt;Cut&gt;</string>
+    <string>&lt;&amp;Cut&gt;</string>
    </property>
    <property name="toolTip">
     <string>&lt;Cut&gt;</string>
@@ -295,7 +296,7 @@
   </action>
   <action name="actionCopy">
    <property name="text">
-    <string>&lt;Copy&gt;</string>
+    <string>&lt;C&amp;opy&gt;</string>
    </property>
    <property name="toolTip">
     <string>&lt;Copy&gt;</string>
@@ -306,7 +307,7 @@
   </action>
   <action name="actionDelete">
    <property name="text">
-    <string>&lt;Delete&gt;</string>
+    <string>&lt;&amp;Delete&gt;</string>
    </property>
    <property name="toolTip">
     <string>&lt;Delete&gt;</string>
@@ -320,7 +321,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>&lt;Fullscreen&gt;</string>
+    <string>&lt;&amp;Fullscreen&gt;</string>
    </property>
    <property name="toolTip">
     <string>&lt;Fullscreen&gt;</string>
@@ -334,7 +335,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>&lt;Grid&gt;</string>
+    <string>&lt;&amp;Grid&gt;</string>
    </property>
    <property name="toolTip">
     <string>&lt;Grid&gt;</string>
@@ -364,7 +365,7 @@
   </action>
   <action name="actionRaise">
    <property name="text">
-    <string>&lt;Raise to Top&gt;</string>
+    <string>&lt;&amp;Raise to Top&gt;</string>
    </property>
    <property name="toolTip">
     <string>&lt;Raise to Top&gt;</string>
@@ -372,7 +373,7 @@
   </action>
   <action name="actionLower">
    <property name="text">
-    <string>&lt;Lower to Bottom&gt;</string>
+    <string>&lt;&amp;Lower to Bottom&gt;</string>
    </property>
    <property name="toolTip">
     <string>&lt;Lower to Bottom&gt;</string>
@@ -380,7 +381,7 @@
   </action>
   <action name="actionRaiseLayer">
    <property name="text">
-    <string>&lt;Raise Layer&gt;</string>
+    <string>&lt;Ra&amp;ise Layer&gt;</string>
    </property>
    <property name="toolTip">
     <string>&lt;Raise Layer&gt;</string>
@@ -388,7 +389,7 @@
   </action>
   <action name="actionLowerLayer">
    <property name="text">
-    <string>&lt;Lower Layer&gt;</string>
+    <string>&lt;Lo&amp;wer Layer&gt;</string>
    </property>
    <property name="toolTip">
     <string>&lt;Lower Layer&gt;</string>
@@ -410,13 +411,24 @@
   </action>
   <action name="actionSelectAll">
    <property name="text">
-    <string>&lt;SelectAll&gt;</string>
+    <string>&lt;&amp;SelectAll&gt;</string>
    </property>
    <property name="toolTip">
     <string>&lt;SelectAll&gt;</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+A</string>
+   </property>
+  </action>
+  <action name="actionCheckerboard">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&lt;&amp;Checkerboard&gt;</string>
+   </property>
+   <property name="toolTip">
+    <string>&lt;Checkerboard&gt;</string>
    </property>
   </action>
  </widget>

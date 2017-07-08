@@ -170,15 +170,18 @@
       <entry value="1">Medium</entry>
       <entry value="2">Fast</entry>
     </list>
-    <value nybble="6" title="Movement Direction" comment="The direction the Amps spin in."/>
+    <list nybble="6" title="Movement Direction" comment="The direction the Amps spin in.">
+      <entry value="0">Clockwise</entry>
+      <entry value="1">Counterclockwise</entry>
+    </list>
     <value nybble="9" title="Circle Radius" comment="Value +1.5"/>
     <value nybble="10" title="Number Of  Amps" comment="The number of Amps in the circle. Value +1"/>
     <value nybble="12" title="Unknown Value 12"/>
     <value nybble="13" title="Amp 5-8 Gap Position" comment="The gap where the player can jump through. Is a bitfield."/>
     <value nybble="14" title="Amp 1-4 Gap Position" comment="The gap where the player can jump through. Is a bitfield."/>
-    <value nybble="15" title="Koopa 13-16 Gap Position" comment="The gap where the player can jump through. Is a bitfield."/>
-    <value nybble="16" title="Koopa 9-12 Gap Position" comment="The gap where the player can jump through. Is a bitfield."/>
-    <list nybble="16" title="Gap Replacement" comment="Coins in circle jump up 1 tile after level fade-in.">
+    <value nybble="15" title="Amp 13-16 Gap Position" comment="The gap where the player can jump through. Is a bitfield."/>
+    <value nybble="16" title="Amp 9-12 Gap Position" comment="The gap where the player can jump through. Is a bitfield."/>
+    <list nybble="18" title="Gap Replacement" comment="Coins in circle jump up 1 tile after level fade-in.">
       <entry value="0">Empty</entry>
       <entry value="1">Coins</entry>
       <entry value="2">Entire Circle is Coins</entry>
@@ -1234,7 +1237,7 @@
   </sprite>
   <sprite id="149" name="Changeable Direction Lift" notes="It is still at first, it starts moving when landed on. After that it reverses direction when landed on.">
     <value nybble="1-2" title="Ending Event ID" comment="When this flag is triggered, the platform will disappear."/>
-    <value nybble="5" title="Starting Direction" comment="A value of 10 causes platform to move down, Needs more testing."/>
+    <value nybble="5" title="Starting Direction" comment="Sets the direction the platform will initaly move when first stepped onto."/>
   </sprite>
   <sprite id="150" name="Seesaw Lift">
     <value nybble="1-2" title="Triggering Event ID"/>
@@ -1373,6 +1376,16 @@
   </sprite>
   <sprite id="166" name="Movement Controller - Back and Forth" notes="Actor: 0x01b">
     <value nybble="6" title="Unknown Value 6" comment="Checkbox?"/>
+    <list nybble="10" title="Starting Direction">
+      <entry value="0">Right</entry>
+      <entry value="1">Left</entry>
+      <entry value="2">Up</entry>
+      <entry value="3">Down</entry>
+    </list>
+    <value nybble="17" title="Tiles to Move"/>
+    <value nybble="18" title="Movement Speed" comment="values currently untested"/>
+    <value nybble="19" title="Start Delay"/>
+    <value nybble="20" title="End Delay"/>
     <value nybble="21-22" title="Movement ID"/>
   </sprite>
   <sprite id="167" name="Pipe Piranha Plant - Down" notes="Used without data"/>
@@ -1794,9 +1807,26 @@
     <value nybble="6" title="Length" comment="Value + 4."/>
     <value nybble="8" title="Unknown Value 8"/>
   </sprite>
-  <sprite id="210" name="Tightrope" notes="This appeared in NSMB.">
-    <value nybble="11" title="Width" comment="Signed?"/>
-    <value nybble="12" title="Height" comment="Signed"/>
+  <sprite id="210" name="Tightrope">
+    <value nybble="11" title="Rope Length"/>
+    <list nybble="12" title="Height">
+      <entry value="0">Flat</entry>
+      <entry value="1">Up One Tile</entry>
+      <entry value="2">Up Two Tiles</entry>
+      <entry value="3">Up Three Tiles</entry>
+      <entry value="4">Up Four Tiles</entry>
+      <entry value="5">Up Five Tiles</entry>
+      <entry value="6">Up Six Tiles</entry>
+      <entry value="7">Up Seven Tiles</entry>
+      <entry value="8">Down Eight Tiles</entry>
+      <entry value="9">Down Seven Tiles</entry>
+      <entry value="10">Down Six Tiles</entry>
+      <entry value="11">Down Five Tiles</entry>
+      <entry value="12">Down Four Tiles</entry>
+      <entry value="13">Down Three Tiles</entry>
+      <entry value="14">Down Two Tiles</entry>
+      <entry value="15">Down One Tile</entry>
+    </list>
   </sprite>
   <sprite id="211" name="Roy Koopa" notes="Requires a castle boss controller to function correctly."/>
   <sprite id="212" name="Roy Battle Walls">
@@ -2378,8 +2408,8 @@
   <sprite id="287" name="Door - Toad House" notes="Existing In-Game Sprite Data: Incomplete"/>
   <sprite id="288" name="Resources Loader - Mega Mario"/>
   <sprite id="289" name="Bouncy Mushroom - Castle">
-    <checkbox nybble="5" title="Solid on top only"/>
-    <checkbox nybble="16" title="Longer Platform" comment="todo: Give detail on sizes."/>
+    <checkbox nybble="5" title="Solid on top only" comment="Allows for the player to jump through the bottom of the platform."/>
+    <checkbox nybble="16" title="Shorter Platform"/>
   </sprite>
   <sprite id="290" name="Path-controlled Climbable Fence (small)">
     <value nybble="5" title="Path ID" comment="may have an overflow nybble(maybe?)"/>

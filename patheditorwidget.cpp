@@ -23,11 +23,10 @@ PathEditorWidget::PathEditorWidget(QList<Path*> *paths)
     id->setRange(0, 255);
     editsLayout->addWidget(id, 0, 1);
 
-    editsLayout->addWidget(new QLabel("Unknown:"), 1, 0, 1, 1, Qt::AlignRight);
+    editsLayout->addWidget(new QLabel("Loops:"), 1, 0, 1, 1, Qt::AlignRight);
 
-    unk1 = new QSpinBox();
-    unk1->setRange(0, 255);
-    editsLayout->addWidget(unk1, 1, 1);
+    loop = new QCheckBox();
+    editsLayout->addWidget(loop, 1, 1);
 
     editsLayout->addWidget(new HorLine(), 2, 0, 1, 2);
 
@@ -52,7 +51,7 @@ PathEditorWidget::PathEditorWidget(QList<Path*> *paths)
 
     connect(pathList, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(handlePathListIndexChanged(QListWidgetItem*)));
     connect(id, SIGNAL(valueChanged(int)), this, SLOT(handleIDChanged(int)));
-    connect(unk1, SIGNAL(valueChanged(int)), this, SLOT(handleunk1Changed(int)));
+    connect(loop, SIGNAL(stateChanged(int)), this, SLOT(handleLoopChanged()));
     connect(speed, SIGNAL(valueChanged(double)), this, SLOT(handleSpeedChanged(double)));
     connect(acceleration, SIGNAL(valueChanged(double)), this, SLOT(handleAccelChanged(double)));
 
@@ -91,7 +90,10 @@ void PathEditorWidget::updateInfo()
 
     handleChanges = false;
     id->setValue(editPath->getid());
-    unk1->setValue(editPath->getUnk1());
+    if (editPath->getLoop() == 2)
+        loop->setChecked(true);
+    else
+        loop->setChecked(false);
     speed->setValue(editNode->getSpeed());
     acceleration->setValue(editNode->getAccel());
     handleChanges = true;
@@ -133,10 +135,13 @@ void PathEditorWidget::handleIDChanged(int idVal)
     emit updateLevelView();
 }
 
-void PathEditorWidget::handleunk1Changed(int unk1Val)
+void PathEditorWidget::handleLoopChanged()
 {
     if (!handleChanges) return;
-    editPath->setUnk1(unk1Val);
+    if (loop->isChecked())
+        editPath->setLoop(2);
+    else
+        editPath->setLoop(0);
 }
 
 void PathEditorWidget::handleSpeedChanged(double speedVal)

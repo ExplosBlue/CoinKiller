@@ -7,6 +7,7 @@
 #include <QListWidget>
 #include <QSpinBox>
 #include <QDoubleSpinBox>
+#include <QCheckBox>
 
 class PathEditorWidget : public QWidget
 {
@@ -35,7 +36,7 @@ private:
     QListWidget* pathList;
 
     QSpinBox* id;
-    QSpinBox* unk1;
+    QCheckBox* loop;
     QDoubleSpinBox* speed;
     QDoubleSpinBox* acceleration;
 
@@ -47,7 +48,7 @@ private:
 private slots:
     void handlePathListIndexChanged(QListWidgetItem *item);
     void handleIDChanged(int idVal);
-    void handleunk1Changed(int unk1Val);
+    void handleLoopChanged();
     void handleSpeedChanged(double speedVal);
     void handleAccelChanged(double accelVal);
 
