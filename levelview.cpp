@@ -112,9 +112,7 @@ void LevelView::paintEvent(QPaintEvent* evt)
         x = 0;
         y = 0;
         // Small Squares
-        if (zoom  < 0.5)
-            return;
-        else
+        if (zoom  > 0.5)
         {
             while (y <= endy)
             {
