@@ -62,6 +62,7 @@ zoom100=Zoom 100%
 zoomMin=Minimum Zoom
 zoomMax=Maximum Zoom
 grid=Grid
+checkerboard=Checkerboard
 fullscreen=Fullscreen
 layer=Layer
 area=Area
@@ -69,6 +70,8 @@ addArea=Add Area
 removeArea=Remove Area
 renderLiquids=Render Liquids
 selectZoneContents=Select Contents
+setBgColor=Set Background Color
+resetBgColor=Reset Background Color
 
 [TilesetEditor]
 tileset=Tileset

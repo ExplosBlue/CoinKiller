@@ -62,6 +62,7 @@ zoom100=Zoom 100%
 zoomMin=Kleinster Zoom
 zoomMax=Größter Zoom
 grid=Raster
+checkerboard=Schachbrettmuster
 fullscreen=Vollbild
 layer=Ebene
 area=Gebiet
@@ -69,6 +70,8 @@ addArea=Gebiet hinzufügen
 removeArea=Gebiet entfernen
 renderLiquids=Flüssigkeiten darstellen
 selectZoneContents=Inhalt auswählen
+setBgColor=Hintergrundfarbe ändern
+resetBgColor=rücksetzen farbe ändern
 
 [TilesetEditor]
 tileset=Tileset

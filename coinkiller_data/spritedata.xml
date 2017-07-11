@@ -2,6 +2,7 @@
 <sprites>
   <sprite id="0" name="Autoscrolling Controller" notes="Actor: 0x1a5">
     <value nybble="1-2" title="Triggering Event ID"/>
+    <value nybble="1-10" title="Autoscroll Speed"/>
     <value nybble="5" title="Unknown Value 5"/>
     <value nybble="6" title="Path ID"/>
     <value nybble="7-8" title="Unused Value 7-8"/>
@@ -598,9 +599,9 @@
     </list>
   </sprite>
   <sprite id="58" name="Coin Spawner - Fountain" notes="Actor: 0x07d">
-    <value nybble="1-2" title="Triggering Event ID" comment="_Not tested_."/>
-    <list nybble="6" title="Mode" comment="Defines how the coins move. _Not tested_.">
-      <entry value="0">???</entry>
+    <value nybble="1-2" title="Triggering Event ID"/>
+    <list nybble="6" title="Mode" comment="Defines how the coins move.">
+      <entry value="0">Coins fall in a straight line</entry>
       <entry value="1">One coin moves up and down once</entry>
       <entry value="2">???</entry>
       <entry value="3">???</entry>
@@ -620,7 +621,23 @@
   </sprite>
   <sprite id="59" name="Rotation-controlled Coin" notes="Actor: 0x0e0">
     <value nybble="1-2" title="Triggering Event ID"/>
-    <value nybble="12" title="Unknown 12"/>
+    <list nybble="12" title="Behavior" comment="The behavior of this rotating coin.">
+      <entry value="0">Normal</entry>
+      <entry value="1">???</entry>
+      <entry value="2">Flip Vertically</entry>
+      <entry value="3">???</entry>
+      <entry value="4">Rotate Facing Controller</entry>
+      <entry value="5">???</entry>
+      <entry value="6">???</entry>
+      <entry value="7">???</entry>
+      <entry value="8">???. 9</entry>
+      <entry value="10">???</entry>
+      <entry value="11">???</entry>
+      <entry value="12">???</entry>
+      <entry value="13">???</entry>
+      <entry value="14">???</entry>
+      <entry value="15">???</entry>
+    </list>
     <value nybble="13" title="Unknown 13"/>
     <value nybble="21-22" title="Rotation ID"/>
   </sprite>
@@ -642,9 +659,27 @@
   </sprite>
   <sprite id="62" name="Rotation-controlled Red Coin" notes="Actor: 0x0d7">
     <value nybble="1-2" title="Triggering Event ID"/>
+    <value nybble="12" title="Behavior" comment="The behavior of this rotating coin."/>
     <value nybble="21-22" title="Rotation ID"/>
   </sprite>
-  <sprite id="63" name="Skewer - Left" notes="Despite what the Actor Name says, this is the small variation.&#13;&#10;Actor: 0x19a"/>
+  <sprite id="63" name="Skewer - Left" notes="Despite what the Actor Name says, this is the small variation.&#13;&#10;Actor: 0x19a">
+    <value nybble="5-6" title="Unknown Value 5-6"/>
+    <value nybble="7-8" title="Unknown Value 7-8"/>
+    <value nybble="9" title="Unknown Value 9"/>
+    <list nybble="10" title="Unknown List 10">
+      <entry value="0">???</entry>
+      <entry value="1">???</entry>
+      <entry value="2">???</entry>
+      <entry value="3">???</entry>
+    </list>
+    <list nybble="11" title="Unknown List 11">
+      <entry value="0">???</entry>
+      <entry value="1">???</entry>
+      <entry value="2">???</entry>
+      <entry value="3">???</entry>
+    </list>
+    <value nybble="12" title="Unknown Value 12"/>
+  </sprite>
   <sprite id="64" name="Skewer - Right" notes="Despite what the Actor Name says, this is the small variation.&#13;&#10;Actor: 0x19b">
     <value nybble="5-6" title="Unknown Field 5-6"/>
   </sprite>
@@ -855,7 +890,7 @@
   <sprite id="97" name="Goal Pole and Fort" notes="This sprite is sometimes used on the top block of a 1x10 invisible solid. This might to be a leftover from when this was necessary, or it was just for visualization.">
     <checkbox nybble="11" title="Secret Exit" comment="Turns it into a secret exit, which looks different and makes a different path on the Map if there is a secret there."/>
   </sprite>
-  <sprite id="98" name="Movement Controller - Group" notes="Used to pair multiple sprites so that their movement can be synchronized. ">
+  <sprite id="98" name="Group Controller" notes="Used to pair multiple sprites so that their movement can be synchronized. ">
     <value nybble="12" title="Group ID" comment="The ID to use when linking to a group."/>
   </sprite>
   <sprite id="99" name="Wiggler">
@@ -1886,18 +1921,113 @@
   <sprite id="217" name="Snake Block">
     <value nybble="1-2" title="Triggering Event ID"/>
     <value nybble="5" title="Path ID" comment="Together with the overflow, this nybble forms the Path ID. It works as follows: For Path ID 27 (1*16+11*1), you need to fill in 11 here, and 1 at the Path ID overflow."/>
-    <value nybble="6" title="Unknown Value 6"/>
-    <value nybble="7" title="Starting Node"/>
+    <list nybble="6" title="Length" comment="Value +3">
+      <entry value="0">3 Blocks</entry>
+      <entry value="1">4 Blocks</entry>
+      <entry value="2">5 Blocks</entry>
+      <entry value="3">6 Blocks</entry>
+      <entry value="4">7 Blocks</entry>
+      <entry value="5">8 Blocks</entry>
+      <entry value="6">9 Blocks</entry>
+      <entry value="7">10 Blocks</entry>
+      <entry value="8">11 Blocks</entry>
+      <entry value="9">12 Blocks</entry>
+      <entry value="10">13 Blocks</entry>
+      <entry value="11">14 Blocks</entry>
+      <entry value="11">15 Blocks</entry>
+      <entry value="12">16 Blocks</entry>
+      <entry value="13">17 Blocks</entry>
+      <entry value="14">18 Blocks</entry>
+      <entry value="15">19 Blocks</entry>
+    </list>
+    <list nybble="7" title="Starting Node" comment="Value +1">
+      <entry value="0">Node 1</entry>
+      <entry value="1">Node 2</entry>
+      <entry value="2">Node 3</entry>
+      <entry value="3">Node 4</entry>
+      <entry value="4">Node 5</entry>
+      <entry value="5">Node 6</entry>
+      <entry value="6">Node 7</entry>
+      <entry value="7">Node 8</entry>
+      <entry value="8">Node 9</entry>
+      <entry value="9">Node 10</entry>
+      <entry value="10">Node 11</entry>
+      <entry value="11">Node 12</entry>
+      <entry value="12">Node 13</entry>
+      <entry value="13">Node 14</entry>
+      <entry value="14">Node 15</entry>
+      <entry value="15">Node 16</entry>
+    </list>
     <value nybble="8" title="Path ID overflow" comment="This nybble works as follows: For Path ID 27 (1*16+11*1), you need to fill in 1 here, and 11 at the Path ID."/>
-    <value nybble="9" title="Unknown Value 9"/>
-    <value nybble="12" title="Group ID" comment="Use this ID to link it to a GroupID (98)"/>
+    <list nybble="9" title="Speed" comment="Values of 3 or greater are unused and have no effect.">
+      <entry value="0">Normal</entry>
+      <entry value="1">Faster</entry>
+      <entry value="2">Fastest</entry>
+    </list>
+    <checkbox nybble="17" title="Already Moving" comment="When this is checked, the snakeblock will move without the player steping onto it."/>
+    <list nybble="19" title="Ending Behaviour" comment="Sets how the snakeblock should act when reaching the final path node. Values of 6 or greater crash the game.">
+      <entry value="0">Stops</entry>
+      <entry value="1">Jumps Right</entry>
+      <entry value="2">Falls Down</entry>
+      <entry value="4">Changes Direction</entry>
+      <entry value="5">Warps to first node</entry>
+    </list>
   </sprite>
-  <sprite id="218" name="Snake Block Controller" notes="Actor: 0x05a">
+  <sprite id="218" name="Syncronised Snake Block (Uses GroupID)" notes="Actor: 0x05a">
+    <value nybble="1-2" title="Triggering Event ID"/>
     <value nybble="5" title="Path ID" comment="Together with the overflow, this nybble forms the Path ID. It works as follows: For Path ID 27 (1*16+11*1), you need to fill in 11 here, and 1 at the Path ID overflow."/>
-    <value nybble="6" title="Length" comment="Value + 3"/>
-    <value nybble="7" title="Starting Node"/>
+    <list nybble="6" title="Length" comment="Value +3">
+      <entry value="0">3 Blocks</entry>
+      <entry value="1">4 Blocks</entry>
+      <entry value="2">5 Blocks</entry>
+      <entry value="3">6 Blocks</entry>
+      <entry value="4">7 Blocks</entry>
+      <entry value="5">8 Blocks</entry>
+      <entry value="6">9 Blocks</entry>
+      <entry value="7">10 Blocks</entry>
+      <entry value="8">11 Blocks</entry>
+      <entry value="9">12 Blocks</entry>
+      <entry value="10">13 Blocks</entry>
+      <entry value="11">14 Blocks</entry>
+      <entry value="11">15 Blocks</entry>
+      <entry value="12">16 Blocks</entry>
+      <entry value="13">17 Blocks</entry>
+      <entry value="14">18 Blocks</entry>
+      <entry value="15">19 Blocks</entry>
+    </list>
+    <list nybble="7" title="Starting Node" comment="Value +1">
+      <entry value="0">Node 1</entry>
+      <entry value="1">Node 2</entry>
+      <entry value="2">Node 3</entry>
+      <entry value="3">Node 4</entry>
+      <entry value="4">Node 5</entry>
+      <entry value="5">Node 6</entry>
+      <entry value="6">Node 7</entry>
+      <entry value="7">Node 8</entry>
+      <entry value="8">Node 9</entry>
+      <entry value="9">Node 10</entry>
+      <entry value="10">Node 11</entry>
+      <entry value="11">Node 12</entry>
+      <entry value="12">Node 13</entry>
+      <entry value="13">Node 14</entry>
+      <entry value="14">Node 15</entry>
+      <entry value="15">Node 16</entry>
+    </list>
     <value nybble="8" title="Path ID overflow" comment="This nybble works as follows: For Path ID 27 (1*16+11*1), you need to fill in 1 here, and 11 at the Path ID."/>
+    <list nybble="9" title="Speed" comment="Values of 3 or greater are unused and have no effect.">
+      <entry value="0">Normal</entry>
+      <entry value="1">Faster</entry>
+      <entry value="2">Fastest</entry>
+    </list>
     <value nybble="12" title="Group ID" comment="Use this ID to link it to a GroupID (98)"/>
+    <checkbox nybble="17" title="Already Moving" comment="When this is checked, the snakeblock will move without the player steping onto it."/>
+    <list nybble="19" title="Ending Behaviour" comment="Sets how the snakeblock should act when reaching the final path node. Values of 6 or greater crash the game.">
+      <entry value="0">Stops</entry>
+      <entry value="1">Jumps Right</entry>
+      <entry value="2">Falls Down</entry>
+      <entry value="4">Changes Direction</entry>
+      <entry value="5">Warps to first node</entry>
+    </list>
   </sprite>
   <sprite id="219" name="Star Coin" notes="5-12 A2 Z1 has a Star Coin with a nybble 22 of 9 with no linked Rotation Controller. This might be because the sprite ID was changed from that of a Rotation-controlled Star Coin to that of a Star Coin - and the Rotation Controller was deleted.">
     <value nybble="1-2" title="Target Event ID" comment="When it is collected, this Flag will be switched on."/>
@@ -2087,7 +2217,10 @@
     </list>
   </sprite>
   <sprite id="237" name="Spiked Ball Spawner" notes="Used in NSMBW, may have similar values to that. Likely to have unused values.">
-    <value nybble="7" title="Unknown Value 7" comment="Checkbox?"/>
+    <list nybble="7" title="Direction" comment="The direction that the spike balls spawn.">
+      <entry value="0">Left</entry>
+      <entry value="1">Right</entry>
+    </list>
     <value nybble="8" title="Unknown Value 8" comment="..."/>
     <value nybble="10" title="Unknown Value 10" comment="..."/>
     <value nybble="13" title="Unknown Value 13" comment="Checkbox?"/>

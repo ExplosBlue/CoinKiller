@@ -197,7 +197,6 @@ Level::Level(Game *game, SarcFilesystem* archive, int area, QString lvlName)
         header->skip(3);
 
         Zone* zone = new Zone(to20(x), to20(y), to20(width), to20(height), id, progPathId, musicId, multiplayerTracking, zoneUnk1);
-
         foreach(tempZoneBounding bounding, boundings)
         {
             if (boundingId == bounding.id)

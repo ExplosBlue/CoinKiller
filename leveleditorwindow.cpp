@@ -27,6 +27,7 @@
 #include <QComboBox>
 #include <QMessageBox>
 #include <QScrollBar>
+#include <QColorDialog>
 
 LevelEditorWindow::LevelEditorWindow(LevelManager* lvlMgr, int initialArea) :
     QMainWindow(lvlMgr->getParent()),
@@ -66,6 +67,8 @@ LevelEditorWindow::LevelEditorWindow(LevelManager* lvlMgr, int initialArea) :
     ui->actionRenderLiquids->setIcon(QIcon(basePath + "render_liquids.png"));
     ui->actionAddArea->setIcon(QIcon(basePath + "add.png"));
     ui->actionDeleteCurrentArea->setIcon(QIcon(basePath + "remove.png"));
+    ui->actionSetBackgroundColor->setIcon(QIcon(basePath + "colors.png"));
+    ui->actionResetBackgroundColor->setIcon(QIcon(basePath + "delete_colors.png"));
 
     QList<int> derpshit;
     derpshit.append(350);
@@ -98,6 +101,7 @@ void LevelEditorWindow::loadTranslations()
     ui->menuFile->setTitle(settings->getTranslation("General", "file"));
     ui->menuEdit->setTitle(settings->getTranslation("General", "edit"));
     ui->menuView->setTitle(settings->getTranslation("LevelEditor", "view"));
+    ui->menuSettings->setTitle(settings->getTranslation("General", "settings"));
 
     ui->actionSave->setText(settings->getTranslation("General", "save"));
     ui->actionSave->setToolTip(settings->getTranslation("General", "save"));
@@ -167,6 +171,12 @@ void LevelEditorWindow::loadTranslations()
 
     ui->actionToggleLayer2->setText(settings->getTranslation("LevelEditor", "layer") + " 2");
     ui->actionToggleLayer2->setToolTip(settings->getTranslation("LevelEditor", "layer") + " 2");
+
+    ui->actionSetBackgroundColor->setText(settings->getTranslation("LevelEditor", "setBgColor"));
+    ui->actionSetBackgroundColor->setToolTip(settings->getTranslation("LevelEditor", "setBgColor"));
+
+    ui->actionResetBackgroundColor->setText(settings->getTranslation("LevelEditor", "resetBgColor"));
+    ui->actionResetBackgroundColor->setToolTip(settings->getTranslation("LevelEditor", "resetBgColor"));
 }
 
 // Actions
@@ -472,6 +482,7 @@ void LevelEditorWindow::loadArea(int id, bool closeLevel, bool init)
     levelView->toggleGrid(ui->actionGrid->isChecked());
     levelView->toggleCheckerboard(ui->actionCheckerboard->isChecked());
     levelView->toggleRenderLiquids(ui->actionRenderLiquids->isChecked());
+    levelView->setBackgroundColor(settings->getColor("lewColor"));
 
     zoom = 1.0;
 
@@ -601,4 +612,25 @@ void LevelEditorWindow::scrollTo(int x, int y)
     qMax(0, y);
     ui->levelViewArea->horizontalScrollBar()->setValue(x);
     ui->levelViewArea->verticalScrollBar()->setValue(y);
+}
+
+void LevelEditorWindow::on_actionSetBackgroundColor_triggered()
+{
+    QColor bgColor = QColorDialog::getColor(settings->getColor("lewColor", QColor(119,136,153)), this, "Select Background Color",  QColorDialog::DontUseNativeDialog);
+    if(bgColor.isValid())
+    {
+        levelView->setBackgroundColor(bgColor);
+        settings->setColor("lewColor", bgColor);
+    }
+}
+
+void LevelEditorWindow::on_actionResetBackgroundColor_triggered()
+{
+    QMessageBox::StandardButton reset;
+    reset = QMessageBox::question(this, "CoinKiller", QString("Are you sure you wish to reset the background color?"), QMessageBox::Cancel|QMessageBox::Ok);
+    if(reset == QMessageBox::Ok)
+    {
+        levelView->setBackgroundColor(QColor(119,136,153));
+        settings->setColor("lewColor", QColor(119,136,153));
+    }
 }

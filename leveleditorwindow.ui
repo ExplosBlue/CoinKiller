@@ -138,9 +138,17 @@
     <addaction name="actionLowerLayer"/>
     <addaction name="separator"/>
    </widget>
+   <widget class="QMenu" name="menuSettings">
+    <property name="title">
+     <string>&lt;Setti&amp;ngs&gt;</string>
+    </property>
+    <addaction name="actionSetBackgroundColor"/>
+    <addaction name="actionResetBackgroundColor"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
    <addaction name="menuView"/>
+   <addaction name="menuSettings"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <widget class="QToolBar" name="toolBar">
@@ -429,6 +437,16 @@
    </property>
    <property name="toolTip">
     <string>&lt;Checkerboard&gt;</string>
+   </property>
+  </action>
+  <action name="actionSetBackgroundColor">
+   <property name="text">
+    <string>&lt;&amp;Set Background Color&gt;</string>
+   </property>
+  </action>
+  <action name="actionResetBackgroundColor">
+   <property name="text">
+    <string>&lt;&amp;Reset Background Color&gt;</string>
    </property>
   </action>
  </widget>

@@ -63,7 +63,7 @@ void LevelView::paintEvent(QPaintEvent* evt)
 
     //qDebug("draw %d,%d %d,%d", drawrect.x(), drawrect.y(), drawrect.width(), drawrect.height());
 
-    painter.fillRect(drawrect, QColor(119,136,153));
+    painter.fillRect(drawrect, backgroundColor);
     tileGrid.clear();
 
     // Render Checkerboard
@@ -77,8 +77,8 @@ void LevelView::paintEvent(QPaintEvent* evt)
         int starty = drawrect.y() - drawrect.y() %160;
         int endy = starty + drawrect.height() + 160;
 
-        int x = startx - 80;
-        int y = starty - 80;
+        int x = startx;
+        int y = starty;
 
         int county = 0;
         bool xoffset = 0;
@@ -112,9 +112,7 @@ void LevelView::paintEvent(QPaintEvent* evt)
         x = 0;
         y = 0;
         // Small Squares
-        if (zoom  < 0.5)
-            return;
-        else
+        if (zoom  > 0.5)
         {
             while (y <= endy)
             {

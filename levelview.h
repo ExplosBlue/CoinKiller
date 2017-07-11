@@ -49,6 +49,7 @@ public:
     void lower();
     void raiseLayer();
     void lowerLayer();
+    void setBackgroundColor(QColor bgcolor) {backgroundColor = bgcolor; update(); }
 
     void setEditonMode(EditMode newMode, bool init = false);
 
@@ -93,6 +94,8 @@ private:
 
     // determines which tiles are already occupied
     TileGrid tileGrid;
+
+    QColor backgroundColor;
 
 };
 

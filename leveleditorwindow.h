@@ -111,6 +111,10 @@ private slots:
 
     void on_actionSelectAll_triggered();
 
+    void on_actionSetBackgroundColor_triggered();
+
+    void on_actionResetBackgroundColor_triggered();
+
 private:
     Ui::LevelEditorWindow *ui;
 
