@@ -11,7 +11,6 @@ ObjectsEditonMode::ObjectsEditonMode(Level *level)
     this->level = level;
     selectionMode = false;
 }
-
 void ObjectsEditonMode::mouseDown(int x, int y, Qt::MouseButtons buttons, Qt::KeyboardModifiers modifiers, QRect drawrect)
 {
     dx = x;
@@ -87,6 +86,7 @@ void ObjectsEditonMode::mouseDown(int x, int y, Qt::MouseButtons buttons, Qt::Ke
         checkEmits();
         emit updateEditors();
         if (selectedObjects.size() == 1) emit selectdObjectChanged(selectedObjects[0]);
+        emit editMade();
     }
 
     if (buttons == Qt::LeftButton)
@@ -108,6 +108,9 @@ void ObjectsEditonMode::mouseDown(int x, int y, Qt::MouseButtons buttons, Qt::Ke
                 else
                     parentPath->insertNode(newNode, parentPath->getIndexOfNode(oldPNode)+1);
                 selectedObjects.append(newNode);
+
+                emit editMade();
+
             }
             else
             {
@@ -120,6 +123,9 @@ void ObjectsEditonMode::mouseDown(int x, int y, Qt::MouseButtons buttons, Qt::Ke
                 else
                     parentPath->insertNode(newNode, parentPath->getIndexOfNode(oldPNode)+1);
                 selectedObjects.append(newNode);
+
+                emit editMade();
+
             }
         }
 
@@ -158,6 +164,7 @@ void ObjectsEditonMode::mouseDown(int x, int y, Qt::MouseButtons buttons, Qt::Ke
                 selectedObjects = cloneObjects(selectedObjects);
                 level->add(selectedObjects);
                 emit updateEditors();
+                emit editMade();
                 clone = true;
             }
 
@@ -260,6 +267,7 @@ void ObjectsEditonMode::mouseDrag(int x, int y, Qt::KeyboardModifiers modifieres
             ly += yDelta;
 
             emit updateEditors();
+            emit editMade();
         }
         // Resize
         else
@@ -337,6 +345,7 @@ void ObjectsEditonMode::mouseDrag(int x, int y, Qt::KeyboardModifiers modifieres
             ly += yDelta;
 
             emit updateEditors();
+            emit editMade();
         }
     }
 }

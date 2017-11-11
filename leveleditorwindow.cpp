@@ -44,6 +44,15 @@ LevelEditorWindow::LevelEditorWindow(LevelManager* lvlMgr, int initialArea) :
     ui->toolBar->insertWidget(ui->actionAddArea, areaSelector);
     connect(areaSelector, SIGNAL(currentIndexChanged(int)), this, SLOT(handleAreaIndexChange(int)));
 
+    ui->statusbar->addWidget(editStatus);
+
+    // Prevent level view background from being white on first load.
+    if (settings->get("initialLoad") != "no")
+    {
+        settings->set("initialLoad", "no");
+        settings->setColor("lewColor", QColor(119,136,153));
+    }
+
     // Load UI Icons
     QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/icons/");
     ui->actionZoom_In->setIcon(QIcon(basePath + "zoomin.png"));
@@ -172,6 +181,12 @@ void LevelEditorWindow::loadTranslations()
     ui->actionToggleLayer2->setText(settings->getTranslation("LevelEditor", "layer") + " 2");
     ui->actionToggleLayer2->setToolTip(settings->getTranslation("LevelEditor", "layer") + " 2");
 
+    ui->actionToggleSprites->setText(settings->getTranslation("LevelEditor", "sprites"));
+    ui->actionToggleSprites->setToolTip(settings->getTranslation("LevelEditor", "sprites"));
+
+    ui->actionTogglePaths->setText(settings->getTranslation("LevelEditor", "paths"));
+    ui->actionTogglePaths->setToolTip(settings->getTranslation("LevelEditor", "paths"));
+
     ui->actionSetBackgroundColor->setText(settings->getTranslation("LevelEditor", "setBgColor"));
     ui->actionSetBackgroundColor->setToolTip(settings->getTranslation("LevelEditor", "setBgColor"));
 
@@ -194,6 +209,18 @@ void LevelEditorWindow::on_actionToggleLayer2_toggled(bool toggle)
     if (toggle) layerMask |=  0x2;
     else        layerMask &= ~0x2;
     levelView->setLayerMask(layerMask);
+    update();
+}
+
+void LevelEditorWindow::on_actionToggleSprites_toggled(bool toggle)
+{
+    levelView->toggleSprites(toggle);
+    update();
+}
+
+void LevelEditorWindow::on_actionTogglePaths_toggled(bool toggle)
+{
+    levelView->togglePaths(toggle);
     update();
 }
 
@@ -241,29 +268,41 @@ void LevelEditorWindow::on_actionZoom_Minimum_triggered()
     update();
 }
 
+void LevelEditorWindow::handleEditMade()
+{
+    editStatus->setText(settings->getTranslation("General", "unsavedChanges"));
+    unsavedChanges = true;
+}
+
 void LevelEditorWindow::on_actionSave_triggered()
 {
     levelView->saveLevel();
+    editStatus->setText(settings->getTranslation("General", "changesSaved"));
+    unsavedChanges = false;
 }
 
 void LevelEditorWindow::on_actionCopy_triggered()
 {
     levelView->copy();
+    emit handleEditMade();
 }
 
 void LevelEditorWindow::on_actionPaste_triggered()
 {
     levelView->paste();
+    emit handleEditMade();
 }
 
 void LevelEditorWindow::on_actionCut_triggered()
 {
     levelView->cut();
+    emit handleEditMade();
 }
 
 void LevelEditorWindow::on_actionDelete_triggered()
 {
     levelView->deleteSel();
+    emit handleEditMade();
 }
 
 void LevelEditorWindow::on_actionSelectAll_triggered()
@@ -274,21 +313,25 @@ void LevelEditorWindow::on_actionSelectAll_triggered()
 void LevelEditorWindow::on_actionRaise_triggered()
 {
     levelView->raise();
+    emit handleEditMade();
 }
 
 void LevelEditorWindow::on_actionLower_triggered()
 {
     levelView->lower();
+    emit handleEditMade();
 }
 
 void LevelEditorWindow::on_actionRaiseLayer_triggered()
 {
     levelView->raiseLayer();
+    emit handleEditMade();
 }
 
 void LevelEditorWindow::on_actionLowerLayer_triggered()
 {
     levelView->lowerLayer();
+    emit handleEditMade();
 }
 
 void LevelEditorWindow::on_actionFullscreen_toggled(bool toggle)
@@ -401,6 +444,26 @@ void LevelEditorWindow::on_sidebarTabWidget_currentChanged(int index)
 
 void LevelEditorWindow::on_actionAddArea_triggered()
 {
+    if (unsavedChanges)
+    {
+        QMessageBox message(this);
+        message.setWindowTitle("Unsaved Changes");
+        message.setText("Do you want to save your changes?");
+        message.setStandardButtons(QMessageBox::Save | QMessageBox::Discard);
+        switch (message.exec())
+        {
+        case QMessageBox::Save:
+            levelView->saveLevel();
+            unsavedChanges = false;
+            editStatus->setText(settings->getTranslation("General", "changesSaved"));
+            break;
+        case QMessageBox::Discard:
+            unsavedChanges = false;
+            this->statusBar()->showMessage(tr(""));
+            break;
+        }
+    }
+
     if (lvlMgr->getAreaCount() >= 4)
     {
         QMessageBox::information(this, "CoinKiller", "Due to limitations there can only be a maximum of 4 areas in a level.", QMessageBox::Ok);
@@ -478,6 +541,8 @@ void LevelEditorWindow::loadArea(int id, bool closeLevel, bool init)
     layerMask = 0x7;
     ui->actionToggleLayer1->setChecked(true);
     ui->actionToggleLayer2->setChecked(true);
+    ui->actionToggleSprites->setChecked(true);
+    ui->actionTogglePaths->setChecked(true);
     levelView->setLayerMask(layerMask);
     levelView->toggleGrid(ui->actionGrid->isChecked());
     levelView->toggleCheckerboard(ui->actionCheckerboard->isChecked());
@@ -491,6 +556,7 @@ void LevelEditorWindow::loadArea(int id, bool closeLevel, bool init)
     // Setup Area Editor
     areaEditor = new AreaEditorWidget(level, lvlMgr->getGame());
     connect(areaEditor, SIGNAL(updateLevelView()), levelView, SLOT(update()));
+    connect(areaEditor, SIGNAL(editMade()), this, SLOT(handleEditMade()));
 
     // Setup Tileset Picker
     tilesetPalette = new TilesetPalette(level, levelView->objEditionModePtr());
@@ -500,37 +566,44 @@ void LevelEditorWindow::loadArea(int id, bool closeLevel, bool init)
     spriteEditor = new SpriteEditorWidget();
     connect(spriteEditor->spriteDataEditorPtr(), SIGNAL(updateLevelView()), levelView, SLOT(update()));
     connect(spriteEditor, SIGNAL(selectedSpriteChanged(int)), this, SLOT(setSelSprite(int)));
+    connect(spriteEditor, SIGNAL(editMade()), this, SLOT(handleEditMade()));
 
     // Setup Entrance Editor
     entranceEditor = new EntranceEditorWidget(&level->entrances);
     connect(entranceEditor, SIGNAL(updateLevelView()), levelView, SLOT(update()));
     connect(entranceEditor, SIGNAL(selectedEntrChanged(Object*)), levelView, SLOT(selectObj(Object*)));
+    connect(entranceEditor, SIGNAL(editMade()), this, SLOT(handleEditMade()));
 
     // Setup Zone Editor
     zoneEditor = new ZoneEditorWidget(&level->zones);
     connect(zoneEditor, SIGNAL(updateLevelView()), levelView, SLOT(update()));
     connect(zoneEditor, SIGNAL(selectedZoneChanged(Object*)), levelView, SLOT(selectObj(Object*)));
     connect(zoneEditor, SIGNAL(selectZoneContents(Zone*)), levelView, SLOT(selectZoneContents(Zone*)));
+    connect(zoneEditor, SIGNAL(editMade()), this, SLOT(handleEditMade()));
 
     // Setup Location Editor
     locationEditor = new LocationEditorWidget(&level->locations);
     connect(locationEditor, SIGNAL(updateLevelView()), levelView, SLOT(update()));
     connect(locationEditor, SIGNAL(selectedLocChanged(Object*)), levelView, SLOT(selectObj(Object*)));
+    connect(locationEditor, SIGNAL(editMade()), this, SLOT(handleEditMade()));
 
     // Setup Path Editor
     pathEditor = new PathEditorWidget(&level->paths);
     connect(pathEditor, SIGNAL(updateLevelView()), levelView, SLOT(update()));
     connect(pathEditor, SIGNAL(selectedPathChanged(Object*)), levelView, SLOT(selectObj(Object*)));
+    connect(pathEditor, SIGNAL(editMade()), this, SLOT(handleEditMade()));
 
     // Setup Progress Path Editor
     progPathEditor = new ProgressPathEditorWidget(&level->progressPaths);
     connect(progPathEditor, SIGNAL(updateLevelView()), levelView, SLOT(update()));
     connect(progPathEditor, SIGNAL(selectedProgPathChanged(Object*)), levelView, SLOT(selectObj(Object*)));
+    connect(progPathEditor, SIGNAL(editMade()), this, SLOT(handleEditMade()));
 
     connect(levelView, SIGNAL(scrollTo(int,int)), this, SLOT(scrollTo(int,int)));
     connect(levelView->editionModePtr(), SIGNAL(selectdObjectChanged(Object*)), this, SLOT(setObjectEdition(Object*)));
     connect(levelView->editionModePtr(), SIGNAL(deselected()), this, SLOT(deselect()));
     connect(levelView->editionModePtr(), SIGNAL(updateEditors()), this, SLOT(updateEditors()));
+    connect(levelView->editionModePtr(), SIGNAL(editMade()), this, SLOT(handleEditMade()));
 
 
     ui->sidebarTabWidget->addTab(areaEditor, QIcon(basePath + "settings.png"), "");
@@ -580,6 +653,26 @@ void LevelEditorWindow::updateAreaSelector(int index)
 
 void LevelEditorWindow::handleAreaIndexChange(int index)
 {
+    if (unsavedChanges)
+    {
+        QMessageBox message(this);
+        message.setWindowTitle("Unsaved Changes");
+        message.setText(settings->getTranslation("General", "wantToSave"));
+        message.setStandardButtons(QMessageBox::Save | QMessageBox::Discard);
+        switch (message.exec())
+        {
+        case QMessageBox::Save:
+            levelView->saveLevel();
+            unsavedChanges = false;
+            editStatus->setText(settings->getTranslation("General", "changesSaved"));
+            break;
+        case QMessageBox::Discard:
+            unsavedChanges = false;
+            this->statusBar()->showMessage(tr(""));
+            break;
+        }
+    }
+
     index++;
 
     if (lvlMgr->areaIsOpen(index))
@@ -633,4 +726,29 @@ void LevelEditorWindow::on_actionResetBackgroundColor_triggered()
         levelView->setBackgroundColor(QColor(119,136,153));
         settings->setColor("lewColor", QColor(119,136,153));
     }
+}
+
+void LevelEditorWindow::closeEvent(QCloseEvent *event)
+{
+    if (unsavedChanges)
+    {
+        QMessageBox message(this);
+        message.setWindowTitle("Unsaved Changes");
+        message.setText(settings->getTranslation("General", "wantToSave"));
+        message.setStandardButtons(QMessageBox::Save | QMessageBox::Cancel | QMessageBox::Discard);
+        switch (message.exec())
+        {
+        case QMessageBox::Save:
+            levelView->saveLevel();
+            event->accept();
+            break;
+        case QMessageBox::Cancel:
+            event->ignore();
+            break;
+        case QMessageBox::Discard:
+            event->accept();
+            break;
+        }
+    }
+    else event->accept();
 }

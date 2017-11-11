@@ -53,6 +53,7 @@ signals:
     void selectdObjectChanged(Object* obj);
     void updateEditors();
     void updateLevelView();
+    void editMade();
 };
 
 #endif // EDITIONMODE_H

@@ -268,60 +268,70 @@ void ZoneEditorWidget::handleIDChange(int idVal)
     editZone->setID(idVal);
     updateList();
     emit updateLevelView();
+    emit editMade();
 }
 
 void ZoneEditorWidget::handleProgPathIDChange(int ppIDVal)
 {
     if (!handleChanges) return;
     editZone->setProgPathId(ppIDVal);
+    emit editMade();
 }
 
 void ZoneEditorWidget::handleMusicIDChange(QString text)
 {
     if (!handleChanges) return;
     editZone->setMusicID(musicIds.key(text, 0));
+    emit editMade();
 }
 
 void ZoneEditorWidget::handleMultiPlayerTrackingChange(QString text)
 {
     if (!handleChanges) return;
     editZone->setMultiplayerTracking(multiplayerTrackings.key(text, 0));
+    emit editMade();
 }
 
 void ZoneEditorWidget::handleUpScrollingChange(bool val)
 {
     if (!handleChanges) return;
     editZone->setUpScrolling(val? 0x0F : 0x00);
+    emit editMade();
 }
 
 void ZoneEditorWidget::handleUpperBoundChange(int val)
 {
     if (!handleChanges) return;
     editZone->setUpperBound(val);
+    emit editMade();
 }
 
 void ZoneEditorWidget::handleLowerBoundChange(int val)
 {
     if (!handleChanges) return;
     editZone->setLowerBound(val);
+    emit editMade();
 }
 
 void ZoneEditorWidget::handleUnkUpperBoundChange(int val)
 {
     if (!handleChanges) return;
     editZone->setUnkUpperBound(val);
+    emit editMade();
 }
 
 void ZoneEditorWidget::handleUnkLowerBoundChange(int val)
 {
     if (!handleChanges) return;
     editZone->setUnkLowerBound(val);
+    emit editMade();
 }
 
 void ZoneEditorWidget::handleUnk1Change(int val)
 {
     if (!handleChanges) return;
     editZone->setUnk1(val);
+    emit editMade();
 }
 
 void ZoneEditorWidget::handleBackgroundChange(QString text)
@@ -329,6 +339,7 @@ void ZoneEditorWidget::handleBackgroundChange(QString text)
     if (!handleChanges) return;
     editZone->setBackgroundName(backgrounds.key(text, "Nohara_Castle"));
     updateBgPreview();
+    emit editMade();
 }
 
 void ZoneEditorWidget::handleSelectContentsClicked()

@@ -1,0 +1,63 @@
+J_Kihon:Aria aperta
+J_J_Kihon_P:Aria aperta Viola (Beta)
+J_Chika:Sotterranei
+J_Setsugen:Neve
+J_Suichu:Sott’acqua
+J_Yougan:Lava
+J_Gold:Oro
+J_Kihon_Test:Aria aperta (Beta)
+M_Chika:Sotterranei
+M_Chika_Red:Sotterranei Rossi (Beta)
+M_Gake:Montagne
+M_Gake_Setsugen:Montagne Innevate
+M_Jungle:Giungla
+M_Kaigan:Spiaggia
+M_Kaigan_Obake:Spiaggia Infestata
+M_Kazan:Vulcano
+M_Kinopio_Normal:Casa Bonus Terreno
+M_Koopa:Castello Finale
+M_Nohara:Aria aperta/Grassland
+M_Nohara_BigTree:Aria aperta/Grassland con Albeti
+M_Nohara_Onpu:Aria aperta/Grassland con Blocco Nota
+M_Nohara2:Cielo
+M_Obake:Casa Fantasma (Dentro)
+M_Obake_Soto:Casa Fantasma (Fuori)
+M_Rainbow:Arcobaleno Bonus
+M_Sabaku:Deserto
+M_Sabaku_Chika:Sotterranei nel deserto
+M_Setsugen:Neve
+M_Shiro:Castello
+M_Shiro_Boss:Castello (Boss)
+M_Shiro_Yogan:Castello (Lava)
+M_SkyTower:Cielo (Costruzione con erba sopra)
+M_Sora:Bonus
+M_Suichu:Sott’acqua
+M_Toride:Torre
+M_Toride_Blue:Torre (Sott’acqua)
+M_Toride_Red:Torre (Lava)
+M_Totempole:Polo Totem
+M_WarpZone:Cannone
+S1_Iseki:Decorazioni del deserto (piattaforme varie)
+S1_Kanaami:Staccionate
+S1_Kinoko:Funghi (Blocchi, Gambi e Piattaforme)
+S1_Kinoko_Snow:Funghi Innevati (Gambi e Piattaforme)
+S1_Kori:Ghiaccio
+S1_Obake_Room:Decorazioni Casa Fantasma
+S1_Obake_Soto:Giardino Infestato
+S1_Rail_Black:Rotaie nere
+S1_Rail_Gray:Rotaie grigie
+S1_Rail_Gray_Mae:Rotaie grigie
+S1_Rail_White:Rotaie bianche
+S1_Sabaku:Decorazioni del deserto (Pietre e cactus)
+S1_SkyTower:Decorazioni costruzione del cielo
+S1_Suichu:Decorazioni sottomarine
+S1_Toride:Mura e staccionate del castello
+S2_Assist:Varie decorazioni
+S2_Kanaami:Staccionate
+S2_Kinoko_variation:Funghi piccoli grandi
+S2_Obake_Room:Decorazioni Casa Fantasma
+S2_Obake_Soto:Giardino Infestato
+S2_Rail_Black:Rotaie nere
+S2_Rail_Gray:Rotaie grigie
+S2_Rail_White:Rotaie bianche
+S2_Sabaku:Decorazioni del deserto (Pietre e cactus)

@@ -84,6 +84,7 @@ void LocationEditorWidget::handleIDChange(int idVal)
     editLocation->setId(idVal);
     updateList();
     emit updateLevelView();
+    emit editMade();
 }
 
 void LocationEditorWidget::handleLocationListIndexChange(QListWidgetItem *item)

@@ -209,10 +209,7 @@ void MainWindow::on_updateSpriteData_clicked()
 
     this->setEnabled(false);
 
-    // RIP in Pieces
-    // QUrl sdUrl("http://kuribo64.net/nsmb2/spritexml2.php");
-
-    QUrl sdUrl("http://nsmb2.us.to/board/spritexml.php");
+    QUrl sdUrl("http://kuribo64.net/nsmb2/spritexml2.php");
     sdDownloader = new FileDownloader(sdUrl, this);
 
     connect(sdDownloader, SIGNAL(downloaded(QNetworkReply::NetworkError)), this, SLOT(sdDownload_finished(QNetworkReply::NetworkError)));

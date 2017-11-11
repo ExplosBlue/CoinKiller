@@ -21,6 +21,7 @@ public:
 signals:
     void updateLevelView();
     void selectedPathChanged(Object* pPath);
+    void editMade();
 
 public slots:
 

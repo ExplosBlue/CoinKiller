@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1549</width>
-    <height>700</height>
+    <width>1364</width>
+    <height>701</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -62,8 +62,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>1448</width>
-              <height>156</height>
+              <width>1289</width>
+              <height>81</height>
              </rect>
             </property>
            </widget>
@@ -81,7 +81,7 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>80</width>
+          <width>56</width>
           <height>597</height>
          </rect>
         </property>
@@ -96,8 +96,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1549</width>
-     <height>34</height>
+     <width>1364</width>
+     <height>35</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -112,6 +112,8 @@
     </property>
     <addaction name="actionToggleLayer1"/>
     <addaction name="actionToggleLayer2"/>
+    <addaction name="actionToggleSprites"/>
+    <addaction name="actionTogglePaths"/>
     <addaction name="separator"/>
     <addaction name="actionZoom_Maximum"/>
     <addaction name="actionZoom_In"/>
@@ -121,10 +123,12 @@
     <addaction name="separator"/>
     <addaction name="actionFullscreen"/>
     <addaction name="actionGrid"/>
+    <addaction name="actionCheckerboard"/>
+    <addaction name="actionRenderLiquids"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
-     <string>&lt;Edit&gt;</string>
+     <string>&lt;Ed&amp;it&gt;</string>
     </property>
     <addaction name="actionPaste"/>
     <addaction name="actionCut"/>
@@ -187,6 +191,8 @@
    <addaction name="separator"/>
    <addaction name="actionToggleLayer1"/>
    <addaction name="actionToggleLayer2"/>
+   <addaction name="actionToggleSprites"/>
+   <addaction name="actionTogglePaths"/>
    <addaction name="separator"/>
    <addaction name="actionAddArea"/>
    <addaction name="actionDeleteCurrentArea"/>
@@ -408,7 +414,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>&lt;RenderLiquids&gt;</string>
+    <string>&lt;&amp;RenderLiquids&gt;</string>
    </property>
    <property name="toolTip">
     <string>&lt;RenderLiquids&gt;</string>
@@ -447,6 +453,28 @@
   <action name="actionResetBackgroundColor">
    <property name="text">
     <string>&lt;&amp;Reset Background Color&gt;</string>
+   </property>
+  </action>
+  <action name="actionToggleSprites">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&lt;&amp;Sprites&gt;</string>
+   </property>
+   <property name="toolTip">
+    <string>&lt;ToggleSprites&gt;</string>
+   </property>
+  </action>
+  <action name="actionTogglePaths">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&lt;Paths&gt;</string>
+   </property>
+   <property name="toolTip">
+    <string>&lt;TogglePaths&gt;</string>
    </property>
   </action>
  </widget>

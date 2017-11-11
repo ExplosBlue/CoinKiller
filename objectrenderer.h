@@ -61,6 +61,7 @@ protected:
     QString text;
     QColor color;
     QTextOption align;
+
 };
 
 class CircleRenderer: public ObjectRenderer
@@ -496,6 +497,16 @@ protected:
     const Sprite *spr;
 };
 
+// Sprite 152: Path Controlled Lift With Peepa
+class PeepaLiftRenderer: public ObjectRenderer
+{
+public:
+    PeepaLiftRenderer(const Sprite *spr);
+    void render(QPainter *painter, QRect *drawrect);
+protected:
+    const Sprite *spr;
+};
+
 // Sprite 154: 4 Plat Rickshaw
 class FourPlatRickRenderer: public ObjectRenderer
 {
@@ -626,6 +637,17 @@ public:
     void render(QPainter *painter, QRect *drawrect);
 protected:
     const Sprite *spr;
+};
+
+// Sprite 217/218: SnakeBlock
+class SnakeBlockRenderer: public SpriteRenderer
+{
+public:
+    SnakeBlockRenderer(const Sprite *spr, const Path *path);
+    void render(QPainter *painter, QRect *drawrect);
+protected:
+    const Sprite *spr;
+    const Path *path;
 };
 
 // Sprite 215: Bob-omb Cannon

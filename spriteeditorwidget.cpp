@@ -74,6 +74,7 @@ SpriteEditorWidget::SpriteEditorWidget()
     setLayout(layout);
 
     connect(spriteTree, SIGNAL(currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)), this, SLOT(handleIndexChange(QTreeWidgetItem*)));
+    connect(editor, SIGNAL(editMade()), this, SLOT(handleEditDetected()));
 
 }
 
@@ -118,12 +119,19 @@ void SpriteEditorWidget::handleIndexChange(QTreeWidgetItem *item)
     int data = item->data(0, Qt::UserRole).toInt();
     if (data >= 0 && data <= 325)
         emit(selectedSpriteChanged(data));
+    emit editMade();
 }
 
 void SpriteEditorWidget::select(Sprite *sprite)
 {
     emit(selectedSpriteChanged(sprite->getid()));
 }
+
+void SpriteEditorWidget::handleEditDetected()
+{
+    emit editMade();
+}
+
 
 SpriteDataEditorWidget::SpriteDataEditorWidget(SpriteData *spriteData)
 {
@@ -175,6 +183,7 @@ void SpriteDataEditorWidget::select(Sprite *sprite)
             listFieldWidgets.append(fieldWidget);
             connect(fieldWidget, SIGNAL(updateHex()), this, SLOT(updateRawSpriteData()));
             connect(fieldWidget, SIGNAL(updateFields()), this, SLOT(updateFields()));
+            connect(fieldWidget, SIGNAL (editMade()), this, SLOT(handleEditDetected()));
         }
         else if (field->type == Field::Checkbox)
         {
@@ -183,6 +192,7 @@ void SpriteDataEditorWidget::select(Sprite *sprite)
             checkboxFieldWidgets.append(fieldWidget);
             connect(fieldWidget, SIGNAL(updateHex()), this, SLOT(updateRawSpriteData()));
             connect(fieldWidget, SIGNAL(updateFields()), this, SLOT(updateFields()));
+            connect(fieldWidget, SIGNAL (editMade()), this, SLOT(handleEditDetected()));
         }
         else if (field->type == Field::Value)
         {
@@ -191,6 +201,7 @@ void SpriteDataEditorWidget::select(Sprite *sprite)
             valueFieldWidgets.append(fieldWidget);
             connect(fieldWidget, SIGNAL(updateHex()), this, SLOT(updateRawSpriteData()));
             connect(fieldWidget, SIGNAL(updateFields()), this, SLOT(updateFields()));
+            connect(fieldWidget, SIGNAL (editMade()), this, SLOT(handleEditDetected()));
         }
     }
 }
@@ -233,6 +244,12 @@ void SpriteDataEditorWidget::handleRawSpriteDataChange(QString text)
     updateFields();
 
     emit updateLevelView();
+    emit editMade();
+}
+
+void SpriteDataEditorWidget::handleEditDetected()
+{
+    emit editMade();
 }
 
 
@@ -263,6 +280,7 @@ void SpriteValueFieldWidget::handleValueChange(int value)
     sprite->setRect();
     emit updateHex();
     emit updateFields();
+    emit editMade();
 }
 
 
@@ -294,6 +312,7 @@ void SpriteCheckboxFieldWidget::handleValueChange(bool checked)
     sprite->setRect();
     emit updateHex();
     emit updateFields();
+    emit editMade();
 }
 
 
@@ -324,4 +343,5 @@ void SpriteListFieldWidget::handleIndexChange(QString text)
     sprite->setRect();
     emit updateHex();
     emit updateFields();
+    emit editMade();
 }

@@ -102,10 +102,12 @@ void ProgressPathEditorWidget::handleIDChanged(int idVal)
     editPath->setId(idVal);
     updateList();
     emit updateLevelView();
+    emit editMade();
 }
 
 void ProgressPathEditorWidget::handleAlternetePathFlagChanged(bool apfVal)
 {
     if (!handleChanges) return;
     editPath->setAlternatePathFlag(apfVal);
+    emit editMade();
 }

@@ -19,6 +19,7 @@ public:
 signals:
     void updateLevelView();
     void selectedLocChanged(Object* loc);
+    void editMade();
 
 private slots:
     void handleLocationListIndexChange(QListWidgetItem *item);

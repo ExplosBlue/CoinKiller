@@ -19,6 +19,7 @@ public:
 signals:
     void updateLevelEditor();
     void relaodTilesetPicker();
+    void tilesetEditMade();
 private slots:
     void handleTilesetChange(QModelIndex index);
 private:
@@ -36,7 +37,7 @@ public:
 signals:
     void updateLevelView();
     void relaodTilesetPicker();
-
+    void editMade();
 private:
     Level* level;
     Game* game;
@@ -65,6 +66,7 @@ private slots:
 
     void passUpdateLevelView() { emit updateLevelView(); }
     void passRelaodTilesetPicker() { emit relaodTilesetPicker(); }
+    void passTilesetEditMade() { emit editMade(); }
 };
 
 #endif // AREAEDITORWIDGET_H

@@ -21,6 +21,7 @@ public:
 signals:
     void updateLevelView();
     void selectedEntrChanged(Object* entr);
+    void editMade();
 
 private:
     QListWidget* entrancesList;

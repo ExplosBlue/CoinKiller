@@ -39,6 +39,7 @@ signals:
     void updateLevelView();
     void selectedZoneChanged(Object* zone);
     void selectZoneContents(Zone* zone);
+    void editMade();
 
 private:
     QListWidget* zoneList;

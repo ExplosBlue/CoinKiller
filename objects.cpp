@@ -653,6 +653,8 @@ void Sprite::setRect()
     case 107: // Path-Controlled Climbable fence
         width = 240;
         height = 240;
+        offsetx = -120;
+        offsety = -120;
         break;
     case 108: // Spider Web
         width = 80;
@@ -1009,6 +1011,17 @@ void Sprite::setRect()
 
         offsety = -20;
         break;
+    case 152: // Path Controlled Lift With Peepa
+        if(getNybble(5) == 0)
+            width = 46;
+        else
+            width = getNybble(5)*20 + 46;
+        height = 22;
+
+        offsetx = -(width/2);
+        renderOffsetW = 40;
+        renderOffsetH = 40;
+        break;
     case 154: // 4 plat rickshaw
         if (getNybble(5) == 1)
         {
@@ -1290,7 +1303,7 @@ void Sprite::setRect()
             for(offset = 0; offset < getNybble(11); offset++)
             {
                 height = (offset*20)+40;
-                offsety = -(offset*20);
+                offsety = -(offset*20)-20;
             }
         }
         else
@@ -1320,6 +1333,11 @@ void Sprite::setRect()
         height = 57 + ((getNybble(5)+1)*22);
         offsetx = -7;
         offsety = -height +22;
+        break;
+    case 217: case 218: // SnakeBlock
+        width = 20;
+        height = 20;
+        offsety = -20;
         break;
     case 215: // Bob-omb Cannon
         width = 31;
@@ -1578,14 +1596,14 @@ void Sprite::setRect()
     case 290: // Path Controlled Fence(Small)
         width = 60;
         height = 60;
-        offsetx = -20;
-        offsety = -20;
+        offsetx = -30;
+        offsety = -30;
         break;
     case 291: // Path Controlled Fence(Big)
         width = 120;
         height = 120;
-        offsetx = -50;
-        offsety = -50;
+        offsetx = -60;
+        offsety = -60;
         break;
     case 292: // Warp Cannon Signboard
         width = 62;

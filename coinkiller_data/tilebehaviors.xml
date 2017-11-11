@@ -157,6 +157,14 @@
 			<value id = "34" description = "8x1 Up: Part 8" />
 		</behavior>
 		
+		<behavior value = "13" description = "Animation related?">
+			<value id = "0" description = "unk0" />
+			<value id = "1" description = "unk1" />
+			<value id = "2" description = "unk2" />
+			<value id = "3" description = "unk3" />
+			<value id = "4" description = "unk4" /> 
+		</behavior>
+		
 		<behavior value = "14" description = "Vine/Climbable Fence">
 			<value id = "0" description = "Vine" />
 			<value id = "3" description = "Fence: Top-Left" />

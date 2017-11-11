@@ -1,0 +1,116 @@
+; Copyright 2015 StapleButter
+;
+; This file is part of CoinKiller.
+;
+; CoinKiller is free software: you can redistribute it and/or modify it under
+; the terms of the GNU General Public License as published by the Free
+; Software Foundation, either version 3 of the License, or (at your option)
+; any later version.
+;
+;
+; CoinKiller is distributed in the hope that it will be useful, but WITHOUT ANY
+; WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+; FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+; You should have received a copy of the GNU General Public License along
+; with CoinKiller. If not, see http://www.gnu.org/licenses/.
+
+[General]
+file=File
+filename=Nome File
+help=Aiuto
+settings=Impostazioni
+tools=Strumenti
+edit=Modifica
+save=Salva
+copy=Copia
+paste=Incolla
+cut=Taglia
+delete=Eliminaa
+selectAll=Seleziona Tutto
+ok=OK
+cancel=Annulla
+world=Mondo
+level=Livello
+changesSaved=Changes Saved
+unsavedChanges=Unsaved Changes
+wantToSave=Do you want to save your changes?
+
+[MainWindow]
+levels=Livelli
+tilesets=Lista Tileset
+addTileset=Aggiungi Tileset
+removeTileset=Rimuovi Tileset
+blankTilesetMissing=Non puoi creare nuovi tileset senza il template.
+tilesetExists=Un tileset con quel nome esiste già.
+loadUnpackedRomFS=Carica cartella ROMFS...
+selectUnpackedRomFSFolder=Seleziona cartella ROMFS...
+aboutCoinKiller=Informazioni su CoinKiller
+languages=Lingue
+NightMode=Modalità notte
+updateSDat=Aggiorna Spritedata.xml
+sDatWarning=Tutti i cambiamenti effettuati al file spritedata.xml\nsaranno sovrascritti!\n\nVuoi procedere?
+sDatSuccess=Il file Spritedata.xml è stato aggiornato con successo!
+sDatErrorNetwork=L’Aggiornamento del file Spritedata.xml è fallito per\nil seguente motivo:\n\nConnecssione a %1 fallita!
+sDatErrorFile=L’Aggiornamento del file Spritedata.xml è fallito per\nil seguente motivo:\n\nImpossibile aprire spritedata.xml for writing!
+
+[LevelEditor]
+view=View
+raiseToTop=Porta tutto Su
+lowerToBottom=Porta tutto Giu
+raiseLayer=Layer Su
+lowerLayer=Layer Giu
+zoomIn=Zoom In
+zoomOut=Zoom Out
+zoom100=Zoom 100%
+zoomMin=Zoom al minimo
+zoomMax=Maximum Zoom
+grid=Grid
+checkerboard=Checkerboard
+fullscreen=Fullscreen
+layer=Layer
+sprites=Sprites
+paths=Paths
+area=Area
+addArea=Aggiungi Area
+removeArea=Rimuovi Area
+renderLiquids=Renderizza Liquidi
+selectZoneContents=Seleziona Contenuti
+setBgColor=Imposta Colore Sfondo
+resetBgColor=Resetta Colore Sfondo
+
+[TilesetEditor]
+tileset=Tileset
+standard=Standard
+stage=Livello
+background=Sfondo
+interactive=Interattivo
+behaviors=Aspetti
+object=Oggetto
+objects=Oggetti
+hitbox=Hitbox
+terrainType=Tipo di Terreno
+behavior3d=Aspetto in 3D
+pipeColor=Colore tubo
+importImage=Importa...
+exportImage=Esporta…
+deleteAllBehaviors=Elimina tutti gli Aspetti
+deleteAllObjs=Elimina tutti gli Oggetti
+deleteAllOverlays=Elimina tutti gli Overlay 3D
+setTilesetSlot=Imposta slot Tileset
+setBgColor=Imposta Colore Sfondo
+showObjMarkers=Mostra Marcatori Oggetti
+hexData=Hex Data
+selectedTile=Tile Selezionato
+noneObj=Niente
+addObj=Aggiungi Oggetto
+removeObj=Rimuovi Oggetto
+moveObjUp=Muovi Oggetto Su
+moveObjDown=Muovi Oggetto Giu
+objSettings=Impostazioni Oggetto
+tileData=Tile Data
+noneData=Niente
+
+[SarcExplorer]
+sarcExplorer=Esplora Sarc
+sarcArchives=Archivi Sarc
+selectArchive=Seleziona un archivio Sarc

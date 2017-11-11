@@ -61,6 +61,7 @@ AreaEditorWidget::AreaEditorWidget(Level* level, Game *game)
     tsChooser = new TilesetChooser(level, game);
     connect(tsChooser, SIGNAL(updateLevelEditor()), this, SLOT(passUpdateLevelView()));
     connect(tsChooser, SIGNAL(relaodTilesetPicker()), this, SLOT(passRelaodTilesetPicker()));
+    connect(tsChooser, SIGNAL(tilesetEditMade()), this, SLOT(passTilesetEditMade()));
     layout->addWidget(tsChooser, 8, 0, 1, 2);
 
     updateInfo();
@@ -81,31 +82,35 @@ void AreaEditorWidget::handleTimeLimitChange(int timeLimitVal)
 {
     if (!handleChanges) return;
     level->timeLimit = timeLimitVal;
+    emit editMade();
 }
 
 void AreaEditorWidget::handleCoinRushTimeLimitChange(int timeLimitVal)
 {
     if (!handleChanges) return;
     level->coinRushTimeLimit = timeLimitVal;
+    emit editMade();
 }
 
 void AreaEditorWidget::handleSpecialLevelFlag1Change(QString text)
 {
     if (!handleChanges) return;
     level->specialLevelFlag = specialLevelFlags1.key(text, 0);
+    emit editMade();
 }
 
 void AreaEditorWidget::handleSpecialLevelFlag2Change(QString text)
 {
     if (!handleChanges) return;
     level->specialLevelFlag2 = specialLevelFlags2.key(text, 0);
+    emit editMade();
 }
 
 void AreaEditorWidget::handleToadHouseFlagChanged(bool flag)
 {
     if (!handleChanges) return;
     level->toadHouseFlag = flag ? 2 : 0;
-
+    emit editMade();
 }
 
 TilesetChooser::TilesetChooser(Level *level, Game *game)
@@ -168,4 +173,5 @@ void TilesetChooser::handleTilesetChange(QModelIndex index)
 
     emit updateLevelEditor();
     emit relaodTilesetPicker();
+    emit tilesetEditMade();
 }

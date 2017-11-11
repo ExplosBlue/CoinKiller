@@ -174,6 +174,7 @@ void EntranceEditorWidget::handleTypeChanged(int typeVal)
     editEntrance->setEntrType(typeVal);
     updateList();
     emit updateLevelView();
+    emit editMade();
 }
 
 void EntranceEditorWidget::handleIDChanged(int idVal)
@@ -182,40 +183,47 @@ void EntranceEditorWidget::handleIDChanged(int idVal)
     editEntrance->setId(idVal);
     updateList();
     emit updateLevelView();
+    emit editMade();
 }
 
 void EntranceEditorWidget::handleDestEntrChange(int destEntrVal)
 {
     if (!handleChanges) return;
     editEntrance->setDestEntr(destEntrVal);
+    emit editMade();
 }
 
 void EntranceEditorWidget::handleDestAreaChange(int destAreaVal)
 {
     if (!handleChanges) return;
     editEntrance->setDestArea(destAreaVal);
+    emit editMade();
 }
 
 void EntranceEditorWidget::handleCamXChange(int camXVal)
 {
     if (!handleChanges) return;
     editEntrance->setCameraX(camXVal);
+    emit editMade();
 }
 
 void EntranceEditorWidget::handleCamYChange(int camYVal)
 {
     if (!handleChanges) return;
     editEntrance->setCameraY(camYVal);
+    emit editMade();
 }
 
 void EntranceEditorWidget::handleEnterableChange(bool enterableVal)
 {
     if (!handleChanges) return;
     editEntrance->setSettingsBit(!enterableVal, 7);
+    emit editMade();
 }
 
 void EntranceEditorWidget::handleReturnToWMChange(bool returnToWMVal)
 {
     if (!handleChanges) return;
     editEntrance->setSettingsBit(returnToWMVal, 4);
+    emit editMade();
 }

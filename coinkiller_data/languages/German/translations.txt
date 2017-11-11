@@ -31,6 +31,9 @@ ok=OK
 cancel=Abbrechen
 world=Welt
 level=Level
+changesSaved=Änderungen gespeichert
+unsavedChanges=Nicht gespeicherte Änderungen
+wantToSave=Willst du deine Änderungen speichern?
 
 [MainWindow]
 levels=Level
@@ -65,6 +68,8 @@ grid=Raster
 checkerboard=Schachbrettmuster
 fullscreen=Vollbild
 layer=Ebene
+sprites=Sprites
+paths=Pfade
 area=Gebiet
 addArea=Gebiet hinzufügen
 removeArea=Gebiet entfernen

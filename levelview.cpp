@@ -46,6 +46,9 @@ LevelView::LevelView(QWidget *parent, Level* level) : QWidget(parent)
     grid = false;
     checkerboard = false;
     renderLiquids = false;
+    renderSprites = true;
+    renderPaths = true;
+
 }
 
 LevelView::~LevelView()
@@ -192,67 +195,113 @@ void LevelView::paintEvent(QPaintEvent* evt)
         painter.drawText(locrect.adjusted(5,5,0,0), locText);
     }
 
-    // Render Liquids
-    if (renderLiquids)
+    if (renderSprites)
     {
+        // Render Liquids
+        if (renderLiquids)
+        {
+            for (int i = 0; i < level->zones.size(); i++)
+            {
+                const Zone* zone = level->zones.at(i);
+
+                QRect zonerect(zone->getx(), zone->gety(), zone->getwidth(), zone->getheight());
+
+                if (!drawrect.intersects(zonerect))
+                    continue;
+
+                foreach (Sprite* s, level->sprites)
+                {
+                    if (s->getid() != 12 && s->getid() != 13 && s->getid() != 14 && s->getid() != 15 && s->getid() != 246)
+                        continue;
+
+                    if (zonerect.contains(s->getx(), s->gety(), false))
+                    {
+                        LiquidRenderer liquidRend(s, zone);
+                        liquidRend.render(&painter, &drawrect);
+                    }
+                }
+            }
+        }
+
+        // Render Scuttlebug Strings
         for (int i = 0; i < level->zones.size(); i++)
         {
             const Zone* zone = level->zones.at(i);
 
-            QRect zonerect(zone->getx(), zone->gety(), zone->getwidth(), zone->getheight());
+            QRect zonerect(zone->getx(), zone->gety()+30, zone->getwidth(), zone->getheight());
 
             if (!drawrect.intersects(zonerect))
                 continue;
 
             foreach (Sprite* s, level->sprites)
             {
-                if (s->getid() != 12 && s->getid() != 13 && s->getid() != 14 && s->getid() != 15 && s->getid() != 246)
+                if (s->getid() != 93)
                     continue;
 
                 if (zonerect.contains(s->getx(), s->gety(), false))
                 {
-                    LiquidRenderer liquidRend(s, zone);
-                    liquidRend.render(&painter, &drawrect);
+                    ScuttlebugRenderer ScuttleRender(s, zone);
+                    ScuttleRender.render(&painter, &drawrect);
                 }
             }
         }
-    }
 
-    // Render Scuttlebug Strings
-    for (int i = 0; i < level->zones.size(); i++)
-    {
-        const Zone* zone = level->zones.at(i);
-
-        QRect zonerect(zone->getx(), zone->gety()+30, zone->getwidth(), zone->getheight());
-
-        if (!drawrect.intersects(zonerect))
-            continue;
-
-        foreach (Sprite* s, level->sprites)
+        // Render Path Controlled Sprites
+        for (int i = 0; i < level->paths.size(); i++)
         {
-            if (s->getid() != 93)
-                continue;
+            const Path* path = level->paths.at(i);
 
-            if (zonerect.contains(s->getx(), s->gety(), false))
+            foreach (Sprite* s, level->sprites)
             {
-                ScuttlebugRenderer ScuttleRender(s, zone);
-                ScuttleRender.render(&painter, &drawrect);
+                if (s->getid() != 107 && s->getid() != 152 && s->getid() != 290 && s->getid() != 291)
+                    continue;
+
+                int pathID = 0;
+                if (s->getid() == 152)
+                    pathID = (s->getNybble(4)+(s->getNybble(7)*16));
+                else
+                    pathID = (s->getNybble(4));
+
+                if (path->getid() == pathID)
+                {
+                    s->setPosition(path->getNode(0)->getx(), path->getNode(0)->gety());
+                }
             }
         }
+
+        // Render SnakeBlocks
+        for (int i = 0; i < level->paths.size(); i++)
+        {
+            const Path* path = level->paths.at(i);
+
+            foreach (Sprite* s, level->sprites)
+            {
+                if (s->getid() != 217 && s->getid() != 218)
+                    continue;
+
+                int pathID = s->getNybble(4)+(s->getNybble(7)*16);
+
+                if (path->getid() == pathID)
+                {
+
+                    SnakeBlockRenderer SnakeBlockRenderer(s, path);
+                    SnakeBlockRenderer.render(&painter, &drawrect);
+                }
+            }
+        }
+
+        // Render Sprites
+        for (int i = 0; i < level->sprites.size(); i++)
+        {
+            Sprite* spr = level->sprites.at(i);
+
+            if (!spr->doRender(drawrect))
+                continue;
+
+            SpriteRenderer sprRend(spr, level->tilesets);
+            sprRend.render(&painter, &drawrect);
+        }
     }
-
-    // Render Sprites
-    for (int i = 0; i < level->sprites.size(); i++)
-    {
-        Sprite* spr = level->sprites.at(i);
-
-        if (!spr->doRender(drawrect))
-            continue;
-
-        SpriteRenderer sprRend(spr, level->tilesets);
-        sprRend.render(&painter, &drawrect);
-    }
-
     // Render Entrances
     for (int i = 0; i < level->entrances.size(); i++)
     {
@@ -268,42 +317,45 @@ void LevelView::paintEvent(QPaintEvent* evt)
     }
 
     // Render Paths
-    for (int i = 0; i < level->paths.size(); i++)
-    {
-        const Path* path = level->paths.at(i);
-        QList<PathNode*> nodes  = path->getNodes();
-
-        for (int j = 0; j < nodes.size() - 1; j++)
+    if (renderPaths)
         {
-            QLine pathLine(QPoint(nodes[j]->getx()+10, nodes[j]->gety()+10), QPoint(nodes[j+1]->getx()+10, nodes[j+1]->gety()+10));
-
-            if (!drawrect.intersects(QRect(pathLine.x1(), pathLine.y1(), pathLine.x2()-pathLine.x1(), pathLine.y2()-pathLine.y1())))
-                continue;
-
-            QPen pen(QColor(0,255,20));
-            pen.setWidth(2);
-            painter.setPen(pen);
-            painter.drawLine(pathLine);
-        }
-
-        for (int j = 0; j < nodes.size(); j++)
+        for (int i = 0; i < level->paths.size(); i++)
         {
-            QRect pathrect(nodes[j]->getx(), nodes[j]->gety(), 20, 20);
+            const Path* path = level->paths.at(i);
+            QList<PathNode*> nodes  = path->getNodes();
 
-            if (!drawrect.intersects(pathrect))
-                continue;
+            for (int j = 0; j < nodes.size() - 1; j++)
+            {
+                QLine pathLine(QPoint(nodes[j]->getx()+10, nodes[j]->gety()+10), QPoint(nodes[j+1]->getx()+10, nodes[j+1]->gety()+10));
 
-            painter.setPen(QColor(0,0,0));
+                if (!drawrect.intersects(QRect(pathLine.x1(), pathLine.y1(), pathLine.x2()-pathLine.x1(), pathLine.y2()-pathLine.y1())))
+                    continue;
 
-            QPainterPath painterPath;
-            painterPath.addRoundedRect(pathrect, 2.0, 2.0);
-            QColor color(0,255,20,200);
-            painter.fillPath(painterPath, color);
-            painter.drawPath(painterPath);
+                QPen pen(QColor(0,255,20));
+                pen.setWidth(2);
+                painter.setPen(pen);
+                painter.drawLine(pathLine);
+            }
 
-            QString pathText = QString("%1-%2").arg(path->getid()).arg(j+1);
-            painter.setFont(QFont("Arial", 7, QFont::Normal));
-            painter.drawText(pathrect, pathText, Qt::AlignHCenter | Qt::AlignVCenter);
+            for (int j = 0; j < nodes.size(); j++)
+            {
+                QRect pathrect(nodes[j]->getx(), nodes[j]->gety(), 20, 20);
+
+                if (!drawrect.intersects(pathrect))
+                    continue;
+
+                painter.setPen(QColor(0,0,0));
+
+                QPainterPath painterPath;
+                painterPath.addRoundedRect(pathrect, 2.0, 2.0);
+                QColor color(0,255,20,200);
+                painter.fillPath(painterPath, color);
+                painter.drawPath(painterPath);
+
+                QString pathText = QString("%1-%2").arg(path->getid()).arg(j+1);
+                painter.setFont(QFont("Arial", 7, QFont::Normal));
+                painter.drawText(pathrect, pathText, Qt::AlignHCenter | Qt::AlignVCenter);
+            }
         }
     }
 

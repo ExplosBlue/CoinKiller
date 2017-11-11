@@ -133,6 +133,7 @@ void PathEditorWidget::handleIDChanged(int idVal)
     editPath->setId(idVal);
     updateList();
     emit updateLevelView();
+    emit editMade();
 }
 
 void PathEditorWidget::handleLoopChanged()
@@ -142,16 +143,19 @@ void PathEditorWidget::handleLoopChanged()
         editPath->setLoop(2);
     else
         editPath->setLoop(0);
+    emit editMade();
 }
 
 void PathEditorWidget::handleSpeedChanged(double speedVal)
 {
     if (!handleChanges) return;
     editNode->setSpeed((float)speedVal);
+    emit editMade();
 }
 
 void PathEditorWidget::handleAccelChanged(double accelVal)
 {
     if (!handleChanges) return;
     editNode->setAccel((float)accelVal);
+    emit editMade();
 }

@@ -48,18 +48,23 @@ class LevelEditorWindow : public QMainWindow
 public:
     explicit LevelEditorWindow(LevelManager* lvlMgr, int initialArea);
     ~LevelEditorWindow();
-    void closeEvent();
+    void closeEvent(QCloseEvent *event);
 
 public slots:
     void setObjectEdition(Object* obj);
     void deselect();
     void updateEditors();
     void scrollTo(int x, int y);
+    void handleEditMade();
 
 private slots:
     void on_actionToggleLayer1_toggled(bool arg1);
 
     void on_actionToggleLayer2_toggled(bool arg1);
+
+    void on_actionToggleSprites_toggled(bool arg1);
+
+    void on_actionTogglePaths_toggled(bool arg1);
 
     void on_actionZoom_In_triggered();
 
@@ -138,6 +143,8 @@ private:
 
     QComboBox* areaSelector;
 
+    QLabel* editStatus = new QLabel(this);
+
     void updateAreaSelector(int index = -1);
 
     quint8 layerMask;
@@ -145,6 +152,8 @@ private:
 
     void loadArea(int id, bool closeLevel = true, bool init = false);
     bool closeLvlOnClose = true;
+
+    bool unsavedChanges = false;
 };
 
 #endif // LEVELEDITORWINDOW_H

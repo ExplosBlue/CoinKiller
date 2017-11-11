@@ -116,6 +116,7 @@ private:
 
     void drawResizeKnob(int x, int y, QPainter *painter);
     void drawPlus(QPainter* painter, int x, int y);
+
 };
 
 #endif // OBJECTSEDITIONMODE_H

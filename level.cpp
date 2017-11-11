@@ -121,8 +121,6 @@ Level::Level(Game *game, SarcFilesystem* archive, int area, QString lvlName)
         header->readStringASCII(background.name, 16);
         background.unk1 = header->read16();
 
-        qDebug("Value of %d found.", background.unk1);
-
         header->skip(2);
         backgrounds.append(background);
     }
@@ -176,9 +174,10 @@ Level::Level(Game *game, SarcFilesystem* archive, int area, QString lvlName)
 
     // Block 8: Sprites Used List (no need to read this)
 
+
     // Block 9: Zones
     header->seek(blockOffsets[9]);
-    for (int z = 0; z < (int)(blockSizes[9]/24); z++)
+    for (int z = 0; z < (int)(blockSizes[9]/28); z++)
     {
         quint16 x = header->read16();
         quint16 y = header->read16();
@@ -216,6 +215,7 @@ Level::Level(Game *game, SarcFilesystem* archive, int area, QString lvlName)
         }
 
         zones.append(zone);
+
     }
 
     // Block 10: Locations

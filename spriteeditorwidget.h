@@ -25,6 +25,8 @@ private slots:
 signals:
     void updateHex();
     void updateFields();
+    void editMade();
+
 private:
     Sprite* sprite;
     Field* field;
@@ -42,6 +44,8 @@ private slots:
 signals:
     void updateHex();
     void updateFields();
+    void editMade();
+
 private:
     Sprite* sprite;
     Field* field;
@@ -59,6 +63,8 @@ private slots:
 signals:
     void updateHex();
     void updateFields();
+    void editMade();
+
 private:
     Sprite* sprite;
     Field* field;
@@ -78,9 +84,11 @@ private slots:
     void handleRawSpriteDataChange(QString text);
     void updateRawSpriteData();
     void updateFields();
+    void handleEditDetected();
 
 signals:
     void updateLevelView();
+    void editMade();
 
 private:
     QGridLayout* layout;
@@ -109,6 +117,7 @@ public:
 
 signals:
     void selectedSpriteChanged(int);
+    void editMade();
 
 public slots:
     void setView(int view);
@@ -116,6 +125,7 @@ public slots:
 
 private slots:
     void handleIndexChange(QTreeWidgetItem *item);
+    void handleEditDetected();
 
 private:
     SpriteData spriteData;
