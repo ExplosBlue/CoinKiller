@@ -1,4 +1,4 @@
- ; Copyright 2015 StapleButter
+; Copyright 2015 StapleButter
 ;
 ; This file is part of CoinKiller.
 ;
