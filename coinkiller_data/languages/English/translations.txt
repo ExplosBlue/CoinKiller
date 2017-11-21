@@ -1,4 +1,4 @@
-; Copyright 2015 StapleButter
+ ; Copyright 2015 StapleButter
 ;
 ; This file is part of CoinKiller.
 ;
@@ -49,9 +49,9 @@ languages=Languages
 NightMode=Night Mode
 updateSDat=Update Spritedata
 sDatWarning=All changes you made to your spritedata.xml will be overwritten!\n\nDo you want to proceed?
-sDatSuccess=Your Spritedata was updated successfully!
-sDatErrorNetwork=Updating the Spritedata failed:\n\nConnection to %1 failed!
-sDatErrorFile=Updating the Spritedata failed:\n\nCould not open spritedata.xml for writing!
+sDatSuccess=Your spritedata was updated successfully!
+sDatErrorNetwork=Updating the spritedata failed:\n\nConnection to %1 failed!
+sDatErrorFile=Updating the spritedata failed:\n\nCould not open spritedata.xml for writing!
 
 [LevelEditor]
 view=View
@@ -114,3 +114,4 @@ noneData=None
 sarcExplorer=Sarc Explorer
 sarcArchives=Sarc Archives
 selectArchive=Select an Sarc Archive
+
