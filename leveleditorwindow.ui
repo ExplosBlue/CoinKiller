@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1364</width>
+    <width>1305</width>
     <height>701</height>
    </rect>
   </property>
@@ -62,7 +62,7 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>1289</width>
+              <width>1230</width>
               <height>81</height>
              </rect>
             </property>
@@ -96,7 +96,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1364</width>
+     <width>1305</width>
      <height>35</height>
     </rect>
    </property>
@@ -125,6 +125,7 @@
     <addaction name="actionGrid"/>
     <addaction name="actionCheckerboard"/>
     <addaction name="actionRenderLiquids"/>
+    <addaction name="actionRenderCameraLimits"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
@@ -188,6 +189,7 @@
    <addaction name="actionGrid"/>
    <addaction name="actionCheckerboard"/>
    <addaction name="actionRenderLiquids"/>
+   <addaction name="actionRenderCameraLimits"/>
    <addaction name="separator"/>
    <addaction name="actionToggleLayer1"/>
    <addaction name="actionToggleLayer2"/>
@@ -471,10 +473,21 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>&lt;Paths&gt;</string>
+    <string>&lt;&amp;Paths&gt;</string>
    </property>
    <property name="toolTip">
     <string>&lt;TogglePaths&gt;</string>
+   </property>
+  </action>
+  <action name="actionRenderCameraLimits">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&lt;&amp;RenderCameraLimits&gt;</string>
+   </property>
+   <property name="toolTip">
+    <string>&lt;RenderCameraLimits&gt;</string>
    </property>
   </action>
  </widget>

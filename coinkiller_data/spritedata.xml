@@ -282,10 +282,9 @@
       <entry value="3">Red (Lava)</entry>
     </list>
     <list nybble="14" title="Contents" comment="10=&quot;Wings fall off&quot; effect plays every time block is hit.">
-      <entry value="0">Unknown (appears to be nothing)</entry>
+      <entry value="0">Nothing</entry>
       <entry value="1">Coin</entry>
       <entry value="2">Super Mushroom if small and Fire Flower if big</entry>
-      <entry value="3">Same as 0?</entry>
       <entry value="4">Super Mushroom if small and Super Leaf if big</entry>
       <entry value="5">Gold Flower</entry>
       <entry value="6">Mini Mushroom</entry>
@@ -294,10 +293,8 @@
       <entry value="9">Mega Mushroom</entry>
       <entry value="10">Ten Coins</entry>
       <entry value="11">1-Up Mushroom</entry>
-      <entry value="12">Same as 0?</entry>
       <entry value="13">Trampoline</entry>
       <entry value="14">Super Mushroom if small and coin if big</entry>
-      <entry value="15">Same as 0?</entry>
     </list>
   </sprite>
   <sprite id="25" name="Fly Away ? Block (contains 1-Up)" notes="Actor: 0x0b4&#13;&#10;Existing In-Game Sprite Data:&#13;&#10;0000 0000 0000 0000 0000 0000    15-1 A1"/>
@@ -704,7 +701,7 @@
   <sprite id="66" name="Pipe Cannon">
     <list nybble="6" title="Firing Direction">
       <entry value="0">30 degrees right</entry>
-      <entry value="1">30 degrees</entry>
+      <entry value="1">30 degrees left</entry>
       <entry value="2">15 degrees right</entry>
       <entry value="3">15 degrees left</entry>
       <entry value="4">Straight Up</entry>
@@ -835,7 +832,7 @@
       <entry value="1">Small</entry>
       <entry value="2">Super</entry>
       <entry value="3">Fire</entry>
-      <entry value="4">Unknown 4</entry>
+      <entry value="4">Mini</entry>
       <entry value="5">Tanooki</entry>
       <entry value="6">Unknown 6</entry>
       <entry value="7">Unknown 7</entry>
@@ -1151,7 +1148,12 @@
       <entry value="0">No</entry>
       <entry value="2">Yes</entry>
     </list>
-    <value nybble="10" title="Stretch Height" comment="..."/>
+    <list nybble="10" title="Stretch Height" comment="Values after 3 repeat.">
+      <entry value="0">No Stretch</entry>
+      <entry value="1">One block</entry>
+      <entry value="2">Two Blocks</entry>
+      <entry value="3">Three Blocks</entry>
+    </list>
     <value nybble="11" title="Stem Length" comment="(value+4)"/>
   </sprite>
   <sprite id="125" name="Bowser" notes="Used without data"/>
@@ -1361,7 +1363,7 @@
   <sprite id="155" name="Ludwig von Koopa" notes="Existing In-Game Sprite Data:&#13;&#10;Incomplete"/>
   <sprite id="156" name="Vertical Camera Limit Left">
     <value nybble="1-2" title="Unknown 1-2" comment="Maybe disables when or once on."/>
-    <value nybble="5" title="Unknown 5"/>
+    <value nybble="5" title="Camera Y Offset" comment="Sets how far above/below the limit the camera will render."/>
     <value nybble="6" title="Unknown 6"/>
     <checkbox nybble="7" title="Permeable Camera Limit" comment="When Set to 1, the camera will scroll past the border if the player passes it. The interactions with &quot;Camera Stay Above&quot;  and &quot;Camera Stay Below&quot; are unclear."/>
     <value nybble="8" title="Unknown 8"/>
@@ -1371,7 +1373,7 @@
   </sprite>
   <sprite id="157" name="Vertical Camera Limit Right">
     <value nybble="1-2" title="Unknown 1-2"/>
-    <value nybble="5" title="Unknown 5"/>
+    <value nybble="5" title="Camera Y Offset" comment="Sets how far above/below the limit the camera will render."/>
     <value nybble="6" title="Unknown 6"/>
     <checkbox nybble="7" title="Permeable Camera Limit" comment="When Set to 1, the camera will scroll past the border if the player passes it. The interactions with &quot;Camera Stay Above&quot;  and &quot;Camera Stay Below&quot; are unclear."/>
     <value nybble="8" title="Unknown 8"/>
@@ -1397,7 +1399,7 @@
     <checkbox nybble="6" title="Move Counter Clockwise" comment="When checked, the spike top will move counter clockwise."/>
   </sprite>
   <sprite id="160" name="Horizontal Camera Limit - Bottom">
-    <value nybble="5" title="Unknown Value 5" comment="..."/>
+    <value nybble="5" title="Camera X Offset" comment="Sets how far left/right the limit the camera will render."/>
     <checkbox nybble="7" title="Permeable Camera Limit" comment="When Set to 1, the camera will scroll past the border if the player passes it. Needs either &quot;Camera Stays to the Left&quot; or &quot;Camera Stays to the Right&quot; checked."/>
     <value nybble="8" title="Unknown Value 8" comment="Checkbox?"/>
     <list nybble="11" title="Scrolling Limit" comment="If &quot;Permable Camera Limit&quot; is checked, the camera will scroll past the limit.">
@@ -1408,7 +1410,7 @@
     <value nybble="13" title="Unknown Value 13" comment="..."/>
   </sprite>
   <sprite id="161" name="Horizontal Camera Limit - Top">
-    <value nybble="5" title="Unknown Value 5" comment="..."/>
+    <value nybble="5" title="Camera X Offset" comment="Sets how far left/right the limit the camera will render."/>
     <value nybble="6" title="Unknown Value 6" comment="Checkbox?"/>
     <checkbox nybble="7" title="Permeable Camera Limit" comment="When Set to 1, the camera will scroll past the border if the player passes it. Needs either &quot;Camera Stays to the Left&quot; or &quot;Camera Stays to the Right&quot; checked."/>
     <list nybble="11" title="Scrolling Limit" comment="If &quot;Permable Camera Limit&quot; is checked, the camera will scroll past the limit.">
@@ -1758,14 +1760,15 @@
   </sprite>
   <sprite id="194" name="Cheep Cheep" notes="A fish that lurks the oceans and rivers to attack Mario. Takes 1 fireball shot be killed.">
     <list nybble="6" title="Type" comment="8 is unused.">
-      <entry value="0">Red</entry>
-      <entry value="1">Green</entry>
+      <entry value="0">Cheep Cheep</entry>
+      <entry value="1">Deep Cheep</entry>
       <entry value="2">Frozen</entry>
       <entry value="3">Swims Right (Short)</entry>
       <entry value="4">Swims Right</entry>
-      <entry value="8">Yellow/Eep Cheep (Dodges Player)</entry>
+      <entry value="8">Eep Cheep</entry>
     </list>
     <value nybble="7" title="Unknown 7"/>
+    <checkbox nybble="11" title="Swims Left"/>
   </sprite>
   <sprite id="195" name="Big Cheep Cheep">
     <list nybble="6" title="Type" comment="May be more to test.">
@@ -1980,6 +1983,7 @@
       <entry value="1">Faster</entry>
       <entry value="2">Fastest</entry>
     </list>
+    <checkbox nybble="10" title="Deletes Itself" comment="If checked, the snakeblock will delete itself."/>
     <checkbox nybble="17" title="Already Moving" comment="When this is checked, the snakeblock will move without the player steping onto it."/>
     <list nybble="19" title="Ending Behavior" comment="Sets how the snakeblock should act when reaching the final path node. Values of 6 or greater crash the game.">
       <entry value="0">Stops</entry>
@@ -2017,8 +2021,10 @@
       <entry value="1">Faster</entry>
       <entry value="2">Fastest</entry>
     </list>
+    <checkbox nybble="10" title="Deletes Itself" comment="If checked, the snakeblock will delete itself."/>
     <value nybble="12" title="Group ID" comment="Use this ID to link it to a GroupID (98)"/>
-    <checkbox nybble="18" title="Already Moving" comment="When this is checked, the snakeblock will move without the player steping onto it."/>
+    <checkbox nybble="17" title="Already Moving" comment="When this is checked, the snakeblock will move without the player steping onto it."/>
+    <checkbox nybble="18" title="Ice Snakeblock" comment="If checked, the snakeblock will be an ice snakeblock."/>
     <list nybble="19" title="Ending Behavior" comment="Sets how the snakeblock should act when reaching the final path node. Values of 6 or greater crash the game.">
       <entry value="0">Stops</entry>
       <entry value="1">Jumps Right</entry>
@@ -2407,22 +2413,18 @@
   <sprite id="267" name="Long ? Block">
     <value nybble="1-2" title="Unknown Field 1-2"/>
     <list nybble="14" title="Contents" comment="Always contains two coins plus whatever is selected here. ">
-      <entry value="0">Nothing</entry>
+      <entry value=" 0">Empty</entry>
       <entry value="1">Coin</entry>
       <entry value="2">Fire Flower</entry>
-      <entry value="3">Nothing</entry>
-      <entry value="4">Raccoon Leaf</entry>
-      <entry value="5">Golden Flower</entry>
+      <entry value="4">Tanooki Leaf</entry>
+      <entry value="5">Gold Flower</entry>
       <entry value="6">Mini Mushroom</entry>
-      <entry value="7">Super Star</entry>
-      <entry value="8">Coin</entry>
-      <entry value="9">Nothing</entry>
-      <entry value="10">Multi hit lots of coins</entry>
-      <entry value="11">1-UP Mushroom</entry>
-      <entry value="12">Nothing</entry>
-      <entry value="13">Spring</entry>
-      <entry value="14">Coin / Mushroom (if small)</entry>
-      <entry value="15">Nothing</entry>
+      <entry value="7">Star</entry>
+      <entry value="8">Star/Coin</entry>
+      <entry value="10">10 Coins</entry>
+      <entry value="11">1-UP</entry>
+      <entry value="13">Trampoline</entry>
+      <entry value="14">Mushroom/Coin</entry>
     </list>
   </sprite>
   <sprite id="268" name="Rectangle Lift - Lava">

@@ -60,6 +60,9 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
     case 22: // Special Exit Controller
         ret = new SpecialExitControllerRenderer(spr);
         break;
+    case 24: case 25: // Flying Question Block
+        ret = new FlyingQuestionBlockRenderer(spr);
+        break;
     case 26: // Roulette Block
         ret = new RouletteBlockRenderer(spr);
         break;
@@ -229,10 +232,10 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
         ret = new NormalImageRenderer(spr, "wiggler.png");
         break;
     case 100: // Rotation Controlled ? Block
-        ret = new ItemBlockRenderer(spr, "question_block.png");
+        ret = new ItemBlockRenderer(spr, tilesets[0]);
         break;
     case 101: // Movement Controlled ? Block
-        ret = new ItemBlockRenderer(spr, "question_block.png");
+        ret = new ItemBlockRenderer(spr, tilesets[0]);
         break;
     case 106: // Trampoline
         ret = new NormalImageRenderer(spr, "trampoline.png");
@@ -457,10 +460,10 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
         ret = new NormalImageRenderer(spr, "spiny_cheep_cheep.png");
         break;
     case 203: // Rotation Controlled Brick Block
-        ret = new ItemBlockRenderer(spr, "brick_block.png");
+        ret = new ItemBlockRenderer(spr, tilesets[0]);
         break;
     case 204: // Movement Controlled Brick Block
-        ret = new ItemBlockRenderer(spr, "brick_block.png");
+        ret = new ItemBlockRenderer(spr, tilesets[0]);
         break;
     case 205: // Red Ring
         ret = new NormalImageRenderer(spr, "red_ring.png");
@@ -556,28 +559,10 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
         ret = new NormalImageRenderer(spr, "bowser_head_statue.png");
         break;
     case 259: // Rotation Controlled Hard Block
-        ret = new HardBlockRenderer(spr);
-        break;
-    case 260: // Tower Cutscene Roy
-        ret = new NormalImageRenderer(spr, "roy_cutscene.png");
-        break;
-    case 261: // Tower Cutscene Iggy
-        ret = new NormalImageRenderer(spr, "iggy_cutscene.png");
-        break;
-    case 262: // Tower Cutscene Wendy
-        ret = new NormalImageRenderer(spr, "wendy_cutscene.png");
-        break;
-    case 263: // Tower Cutscene Morton
-        ret = new NormalImageRenderer(spr, "morton_cutscene.png");
-        break;
-    case 264: // Tower Cutscene Ludwig
-        ret = new NormalImageRenderer(spr, "ludwig_cutscene.png");
-        break;
-    case 265: // Tower Cutscene No koopa
-        ret = new NormalImageRenderer(spr, "tower_cutscene.png");
+        ret = new HardBlockRenderer(spr, tilesets[0]);
         break;
     case 267: // Long Question Block
-        ret = new ItemBlockRenderer(spr, "long_question_block.png");
+        ret = new ItemBlockRenderer(spr, tilesets[0]);
         break;
     case 269: // Gold Ship
         ret = new NormalImageRenderer(spr, "gold_ship.png");
@@ -595,10 +580,10 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
         ret = new NormalImageRenderer(spr, "flying_gold_block.png");
         break;
     case 275: // Long Question Block - Underground
-        ret = new ItemBlockRenderer(spr, "long_question_block_underground.png");
+        ret = new ItemBlockRenderer(spr, tilesets[0]);
         break;
     case 276: // Long Question Block - Lava
-        ret = new ItemBlockRenderer(spr, "long_question_block_lava.png");
+        ret = new ItemBlockRenderer(spr, tilesets[0]);
         break;
     case 277: // Switchable Conveyor Belt
         ret = new NormalImageRenderer(spr, "switchable_conveyor_belt.png");
@@ -769,11 +754,12 @@ void PipeFlowRenderer::render(QPainter *painter, QRect *)
         default: direction = "up"; break;
     }
 
+    int x = spr->getx()+spr->getOffsetX();
+    int y = spr->gety()+spr->getOffsetY();
+
     if (spr->getNybble(10) != 1)
-        painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), ImageCache::getInstance()->get(SpriteImg, dir + "air_" + direction + ".png"));
-    painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), ImageCache::getInstance()->get(SpriteImg, dir + "bubbles_" + direction + ".png"));
-
-
+        painter->drawPixmap(x, y, spr->getwidth(), spr->getheight(), ImageCache::getInstance()->get(SpriteImg, dir + "air_" + direction + ".png"));
+    painter->drawPixmap(x, y, spr->getwidth(), spr->getheight(), ImageCache::getInstance()->get(SpriteImg, dir + "bubbles_" + direction + ".png"));
 }
 
 // Sprite 2: Downwards Water Pull
@@ -784,10 +770,13 @@ DownWaterPullRenderer::DownWaterPullRenderer(const Sprite *spr)
 
 void DownWaterPullRenderer::render(QPainter *painter, QRect *)
 {
+    int x = spr->getx()+spr->getOffsetX();
+    int y = spr->gety()+spr->getOffsetY();
+
     if (spr->getNybble(10) == 1)
-        painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), ImageCache::getInstance()->get(SpriteImg, "down_water_pull.png"));
+        painter->drawPixmap(x, y, spr->getwidth(), spr->getheight(), ImageCache::getInstance()->get(SpriteImg, "down_water_pull.png"));
     else
-        painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), ImageCache::getInstance()->get(SpriteImg, "down_water_pull_big.png"));
+        painter->drawPixmap(x, y, spr->getwidth(), spr->getheight(), ImageCache::getInstance()->get(SpriteImg, "down_water_pull_big.png"));
 }
 
 // Sprite 4/5/6/7: Burner Right/Down/Left/Up
@@ -799,8 +788,13 @@ BurnerRenderer::BurnerRenderer(const Sprite *spr, QString name)
 
 void BurnerRenderer::render(QPainter *painter, QRect *)
 {
-    if (spr->getNybble(4) == 1) painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), ImageCache::getInstance()->get(SpriteImg, name + "_big.png"));
-    else painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), ImageCache::getInstance()->get(SpriteImg, name + ".png"));
+    int x = spr->getx()+spr->getOffsetX();
+    int y = spr->gety()+spr->getOffsetY();
+
+    if (spr->getNybble(4) == 1)
+        painter->drawPixmap(x, y, spr->getwidth(), spr->getheight(), ImageCache::getInstance()->get(SpriteImg, name + "_big.png"));
+    else
+        painter->drawPixmap(x, y, spr->getwidth(), spr->getheight(), ImageCache::getInstance()->get(SpriteImg, name + ".png"));
 }
 
 // Sprite 9: Whomp
@@ -856,7 +850,6 @@ void TileGodRenderer::render(QPainter *painter, QRect *)
             tileGrid[0xFFFFFFFF] = 1;
 
             tempPainter.setOpacity(0.5);
-
             int tileId = tileIds[0];
 
             if (spr->getNybble(6) < 12)
@@ -891,6 +884,55 @@ void SpecialExitControllerRenderer::render(QPainter *painter, QRect *)
     painter->drawText(sprRect.adjusted(2,2,15,0), "Warp");
 }
 
+// Sprite 24: Flying Question Block
+FlyingQuestionBlockRenderer::FlyingQuestionBlockRenderer(const Sprite *spr)
+{
+    this->spr = spr;
+}
+void FlyingQuestionBlockRenderer::render(QPainter *painter, QRect *)
+{
+    QString type;
+    QString overlay;
+
+    switch (spr->getNybble(5))
+    {
+        case 1: type = "_underground.png"; break;
+        case 2: type = "_snow.png"; break;
+        case 3: type = "_lava.png"; break;
+        default: type = ".png"; break;
+    }
+
+    switch (spr->getNybble(13))
+    {
+        case 0: break;
+        case 1: overlay = "coin.png"; break;
+        case 2: overlay = "fire_flower.png"; break;
+        case 4: overlay = "super_leaf.png"; break;
+        case 5: overlay = "gold_flower.png"; break;
+        case 6: overlay = "mini_mushroom.png"; break;
+        case 7: overlay = "super_star.png"; break;
+        case 8: overlay = "coin_star.png"; break;
+        case 9: overlay = "mega_mushroom.png"; break;
+        case 10: overlay = "10_coins.png"; break;
+        case 11: overlay = "1up_mushroom.png"; break;
+        case 13: overlay = "trampoline.png"; break;
+        case 14: overlay = "coin_super_mushroom.png"; break;
+        default: return;
+    }
+
+    if (spr->getid() == 25)
+    {
+        type = ".png";
+        overlay = "1up_mushroom.png";
+    }
+
+    int x = spr->getx()+spr->getOffsetX();
+    int y = spr->gety()+spr->getOffsetY();
+
+    painter->drawPixmap(x, y, 28, 22, ImageCache::getInstance()->get(SpriteImg, "flying_question_block" + type));
+    painter->drawPixmap(x+2, y+1, 18, 18, ImageCache::getInstance()->get(TileOverlay, overlay));
+}
+
 // Sprite 26: Roulette Block
 RouletteBlockRenderer::RouletteBlockRenderer(const Sprite *spr)
 {
@@ -907,8 +949,11 @@ void RouletteBlockRenderer::render(QPainter *painter, QRect *)
         default: contents = "flower_star.png"; break;
     }
 
-    painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), 30, 30, ImageCache::getInstance()->get(SpriteImg, "roulette_block/roulette_block.png"));
-    painter->drawPixmap(spr->getx()+spr->getOffsetX()+5, spr->gety()+spr->getOffsetY()+5, 20, 20, ImageCache::getInstance()->get(SpriteImg, "roulette_block/" + contents));
+    int x = spr->getx()+spr->getOffsetX();
+    int y = spr->gety()+spr->getOffsetY();
+
+    painter->drawPixmap(x, y, 30, 30, ImageCache::getInstance()->get(SpriteImg, "roulette_block/roulette_block.png"));
+    painter->drawPixmap(x+5, y+5, 20, 20, ImageCache::getInstance()->get(SpriteImg, "roulette_block/" + contents));
 }
 
 // Sprite 28/60/101/204/: Movement Controlled Sprites
@@ -921,10 +966,7 @@ MovementSpriteRenderer::MovementSpriteRenderer(const Sprite *spr, QString fileNa
 void MovementSpriteRenderer::render(QPainter *painter, QRect *drawrect)
 {
     img->render(painter, drawrect);
-
-    QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/tileoverlays/");
-    painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), 20, 20, QPixmap(basePath + "movement.png"));
-
+    painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), 20, 20, ImageCache::getInstance()->get(TileOverlay, "movement.png"));
 }
 
 // Sprite 38: Reznor Wheel
@@ -935,23 +977,26 @@ ReznorWheelRenderer::ReznorWheelRenderer(const Sprite *spr)
 
 void ReznorWheelRenderer::render(QPainter *painter, QRect *)
 {
+    int x = spr->getx()+spr->getOffsetX();
+    int y = spr->gety()+spr->getOffsetY();
+
     if(spr->getNybble(6) == 1)
-        painter->drawPixmap(spr->getx()+spr->getOffsetX(),spr->gety()+spr->getOffsetY(),349, 353, ImageCache::getInstance()->get(SpriteImg, "reznor_wheel_big.png"));
+        painter->drawPixmap(x, y, 349, 353, ImageCache::getInstance()->get(SpriteImg, "reznor_wheel_big.png"));
     else
     {   //Wheel
-        painter->drawPixmap(spr->getx()+spr->getOffsetX(),spr->gety()+spr->getOffsetY(),201, 177, ImageCache::getInstance()->get(SpriteImg, "reznor_wheel.png"));
+        painter->drawPixmap(x, y, 201, 177, ImageCache::getInstance()->get(SpriteImg, "reznor_wheel.png"));
         //Top Right
         if((spr->getNybble(5) == 1)||(spr->getNybble(5) == 3)||(spr->getNybble(5) == 5)||(spr->getNybble(5) == 7)||(spr->getNybble(5) == 9)||(spr->getNybble(5) == 11)||(spr->getNybble(5) == 13)||(spr->getNybble(5) == 15))
-            painter->drawPixmap(spr->getx()+spr->getOffsetX()+145,spr->gety()+spr->getOffsetY()-10,48, 55, ImageCache::getInstance()->get(SpriteImg, "reznor.png"));
+            painter->drawPixmap(x+145, y-10, 48, 55, ImageCache::getInstance()->get(SpriteImg, "reznor.png"));
         //Top Left
         if((spr->getNybble(5) == 2)||(spr->getNybble(5) == 3)||(spr->getNybble(5) == 6)||(spr->getNybble(5) == 7)||(spr->getNybble(5) == 10)||(spr->getNybble(5) == 11)||(spr->getNybble(5) == 14)||(spr->getNybble(5) == 15))
-            painter->drawPixmap(spr->getx()+spr->getOffsetX()+35,spr->gety()+spr->getOffsetY()-40,48, 55, ImageCache::getInstance()->get(SpriteImg, "reznor.png"));
+            painter->drawPixmap(x+35, y-40, 48, 55, ImageCache::getInstance()->get(SpriteImg, "reznor.png"));
         //Bottom Left
         if((spr->getNybble(5) == 4)||(spr->getNybble(5) == 5)||(spr->getNybble(5) == 6)||(spr->getNybble(5) == 7)||(spr->getNybble(5) == 12)||(spr->getNybble(5) == 13)||(spr->getNybble(5) == 14)||(spr->getNybble(5) == 15))
-            painter->drawPixmap(spr->getx()+spr->getOffsetX()+5,spr->gety()+spr->getOffsetY()+71,48, 55, ImageCache::getInstance()->get(SpriteImg, "reznor.png"));
+            painter->drawPixmap(x+5, y+71, 48, 55, ImageCache::getInstance()->get(SpriteImg, "reznor.png"));
         //Bottom Right
         if((spr->getNybble(5) == 8)||(spr->getNybble(5) == 9)||(spr->getNybble(5) == 10)||(spr->getNybble(5) == 11)||(spr->getNybble(5) == 12)||(spr->getNybble(5) == 13)||(spr->getNybble(5) == 14)||(spr->getNybble(5) == 15))
-            painter->drawPixmap(spr->getx()+spr->getOffsetX()+115,spr->gety()+spr->getOffsetY()+100,48, 55, ImageCache::getInstance()->get(SpriteImg, "reznor.png"));
+            painter->drawPixmap(x+115, y+100, 48, 55, ImageCache::getInstance()->get(SpriteImg, "reznor.png"));
     }
 }
 
@@ -1028,11 +1073,10 @@ void RotationSpriteRenderer::render(QPainter *painter, QRect *drawrect)
 {
     img->render(painter,drawrect);
 
-    QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/tileoverlays/");
     if((spr->getwidth() == 20) && (spr->getheight() == 20))
-        painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), 20, 20, QPixmap(basePath + "rotation.png"));
+        painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), 20, 20, ImageCache::getInstance()->get(TileOverlay, "rotation.png"));
     else
-        painter->drawPixmap(spr->getx()+spr->getOffsetX()+10, spr->gety()+spr->getOffsetY()+10, 20, 20, QPixmap(basePath + "rotation.png"));
+        painter->drawPixmap(spr->getx()+spr->getOffsetX()+10, spr->gety()+spr->getOffsetY()+10, 20, 20, ImageCache::getInstance()->get(TileOverlay, "rotation.png"));
 }
 
 // Sprite 61: RedCoin
@@ -1456,14 +1500,72 @@ MushroomPlatformRenderer::MushroomPlatformRenderer(const Sprite *spr)
 
 void MushroomPlatformRenderer::render(QPainter *painter, QRect *)
 {
-    painter->drawPixmap(QRect(spr->getx(), spr->gety()+20, 20, 80), ImageCache::getInstance()->get(SpriteImg, "mushroom_platform/stem_top.png"));
-    for (int i = 0; i < spr->getNybble(10); i++)
-        painter->drawPixmap(QRect(spr->getx(), spr->gety()+100+i*20, 20, 20), ImageCache::getInstance()->get(SpriteImg, "mushroom_platform/stem.png"));
-    painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX(), spr->gety(), 24, 20), ImageCache::getInstance()->get(SpriteImg, "mushroom_platform/l.png"));
-    for (int i = 20; i < spr->getwidth()-20; i += 20)
-        painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()+i, spr->gety(), 20, 20), ImageCache::getInstance()->get(SpriteImg, "mushroom_platform/m.png"));
-    painter->drawPixmap(QRect(spr->getx()-spr->getOffsetX()-4, spr->gety(), 24, 20), ImageCache::getInstance()->get(SpriteImg, "mushroom_platform/r.png"));
+    QPixmap platform(spr->getwidth(), 20);
+    platform.fill(Qt::transparent);
+    QPainter platformPainter(&platform);
 
+    int stretchHeight = 0;
+    if (spr->getNybble(8) == 2)
+    {
+        switch (spr->getNybble(9))
+        {
+            case 1: case 5: case 9: case 13:
+                stretchHeight = 20;
+                break;
+            case 2: case 6: case 10: case 14:
+                stretchHeight = 40;
+                break;
+            case 3: case 7: case 11: case 15:
+                stretchHeight = 60;
+                break;
+            default:
+                stretchHeight = 0;
+                break;
+        }
+    }
+
+    // Draw the platform into a pixmap for use later
+    platformPainter.drawPixmap(0, 0, 24, 20, ImageCache::getInstance()->get(SpriteImg, "mushroom_platform/l.png"));
+    for (int i = 20; i < spr->getwidth()-20; i += 20)
+        platformPainter.drawPixmap(0+i, 0, 20, 20, ImageCache::getInstance()->get(SpriteImg, "mushroom_platform/m.png"));
+    platformPainter.drawPixmap(spr->getwidth()-24, 0, 24, 20, ImageCache::getInstance()->get(SpriteImg, "mushroom_platform/r.png"));
+
+    // Draw transparent flat version of platform
+    painter->setOpacity(0.3);
+    painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety(), platform.width(), platform.height(), platform);
+    painter->setOpacity(1);
+
+    // Draw the stem
+    painter->drawPixmap(QRect(spr->getx(), spr->gety()+5-stretchHeight, 20, 80), ImageCache::getInstance()->get(SpriteImg, "mushroom_platform/stem_top_extended.png"));
+    painter->drawPixmap(QRect(spr->getx(), spr->gety()+20-stretchHeight, 20, 80), ImageCache::getInstance()->get(SpriteImg, "mushroom_platform/stem_top.png"));
+    for (int i = 0; i < spr->getNybble(10)+(stretchHeight/20); i++)
+        painter->drawPixmap(QRect(spr->getx(), spr->gety()+100+i*20-stretchHeight, 20, 20), ImageCache::getInstance()->get(SpriteImg, "mushroom_platform/stem.png"));
+
+    if (spr->getNybble(7) > 8)
+    {
+        // Draw transparent tilted version of the platform - Facing Left
+        painter->setOpacity(0.3);
+        QPixmap platformRotatedL = platform.transformed(QTransform().rotate(-11.25*(spr->getNybble(7)-8)));
+        painter->drawPixmap(spr->getx()-(platformRotatedL.width()/2)+10, spr->gety()-(platformRotatedL.height()/2)+10-stretchHeight, platformRotatedL.width(), platformRotatedL.height(), platformRotatedL);
+        painter->setOpacity(1);
+
+        // Draw solid tilted version of the platform - Facing Right
+        QPixmap platformRotated = platform.transformed(QTransform().rotate(11.25*(spr->getNybble(7)-8)));
+        painter->drawPixmap(spr->getx()-(platformRotated.width()/2)+10, spr->gety()-(platformRotated.height()/2)+10-stretchHeight, platformRotated.width(), platformRotated.height(), platformRotated);
+    }
+
+    if (spr->getNybble(7) < 8)
+    {
+        // Draw transparent tilted version of the platform - Facing Right
+        painter->setOpacity(0.3);
+        QPixmap platformRotatedR = platform.transformed(QTransform().rotate(11.25*spr->getNybble(7)));
+        painter->drawPixmap(spr->getx()-(platformRotatedR.width()/2)+10, spr->gety()-(platformRotatedR.height()/2)+10-stretchHeight, platformRotatedR.width(), platformRotatedR.height(), platformRotatedR);
+        painter->setOpacity(1);
+
+        // Draw solid tilted version of the platform - Facing Left
+        QPixmap platformRotated = platform.transformed(QTransform().rotate(-11.25*spr->getNybble(7)));
+        painter->drawPixmap(spr->getx()-(platformRotated.width()/2)+10, spr->gety()-(platformRotated.height()/2)+10-stretchHeight, platformRotated.width(), platformRotated.height(), platformRotated);
+    }
 }
 
 
@@ -1891,15 +1993,22 @@ void SnakeBlockRenderer::render(QPainter *painter, QRect *)
     int curX = 0;
     int curY = 0;
 
+    QString ice = "";
+    if (spr->getid() == 218 && spr->getNybble(17) == 1)
+        ice = "ice_";
+
     if (!(nextNode >= path->getNumberOfNodes()))
     {
         curX = path->getNode(curNode)->getx();
         curY = path->getNode(curNode)->gety();
-        painter->drawPixmap(QRect(curX, curY, 20, 20), ImageCache::getInstance()->get(SpriteImg, "snakeblock_tail.png"));
+        painter->drawPixmap(QRect(curX, curY, 20, 20), ImageCache::getInstance()->get(SpriteImg, ice + "snakeblock_tail.png"));
     }
+
 
     if (startnode < path->getNumberOfNodes())
     {
+        painter->drawPixmap(QRect(path->getNode(startnode)->getx(), path->getNode(startnode)->gety(), 20, 20), ImageCache::getInstance()->get(SpriteImg, ice + "snakeblock_tail.png"));
+
         while (blocksToDraw > 0)
         {
             if (nextNode >= path->getNumberOfNodes())
@@ -1924,9 +2033,9 @@ void SnakeBlockRenderer::render(QPainter *painter, QRect *)
             curY = curY+y;
 
             if (blocksToDraw == 1)
-                painter->drawPixmap(QRect(curX, curY, 20, 20), ImageCache::getInstance()->get(SpriteImg, "snakeblock.png"));
+                painter->drawPixmap(QRect(curX, curY, 20, 20), ImageCache::getInstance()->get(SpriteImg, ice + "snakeblock.png"));
             else
-                painter->drawPixmap(QRect(curX, curY, 20, 20), ImageCache::getInstance()->get(SpriteImg, "snakeblock_tail.png"));
+                painter->drawPixmap(QRect(curX, curY, 20, 20), ImageCache::getInstance()->get(SpriteImg, ice + "snakeblock_tail.png"));
 
             if (curX == path->getNode(nextNode)->getx() && curY == path->getNode(nextNode)->gety())
             {
@@ -2225,17 +2334,55 @@ void ChainChompRenderer::render(QPainter *painter, QRect *drawrect)
 }
 
 // Sprites 100/101/203/204/267/275/276: Item Blocks
-ItemBlockRenderer::ItemBlockRenderer(const Sprite *spr, QString filename)
+ItemBlockRenderer::ItemBlockRenderer(const Sprite *spr, Tileset *tileset)
 {
     this->spr = spr;
-    block = new NormalImageRenderer(spr, filename);
+    this->tileset = tileset;
 }
 
-void ItemBlockRenderer::render(QPainter *painter, QRect *drawrect)
+void ItemBlockRenderer::render(QPainter *painter, QRect *)
 {
-    block->render(painter, drawrect);
+    bool invalid = false;
+    if (tileset == NULL)
+    {
+        painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), ImageCache::getInstance()->get(TileOverride, "error.png"));
+        invalid = true;
+    }
+    else
+    {    if (spr->getid() != 267 || spr->getid() != 275 || spr->getid() != 276)
+        {
+            int tileId = 0;
+            switch (spr->getid())
+            {
+            case 100: case 101: tileId = 21; break;
+            case 203: case 204: tileId = 20; break;
+            }
 
-    QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/tileoverlays/");
+            QPixmap block(spr->getwidth(), spr->getheight());
+            block.fill(QColor(0,0,0,0));
+            QPainter tempPainter(&block);
+
+            TileGrid tileGrid;
+            tileGrid[0xFFFFFFFF] = 1;
+
+            tileset->drawTile(tempPainter, tileGrid, tileId, 0, 0, 1, 0);
+            painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), 20, 20, block);
+        }
+    }
+
+    if ( spr->getid() == 267 || spr->getid() == 275 || spr->getid() == 276 )
+    {
+        QString filename;
+        switch (spr->getid())
+        {
+            case 267: filename = "long_question_block.png"; break;
+            case 275: filename = "long_question_block_underground.png"; break;
+            case 276: filename = "long_question_block_lava.png"; break;
+            default: return;
+        }
+        painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), ImageCache::getInstance()->get(SpriteImg, filename));
+    }
+
     QString overlay;
 
     switch (spr->getNybble(13))
@@ -2255,15 +2402,15 @@ void ItemBlockRenderer::render(QPainter *painter, QRect *drawrect)
         default: return;
     }
 
-    if ((spr->getheight() == 20) && (spr->getwidth() == 20))
-        painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), 20, 20, QPixmap(basePath + overlay));
-    else
-        painter->drawPixmap(spr->getx()+spr->getOffsetX()+20, spr->gety()+spr->getOffsetY(), 20, 20, QPixmap(basePath + overlay));
+        if (((spr->getheight() == 20) && (spr->getwidth() == 20)) && !invalid)
+            painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), 20, 20, ImageCache::getInstance()->get(TileOverlay, overlay));
+        else
+            painter->drawPixmap(spr->getx()+spr->getOffsetX()+20, spr->gety()+spr->getOffsetY(), 20, 20, ImageCache::getInstance()->get(TileOverlay, overlay));
 
-    if((spr->getid() == 100) || (spr->getid() == 203))
-        painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), 20, 20, QPixmap(basePath + "rotation.png"));
-    if((spr->getid() == 101) || (spr->getid() == 204))
-        painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), 20, 20, QPixmap(basePath + "movement.png"));
+        if(((spr->getid() == 100) || (spr->getid() == 203)) && !invalid)
+            painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), 20, 20, ImageCache::getInstance()->get(TileOverlay, "rotation.png"));
+        if(((spr->getid() == 101) || (spr->getid() == 204)) && !invalid)
+            painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), 20, 20, ImageCache::getInstance()->get(TileOverlay, "movement.png"));
 }
 
 // Sprite 253: Larry Battle Platform
@@ -2283,18 +2430,66 @@ void LarryPlatformRenderer::render(QPainter *painter, QRect *)
 }
 
 // Sprite 259: Rotation Controlled hard Block
-HardBlockRenderer::HardBlockRenderer(const Sprite *spr)
+HardBlockRenderer::HardBlockRenderer(const Sprite *spr, Tileset *tileset)
 {
     this->spr = spr;
+    this->tileset = tileset;
 }
 
 void HardBlockRenderer::render(QPainter *painter, QRect *)
 {
-    if (spr->getNybble(12) == 1) painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), ImageCache::getInstance()->get(SpriteImg, + "pivot_block.png"));
-    else if (spr->getNybble(12) == 2)painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(),ImageCache::getInstance()->get(SpriteImg,+ "used_block.png"));
-    else if (spr->getNybble(12) >= 3)painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), ImageCache::getInstance()->get(SpriteImg, + "brick_block.png"));
-    else painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), ImageCache::getInstance()->get(SpriteImg, + "stone_block.png"));
-    painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), 20, 20, QPixmap(QCoreApplication::applicationDirPath() + "/coinkiller_data/tileoverlays/rotation.png"));
+    if (tileset == NULL)
+    {
+        painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), ImageCache::getInstance()->get(TileOverride, "error.png"));
+    }
+    else
+    {
+        int tileId = 0;
+        switch (spr->getNybble(12))
+        {
+            case 1: tileId = 33; break;
+            case 2: tileId = 22; break;
+            case 3: tileId = 20; break;
+            default: tileId = 24; break;
+        }
+
+        QPixmap block(spr->getwidth(), spr->getheight());
+        block.fill(QColor(0,0,0,0));
+        QPainter tempPainter(&block);
+
+        TileGrid tileGrid;
+        tileGrid[0xFFFFFFFF] = 1;
+
+        tileset->drawTile(tempPainter, tileGrid, tileId, 0, 0, 1, 0);
+        painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), 20, 20, block);
+        painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), 20, 20, QPixmap(QCoreApplication::applicationDirPath() + "/coinkiller_data/tileoverlays/rotation.png"));
+    }
+}
+
+// Sprite 260/261/262/263/264/256: Boss Cutscene Controllers
+BossControllerRenderer::BossControllerRenderer(const Sprite *spr, const Zone *zone)
+{
+    this->spr = spr;
+    this->zone = zone;
+}
+
+void BossControllerRenderer::render(QPainter *painter, QRect *)
+{
+    int x = zone->getx()+zone->getwidth()-80;
+    int y = zone->gety();
+
+    QString bossName;
+    switch (spr->getid())
+    {
+        case 260: bossName = "roy"; break;
+        case 261: bossName = "iggy"; break;
+        case 262: bossName = "wendy"; break;
+        case 263: bossName = "morton"; break;
+        case 264: bossName = "ludwig"; break;
+        default: bossName = "tower"; break;
+    }
+
+    painter->drawPixmap(x, y, 70, 140, ImageCache::getInstance()->get(SpriteImg, bossName + "_cutscene.png"));
 }
 
 // Sprite 280: + Clock
@@ -2472,6 +2667,67 @@ void EntranceRenderer::render(QPainter *painter, QRect *drawrect)
     painter->drawText(textRect, QString("%1").arg(entr->getid()), Qt::AlignLeft | Qt::AlignTop);
 }
 
+// Vertical Camera Limit Renderer
+VCameraLimitRenderer::VCameraLimitRenderer(int leftX, int rightX, int yPos, int yRenderOffset, bool permiable)
+{
+    this->leftX = leftX;
+    this->rightX = rightX;
+    this->yPos = yPos;
+    this->yRenderOffset = yRenderOffset;
+    this->permiable = permiable;
+}
+
+void VCameraLimitRenderer::render(QPainter *painter, QRect *)
+{
+    QPen normalPen(Qt::black, 2, Qt::SolidLine, Qt::FlatCap);
+    QPen permiablePen(Qt::black, 2, Qt::DashLine, Qt::FlatCap);
+    QPen offsetPen(Qt::black, 2, Qt::SolidLine, Qt::FlatCap);
+
+    if(permiable)
+        painter->setPen(permiablePen);
+    else
+        painter->setPen(normalPen);
+
+    painter->drawLine(leftX+20, yPos+19, rightX, yPos+19);
+
+    if (yRenderOffset !=0)
+    {
+        painter->setPen(offsetPen);
+        painter->drawLine(leftX, yPos+19+yRenderOffset, rightX+20, yPos+19+yRenderOffset);
+        painter->drawLine(leftX, yPos+19-yRenderOffset, rightX+20, yPos+19-yRenderOffset);
+    }
+}
+
+// Horizontal Camera Limit Renderer
+HCameraLimitRenderer::HCameraLimitRenderer(int topY, int bottomY, int xPos, int xRenderOffset, bool permiable)
+{
+    this->topY = topY;
+    this->bottomY = bottomY;
+    this->xPos = xPos;
+    this->xRenderOffset = xRenderOffset;
+    this->permiable = permiable;
+}
+
+void HCameraLimitRenderer::render(QPainter *painter, QRect *)
+{
+    QPen normalPen(Qt::black, 2, Qt::SolidLine, Qt::FlatCap);
+    QPen permiablePen(Qt::black, 2, Qt::DashLine, Qt::FlatCap);
+    QPen offsetPen(Qt::black, 2, Qt::SolidLine, Qt::FlatCap);
+
+    if(permiable)
+        painter->setPen(permiablePen);
+    else
+        painter->setPen(normalPen);
+
+    painter->drawLine(xPos+19, bottomY, xPos+19, topY+20);
+
+    if (xRenderOffset !=0)
+    {
+        painter->setPen(offsetPen);
+        painter->drawLine(xPos+19+xRenderOffset, bottomY+20, xPos+19+xRenderOffset, topY);
+        painter->drawLine(xPos+19-xRenderOffset, bottomY+20, xPos+19-xRenderOffset, topY);
+    }
+}
 
 // Liquid Renderer
 

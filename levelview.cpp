@@ -46,9 +46,9 @@ LevelView::LevelView(QWidget *parent, Level* level) : QWidget(parent)
     grid = false;
     checkerboard = false;
     renderLiquids = false;
+    renderCameraLimits = false;
     renderSprites = true;
     renderPaths = true;
-
 }
 
 LevelView::~LevelView()
@@ -246,6 +246,30 @@ void LevelView::paintEvent(QPaintEvent* evt)
             }
         }
 
+        // Render Boss Cutscene Controllers
+        for (int i = 0; i < level->zones.size(); i++)
+        {
+            const Zone* zone = level->zones.at(i);
+
+            QRect zonerect(zone->getx(), zone->gety(), zone->getwidth(), zone->getheight());
+
+            if (!drawrect.intersects(zonerect))
+                continue;
+
+            foreach (Sprite* s, level->sprites)
+            {
+                if (s->getid() != 260 && s->getid() != 261 && s->getid() != 262
+                        && s->getid() != 263 && s->getid() != 264 && s->getid() != 265)
+                    continue;
+
+                if (zonerect.contains(s->getx(), s->gety(), false))
+                {
+                    BossControllerRenderer BossControllerRenderer(s, zone);
+                    BossControllerRenderer.render(&painter, &drawrect);
+                }
+            }
+        }
+
         // Render Path Controlled Sprites
         for (int i = 0; i < level->paths.size(); i++)
         {
@@ -300,6 +324,145 @@ void LevelView::paintEvent(QPaintEvent* evt)
 
             SpriteRenderer sprRend(spr, level->tilesets);
             sprRend.render(&painter, &drawrect);
+        }
+
+        // Render Camera Limit Boundries
+        if (renderCameraLimits)
+        {
+            for (int i = 0; i < level->sprites.size(); i++)
+            {
+                QList<Sprite*> leftLimits;
+                QList<Sprite*> rightLimits;
+
+                QList<Sprite*> bottomLimits;
+                QList<Sprite*> topLimits;
+
+                foreach (Sprite* s, level->sprites)
+                {
+                    if (s->getid() != 156 && s->getid() != 157 && s->getid() != 160 && s->getid() != 161)
+                        continue;
+
+                    if (s->getid() == 156)
+                        leftLimits.append(s);
+
+                    if (s->getid() == 157)
+                        rightLimits.append(s);
+
+                    if (s->getid() == 160)
+                        bottomLimits.append(s);
+
+                    if (s->getid() == 161)
+                        topLimits.append(s);
+                }
+
+                // Sort right limits from smallest to largest xPos
+                for (int i = 0; i < rightLimits.size()-1; i++)
+                {
+                    if (rightLimits[i]->getx() > rightLimits[i+1]->getx())
+                    {
+                        rightLimits.swap(i, i+1);
+                        int j = i;
+                        while (j > 0)
+                        {
+                            if (rightLimits[j-1]->getx() > rightLimits[j]->getx())
+                                rightLimits.swap(j-1, j);
+                            j--;
+                        }
+                    }
+                }
+
+                // Sort bottom limits from smallest to largest yPos
+                for (int i = 0; i < bottomLimits.size()-1; i++)
+                {
+                    if (bottomLimits[i]->gety() > bottomLimits[i+1]->gety())
+                    {
+                        bottomLimits.swap(i, i+1);
+                        int j = i;
+                        while (j > 0)
+                        {
+                            if (bottomLimits[j-1]->gety() > bottomLimits[j]->gety())
+                                bottomLimits.swap(j-1, j);
+                            j--;
+                        }
+                    }
+                }
+
+                foreach (Sprite* left, leftLimits)
+                {
+                    int leftX = left->getx();
+                    int rightX = 0;
+                    int yPos = left->gety();
+                    bool noPair = true;
+                    bool permiable = false;
+                    int yRenderOffset = 0;
+                    foreach (Sprite* right, rightLimits)
+                    {
+                        if (left->gety() != right->gety())
+                            continue;
+
+                        if (right->getx() > left->getx())
+                        {
+                            noPair = false;
+                            rightX = right->getx();
+
+                            if (right->getNybble(6) == 1 && left->getNybble(6) == 1)
+                                permiable = true;
+
+                            if (right->getNybble(10) == 1 && left->getNybble(10) == 1)
+                                yPos = yPos-18;
+
+                            if (right->getNybble(4) == left->getNybble(4))
+                                yRenderOffset = right->getNybble(4)*20;
+
+                            break;
+                        }
+                    }
+
+                    if (!noPair)
+                    {
+                        VCameraLimitRenderer VCameraLimitRenderer(leftX, rightX, yPos, yRenderOffset, permiable);
+                        VCameraLimitRenderer.render(&painter, &drawrect);
+                    }
+                }
+
+                foreach (Sprite* top, topLimits)
+                {
+                    int topY = top->gety();
+                    int bottomY = 0;
+                    int xPos = top->getx();
+                    bool noPair = true;
+                    bool permiable = false;
+                    int xRenderOffset = 0;
+                    foreach (Sprite* bottom, bottomLimits)
+                    {
+                        if (top->getx() != bottom->getx())
+                            continue;
+
+                        if (bottom->gety() > top->gety())
+                        {
+                            noPair = false;
+                            bottomY = bottom->gety();
+
+                            if (bottom->getNybble(6) == 1 && top->getNybble(6) == 1)
+                                permiable = true;
+
+                            if (bottom->getNybble(10) == 1 && top->getNybble(10) == 1)
+                                xPos = xPos-18;
+
+                            if (bottom->getNybble(4) == top->getNybble(4))
+                                xRenderOffset = bottom->getNybble(4)*20;
+
+                            break;
+                        }
+                    }
+
+                    if (!noPair)
+                    {
+                        HCameraLimitRenderer HCameraLimitRenderer(topY, bottomY, xPos, xRenderOffset, permiable);
+                        HCameraLimitRenderer.render(&painter, &drawrect);
+                    }
+                }
+            }
         }
     }
     // Render Entrances

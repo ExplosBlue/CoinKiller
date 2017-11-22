@@ -74,6 +74,7 @@ area=Gebiet
 addArea=Gebiet hinzufügen
 removeArea=Gebiet entfernen
 renderLiquids=Flüssigkeiten darstellen
+renderCameraLimits=Render Camera Limits
 selectZoneContents=Inhalt auswählen
 setBgColor=Hintergrundfarbe ändern
 resetBgColor=rücksetzen farbe ändern

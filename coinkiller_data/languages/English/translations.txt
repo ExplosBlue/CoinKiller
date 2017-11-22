@@ -74,6 +74,7 @@ area=Area
 addArea=Add Area
 removeArea=Remove Area
 renderLiquids=Render Liquids
+renderCameraLimits=Render Camera Limits
 selectZoneContents=Select Contents
 setBgColor=Set Background Color
 resetBgColor=Reset Background Color

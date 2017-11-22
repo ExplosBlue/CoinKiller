@@ -149,6 +149,17 @@ protected:
     const Sprite *spr;
 };
 
+// Spirte 24: Flying Question Block
+class FlyingQuestionBlockRenderer: public SpriteRenderer
+{
+public:
+    FlyingQuestionBlockRenderer(const Sprite *spr);
+    void render(QPainter *painter, QRect *drawrect);
+protected:
+    const Sprite *spr;
+};
+
+
 // Spirte 26: Roulette Block
 class RouletteBlockRenderer: public SpriteRenderer
 {
@@ -518,6 +529,34 @@ protected:
     NormalImageRenderer *img;
 };
 
+// Sprite 156/157: Vertical Camera Limits
+class VCameraLimitRenderer: public ObjectRenderer
+{
+public:
+    VCameraLimitRenderer(int leftX, int rightX, int yPos, int yRenderOffset, bool permiable);
+    void render(QPainter *painter, QRect *drawrect);
+protected:
+    int leftX;
+    int rightX;
+    int yPos;
+    int yRenderOffset;
+    bool permiable;
+};
+
+// Sprite 160/161: Horizontal Camera Limits
+class HCameraLimitRenderer: public ObjectRenderer
+{
+public:
+    HCameraLimitRenderer(int topY, int bottomY, int xPos, int xRenderOffset, bool permiable);
+    void render(QPainter *painter, QRect *drawrect);
+protected:
+    int topY;
+    int bottomY;
+    int xPos;
+    int xRenderOffset;
+    bool permiable;
+};
+
 // Sprite 159: Spike Top
 class SpikeTopRenderer: public ObjectRenderer
 {
@@ -721,11 +760,12 @@ protected:
 class ItemBlockRenderer: public SpriteRenderer
 {
 public:
-    ItemBlockRenderer(const Sprite *spr, QString filename);
+    ItemBlockRenderer(const Sprite *spr, Tileset *tileset);
     void render(QPainter *painter, QRect *drawrect);
 protected:
     const Sprite *spr;
-    NormalImageRenderer* block;
+    Tileset *tileset;
+    RoundedRectRenderer *nullTile;
 };
 
 // Sprite 253: Larry Battle Platform
@@ -742,11 +782,23 @@ protected:
 class HardBlockRenderer: public ObjectRenderer
 {
 public:
-    HardBlockRenderer(const Sprite *spr);
+    HardBlockRenderer(const Sprite *spr, Tileset *tileset);
     void render(QPainter *painter, QRect *drawrect);
 protected:
     const Sprite *spr;
+    Tileset *tileset;
     NormalImageRenderer *img;
+};
+
+// Sprite 260/261/262/263/264/256: Boss Cutscene Controllers
+class BossControllerRenderer: public SpriteRenderer
+{
+public:
+    BossControllerRenderer(const Sprite *spr, const Zone *zone);
+    void render(QPainter *painter, QRect *drawrect);
+protected:
+    const Sprite *spr;
+    const Zone *zone;
 };
 
 // Sprite 280: + Clock

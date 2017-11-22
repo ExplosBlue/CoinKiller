@@ -186,10 +186,10 @@ void Sprite::setRect()
         offsetx = -5;
         break;
     case 3: // Cheep Chomp
-        width = 79;
-        height = 67;
-        offsetx = -31;
-        offsety = -26;
+        width = 80;
+        height = 80;
+        offsetx = -30;
+        offsety = -30;
         break;
     case 4: // Burner Right
         if(getNybble(4) == 1)
@@ -235,10 +235,9 @@ void Sprite::setRect()
         width = 22;
         offsetx = -1;
         break;
-    case 8: // Swoop
-        width = 13;
-        height = 22;
-        offsetx = 3;
+    case 8: // Swooper
+        width = 20;
+        height = 25;
         break;
     case 9: // Whomp
         if (getNybble(5) == 1)
@@ -286,6 +285,11 @@ void Sprite::setRect()
     case 22: // Special Exit Controller
         width = qMax(getNybble(7) * 20, 20);
         height = qMax(getNybble(4) * 20, 20);
+        break;
+    case 24: // Flying Question Block
+        width = 28;
+        height = 22;
+        offsetx = -4;
         break;
     case 26: // Roulette Block
         width = 30;
@@ -826,6 +830,27 @@ void Sprite::setRect()
     case 124: // Mushroom Platform
         width = 60 + 20*getNybble(6);
         height = 100 + 20*getNybble(10);
+        if (getNybble(8) == 2)
+        {
+            switch (getNybble(9))
+            {
+                case 1: case 5: case 9: case 13:
+                    height = 100 + 20*getNybble(10)+20;
+                    offsety = -20;
+                    break;
+                case 2: case 6: case 10: case 14:
+                    height = 100 + 20*getNybble(10)+40;
+                    offsety = -40;
+                    break;
+                case 3: case 7: case 11: case 15:
+                    height = 100 + 20*getNybble(10)+60;
+                    offsety = -60;
+                    break;
+                default:
+                    height = 100 + 20*getNybble(10);
+                    break;
+            }
+        }
         offsetx = 10 - (width / 2);
         break;
     case 125: // Bowser
@@ -1476,30 +1501,6 @@ void Sprite::setRect()
         height = 42;
         offsetx = -18;
         offsety = -1;
-        break;
-    case 260: // Tower cutscene Roy
-        width = 65;
-        height = 131;
-        break;
-    case 261: // Tower cutscene Iggy
-        width = 47;
-        height = 126;
-        break;
-    case 262: // Tower cutscene Wendy
-        width = 46;
-        height = 123;
-        break;
-    case 263: // Tower cutscene Morton
-        width = 67;
-        height = 125;
-        break;
-    case 264: // Tower cutscene Ludwig
-        width = 50;
-        height = 125;
-        break;
-    case 265: // Tower cutscene No Koopa
-        width = 46;
-        height = 123;
         break;
     case 267: case 275: case 276: // Long Question Blocks
         width = 60;

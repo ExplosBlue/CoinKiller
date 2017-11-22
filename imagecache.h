@@ -6,7 +6,7 @@
 
 enum CacheImgType
 {
-    SpriteImg
+    SpriteImg, TileOverlay, TileOverride
 };
 
 class ImageCache

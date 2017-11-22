@@ -39,6 +39,7 @@ public:
     void toggleGrid(bool toggle) { grid = toggle; update(); }
     void toggleCheckerboard(bool toggle) { checkerboard = toggle; update(); }
     void toggleRenderLiquids(bool toggle) { renderLiquids = toggle; update(); }
+    void toggleRenderCameraLimits(bool toggle) { renderCameraLimits = toggle; update(); }
     void toggleSprites(bool toggle) { renderSprites = toggle; update(); }
     void togglePaths(bool toggle) { renderPaths = toggle; update(); }
     void saveLevel();
@@ -91,6 +92,7 @@ private:
     bool grid;
     bool checkerboard;
     bool renderLiquids;
+    bool renderCameraLimits;
     bool renderSprites;
     bool renderPaths;
 

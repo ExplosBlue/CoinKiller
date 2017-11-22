@@ -74,6 +74,7 @@ LevelEditorWindow::LevelEditorWindow(LevelManager* lvlMgr, int initialArea) :
     ui->actionGrid->setIcon(QIcon(basePath + "grid.png"));
     ui->actionCheckerboard->setIcon(QIcon(basePath + "checkerboard.png"));
     ui->actionRenderLiquids->setIcon(QIcon(basePath + "render_liquids.png"));
+    ui->actionRenderCameraLimits->setIcon(QIcon(basePath + "render_camera_limits.png"));
     ui->actionAddArea->setIcon(QIcon(basePath + "add.png"));
     ui->actionDeleteCurrentArea->setIcon(QIcon(basePath + "remove.png"));
     ui->actionSetBackgroundColor->setIcon(QIcon(basePath + "colors.png"));
@@ -94,6 +95,7 @@ LevelEditorWindow::LevelEditorWindow(LevelManager* lvlMgr, int initialArea) :
     ui->actionGrid->setChecked(settings->get("grid", false).toBool());
     ui->actionCheckerboard->setChecked(settings->get("checkerboard", false).toBool());
     ui->actionRenderLiquids->setChecked(settings->get("renderLiquids", true).toBool());
+    ui->actionRenderCameraLimits->setChecked(settings->get("renderCameraLimits", true).toBool());
 }
 
 LevelEditorWindow::~LevelEditorWindow()
@@ -168,6 +170,9 @@ void LevelEditorWindow::loadTranslations()
 
     ui->actionRenderLiquids->setText(settings->getTranslation("LevelEditor", "renderLiquids"));
     ui->actionRenderLiquids->setToolTip(settings->getTranslation("LevelEditor", "renderLiquids"));
+
+    ui->actionRenderCameraLimits->setText(settings->getTranslation("LevelEditor", "renderCameraLimits"));
+    ui->actionRenderCameraLimits->setToolTip(settings->getTranslation("LevelEditor", "renderCameraLimits"));
 
     ui->actionAddArea->setText(settings->getTranslation("LevelEditor", "addArea"));
     ui->actionAddArea->setToolTip(settings->getTranslation("LevelEditor", "addArea"));
@@ -366,6 +371,12 @@ void LevelEditorWindow::on_actionRenderLiquids_toggled(bool toggle)
     settings->set("renderLiquids", toggle);
 }
 
+void LevelEditorWindow::on_actionRenderCameraLimits_toggled(bool toggle)
+{
+    levelView->toggleRenderCameraLimits(toggle);
+    settings->set("renderCameraLimits", toggle);
+}
+
 void LevelEditorWindow::setSelSprite(int spriteId)
 {
     levelView->objEditionModePtr()->setDrawType(1);
@@ -447,8 +458,8 @@ void LevelEditorWindow::on_actionAddArea_triggered()
     if (unsavedChanges)
     {
         QMessageBox message(this);
-        message.setWindowTitle("Unsaved Changes");
-        message.setText("Do you want to save your changes?");
+        message.setWindowTitle(settings->getTranslation("General", "unsavedChanges"));
+        message.setText(settings->getTranslation("General", "wantToSave"));
         message.setStandardButtons(QMessageBox::Save | QMessageBox::Discard);
         switch (message.exec())
         {
@@ -459,7 +470,7 @@ void LevelEditorWindow::on_actionAddArea_triggered()
             break;
         case QMessageBox::Discard:
             unsavedChanges = false;
-            this->statusBar()->showMessage(tr(""));
+            editStatus->setText("");
             break;
         }
     }
@@ -547,6 +558,7 @@ void LevelEditorWindow::loadArea(int id, bool closeLevel, bool init)
     levelView->toggleGrid(ui->actionGrid->isChecked());
     levelView->toggleCheckerboard(ui->actionCheckerboard->isChecked());
     levelView->toggleRenderLiquids(ui->actionRenderLiquids->isChecked());
+    levelView->toggleRenderCameraLimits(ui->actionRenderCameraLimits->isChecked());
     levelView->setBackgroundColor(settings->getColor("lewColor"));
 
     zoom = 1.0;
@@ -656,7 +668,7 @@ void LevelEditorWindow::handleAreaIndexChange(int index)
     if (unsavedChanges)
     {
         QMessageBox message(this);
-        message.setWindowTitle("Unsaved Changes");
+        message.setWindowTitle(settings->getTranslation("General", "unsavedChanges"));
         message.setText(settings->getTranslation("General", "wantToSave"));
         message.setStandardButtons(QMessageBox::Save | QMessageBox::Discard);
         switch (message.exec())
@@ -668,7 +680,7 @@ void LevelEditorWindow::handleAreaIndexChange(int index)
             break;
         case QMessageBox::Discard:
             unsavedChanges = false;
-            this->statusBar()->showMessage(tr(""));
+            editStatus->setText("");
             break;
         }
     }
@@ -733,7 +745,7 @@ void LevelEditorWindow::closeEvent(QCloseEvent *event)
     if (unsavedChanges)
     {
         QMessageBox message(this);
-        message.setWindowTitle("Unsaved Changes");
+        message.setWindowTitle(settings->getTranslation("General", "unsavedChanges"));
         message.setText(settings->getTranslation("General", "wantToSave"));
         message.setStandardButtons(QMessageBox::Save | QMessageBox::Cancel | QMessageBox::Discard);
         switch (message.exec())
