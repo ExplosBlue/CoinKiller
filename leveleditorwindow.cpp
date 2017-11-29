@@ -80,10 +80,10 @@ LevelEditorWindow::LevelEditorWindow(LevelManager* lvlMgr, int initialArea) :
     ui->actionSetBackgroundColor->setIcon(QIcon(basePath + "colors.png"));
     ui->actionResetBackgroundColor->setIcon(QIcon(basePath + "delete_colors.png"));
 
-    QList<int> derpshit;
-    derpshit.append(350);
-    derpshit.append(999999999);
-    ui->splitter->setSizes(derpshit);
+    QList<int> splitterSizes;
+    splitterSizes.append(350);
+    splitterSizes.append(999999999);
+    ui->splitter->setSizes(splitterSizes);
     ui->splitter->setCollapsible(0, false);
 
     ui->sidebar->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Ignored);
@@ -96,6 +96,8 @@ LevelEditorWindow::LevelEditorWindow(LevelManager* lvlMgr, int initialArea) :
     ui->actionCheckerboard->setChecked(settings->get("checkerboard", false).toBool());
     ui->actionRenderLiquids->setChecked(settings->get("renderLiquids", true).toBool());
     ui->actionRenderCameraLimits->setChecked(settings->get("renderCameraLimits", true).toBool());
+
+    editStatus->setText("Ready!"); // todo: do translation shit
 }
 
 LevelEditorWindow::~LevelEditorWindow()

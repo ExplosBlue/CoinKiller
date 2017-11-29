@@ -139,6 +139,16 @@ private:
     int tileIds [12] = { 27, 20, 15, 24, 23, 23, 19, 41, 101, 94, 105, 131 };
 };
 
+// Sprite 21: Note Block
+class NoteBlockRenderer: public SpriteRenderer
+{
+public:
+    NoteBlockRenderer(const Sprite *spr);
+    void render(QPainter *painter, QRect *drawrect);
+protected:
+    const Sprite *spr;
+};
+
 // Sprite 22: Special Exit Controller
 class SpecialExitControllerRenderer: public SpriteRenderer
 {
@@ -149,7 +159,7 @@ protected:
     const Sprite *spr;
 };
 
-// Spirte 24: Flying Question Block
+// Sprite 24: Flying Question Block
 class FlyingQuestionBlockRenderer: public SpriteRenderer
 {
 public:
@@ -160,7 +170,7 @@ protected:
 };
 
 
-// Spirte 26: Roulette Block
+// Sprite 26: Roulette Block
 class RouletteBlockRenderer: public SpriteRenderer
 {
 public:

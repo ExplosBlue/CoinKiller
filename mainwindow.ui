@@ -175,7 +175,6 @@
      <string>&lt;File&gt;</string>
     </property>
     <addaction name="actionLoadUnpackedROMFS"/>
-    <addaction name="actionDebug_test"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">

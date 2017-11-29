@@ -37,7 +37,6 @@
 #include "tileseteditorwindow.h"
 #include "sarcexplorerwindow.h"
 #include "newtilesetdialog.h"
-#include "sillytest.h" // REMOVE ME!!
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -122,8 +121,7 @@ void MainWindow::on_actionLoadUnpackedROMFS_triggered()
 
 void MainWindow::on_actionDebug_test_triggered()
 {
-    SillyTest* silly = new SillyTest(this);
-    silly->show();
+
 }
 
 void MainWindow::on_levelList_doubleClicked(const QModelIndex &index)

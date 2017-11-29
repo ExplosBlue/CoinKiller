@@ -55,7 +55,7 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
         ret = new NormalImageRenderer(spr, "gold_block.png");
         break;
     case 21: // Note Block
-        ret = new NormalImageRenderer(spr, "note_block.png");
+        ret = new NoteBlockRenderer(spr);
         break;
     case 22: // Special Exit Controller
         ret = new SpecialExitControllerRenderer(spr);
@@ -867,6 +867,40 @@ void TileGodRenderer::render(QPainter *painter, QRect *)
     painter->drawRect(sprrect);
 }
 
+// Sprite 21: Note Block
+NoteBlockRenderer::NoteBlockRenderer(const Sprite *spr)
+{
+    this->spr = spr;
+}
+void NoteBlockRenderer::render(QPainter *painter, QRect *)
+{
+    QString overlay;
+
+    switch (spr->getNybble(13))
+    {
+        case 0: break;
+        case 1: overlay = "coin.png"; break;
+        case 2: overlay = "fire_flower.png"; break;
+        case 4: overlay = "super_leaf.png"; break;
+        case 5: overlay = "gold_flower.png"; break;
+        case 6: overlay = "mini_mushroom.png"; break;
+        case 7: overlay = "super_star.png"; break;
+        case 8: overlay = "coin_star.png"; break;
+        case 9: overlay = "mega_mushroom.png"; break;
+        case 10: overlay = "10_coins.png"; break;
+        case 11: overlay = "1up_mushroom.png"; break;
+        case 13: overlay = "trampoline.png"; break;
+        case 14: overlay = "coin_super_mushroom.png"; break;
+        default: return;
+    }
+
+    int x = spr->getx()+spr->getOffsetX();
+    int y = spr->gety()+spr->getOffsetY();
+
+    painter->drawPixmap(x, y, 20, 20, ImageCache::getInstance()->get(SpriteImg, "note_block.png"));
+    painter->drawPixmap(x+2, y+1, 18, 18, ImageCache::getInstance()->get(TileOverlay, overlay));
+}
+
 // Sprite 22: Special Exit Controller
 SpecialExitControllerRenderer::SpecialExitControllerRenderer(const Sprite *spr)
 {
@@ -894,35 +928,44 @@ void FlyingQuestionBlockRenderer::render(QPainter *painter, QRect *)
     QString type;
     QString overlay;
 
-    switch (spr->getNybble(5))
+    if (spr->getid() != 25)
     {
-        case 1: type = "_underground.png"; break;
-        case 2: type = "_snow.png"; break;
-        case 3: type = "_lava.png"; break;
-        default: type = ".png"; break;
-    }
+        switch (spr->getNybble(5))
+        {
+            case 1: type = "_underground.png"; break;
+            case 2: type = "_snow.png"; break;
+            case 3: type = "_lava.png"; break;
+            default: type = ".png"; break;
+        }
 
-    switch (spr->getNybble(13))
-    {
-        case 0: break;
-        case 1: overlay = "coin.png"; break;
-        case 2: overlay = "fire_flower.png"; break;
-        case 4: overlay = "super_leaf.png"; break;
-        case 5: overlay = "gold_flower.png"; break;
-        case 6: overlay = "mini_mushroom.png"; break;
-        case 7: overlay = "super_star.png"; break;
-        case 8: overlay = "coin_star.png"; break;
-        case 9: overlay = "mega_mushroom.png"; break;
-        case 10: overlay = "10_coins.png"; break;
-        case 11: overlay = "1up_mushroom.png"; break;
-        case 13: overlay = "trampoline.png"; break;
-        case 14: overlay = "coin_super_mushroom.png"; break;
-        default: return;
+        switch (spr->getNybble(13))
+        {
+            case 0: break;
+            case 1: overlay = "coin.png"; break;
+            case 2: overlay = "fire_flower.png"; break;
+            case 4: overlay = "super_leaf.png"; break;
+            case 5: overlay = "gold_flower.png"; break;
+            case 6: overlay = "mini_mushroom.png"; break;
+            case 7: overlay = "super_star.png"; break;
+            case 8: overlay = "coin_star.png"; break;
+            case 9: overlay = "mega_mushroom.png"; break;
+            case 10: overlay = "10_coins.png"; break;
+            case 11: overlay = "1up_mushroom.png"; break;
+            case 13: overlay = "trampoline.png"; break;
+            case 14: overlay = "coin_super_mushroom.png"; break;
+            default: return;
+        }
     }
-
-    if (spr->getid() == 25)
+    else
     {
-        type = ".png";
+        switch (spr->getNybble(7))
+        {
+            case 1: type = "_underground.png"; break;
+            case 2: type = "_snow.png"; break;
+            case 3: type = "_lava.png"; break;
+            default: type = ".png"; break;
+        }
+
         overlay = "1up_mushroom.png";
     }
 
