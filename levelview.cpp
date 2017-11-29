@@ -703,6 +703,20 @@ void LevelView::mouseMoveEvent(QMouseEvent* evt)
     setCursor(QCursor(mode->getActualCursor()));
     update();
 
+    /*QString ret;
+
+    foreach (Sprite* spr, level->sprites)
+    {
+        QRect spriteRect = QRect(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight());
+        QRect mouseRect = QRect(evt->x(), evt->y(), 20, 20);
+
+        ret = "(" + QString::number(evt->x()) + ", " + QString::number(evt->y()) + ")";
+
+        emit updateLevelLabel(ret);
+        //if (spriteRect.intersects(mouseRect))
+
+    }*/
+
     emit updateMinimapBounds();
 }
 
@@ -723,9 +737,9 @@ void LevelView::keyPressEvent(QKeyEvent* evt)
     mode->keyPress(evt);
 }
 
-void LevelView::saveLevel()
+qint8 LevelView::saveLevel()
 {
-    level->save();
+    return level->save();
 }
 
 void LevelView::copy()

@@ -22,6 +22,7 @@
 #include "is.h"
 
 #include <QFile>
+#include <QMessageBox>
 #include <limits>
 
 Level::Level(Game *game, SarcFilesystem* archive, int area, QString lvlName)
@@ -348,8 +349,46 @@ Level::~Level()
         delete locations[l];
 }
 
-void Level::save()
+qint8 Level::save()
 {
+    // before we even do anything, make sure that this level will load
+    // take very good note, however. The only possible scenarios that are coded are ones
+    // that the editor can create, not by external hex editing.
+    // start out with a null string, add shit to it if things went wrong
+    QString wrongShit;
+
+    // no zones
+    if (zones.size() == 0)
+        wrongShit += "- Needs at least one zone\n";
+    // no entrances
+    if (entrances.size() == 0)
+        wrongShit += "- Needs at least one entrance\n";
+
+    // crashing entrances
+    foreach (Entrance* entr, entrances)
+        if (entr->getEntrType() == 28 || entr->getEntrType() == 29)
+            wrongShit += "- An invalid/crashing entrance type on ID " + QString::number(entr->getid()) + "\n";
+
+    if (wrongShit != NULL)
+    {
+        QMessageBox *msgBox = new QMessageBox();
+        msgBox->setWindowTitle("Level Errors");
+        msgBox->setWindowModality(Qt::NonModal);
+        msgBox->setInformativeText(
+                    "This level has errors that WILL crash the game.\n"
+                    "The following errors were found:\n" + wrongShit +
+                    " Do you still wish to save this file?");
+        msgBox->setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+        int ret = msgBox->exec();
+
+        // if they selected No, terminate the save
+        // it's asked "Yes" or "No" in case there's something that needs to be tested or whatever
+        if (ret == QMessageBox::No)
+            return 1;
+
+        delete msgBox;
+    }
+
     // Save BGDat
     QString bgdatfiletemp = QString("/course/course%1_bgdatL%2.bin").arg(area);
     for (int l = 0; l < 2; l++)
@@ -717,6 +756,7 @@ void Level::save()
     header->close();
     delete header;
 
+    return 0;
 }
 
 

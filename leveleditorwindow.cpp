@@ -33,6 +33,8 @@ LevelEditorWindow::LevelEditorWindow(LevelManager* lvlMgr, int initialArea) :
     QMainWindow(lvlMgr->getParent()),
     ui(new Ui::LevelEditorWindow)
 {
+    this->setWindowState(Qt::WindowMaximized);
+
     this->lvlMgr = lvlMgr;
     this->settings = SettingsManager::getInstance();
 
@@ -45,6 +47,7 @@ LevelEditorWindow::LevelEditorWindow(LevelManager* lvlMgr, int initialArea) :
     connect(areaSelector, SIGNAL(currentIndexChanged(int)), this, SLOT(handleAreaIndexChange(int)));
 
     ui->statusbar->addWidget(editStatus);
+    //connect(editStatus, SIGNAL(updateLevelLabel(QString)), editStatus, SLOT(setText(QString)));
 
     // Prevent level view background from being white on first load.
     if (settings->get("initialLoad") != "no")
@@ -283,9 +286,14 @@ void LevelEditorWindow::handleEditMade()
 
 void LevelEditorWindow::on_actionSave_triggered()
 {
-    levelView->saveLevel();
-    editStatus->setText(settings->getTranslation("General", "changesSaved"));
-    unsavedChanges = false;
+    qint8 res = levelView->saveLevel();
+    if (res != 0)
+        editStatus->setText("Save Failed.");
+    else
+    {
+        editStatus->setText(settings->getTranslation("General", "changesSaved"));
+        unsavedChanges = false;
+    }
 }
 
 void LevelEditorWindow::on_actionCopy_triggered()

@@ -14,10 +14,7 @@ Ctpk::Ctpk(FileBase* file)
     file->readStringASCII(magic, 4);
 
     if (magic != "CTPK")
-    {
         throw std::runtime_error("CTPK: invalid file");
-    }
-
 
     // Parse CTPK Header
 
@@ -54,15 +51,10 @@ Ctpk::Ctpk(FileBase* file)
 
 
     // Parse Info 1 (Whatever this is)
-
     for (uint i = 0; i< numEntries; i++)
-    {
         entries[i]->info1 = file->read32();
-    }
-
 
     // Parse Hashes
-
     file->seek(hashSectionOffset);
 
     for (uint i = 0; i< numEntries; i++)
@@ -77,9 +69,7 @@ Ctpk::Ctpk(FileBase* file)
     file->seek(infoSectionOffset);
 
     for (uint i = 0; i< numEntries; i++)
-    {
         entries[i]->info2 = file->read32();
-    }
 
 
     // Parse Filenames
@@ -90,11 +80,8 @@ Ctpk::Ctpk(FileBase* file)
         file->readStringASCII(entry->filename);
     }
 
-
     file->close();
-
-
-    printInfo();
+    //printInfo();
 }
 
 Ctpk::~Ctpk()

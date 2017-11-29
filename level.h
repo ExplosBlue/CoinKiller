@@ -29,7 +29,7 @@ class Level
 public:
     Level(Game *game, SarcFilesystem* archive, int area, QString lvlName);
     ~Level();
-    void save();
+    qint8 save();
 
     Game* game;
 

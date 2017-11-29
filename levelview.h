@@ -42,7 +42,7 @@ public:
     void toggleRenderCameraLimits(bool toggle) { renderCameraLimits = toggle; update(); }
     void toggleSprites(bool toggle) { renderSprites = toggle; update(); }
     void togglePaths(bool toggle) { renderPaths = toggle; update(); }
-    void saveLevel();
+    qint8 saveLevel();
     void copy();
     void paste();
     void cut();
@@ -64,6 +64,7 @@ signals:
     void updateMinimap(QRect drawrect);
     void updateMinimapBounds();
     void updateCtrlabel(QString text);
+    void updateLevelLabel(QString lbl);
 
 public slots:
     void selectObj(Object* obj);
