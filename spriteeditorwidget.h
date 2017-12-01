@@ -13,6 +13,7 @@
 #include <QLineEdit>
 #include <QCheckBox>
 #include <QGridLayout>
+#include <QPushButton>
 
 class SpriteValueFieldWidget : public QSpinBox
 {
@@ -85,6 +86,7 @@ private slots:
     void updateRawSpriteData();
     void updateFields();
     void handleEditDetected();
+    void handleShowNotes();
 
 signals:
     void updateLevelView();
@@ -99,10 +101,13 @@ private:
     bool editingASprite = false;
 
     QLabel* spriteName;
+    QPushButton* spriteNotesButton;
     QList<QLabel*> fieldNames;
     QList<SpriteValueFieldWidget*> valueFieldWidgets;
     QList<SpriteListFieldWidget*> listFieldWidgets;
     QList<SpriteCheckboxFieldWidget*> checkboxFieldWidgets;
+
+    QString spriteNotes;
 
     void addField(Field* field, int pos);
 };

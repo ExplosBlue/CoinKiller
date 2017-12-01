@@ -297,7 +297,7 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
     case 128: // Dry Bowser
         ret = new NormalImageRenderer(spr, "dry_bowser.png");
         break;
-    case 132: // Bowser Battle Lift and Switch Controller
+    case 131: case 132: // Bowser Battle Lift and Switch Controller
         ret = new NormalImageRenderer(spr, "bowser_switch.png");
         break;
     case 133: // Bowser Shutter
@@ -470,6 +470,9 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
         break;
     case 206: // Gold Ring
         ret = new NormalImageRenderer(spr, "gold_ring.png");
+        break;
+    case 209: // Swinging Rope
+        ret = new SwingingRopeRenderer(spr);
         break;
     case 210: // Tightrope
         ret = new TightropeRenderer(spr);
@@ -1976,6 +1979,27 @@ BigCheepRenderer::BigCheepRenderer(const Sprite *spr)
 void BigCheepRenderer::render(QPainter *painter, QRect *drawrect)
 {
     img->render(painter, drawrect);
+}
+
+// Sprite 209: Swinging Rope
+SwingingRopeRenderer::SwingingRopeRenderer(const Sprite *spr)
+{
+    this->spr = spr;
+}
+
+void SwingingRopeRenderer::render(QPainter *painter, QRect *)
+{
+    QString img = "rope";
+    if (spr->getid() == 239)
+        img = "vine";
+
+    int length = (spr->getNybble(5)+3)*20;
+
+    for(int i = 0; i < length; i+=20)
+    {
+        painter->drawPixmap(spr->getx(), spr->gety()+i, 20, 20, ImageCache::getInstance()->get(SpriteImg, img+"_segment.png"));
+    }
+    painter->drawPixmap(spr->getx(), spr->gety()+length, 20, 20, ImageCache::getInstance()->get(SpriteImg, img+"_end.png"));
 }
 
 // Sprite 210: Tightrope

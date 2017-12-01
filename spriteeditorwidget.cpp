@@ -4,6 +4,7 @@
 #include <QGridLayout>
 #include <QLabel>
 #include <QStringListModel>
+#include <QMessageBox>
 
 SpriteEditorWidget::SpriteEditorWidget()
 {
@@ -142,6 +143,15 @@ SpriteDataEditorWidget::SpriteDataEditorWidget(SpriteData *spriteData)
     spriteName = new QLabel();
     layout->addWidget(spriteName, 0, 0, 1, 2);
 
+    spriteNotesButton = new QPushButton();
+    spriteNotesButton->setText("Notes");
+    spriteNotesButton->setToolTipDuration(10000);
+    QSizePolicy buttonPolicy = sizePolicy();
+    buttonPolicy.setHeightForWidth(true);
+    spriteNotesButton->setSizePolicy(buttonPolicy);
+    layout->addWidget(spriteNotesButton, 0, 1, 1, 1, Qt::AlignRight);
+    connect(spriteNotesButton, SIGNAL (pressed()),this, SLOT (handleShowNotes()));
+
     rawSpriteData = new QLineEdit();
     rawSpriteData->setInputMask("HHHH HHHH HHHH HHHH HHHH HHHH");
     layout->addWidget(new QLabel("Raw Sprite Data:"), 1, 0, 1, 1, Qt::AlignRight);
@@ -164,6 +174,8 @@ void SpriteDataEditorWidget::select(Sprite *sprite)
 
     spriteName->setText(QString("<b>%1 (%2)</b>").arg(def->getName()).arg(sprite->getid()));
     spriteName->setToolTip(def->getNotes());
+    spriteNotes = def->getNotes();
+    spriteNotesButton->setToolTip(spriteNotes);
 
     for (int i = 0; i < spriteData->getSpriteDefPtr(sprite->getid())->getFieldCount(); i++)
     {
@@ -252,6 +264,18 @@ void SpriteDataEditorWidget::handleEditDetected()
     emit editMade();
 }
 
+void SpriteDataEditorWidget::handleShowNotes()
+{
+    QString name = spriteName->text();
+    name.remove(QRegExp("<[^>]*>"));
+
+    QMessageBox notes;
+    notes.setWindowTitle(name);
+    notes.setText(spriteNotes);
+    notes.setDefaultButton(QMessageBox::Ok);
+    notes.setIcon(QMessageBox::Information);
+    notes.exec();
+}
 
 // Field Widgets
 

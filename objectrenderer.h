@@ -668,6 +668,16 @@ protected:
     NormalImageRenderer *img;
 };
 
+// Sprite 209: Swinging Rope
+class SwingingRopeRenderer: public SpriteRenderer
+{
+public:
+    SwingingRopeRenderer(const Sprite *spr);
+    void render(QPainter *painter, QRect *drawrect);
+protected:
+    const Sprite *spr;
+};
+
 // Sprite 210: Tightrope
 class TightropeRenderer: public SpriteRenderer
 {

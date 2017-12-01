@@ -871,7 +871,7 @@ void Sprite::setRect()
         offsetx = -55;
         offsety = -85;
         break;
-    case 132: // Bowser Battle Switch and Platform Controller
+    case 131: case 132: // Bowser Battle Switch and Platform Controller
         width = 53;
         height = 46;
         offsetx = -27;
@@ -1310,6 +1310,10 @@ void Sprite::setRect()
         width = 40;
         height = 56;
         offsety = 2;
+        break;
+    case 209: // Swinging Rope
+        width = 20;
+        height = (getNybble(5)+4)*20;
         break;
     case 210: // Tightrope
         if (getNybble(10) == 0)
