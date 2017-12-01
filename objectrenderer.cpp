@@ -549,6 +549,9 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
     case 244: // Chain Chomp
         ret = new ChainChompRenderer(spr);
         break;
+    case 247: // Invisible Bouncy Block
+        ret = new InvisibleBouncyBlockRenderer(spr);
+        break;
     case 251: // Treasure Chest
         ret = new NormalImageRenderer(spr, "treasure_chest.png");
         break;
@@ -638,6 +641,9 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
         break;
     case 299: // Rectangle Lift Lemmy Battle
         ret = new NormalImageRenderer(spr, "rect_lift_lemmy.png");
+        break;
+    case 300: // Applause Coin
+        ret = new NormalImageRenderer(spr, "coin.png");
         break;
     case 302: // Moon Coin
         ret = new NormalImageRenderer(spr, "moon_coin.png");
@@ -2374,6 +2380,21 @@ ChainChompRenderer::ChainChompRenderer(const Sprite *spr)
 void ChainChompRenderer::render(QPainter *painter, QRect *drawrect)
 {
     img->render(painter, drawrect);
+}
+
+// Sprite 247: Invisible Bouncy Blocks
+InvisibleBouncyBlockRenderer::InvisibleBouncyBlockRenderer(const Sprite *spr)
+{
+    this->spr = spr;
+}
+
+void InvisibleBouncyBlockRenderer::render(QPainter *painter, QRect *)
+{
+    // value + 2 i think
+    if(spr->getNybble(10) == 0)
+        painter->drawPixmap(spr->getx(), spr->gety(), 20, 20, ImageCache::getInstance()->get(SpriteImg, + "invisible_bounce.png"));
+    for (int i = 0; i < spr->getNybble(10) + 1; i++)
+        painter->drawPixmap(spr->getx()+spr->getOffsetX()+i*20, spr->gety(), 20, 20, ImageCache::getInstance()->get(SpriteImg, + "invisible_bounce.png"));
 }
 
 // Sprites 100/101/203/204/267/275/276: Item Blocks

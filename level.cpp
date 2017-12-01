@@ -355,7 +355,7 @@ qint8 Level::save()
     // take very good note, however. The only possible scenarios that are coded are ones
     // that the editor can create, not by external hex editing.
     // start out with a null string, add shit to it if things went wrong
-    QString wrongShit;
+    /*QString wrongShit;
 
     // no zones
     if (zones.size() == 0)
@@ -387,7 +387,7 @@ qint8 Level::save()
             return 1;
 
         delete msgBox;
-    }
+    }*/
 
     // Save BGDat
     QString bgdatfiletemp = QString("/course/course%1_bgdatL%2.bin").arg(area);

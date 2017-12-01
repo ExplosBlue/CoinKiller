@@ -64,7 +64,7 @@ signals:
     void updateMinimap(QRect drawrect);
     void updateMinimapBounds();
     void updateCtrlabel(QString text);
-    void updateLevelLabel(QString lbl);
+    //void updateLevelLabel(QString lbl);
 
 public slots:
     void selectObj(Object* obj);

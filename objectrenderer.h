@@ -766,6 +766,17 @@ protected:
     NormalImageRenderer* img;
 };
 
+// Sprite 247: Invisible Bouncy Block
+class InvisibleBouncyBlockRenderer: public SpriteRenderer
+{
+public:
+    InvisibleBouncyBlockRenderer(const Sprite *spr);
+    void render(QPainter *painter, QRect *drawrect);
+protected:
+    const Sprite *spr;
+    NormalImageRenderer* img;
+};
+
 // Sprites 100/101/203/204/267/275/276: Item Blocks
 class ItemBlockRenderer: public SpriteRenderer
 {
