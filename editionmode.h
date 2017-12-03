@@ -39,6 +39,10 @@ public:
     virtual void raiseLayer() {}
     virtual void lowerLayer() {}
 
+    virtual void setLayerMask(quint8) {}
+    virtual void toggleSprites(bool) {}
+    virtual void togglePaths(bool) {}
+
     virtual void select(Object*) {}
     virtual void selectAll() {}
 

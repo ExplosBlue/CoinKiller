@@ -34,14 +34,14 @@ public:
     explicit LevelView(QWidget *parent, Level* level);
     ~LevelView();
 
-    void setLayerMask(quint8 mask) { layerMask = mask; update(); }
+    void setLayerMask(quint8 mask);
     void setZoom(float zoom) { this->zoom = zoom; setMinimumSize(4096*20*zoom, 4096*20*zoom); setMaximumSize(4096*20*zoom, 4096*20*zoom); update(); }
     void toggleGrid(bool toggle) { grid = toggle; update(); }
     void toggleCheckerboard(bool toggle) { checkerboard = toggle; update(); }
     void toggleRenderLiquids(bool toggle) { renderLiquids = toggle; update(); }
     void toggleRenderCameraLimits(bool toggle) { renderCameraLimits = toggle; update(); }
-    void toggleSprites(bool toggle) { renderSprites = toggle; update(); }
-    void togglePaths(bool toggle) { renderPaths = toggle; update(); }
+    void toggleSprites(bool toggle);
+    void togglePaths(bool toggle);
     qint8 saveLevel();
     void copy();
     void paste();

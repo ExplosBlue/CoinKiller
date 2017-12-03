@@ -175,7 +175,11 @@ void SpriteDataEditorWidget::select(Sprite *sprite)
     spriteName->setText(QString("<b>%1 (%2)</b>").arg(def->getName()).arg(sprite->getid()));
     spriteName->setToolTip(def->getNotes());
     spriteNotes = def->getNotes();
-    spriteNotesButton->setToolTip(spriteNotes);
+
+    if (spriteNotes == "")
+        spriteNotesButton->setToolTip("No notes available for this sprite.");
+    else
+        spriteNotesButton->setToolTip(spriteNotes);
 
     for (int i = 0; i < spriteData->getSpriteDefPtr(sprite->getid())->getFieldCount(); i++)
     {
@@ -271,9 +275,19 @@ void SpriteDataEditorWidget::handleShowNotes()
 
     QMessageBox notes;
     notes.setWindowTitle(name);
-    notes.setText(spriteNotes);
+
+    if (spriteNotes == "")
+        notes.setText("No notes available for this sprite.");
+    else
+        notes.setText(spriteNotes);
+
     notes.setDefaultButton(QMessageBox::Ok);
     notes.setIcon(QMessageBox::Information);
+
+    QSpacerItem* spacer = new QSpacerItem(750, 0, QSizePolicy::Minimum, QSizePolicy::Expanding);
+    QGridLayout* layout = (QGridLayout*)notes.layout();
+    layout->addItem(spacer, layout->rowCount(), 0, 1, layout->columnCount());
+
     notes.exec();
 }
 

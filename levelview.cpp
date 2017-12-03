@@ -737,6 +737,27 @@ void LevelView::keyPressEvent(QKeyEvent* evt)
     mode->keyPress(evt);
 }
 
+void LevelView::setLayerMask(quint8 mask)
+{
+    layerMask = mask;
+    editionModePtr()->setLayerMask(layerMask);
+    update();
+}
+
+void LevelView::toggleSprites(bool toggle)
+{
+    renderSprites = toggle;
+    editionModePtr()->toggleSprites(toggle);
+    update();
+}
+
+void LevelView::togglePaths(bool toggle)
+{
+    renderPaths = toggle;
+    editionModePtr()->togglePaths(toggle);
+    update();
+}
+
 qint8 LevelView::saveLevel()
 {
     return level->save();

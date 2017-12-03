@@ -180,7 +180,7 @@ void LevelEditorWindow::loadTranslations()
     ui->actionRenderCameraLimits->setToolTip(settings->getTranslation("LevelEditor", "renderCameraLimits"));
 
     ui->actionAddArea->setText(settings->getTranslation("LevelEditor", "addArea"));
-    ui->actionAddArea->setToolTip(settings->getTranslation("LevelEditor", "addArea"));
+    ui->actionAddArea->setToolTip(settings->getTranslation("LevelEditor", ""));
 
     ui->actionDeleteCurrentArea->setText(settings->getTranslation("LevelEditor", "removeArea"));
     ui->actionDeleteCurrentArea->setToolTip(settings->getTranslation("LevelEditor", "removeArea"));
@@ -491,7 +491,8 @@ void LevelEditorWindow::on_actionAddArea_triggered()
         return;
     }
 
-    int seekArea = lvlMgr->addArea(level->getAreaID());
+    // int seekArea = lvlMgr->addArea(level->getAreaID());
+    int seekArea = lvlMgr->addArea(lvlMgr->getAreaCount());
     loadArea(seekArea);
     updateAreaSelector(seekArea);
 }

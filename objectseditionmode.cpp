@@ -464,11 +464,15 @@ QList<Object*> ObjectsEditonMode::getObjectsAtPos(int x1, int y1, int x2, int y2
 
     QRect area = QRect(QPoint(x1, y1), QPoint(x2, y2));
 
-    for (int l = 1; l >= 0; l--) foreach (BgdatObject* bgdat, level->objects[l]) if (bgdat->clickDetection(area)) objects.append(bgdat);
+    for (int l = 1; l >= 0; l--)
+    {
+        if (!(layerMask & (1<<l))) continue;
+        foreach (BgdatObject* bgdat, level->objects[l]) if (bgdat->clickDetection(area)) objects.append(bgdat);
+    }
     foreach (Location* loc, level->locations) if (loc->clickDetection(area)) objects.append(loc);
-    foreach (Sprite* spr, level->sprites) if (spr->clickDetection(area)) objects.append(spr);
+    if (spriteInteraction) foreach (Sprite* spr, level->sprites) if (spr->clickDetection(area)) objects.append(spr);
     foreach (Entrance* entr, level->entrances) if (entr->clickDetection(area)) objects.append(entr);
-    foreach (Path* path, level->paths) foreach (PathNode* node, path->getNodes()) if (node->clickDetection(area)) objects.append(node);
+    if (pathInteraction) foreach (Path* path, level->paths) foreach (PathNode* node, path->getNodes()) if (node->clickDetection(area)) objects.append(node);
     foreach (ProgressPath* path, level->progressPaths) foreach (ProgressPathNode* node, path->getNodes()) if (node->clickDetection(area)) objects.append(node);
 
     foreach (Zone* zone, level->zones)
