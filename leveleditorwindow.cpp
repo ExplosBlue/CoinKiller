@@ -304,6 +304,7 @@ void LevelEditorWindow::on_actionCopy_triggered()
 
 void LevelEditorWindow::on_actionPaste_triggered()
 {
+    spriteIds->deselect();
     levelView->paste();
     emit handleEditMade();
 }
@@ -443,6 +444,7 @@ void LevelEditorWindow::deselect()
     locationEditor->deselect();
     pathEditor->deselect();
     progPathEditor->deselect();
+    spriteIds->deselect();
 }
 
 void LevelEditorWindow::updateEditors()
@@ -453,6 +455,7 @@ void LevelEditorWindow::updateEditors()
     locationEditor->updateEditor();
     pathEditor->updateEditor();
     progPathEditor->updateEditor();
+    spriteIds->updateEditor();
 }
 
 void LevelEditorWindow::on_sidebarTabWidget_currentChanged(int index)
@@ -622,6 +625,11 @@ void LevelEditorWindow::loadArea(int id, bool closeLevel, bool init)
     connect(progPathEditor, SIGNAL(selectedProgPathChanged(Object*)), levelView, SLOT(selectObj(Object*)));
     connect(progPathEditor, SIGNAL(editMade()), this, SLOT(handleEditMade()));
 
+    // Setup Sprite Ids Widget
+    spriteIds = new SpriteIdWidget(&level->sprites);
+    connect(spriteIds, SIGNAL(updateLevelView()), levelView, SLOT(update()));
+    connect(spriteIds, SIGNAL(selectedSpriteChanged(Object*)), levelView, SLOT(selectObj(Object*)));
+
     connect(levelView, SIGNAL(scrollTo(int,int)), this, SLOT(scrollTo(int,int)));
     connect(levelView->editionModePtr(), SIGNAL(selectdObjectChanged(Object*)), this, SLOT(setObjectEdition(Object*)));
     connect(levelView->editionModePtr(), SIGNAL(deselected()), this, SLOT(deselect()));
@@ -632,6 +640,7 @@ void LevelEditorWindow::loadArea(int id, bool closeLevel, bool init)
     ui->sidebarTabWidget->addTab(areaEditor, QIcon(basePath + "settings.png"), "");
     ui->sidebarTabWidget->addTab(tilesetPalette, QIcon(basePath + "filled_box"), "");
     ui->sidebarTabWidget->addTab(spriteEditor, QIcon(basePath + "goomba.png"), "");
+    ui->sidebarTabWidget->addTab(spriteIds, QIcon(basePath + "ids.png"), "");
     ui->sidebarTabWidget->addTab(entranceEditor, QIcon(basePath + "entrance.png"), "");
     ui->sidebarTabWidget->addTab(zoneEditor, QIcon(basePath + "zone.png"), "");
     ui->sidebarTabWidget->addTab(locationEditor, QIcon(basePath + "location.png"), "");
@@ -644,6 +653,12 @@ void LevelEditorWindow::loadArea(int id, bool closeLevel, bool init)
     connect(levelView, SIGNAL(updateMinimapBounds()), miniMap, SLOT(updateBounds()));
     connect(miniMap, SIGNAL(scrollTo(int,int)), this, SLOT(scrollTo(int,int)));
     ui->miniMap->setWidget(miniMap);
+
+    // Fix sprite loading bug when opening a new area
+    levelView->toggleSprites(false);
+    levelView->toggleSprites(true);
+    update();
+
 }
 
 void LevelEditorWindow::updateAreaSelector(int index)

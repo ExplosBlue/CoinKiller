@@ -30,9 +30,9 @@ public:
     void raiseLayer();
     void lowerLayer();
 
-    void setLayerMask(quint8 mask) { layerMask = mask; qDebug("layer mask set to %d", layerMask); }
-    void toggleSprites(bool toggle) { spriteInteraction = toggle; qDebug("spriteInteration is %d", toggle); }
-    void togglePaths(bool toggle) { pathInteraction = toggle; qDebug("pathInteraction is %d", toggle); }
+    void setLayerMask(quint8 mask) { layerMask = mask; }
+    void toggleSprites(bool toggle) { spriteInteraction = toggle; }
+    void togglePaths(bool toggle) { pathInteraction = toggle; }
 
     void select(Object* obj);
     void selectAll();

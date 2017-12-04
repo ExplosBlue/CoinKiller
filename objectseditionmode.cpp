@@ -473,7 +473,7 @@ QList<Object*> ObjectsEditonMode::getObjectsAtPos(int x1, int y1, int x2, int y2
     if (spriteInteraction) foreach (Sprite* spr, level->sprites) if (spr->clickDetection(area)) objects.append(spr);
     foreach (Entrance* entr, level->entrances) if (entr->clickDetection(area)) objects.append(entr);
     if (pathInteraction) foreach (Path* path, level->paths) foreach (PathNode* node, path->getNodes()) if (node->clickDetection(area)) objects.append(node);
-    foreach (ProgressPath* path, level->progressPaths) foreach (ProgressPathNode* node, path->getNodes()) if (node->clickDetection(area)) objects.append(node);
+    if (pathInteraction) foreach (ProgressPath* path, level->progressPaths) foreach (ProgressPathNode* node, path->getNodes()) if (node->clickDetection(area)) objects.append(node);
 
     foreach (Zone* zone, level->zones)
     {

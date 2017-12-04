@@ -35,6 +35,7 @@
 #include "locationeditorwidget.h"
 #include "patheditorwidget.h"
 #include "progresspatheditorwidget.h"
+#include "spriteidswidget.h"
 #include "settingsmanager.h"
 
 namespace Ui {
@@ -142,6 +143,7 @@ private:
     LocationEditorWidget* locationEditor;
     PathEditorWidget* pathEditor;
     ProgressPathEditorWidget* progPathEditor;
+    SpriteIdWidget* spriteIds;
 
     QComboBox* areaSelector;
 

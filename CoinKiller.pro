@@ -48,7 +48,8 @@ SOURCES += main.cpp\
     objectseditionmode.cpp \
     sarcexplorerwindow.cpp \
     newtilesetdialog.cpp \
-    imagecache.cpp
+    imagecache.cpp \
+    spriteidswidget.cpp
 
 HEADERS  += mainwindow.h \
     filesystembase.h \
@@ -88,7 +89,8 @@ HEADERS  += mainwindow.h \
     objectseditionmode.h \
     sarcexplorerwindow.h \
     newtilesetdialog.h \
-    imagecache.h
+    imagecache.h \
+    spriteidswidget.h
 
 FORMS    += mainwindow.ui \
     leveleditorwindow.ui \

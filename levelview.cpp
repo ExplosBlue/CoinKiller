@@ -481,7 +481,7 @@ void LevelView::paintEvent(QPaintEvent* evt)
 
     // Render Paths
     if (renderPaths)
-        {
+    {
         for (int i = 0; i < level->paths.size(); i++)
         {
             const Path* path = level->paths.at(i);
@@ -520,45 +520,46 @@ void LevelView::paintEvent(QPaintEvent* evt)
                 painter.drawText(pathrect, pathText, Qt::AlignHCenter | Qt::AlignVCenter);
             }
         }
-    }
 
-    // Render Progress Paths
-    for (int i = 0; i < level->progressPaths.size(); i++)
-    {
-        const ProgressPath* pPath = level->progressPaths.at(i);
-        QList<ProgressPathNode*> nodes  = pPath->getNodes();
 
-        for (int j = 0; j < nodes.size() - 1; j++)
+        // Render Progress Paths
+        for (int i = 0; i < level->progressPaths.size(); i++)
         {
-            QLine ppathLine(QPoint(nodes[j]->getx()+10, nodes[j]->gety()+10), QPoint(nodes[j+1]->getx()+10, nodes[j+1]->gety()+10));
+            const ProgressPath* pPath = level->progressPaths.at(i);
+            QList<ProgressPathNode*> nodes  = pPath->getNodes();
 
-            if (!drawrect.intersects(QRect(ppathLine.x1(), ppathLine.y1(), ppathLine.x2()-ppathLine.x1(), ppathLine.y2()-ppathLine.y1())))
-                continue;
+            for (int j = 0; j < nodes.size() - 1; j++)
+            {
+                QLine ppathLine(QPoint(nodes[j]->getx()+10, nodes[j]->gety()+10), QPoint(nodes[j+1]->getx()+10, nodes[j+1]->gety()+10));
 
-            QPen pen(QColor(220,255,0));
-            pen.setWidth(2);
-            painter.setPen(pen);
-            painter.drawLine(ppathLine);
-        }
+                if (!drawrect.intersects(QRect(ppathLine.x1(), ppathLine.y1(), ppathLine.x2()-ppathLine.x1(), ppathLine.y2()-ppathLine.y1())))
+                    continue;
 
-        for (int j = 0; j < nodes.size(); j++)
-        {
-            QRect ppathrect(nodes[j]->getx(), nodes[j]->gety(), 20, 20);
+                QPen pen(QColor(220,255,0));
+                pen.setWidth(2);
+                painter.setPen(pen);
+                painter.drawLine(ppathLine);
+            }
 
-            if (!drawrect.intersects(ppathrect))
-                continue;
+            for (int j = 0; j < nodes.size(); j++)
+            {
+                QRect ppathrect(nodes[j]->getx(), nodes[j]->gety(), 20, 20);
 
-            painter.setPen(QColor(0,0,0));
+                if (!drawrect.intersects(ppathrect))
+                    continue;
 
-            QPainterPath path;
-            path.addRoundedRect(ppathrect, 2.0, 2.0);
-            QColor color(220,255,0,200);
-            painter.fillPath(path, color);
-            painter.drawPath(path);
+                painter.setPen(QColor(0,0,0));
 
-            QString pPathText = QString("%1-%2").arg(pPath->getid()).arg(j+1);
-            painter.setFont(QFont("Arial", 7, QFont::Normal));
-            painter.drawText(ppathrect, pPathText, Qt::AlignHCenter | Qt::AlignVCenter);
+                QPainterPath path;
+                path.addRoundedRect(ppathrect, 2.0, 2.0);
+                QColor color(220,255,0,200);
+                painter.fillPath(path, color);
+                painter.drawPath(path);
+
+                QString pPathText = QString("%1-%2").arg(pPath->getid()).arg(j+1);
+                painter.setFont(QFont("Arial", 7, QFont::Normal));
+                painter.drawText(ppathrect, pPathText, Qt::AlignHCenter | Qt::AlignVCenter);
+            }
         }
     }
 
@@ -867,10 +868,10 @@ void LevelView::setEditonMode(EditMode newMode, bool init)
 
     switch (newMode)
     {
-        case EditMode_ObjectsMode:
-        default:
-            mode = objectEditionMode;
-            break;
+    case EditMode_ObjectsMode:
+    default:
+        mode = objectEditionMode;
+        break;
     }
 
     mode->activate();

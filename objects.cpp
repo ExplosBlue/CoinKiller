@@ -286,7 +286,7 @@ void Sprite::setRect()
         width = qMax(getNybble(7) * 20, 20);
         height = qMax(getNybble(4) * 20, 20);
         break;
-    case 24: // Flying Question Block
+    case 24: case 25: // Flying Question Block
         width = 28;
         height = 22;
         offsetx = -4;
