@@ -47,6 +47,7 @@ selectUnpackedRomFSFolder=Select unpacked ROMFS Folder...
 aboutCoinKiller=About CoinKiller
 languages=Languages
 NightMode=Night Mode
+Maximised=Start Maximised
 updateSDat=Update Spritedata
 sDatWarning=All changes you made to your spritedata.xml will be overwritten!\n\nDo you want to proceed?
 sDatSuccess=Your spritedata was updated successfully!

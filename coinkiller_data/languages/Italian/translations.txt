@@ -47,6 +47,7 @@ selectUnpackedRomFSFolder=Seleziona cartella ROMFS...
 aboutCoinKiller=Informazioni su CoinKiller
 languages=Lingue
 NightMode=Modalità notte
+Maximised=Start Maximised
 updateSDat=Aggiorna Spritedata.xml
 sDatWarning=Tutti i cambiamenti effettuati al file spritedata.xml\nsaranno sovrascritti!\n\nVuoi procedere?
 sDatSuccess=Il file Spritedata.xml è stato aggiornato con successo!

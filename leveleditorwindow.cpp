@@ -33,10 +33,11 @@ LevelEditorWindow::LevelEditorWindow(LevelManager* lvlMgr, int initialArea) :
     QMainWindow(lvlMgr->getParent()),
     ui(new Ui::LevelEditorWindow)
 {
-    this->setWindowState(Qt::WindowMaximized);
-
     this->lvlMgr = lvlMgr;
     this->settings = SettingsManager::getInstance();
+
+    if (settings->get("maximised", false).toBool())
+        this->setWindowState(Qt::WindowMaximized);
 
     this->setAttribute(Qt::WA_DeleteOnClose);
     ui->setupUi(this);
@@ -468,12 +469,18 @@ void LevelEditorWindow::on_sidebarTabWidget_currentChanged(int index)
 
 void LevelEditorWindow::on_actionAddArea_triggered()
 {
+    bool ignore = false;
     if (unsavedChanges)
     {
         QMessageBox message(this);
         message.setWindowTitle(settings->getTranslation("General", "unsavedChanges"));
         message.setText(settings->getTranslation("General", "wantToSave"));
-        message.setStandardButtons(QMessageBox::Save | QMessageBox::Discard);
+        message.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
+
+        QSpacerItem* spacer = new QSpacerItem(400, 0, QSizePolicy::Minimum, QSizePolicy::Expanding);
+        QGridLayout* layout = (QGridLayout*)message.layout();
+        layout->addItem(spacer, layout->rowCount(), 0, 1, layout->columnCount());
+
         switch (message.exec())
         {
         case QMessageBox::Save:
@@ -485,19 +492,24 @@ void LevelEditorWindow::on_actionAddArea_triggered()
             unsavedChanges = false;
             editStatus->setText("");
             break;
+        case QMessageBox::Cancel:
+            ignore = true;
+            break;
         }
     }
 
-    if (lvlMgr->getAreaCount() >= 4)
+    if (!ignore)
     {
-        QMessageBox::information(this, "CoinKiller", "Due to limitations there can only be a maximum of 4 areas in a level.", QMessageBox::Ok);
-        return;
-    }
+        if (lvlMgr->getAreaCount() >= 4)
+        {
+            QMessageBox::information(this, "CoinKiller", "Due to limitations there can only be a maximum of 4 areas in a level.", QMessageBox::Ok);
+            return;
+        }
 
-    // int seekArea = lvlMgr->addArea(level->getAreaID());
     int seekArea = lvlMgr->addArea(lvlMgr->getAreaCount());
     loadArea(seekArea);
     updateAreaSelector(seekArea);
+    }
 }
 
 void LevelEditorWindow::on_actionDeleteCurrentArea_triggered()
@@ -691,12 +703,19 @@ void LevelEditorWindow::updateAreaSelector(int index)
 
 void LevelEditorWindow::handleAreaIndexChange(int index)
 {
+    bool ignore = false;
+
     if (unsavedChanges)
     {
         QMessageBox message(this);
         message.setWindowTitle(settings->getTranslation("General", "unsavedChanges"));
         message.setText(settings->getTranslation("General", "wantToSave"));
-        message.setStandardButtons(QMessageBox::Save | QMessageBox::Discard);
+        message.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
+
+        QSpacerItem* spacer = new QSpacerItem(400, 0, QSizePolicy::Minimum, QSizePolicy::Expanding);
+        QGridLayout* layout = (QGridLayout*)message.layout();
+        layout->addItem(spacer, layout->rowCount(), 0, 1, layout->columnCount());
+
         switch (message.exec())
         {
         case QMessageBox::Save:
@@ -706,29 +725,41 @@ void LevelEditorWindow::handleAreaIndexChange(int index)
             break;
         case QMessageBox::Discard:
             unsavedChanges = false;
-            editStatus->setText("");
+            editStatus->setText("Ready!");
+            break;
+        case QMessageBox::Cancel:
+            ignore = true;
             break;
         }
     }
 
-    index++;
-
-    if (lvlMgr->areaIsOpen(index))
+    if (!ignore)
     {
-        updateAreaSelector(level->getAreaID());
-        QMessageBox::information(this, "CoinKiller", QString("Area %1 cannot be opened because it is already opened in anoter editor window.").arg(index), QMessageBox::Ok);
-        return;
-    }
+        index++;
 
-    if (QApplication::queryKeyboardModifiers() &= Qt::ControlModifier)
-    {
-        updateAreaSelector(level->getAreaID());
-        lvlMgr->openAreaEditor(index);
+        if (lvlMgr->areaIsOpen(index))
+        {
+            updateAreaSelector(level->getAreaID());
+            QMessageBox::information(this, "CoinKiller", QString("Area %1 cannot be opened because it is already opened in anoter editor window.").arg(index), QMessageBox::Ok);
+            return;
+        }
+
+        if (QApplication::queryKeyboardModifiers() &= Qt::ControlModifier)
+        {
+            updateAreaSelector(level->getAreaID());
+            lvlMgr->openAreaEditor(index);
+        }
+        else
+        {
+            loadArea(index);
+            updateAreaSelector();
+        }
     }
     else
     {
-        loadArea(index);
-        updateAreaSelector();
+        areaSelector->blockSignals(true);
+        areaSelector->setCurrentIndex(level->getAreaID()-1);
+        areaSelector->blockSignals(false);
     }
 }
 
@@ -774,6 +805,11 @@ void LevelEditorWindow::closeEvent(QCloseEvent *event)
         message.setWindowTitle(settings->getTranslation("General", "unsavedChanges"));
         message.setText(settings->getTranslation("General", "wantToSave"));
         message.setStandardButtons(QMessageBox::Save | QMessageBox::Cancel | QMessageBox::Discard);
+
+        QSpacerItem* spacer = new QSpacerItem(400, 0, QSizePolicy::Minimum, QSizePolicy::Expanding);
+        QGridLayout* layout = (QGridLayout*)message.layout();
+        layout->addItem(spacer, layout->rowCount(), 0, 1, layout->columnCount());
+
         switch (message.exec())
         {
         case QMessageBox::Save:

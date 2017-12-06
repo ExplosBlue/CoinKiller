@@ -18,18 +18,6 @@
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QVBoxLayout" name="verticalLayout">
-    <property name="leftMargin">
-     <number>0</number>
-    </property>
-    <property name="topMargin">
-     <number>0</number>
-    </property>
-    <property name="rightMargin">
-     <number>0</number>
-    </property>
-    <property name="bottomMargin">
-     <number>0</number>
-    </property>
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
@@ -132,10 +120,21 @@
             </property>
            </widget>
           </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout">
           <item>
            <widget class="QCheckBox" name="nightModeCheckbox">
             <property name="text">
              <string>&lt;NightMode&gt;</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="maximisedCheckbox">
+            <property name="text">
+             <string>&lt;Maximised&gt;</string>
             </property>
            </widget>
           </item>
@@ -167,18 +166,18 @@
      <x>0</x>
      <y>0</y>
      <width>436</width>
-     <height>21</height>
+     <height>36</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
     <property name="title">
-     <string>&lt;File&gt;</string>
+     <string>&lt;&amp;File&gt;</string>
     </property>
     <addaction name="actionLoadUnpackedROMFS"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
-     <string>&lt;Help&gt;</string>
+     <string>&lt;&amp;Help&gt;</string>
     </property>
     <addaction name="actionAbout"/>
    </widget>
@@ -188,12 +187,12 @@
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionLoadUnpackedROMFS">
    <property name="text">
-    <string>&lt;Load unpacked ROMFS&gt;</string>
+    <string>&lt;&amp;Load unpacked ROMFS&gt;</string>
    </property>
   </action>
   <action name="actionAbout">
    <property name="text">
-    <string>&lt;About CoinKiller&gt;</string>
+    <string>&lt;About &amp;CoinKiller&gt;</string>
    </property>
   </action>
   <action name="actionDebug_test">

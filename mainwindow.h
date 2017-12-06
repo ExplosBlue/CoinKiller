@@ -62,6 +62,8 @@ private slots:
 
     void on_nightModeCheckbox_toggled(bool checked);
 
+    void on_maximisedCheckbox_toggled(bool checked);
+
 private:
     Ui::MainWindow *ui;
 

@@ -66,6 +66,7 @@ MainWindow::MainWindow(QWidget *parent) :
     setGameLoaded(false);
 
     ui->nightModeCheckbox->setChecked(settings->get("nightmode", false).toBool());
+    ui->maximisedCheckbox->setChecked(settings->get("maximised", false).toBool());
 }
 
 MainWindow::~MainWindow()
@@ -196,6 +197,7 @@ void MainWindow::loadTranslations()
     ui->tabWidget->setTabText(3, settings->getTranslation("General", "tools"));
     ui->openSarcExplorerBtn->setText(settings->getTranslation("SarcExplorer", "sarcExplorer"));
     ui->nightModeCheckbox->setText(settings->getTranslation("MainWindow", "NightMode"));
+    ui->maximisedCheckbox->setText(settings->getTranslation("MainWindow", "Maximised"));
 }
 
 void MainWindow::on_updateSpriteData_clicked()
@@ -327,4 +329,9 @@ void MainWindow::setStyleSheetFromPath(QString path)
     styleSheetFile.open(QFile::ReadOnly);
     QString styleSheetTxt = QLatin1String(styleSheetFile.readAll());
     setStyleSheet(styleSheetTxt);
+}
+
+void MainWindow::on_maximisedCheckbox_toggled(bool checkState)
+{
+    settings->set("maximised", checkState);
 }

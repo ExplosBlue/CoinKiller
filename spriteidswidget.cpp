@@ -65,7 +65,7 @@ void SpriteIdWidget::updateList()
 
                 QString match = "triggering";
 
-                if (field->title.toLower().contains(match) && field->title.toLower().contains("id"))
+                if (field->title.toLower().contains(match) && field->title.toLower().contains("id") && sprite->getNybbleData(field->startNybble, field->endNybble) != 0)
                 {
                     QTreeWidgetItem* spriteItem = new QTreeWidgetItem();
                     spriteItem->setText(0, QString("%1: %2").arg(sprite->getid()).arg(spriteData.getSpriteDef(sprite->getid()).getName()));
@@ -94,7 +94,7 @@ void SpriteIdWidget::updateList()
 
                 QString match = "target";
 
-                if (field->title.toLower().contains(match) && field->title.toLower().contains("id"))
+                if (field->title.toLower().contains(match) && field->title.toLower().contains("id") && sprite->getNybbleData(field->startNybble, field->endNybble) != 0)
                 {
                     QTreeWidgetItem* spriteItem = new QTreeWidgetItem();
                     spriteItem->setText(0, QString("%1: %2").arg(sprite->getid()).arg(spriteData.getSpriteDef(sprite->getid()).getName()));
@@ -123,7 +123,7 @@ void SpriteIdWidget::updateList()
 
                 QString match = "rotation";
 
-                if (field->title.toLower().contains(match) && field->title.toLower().contains("id"))
+                if (field->title.toLower().contains(match) && field->title.toLower().contains("id") && sprite->getNybbleData(field->startNybble, field->endNybble) != 0)
                 {
                     QTreeWidgetItem* spriteItem = new QTreeWidgetItem();
                     spriteItem->setText(0, QString("%1: %2").arg(sprite->getid()).arg(spriteData.getSpriteDef(sprite->getid()).getName()));
@@ -152,7 +152,7 @@ void SpriteIdWidget::updateList()
 
                 QString match = "group";
 
-                if (field->title.toLower().contains(match) && field->title.toLower().contains("id"))
+                if (field->title.toLower().contains(match) && field->title.toLower().contains("id") && sprite->getNybbleData(field->startNybble, field->endNybble) != 0)
                 {
                     QTreeWidgetItem* spriteItem = new QTreeWidgetItem();
                     spriteItem->setText(0, QString("%1: %2").arg(sprite->getid()).arg(spriteData.getSpriteDef(sprite->getid()).getName()));
