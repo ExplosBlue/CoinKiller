@@ -79,6 +79,17 @@ renderCameraLimits=Render Camera Limits
 selectZoneContents=Inhalt auswählen
 setBgColor=Hintergrundfarbe ändern
 resetBgColor=rücksetzen farbe ändern
+resetUi=Reset UI Layout
+areaEditor=Area Settings
+tilesetEditor=Tiles
+spriteEditor=Sprites
+entranceEditor=Entrances
+zoneEditor=Zones
+locationEditor=Locations
+pathEditor=Paths
+progPathEditor=Progress Paths
+eventIds=Event IDs
+miniMap=MiniMap
 
 [TilesetEditor]
 tileset=Tileset

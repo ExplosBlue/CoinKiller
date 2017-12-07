@@ -311,9 +311,9 @@ void MainWindow::setNightmode(bool nightmode)
     settings->set("nightmode", nightmode);
 
     if (nightmode)
-        setStyleSheetFromPath("nightmode.qss");
+        setStyleSheetFromPath("NightMode.qss");
     else
-        setStyleSheetFromPath("lightmode.qss");
+        setStyleSheetFromPath("");
 }
   
 void MainWindow::setStyleSheetFromPath(QString path)
@@ -322,13 +322,14 @@ void MainWindow::setStyleSheetFromPath(QString path)
 
     if (!styleSheetFile.exists())
     {
-        setStyleSheet("");
+        qApp->setStyleSheet("");
         return;
     }
 
-    styleSheetFile.open(QFile::ReadOnly);
+    styleSheetFile.open(QFile::ReadOnly | QFile::Text);
     QString styleSheetTxt = QLatin1String(styleSheetFile.readAll());
-    setStyleSheet(styleSheetTxt);
+    styleSheetFile.close();
+    qApp->setStyleSheet(styleSheetTxt);
 }
 
 void MainWindow::on_maximisedCheckbox_toggled(bool checkState)
