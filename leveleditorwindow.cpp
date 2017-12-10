@@ -1,13 +1,10 @@
 /*
     Copyright 2015 StapleButter
-
     This file is part of CoinKiller.
-
     CoinKiller is free software: you can redistribute it and/or modify it under
     the terms of the GNU General Public License as published by the Free
     Software Foundation, either version 3 of the License, or (at your option)
     any later version.
-
     CoinKiller is distributed in the hope that it will be useful, but WITHOUT ANY
     WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
     FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -83,13 +80,15 @@ LevelEditorWindow::LevelEditorWindow(LevelManager* lvlMgr, int initialArea) :
     ui->actionDeleteCurrentArea->setIcon(QIcon(basePath + "remove.png"));
     ui->actionSetBackgroundColor->setIcon(QIcon(basePath + "colors.png"));
     ui->actionResetBackgroundColor->setIcon(QIcon(basePath + "delete_colors.png"));
-    ui->actionResetUiLayout->setIcon(QIcon(basePath + "reset_ui.png"));
 
     QList<int> splitterSizes;
     splitterSizes.append(350);
     splitterSizes.append(999999999);
     ui->splitter->setSizes(splitterSizes);
     ui->splitter->setCollapsible(0, false);
+
+    ui->sidebar->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Ignored);
+    ui->sidebar->setMinimumSize(350, 20);
 
     loadArea(initialArea, false, true);
 
@@ -201,9 +200,6 @@ void LevelEditorWindow::loadTranslations()
 
     ui->actionResetBackgroundColor->setText(settings->getTranslation("LevelEditor", "resetBgColor"));
     ui->actionResetBackgroundColor->setToolTip(settings->getTranslation("LevelEditor", "resetBgColor"));
-
-    ui->actionResetUiLayout->setText(settings->getTranslation("LevelEditor", "resetUi"));
-    ui->actionResetUiLayout->setToolTip(settings->getTranslation("LevelEditor", "resetUi"));
 }
 
 // Actions
@@ -402,45 +398,38 @@ void LevelEditorWindow::setObjectEdition(Object* obj)
 
     if (is<BgdatObject*>(obj))
     {
-        tilesetPaletteDock->show();
-        tilesetPaletteDock->raise();
+        ui->sidebarTabWidget->setCurrentIndex(1);
         tilesetPalette->select(dynamic_cast<BgdatObject*>(obj));
     }
     else if (is<Sprite*>(obj))
     {
-        spriteEditorDock->show();
-        spriteEditorDock->raise();
+        ui->sidebarTabWidget->setCurrentIndex(2);
         spriteEditor->select(dynamic_cast<Sprite*>(obj));
         spriteEditor->spriteDataEditorPtr()->select(dynamic_cast<Sprite*>(obj));
     }
     if (is<Entrance*>(obj))
     {
-        entranceEditorDock->show();
-        entranceEditorDock->raise();
+        ui->sidebarTabWidget->setCurrentIndex(4);
         entranceEditor->select(dynamic_cast<Entrance*>(obj));
     }
     else if (is<Zone*>(obj))
     {
-        zoneEditorDock->show();
-        zoneEditorDock->raise();
+        ui->sidebarTabWidget->setCurrentIndex(5);
         zoneEditor->select(dynamic_cast<Zone*>(obj));
     }
     else if (is<Location*>(obj))
     {
-        locationEditorDock->show();
-        locationEditorDock->raise();
+        ui->sidebarTabWidget->setCurrentIndex(6);
         locationEditor->select(dynamic_cast<Location*>(obj));
     }
     else if (is<PathNode*>(obj))
     {
-        pathEditorDock->show();
-        pathEditorDock->raise();
+        ui->sidebarTabWidget->setCurrentIndex(7);
         pathEditor->select(dynamic_cast<PathNode*>(obj));
     }
     else if (is<ProgressPathNode*>(obj))
     {
-        progPathEditorDock->show();
-        progPathEditorDock->raise();
+        ui->sidebarTabWidget->setCurrentIndex(8);
         progPathEditor->select(dynamic_cast<ProgressPathNode*>(obj));
     }
 }
@@ -465,6 +454,16 @@ void LevelEditorWindow::updateEditors()
     pathEditor->updateEditor();
     progPathEditor->updateEditor();
     spriteIds->updateEditor();
+}
+
+void LevelEditorWindow::on_sidebarTabWidget_currentChanged(int index)
+{    
+    if (index == 0 || index == 3)
+        levelView->objEditionModePtr()->setDrawType(-1);
+    else if (index > 3)
+        levelView->objEditionModePtr()->setDrawType(index-2);
+    else
+        levelView->objEditionModePtr()->setDrawType(index-1);
 }
 
 void LevelEditorWindow::on_actionAddArea_triggered()
@@ -500,8 +499,6 @@ void LevelEditorWindow::on_actionAddArea_triggered()
 
     if (!ignore)
     {
-        settings->set("dockPositions",this->saveState(1));
-
         if (lvlMgr->getAreaCount() >= 4)
         {
             QMessageBox::information(this, "CoinKiller", "Due to limitations there can only be a maximum of 4 areas in a level.", QMessageBox::Ok);
@@ -560,6 +557,14 @@ void LevelEditorWindow::loadArea(int id, bool closeLevel, bool init)
     if (!init)
     {
         delete levelView;
+        delete miniMap;
+
+        for(int i = ui->sidebarTabWidget->count() - 1; i >= 0; i--)
+        {
+            QWidget* deleteWidget = ui->sidebarTabWidget->widget(i);
+            ui->sidebarTabWidget->removeTab(i);
+            delete deleteWidget;
+        }
     }
 
     level = lvlMgr->openArea(id);
@@ -583,14 +588,88 @@ void LevelEditorWindow::loadArea(int id, bool closeLevel, bool init)
 
     zoom = 1.0;
 
-    setupWidgets(false, init);
+    QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/icons/");
 
-    // Avoid issue with objects being un-selectable when opening an area
+    // Setup Area Editor
+    areaEditor = new AreaEditorWidget(level, lvlMgr->getGame());
+    connect(areaEditor, SIGNAL(updateLevelView()), levelView, SLOT(update()));
+    connect(areaEditor, SIGNAL(editMade()), this, SLOT(handleEditMade()));
+
+    // Setup Tileset Picker
+    tilesetPalette = new TilesetPalette(level, levelView->objEditionModePtr());
+    connect(areaEditor, SIGNAL(relaodTilesetPicker()), tilesetPalette, SLOT(reloadTilesets()));
+
+    // Setup Sprite Picker
+    spriteEditor = new SpriteEditorWidget();
+    connect(spriteEditor->spriteDataEditorPtr(), SIGNAL(updateLevelView()), levelView, SLOT(update()));
+    connect(spriteEditor, SIGNAL(selectedSpriteChanged(int)), this, SLOT(setSelSprite(int)));
+    connect(spriteEditor, SIGNAL(editMade()), this, SLOT(handleEditMade()));
+
+    // Setup Entrance Editor
+    entranceEditor = new EntranceEditorWidget(&level->entrances);
+    connect(entranceEditor, SIGNAL(updateLevelView()), levelView, SLOT(update()));
+    connect(entranceEditor, SIGNAL(selectedEntrChanged(Object*)), levelView, SLOT(selectObj(Object*)));
+    connect(entranceEditor, SIGNAL(editMade()), this, SLOT(handleEditMade()));
+
+    // Setup Zone Editor
+    zoneEditor = new ZoneEditorWidget(&level->zones);
+    connect(zoneEditor, SIGNAL(updateLevelView()), levelView, SLOT(update()));
+    connect(zoneEditor, SIGNAL(selectedZoneChanged(Object*)), levelView, SLOT(selectObj(Object*)));
+    connect(zoneEditor, SIGNAL(selectZoneContents(Zone*)), levelView, SLOT(selectZoneContents(Zone*)));
+    connect(zoneEditor, SIGNAL(editMade()), this, SLOT(handleEditMade()));
+
+    // Setup Location Editor
+    locationEditor = new LocationEditorWidget(&level->locations);
+    connect(locationEditor, SIGNAL(updateLevelView()), levelView, SLOT(update()));
+    connect(locationEditor, SIGNAL(selectedLocChanged(Object*)), levelView, SLOT(selectObj(Object*)));
+    connect(locationEditor, SIGNAL(editMade()), this, SLOT(handleEditMade()));
+
+    // Setup Path Editor
+    pathEditor = new PathEditorWidget(&level->paths);
+    connect(pathEditor, SIGNAL(updateLevelView()), levelView, SLOT(update()));
+    connect(pathEditor, SIGNAL(selectedPathChanged(Object*)), levelView, SLOT(selectObj(Object*)));
+    connect(pathEditor, SIGNAL(editMade()), this, SLOT(handleEditMade()));
+
+    // Setup Progress Path Editor
+    progPathEditor = new ProgressPathEditorWidget(&level->progressPaths);
+    connect(progPathEditor, SIGNAL(updateLevelView()), levelView, SLOT(update()));
+    connect(progPathEditor, SIGNAL(selectedProgPathChanged(Object*)), levelView, SLOT(selectObj(Object*)));
+    connect(progPathEditor, SIGNAL(editMade()), this, SLOT(handleEditMade()));
+
+    // Setup Sprite Ids Widget
+    spriteIds = new SpriteIdWidget(&level->sprites);
+    connect(spriteIds, SIGNAL(updateLevelView()), levelView, SLOT(update()));
+    connect(spriteIds, SIGNAL(selectedSpriteChanged(Object*)), levelView, SLOT(selectObj(Object*)));
+
+    connect(levelView, SIGNAL(scrollTo(int,int)), this, SLOT(scrollTo(int,int)));
+    connect(levelView->editionModePtr(), SIGNAL(selectdObjectChanged(Object*)), this, SLOT(setObjectEdition(Object*)));
+    connect(levelView->editionModePtr(), SIGNAL(deselected()), this, SLOT(deselect()));
+    connect(levelView->editionModePtr(), SIGNAL(updateEditors()), this, SLOT(updateEditors()));
+    connect(levelView->editionModePtr(), SIGNAL(editMade()), this, SLOT(handleEditMade()));
+
+
+    ui->sidebarTabWidget->addTab(areaEditor, QIcon(basePath + "settings.png"), "");
+    ui->sidebarTabWidget->addTab(tilesetPalette, QIcon(basePath + "filled_box"), "");
+    ui->sidebarTabWidget->addTab(spriteEditor, QIcon(basePath + "goomba.png"), "");
+    ui->sidebarTabWidget->addTab(spriteIds, QIcon(basePath + "ids.png"), "");
+    ui->sidebarTabWidget->addTab(entranceEditor, QIcon(basePath + "entrance.png"), "");
+    ui->sidebarTabWidget->addTab(zoneEditor, QIcon(basePath + "zone.png"), "");
+    ui->sidebarTabWidget->addTab(locationEditor, QIcon(basePath + "location.png"), "");
+    ui->sidebarTabWidget->addTab(pathEditor, QIcon(basePath + "path.png"), "");
+    ui->sidebarTabWidget->addTab(progPathEditor, QIcon(basePath + "progress_path.png"), "");
+
+
+    miniMap = new LevelMiniMap(this, level);
+    connect(levelView, SIGNAL(updateMinimap(QRect)), miniMap, SLOT(update_(QRect)));
+    connect(levelView, SIGNAL(updateMinimapBounds()), miniMap, SLOT(updateBounds()));
+    connect(miniMap, SIGNAL(scrollTo(int,int)), this, SLOT(scrollTo(int,int)));
+    ui->miniMap->setWidget(miniMap);
+
+    // Fix sprite loading bug when opening a new area
     levelView->toggleSprites(false);
     levelView->toggleSprites(true);
-    levelView->togglePaths(false);
-    levelView->togglePaths(true);
     update();
+
 }
 
 void LevelEditorWindow::updateAreaSelector(int index)
@@ -655,8 +734,6 @@ void LevelEditorWindow::handleAreaIndexChange(int index)
 
     if (!ignore)
     {
-        settings->set("dockPositions",this->saveState(1));
-
         index++;
 
         if (lvlMgr->areaIsOpen(index))
@@ -698,189 +775,6 @@ void LevelEditorWindow::scrollTo(int x, int y)
     ui->levelViewArea->verticalScrollBar()->setValue(y);
 }
 
-void LevelEditorWindow::setupWidgets(bool resetLayout, bool init)
-{
-    if (!init)
-    {
-        delete areaEditor;
-        delete tilesetPalette;
-        delete spriteEditor;
-        delete entranceEditor;
-        delete zoneEditor;
-        delete locationEditor;
-        delete pathEditor;
-        delete progPathEditor;
-        delete spriteIds;
-        delete miniMap;
-
-        delete areaEditorDock;
-        delete tilesetPaletteDock;
-        delete spriteEditorDock;
-        delete entranceEditorDock;
-        delete zoneEditorDock;
-        delete locationEditorDock;
-        delete pathEditorDock;
-        delete progPathEditorDock;
-        delete spriteIdsDock;
-        delete miniMapDock;
-    }
-
-    // Setup Area Editor
-    areaEditor = new AreaEditorWidget(level, lvlMgr->getGame());
-    connect(areaEditor, SIGNAL(updateLevelView()), levelView, SLOT(update()));
-    connect(areaEditor, SIGNAL(editMade()), this, SLOT(handleEditMade()));
-
-    areaEditorDock = new QDockWidget(settings->getTranslation("LevelEditor", "areaEditor"), this);
-    areaEditorDock->setWidget(areaEditor);
-    areaEditorDock->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
-    areaEditorDock->setObjectName("areaEditor");
-
-    // Setup Tileset Picker
-    tilesetPalette = new TilesetPalette(level, levelView->objEditionModePtr());
-    connect(areaEditor, SIGNAL(relaodTilesetPicker()), tilesetPalette, SLOT(reloadTilesets()));
-
-    tilesetPaletteDock = new QDockWidget(settings->getTranslation("LevelEditor", "tilesetEditor"), this);
-    tilesetPaletteDock->setWidget(tilesetPalette);
-    tilesetPaletteDock->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
-    tilesetPaletteDock->setObjectName("tilesetPallete");
-
-    // Setup Sprite Picker
-    spriteEditor = new SpriteEditorWidget();
-    connect(spriteEditor->spriteDataEditorPtr(), SIGNAL(updateLevelView()), levelView, SLOT(update()));
-    connect(spriteEditor, SIGNAL(selectedSpriteChanged(int)), this, SLOT(setSelSprite(int)));
-    connect(spriteEditor, SIGNAL(editMade()), this, SLOT(handleEditMade()));
-
-    spriteEditorDock = new QDockWidget(settings->getTranslation("LevelEditor", "spriteEditor"), this);
-    spriteEditorDock->setWidget(spriteEditor);
-    spriteEditorDock->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
-    spriteEditorDock->setObjectName("spriteEditor");
-
-    // Setup Entrance Editor
-    entranceEditor = new EntranceEditorWidget(&level->entrances);
-    connect(entranceEditor, SIGNAL(updateLevelView()), levelView, SLOT(update()));
-    connect(entranceEditor, SIGNAL(selectedEntrChanged(Object*)), levelView, SLOT(selectObj(Object*)));
-    connect(entranceEditor, SIGNAL(editMade()), this, SLOT(handleEditMade()));
-
-    entranceEditorDock = new QDockWidget(settings->getTranslation("LevelEditor", "entranceEditor"), this);
-    entranceEditorDock->setWidget(entranceEditor);
-    entranceEditorDock->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
-    entranceEditorDock->setObjectName("entranceEditor");
-
-    // Setup Zone Editor
-    zoneEditor = new ZoneEditorWidget(&level->zones);
-    connect(zoneEditor, SIGNAL(updateLevelView()), levelView, SLOT(update()));
-    connect(zoneEditor, SIGNAL(selectedZoneChanged(Object*)), levelView, SLOT(selectObj(Object*)));
-    connect(zoneEditor, SIGNAL(selectZoneContents(Zone*)), levelView, SLOT(selectZoneContents(Zone*)));
-    connect(zoneEditor, SIGNAL(editMade()), this, SLOT(handleEditMade()));
-
-    zoneEditorDock = new QDockWidget(settings->getTranslation("LevelEditor", "zoneEditor"), this);
-    zoneEditorDock->setWidget(zoneEditor);
-    zoneEditorDock->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
-    zoneEditorDock->setObjectName("zoneEditor");
-
-    // Setup Location Editor
-    locationEditor = new LocationEditorWidget(&level->locations);
-    connect(locationEditor, SIGNAL(updateLevelView()), levelView, SLOT(update()));
-    connect(locationEditor, SIGNAL(selectedLocChanged(Object*)), levelView, SLOT(selectObj(Object*)));
-    connect(locationEditor, SIGNAL(editMade()), this, SLOT(handleEditMade()));
-
-    locationEditorDock = new QDockWidget(settings->getTranslation("LevelEditor", "locationEditor"), this);
-    locationEditorDock->setWidget(locationEditor);
-    locationEditorDock->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
-    locationEditorDock->setObjectName("locationEditor");
-
-    // Setup Path Editor
-    pathEditor = new PathEditorWidget(&level->paths);
-    connect(pathEditor, SIGNAL(updateLevelView()), levelView, SLOT(update()));
-    connect(pathEditor, SIGNAL(selectedPathChanged(Object*)), levelView, SLOT(selectObj(Object*)));
-    connect(pathEditor, SIGNAL(editMade()), this, SLOT(handleEditMade()));
-
-    pathEditorDock = new QDockWidget(settings->getTranslation("LevelEditor", "pathEditor"), this);
-    pathEditorDock->setWidget(pathEditor);
-    pathEditorDock->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
-    pathEditorDock->setObjectName("pathEditor");
-
-    // Setup Progress Path Editor
-    progPathEditor = new ProgressPathEditorWidget(&level->progressPaths);
-    connect(progPathEditor, SIGNAL(updateLevelView()), levelView, SLOT(update()));
-    connect(progPathEditor, SIGNAL(selectedProgPathChanged(Object*)), levelView, SLOT(selectObj(Object*)));
-    connect(progPathEditor, SIGNAL(editMade()), this, SLOT(handleEditMade()));
-
-    progPathEditorDock = new QDockWidget(settings->getTranslation("LevelEditor", "progPathEditor"), this);
-    progPathEditorDock->setWidget(progPathEditor);
-    progPathEditorDock->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
-    progPathEditorDock->setObjectName("progPathEditor");
-
-    // Setup Sprite Ids Widget
-    spriteIds = new SpriteIdWidget(&level->sprites);
-    connect(spriteIds, SIGNAL(updateLevelView()), levelView, SLOT(update()));
-    connect(spriteIds, SIGNAL(selectedSpriteChanged(Object*)), levelView, SLOT(selectObj(Object*)));
-
-    spriteIdsDock = new QDockWidget(settings->getTranslation("LevelEditor", "eventIds"), this);
-    spriteIdsDock->setWidget(spriteIds);
-    spriteIdsDock->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
-    spriteIdsDock->setObjectName("spriteIds");
-
-    // Setup Minimap
-    QScrollArea* miniMapArea = new QScrollArea(this);
-    miniMapArea->setWidgetResizable(true);
-    miniMapArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    miniMapArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-
-    miniMap = new LevelMiniMap(this, level);
-    connect(levelView, SIGNAL(updateMinimap(QRect)), miniMap, SLOT(update_(QRect)));
-    connect(levelView, SIGNAL(updateMinimapBounds()), miniMap, SLOT(updateBounds()));
-    connect(miniMap, SIGNAL(scrollTo(int,int)), this, SLOT(scrollTo(int,int)));
-    miniMapArea->setWidget(miniMap);
-
-    miniMapDock = new QDockWidget(settings->getTranslation("LevelEditor", "miniMap"), this);
-    miniMapDock->setWidget(miniMapArea);
-    miniMapDock->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
-    miniMapDock->setObjectName("miniMap");
-
-    connect(levelView, SIGNAL(scrollTo(int,int)), this, SLOT(scrollTo(int,int)));
-    connect(levelView->editionModePtr(), SIGNAL(selectdObjectChanged(Object*)), this, SLOT(setObjectEdition(Object*)));
-    connect(levelView->editionModePtr(), SIGNAL(deselected()), this, SLOT(deselect()));
-    connect(levelView->editionModePtr(), SIGNAL(updateEditors()), this, SLOT(updateEditors()));
-    connect(levelView->editionModePtr(), SIGNAL(editMade()), this, SLOT(handleEditMade()));
-
-    // Setup Ui Layout
-    if ((this->restoreState(settings->get("dockPositions").toByteArray(), 1)) && (!resetLayout))
-        this->restoreState(settings->get("dockPositions").toByteArray(), 1);
-    else
-    {
-        addDockWidget(Qt::LeftDockWidgetArea, areaEditorDock);
-        addDockWidget(Qt::LeftDockWidgetArea, tilesetPaletteDock);
-        addDockWidget(Qt::LeftDockWidgetArea, spriteEditorDock);
-        addDockWidget(Qt::LeftDockWidgetArea, spriteIdsDock);
-        addDockWidget(Qt::LeftDockWidgetArea, entranceEditorDock);
-        addDockWidget(Qt::LeftDockWidgetArea, zoneEditorDock);
-        addDockWidget(Qt::LeftDockWidgetArea, locationEditorDock);
-        addDockWidget(Qt::LeftDockWidgetArea, pathEditorDock);
-        addDockWidget(Qt::LeftDockWidgetArea, progPathEditorDock);
-        addDockWidget(Qt::LeftDockWidgetArea, miniMapDock);
-
-        tabifyDockWidget(areaEditorDock, tilesetPaletteDock);
-        tabifyDockWidget(tilesetPaletteDock, spriteEditorDock);
-        tabifyDockWidget(spriteEditorDock, spriteIdsDock);
-        tabifyDockWidget(spriteIdsDock, entranceEditorDock);
-        tabifyDockWidget(entranceEditorDock, zoneEditorDock);
-        tabifyDockWidget(zoneEditorDock, locationEditorDock);
-        tabifyDockWidget(locationEditorDock, pathEditorDock);
-        tabifyDockWidget(pathEditorDock, progPathEditorDock);
-    }
-
-    setTabPosition(Qt::AllDockWidgetAreas, QTabWidget::North);
-
-    areaEditorDock->show();
-    areaEditorDock->raise();
-}
-
-void LevelEditorWindow::on_actionResetUiLayout_triggered()
-{
-    setupWidgets(true, false);
-}
-
 void LevelEditorWindow::on_actionSetBackgroundColor_triggered()
 {
     QColor bgColor = QColorDialog::getColor(settings->getColor("lewColor", QColor(119,136,153)), this, "Select Background Color",  QColorDialog::DontUseNativeDialog);
@@ -918,7 +812,6 @@ void LevelEditorWindow::closeEvent(QCloseEvent *event)
         switch (message.exec())
         {
         case QMessageBox::Save:
-            settings->set("dockPositions",this->saveState(1));
             levelView->saveLevel();
             event->accept();
             break;
@@ -926,14 +819,9 @@ void LevelEditorWindow::closeEvent(QCloseEvent *event)
             event->ignore();
             break;
         case QMessageBox::Discard:
-            settings->set("dockPositions",this->saveState(1));
             event->accept();
             break;
         }
     }
-    else
-    {
-        settings->set("dockPositions",this->saveState(1));
-        event->accept();
-    }
+    else event->accept();
 }

@@ -1,13 +1,10 @@
 /*
     Copyright 2015 StapleButter
-
     This file is part of CoinKiller.
-
     CoinKiller is free software: you can redistribute it and/or modify it under
     the terms of the GNU General Public License as published by the Free
     Software Foundation, either version 3 of the License, or (at your option)
     any later version.
-
     CoinKiller is distributed in the hope that it will be useful, but WITHOUT ANY
     WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
     FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -21,7 +18,6 @@
 #include <QMainWindow>
 #include <QListView>
 #include <QComboBox>
-#include <QDockWidget>
 
 #include "filesystem.h"
 #include "levelview.h"
@@ -100,6 +96,8 @@ private slots:
 
     void setSelSprite(int spriteId);
 
+    void on_sidebarTabWidget_currentChanged(int index);
+
     void on_actionAddArea_triggered();
 
     void on_actionDeleteCurrentArea_triggered();
@@ -121,8 +119,6 @@ private slots:
     void on_actionSetBackgroundColor_triggered();
 
     void on_actionResetBackgroundColor_triggered();
-
-    void on_actionResetUiLayout_triggered();
 
 private:
     Ui::LevelEditorWindow *ui;
@@ -146,17 +142,6 @@ private:
     ProgressPathEditorWidget* progPathEditor;
     SpriteIdWidget* spriteIds;
 
-    QDockWidget* areaEditorDock;
-    QDockWidget* tilesetPaletteDock;
-    QDockWidget* spriteEditorDock;
-    QDockWidget* entranceEditorDock;
-    QDockWidget* zoneEditorDock;
-    QDockWidget* locationEditorDock;
-    QDockWidget* pathEditorDock;
-    QDockWidget* progPathEditorDock;
-    QDockWidget* spriteIdsDock;
-    QDockWidget* miniMapDock;
-
     QComboBox* areaSelector;
 
     QLabel* editStatus = new QLabel(this);
@@ -170,8 +155,6 @@ private:
     bool closeLvlOnClose = true;
 
     bool unsavedChanges = false;
-
-    void setupWidgets(bool resetLayout, bool init);
 };
 
 #endif // LEVELEDITORWINDOW_H

@@ -79,17 +79,6 @@ renderCameraLimits=Render Camera Limits
 selectZoneContents=Select Contents
 setBgColor=Set Background Color
 resetBgColor=Reset Background Color
-resetUi=Reset UI Layout
-areaEditor=Area Settings
-tilesetEditor=Tiles
-spriteEditor=Sprites
-entranceEditor=Entrances
-zoneEditor=Zones
-locationEditor=Locations
-pathEditor=Paths
-progPathEditor=Progress Paths
-eventIds=Event IDs
-miniMap=MiniMap
 
 [TilesetEditor]
 tileset=Tileset
@@ -127,4 +116,3 @@ noneData=None
 sarcExplorer=Sarc Explorer
 sarcArchives=Sarc Archives
 selectArchive=Select an Sarc Archive
-

@@ -35,6 +35,43 @@
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
       </property>
+      <widget class="QWidget" name="sidebar" native="true">
+       <layout class="QVBoxLayout" name="verticalLayout_2">
+        <item>
+         <widget class="QSplitter" name="splitter_2">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <widget class="QTabWidget" name="sidebarTabWidget">
+           <property name="currentIndex">
+            <number>-1</number>
+           </property>
+          </widget>
+          <widget class="QScrollArea" name="miniMap">
+           <property name="verticalScrollBarPolicy">
+            <enum>Qt::ScrollBarAlwaysOff</enum>
+           </property>
+           <property name="horizontalScrollBarPolicy">
+            <enum>Qt::ScrollBarAlwaysOff</enum>
+           </property>
+           <property name="widgetResizable">
+            <bool>true</bool>
+           </property>
+           <widget class="QWidget" name="scrollAreaWidgetContents_3">
+            <property name="geometry">
+             <rect>
+              <x>0</x>
+              <y>0</y>
+              <width>1230</width>
+              <height>81</height>
+             </rect>
+            </property>
+           </widget>
+          </widget>
+         </widget>
+        </item>
+       </layout>
+      </widget>
       <widget class="QScrollArea" name="levelViewArea">
        <property name="widgetResizable">
         <bool>true</bool>
@@ -44,8 +81,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>1299</width>
-          <height>580</height>
+          <width>56</width>
+          <height>597</height>
          </rect>
         </property>
        </widget>
@@ -60,7 +97,7 @@
      <x>0</x>
      <y>0</y>
      <width>1305</width>
-     <height>36</height>
+     <height>35</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -112,7 +149,6 @@
     </property>
     <addaction name="actionSetBackgroundColor"/>
     <addaction name="actionResetBackgroundColor"/>
-    <addaction name="actionResetUiLayout"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -448,18 +484,10 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>&lt;R&amp;enderCameraLimits&gt;</string>
+    <string>&lt;&amp;RenderCameraLimits&gt;</string>
    </property>
    <property name="toolTip">
     <string>&lt;RenderCameraLimits&gt;</string>
-   </property>
-  </action>
-  <action name="actionResetUiLayout">
-   <property name="text">
-    <string>&lt;&amp;Reset Ui Layout&gt;</string>
-   </property>
-   <property name="toolTip">
-    <string>&lt;Reset Ui layout&gt;</string>
    </property>
   </action>
  </widget>
