@@ -703,9 +703,6 @@ void ObjectsEditonMode::copy()
         if (obj->getType() == 0)
             hasBgDats = true;
 
-        if (obj->toString(0,0) == "")
-            continue;
-
         if (obj->getx()+obj->getOffsetX() < minX) minX = obj->getx()+obj->getOffsetX();
         if (obj->gety()+obj->getOffsetY() < minY) minY = obj->gety()+obj->getOffsetY();
         if (obj->getx()+obj->getOffsetX()+obj->getwidth() > maxX) maxX = obj->getx()+obj->getOffsetX()+obj->getwidth();
@@ -720,10 +717,91 @@ void ObjectsEditonMode::copy()
         minY = typeRound(minY, 0);
     }
 
+    QList<Path*> paths;
+    QList<ProgressPath*> progPaths;
+
+    bool copyObject = false;
+
+    QString nextText = "";
+
     foreach (Object* obj, selectedObjects)
     {
-        QString nextText = obj->toString(-minX, -minY);
-        if (nextText != "") clipboardText.append("|" + nextText);
+        if (is<PathNode*>(obj))
+        {
+            PathNode* pathNode = dynamic_cast<PathNode*>(obj);
+            Path* parentPath = pathNode->getParentPath();
+
+            if (paths.empty())
+            {
+                paths.append(parentPath);
+                copyObject = true;
+            }
+            else
+            {
+                for (int i = 0; i < paths.count(); i++)
+                {
+                    if (parentPath == paths[i])
+                    {
+                        copyObject = false;
+                        break;
+                    }
+                    else
+                    {
+                        if (i == paths.count()-1)
+                        {
+                            paths.append(parentPath);
+                            copyObject = true;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        else if (is<ProgressPathNode*>(obj))
+        {
+            ProgressPathNode* progPathNode = dynamic_cast<ProgressPathNode*>(obj);
+            ProgressPath* parentPath = progPathNode->getParentPath();
+
+            if (progPaths.empty())
+            {
+                progPaths.append(parentPath);
+                copyObject = true;
+            }
+            else
+            {
+                for (int i = 0; i < progPaths.count(); i++)
+                {
+                    if (parentPath == progPaths[i])
+                    {
+                        copyObject = false;
+                        break;
+                    }
+                    else
+                    {
+                        if (i == progPaths.count()-1)
+                        {
+                            progPaths.append(parentPath);
+                            copyObject = true;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        else
+        {
+            copyObject = true;
+        }
+
+        if (copyObject)
+        {
+            nextText = obj->toString(-minX, -minY);
+
+            if (nextText != "")
+                clipboardText.append("|" + nextText);
+
+            copyObject = false;
+        }
     }
 
     QApplication::clipboard()->setText(clipboardText);
@@ -757,37 +835,96 @@ void ObjectsEditonMode::paste(int currX, int currY, int currW, int currH)
 
         switch (params[0].toInt())
         {
-            case 0: // BG dat
+        case 0: // BG dat
+        {
+            BgdatObject* newObj = new BgdatObject(params[3].toInt()+pOffsetX, params[4].toInt()+pOffsetY, params[5].toInt(), params[6].toInt(), params[1].toInt(), params[2].toInt());
+            level->objects[newObj->getLayer()].append(newObj);
+            selectedObjects.append(newObj);
+            break;
+        }
+        case 1: // Sprite
+        {
+            Sprite* newSpr = new Sprite(params[2].toInt()+pOffsetX, params[3].toInt()+pOffsetY, params[1].toInt());
+            for (int i=0; i<12; i++) newSpr->setByte(i, params[i+4].toUInt());
+            newSpr->setRect();
+            level->sprites.append(newSpr);
+            selectedObjects.append(newSpr);
+            break;
+        }
+        case 2: // Entrance
+        {
+            Entrance* newEntr = new Entrance(params[3].toInt()+pOffsetX, params[4].toInt()+pOffsetY, params[7].toInt(), params[8].toInt(), params[1].toInt(), params[5].toInt(), params[6].toInt(), params[2].toInt(), params[9].toInt(), 0, 0);
+            level->entrances.append(newEntr);
+            selectedObjects.append(newEntr);
+            break;
+        }
+        case 3: // Zone
+        {
+            // This positions the zone wrong TODO: Figure out how to offset correctly
+            Zone* newZone = new Zone(params[1].toInt()+pOffsetX, params[2].toInt()+pOffsetY, params[3].toInt(), params[4].toInt(), params[5].toInt(), params[6].toInt(), params[7].toInt(), params[8].toInt(), params[9].toInt());
+
+            newZone->setUpperBound(params[10].toInt());
+            newZone->setLowerBound(params[11].toInt());
+            newZone->setUnkUpperBound(params[12].toInt());
+            newZone->setUnkLowerBound(params[13].toInt());
+            newZone->setUpScrolling(params[14].toInt());
+            newZone->setXScrollRate(params[15].toInt());
+            newZone->setYScrollRate(params[16].toInt());
+            newZone->setBgXPos(params[17].toInt());
+            newZone->setBgYPos(params[18].toInt());
+            newZone->setBackgroundName(params[19]);
+            newZone->setBgUnk1(params[20].toInt());
+
+            level->zones.append(newZone);
+            selectedObjects.append(newZone);
+            break;
+        }
+        case 4: // Location
+        {
+            Location* newLoc = new Location(params[2].toInt()+pOffsetX, params[3].toInt()+pOffsetY, params[4].toInt(), params[5].toInt(), params[1].toInt());
+            level->locations.append(newLoc);
+            selectedObjects.append(newLoc);
+            break;
+        }
+        case 5: // Path
+        {
+            Path* newPath = level->newPath();
+            level->paths.append(newPath);
+
+            newPath->setId(params[1].toInt());
+            newPath->setLoop(params[2].toInt());
+
+            QStringList pathNodes = params[3].split(';');
+            for (int i = 0; i < pathNodes.size(); i++)
             {
-                BgdatObject* newObj = new BgdatObject(params[3].toInt()+pOffsetX, params[4].toInt()+pOffsetY, params[5].toInt(), params[6].toInt(), params[1].toInt(), params[2].toInt());
-                level->objects[newObj->getLayer()].append(newObj);
-                selectedObjects.append(newObj);
-                break;
+                QStringList nodeData = pathNodes[i].split(',');
+                PathNode* newNode = new PathNode(nodeData[1].toInt()+pOffsetX, nodeData[2].toInt()+pOffsetY, nodeData[3].toFloat(), nodeData[4].toFloat(), nodeData[5].toInt(), newPath);
+                newPath->insertNode(newNode, nodeData[0].toInt());
+
+                selectedObjects.append(newPath->getNode(i));
             }
-            case 1: // Sprite
+            break;
+        }
+        case 6: // Progress Path
+        {
+            ProgressPath* newProgPath = level->newProgressPath();
+            level->progressPaths.append(newProgPath);
+
+            newProgPath->setId(params[1].toInt());
+            newProgPath->setAlternatePathFlag(params[2].toInt());
+
+            QStringList progPathNodes = params[3].split(';');
+            for (int i = 0; i < progPathNodes.size(); i++)
             {
-                Sprite* newSpr = new Sprite(params[2].toInt()+pOffsetX, params[3].toInt()+pOffsetY, params[1].toInt());
-                for (int i=0; i<12; i++) newSpr->setByte(i, params[i+4].toUInt());
-                newSpr->setRect();
-                level->sprites.append(newSpr);
-                selectedObjects.append(newSpr);
-                break;
+                QStringList nodeData = progPathNodes[i].split(',');
+                ProgressPathNode* newProgPathNode = new ProgressPathNode(nodeData[1].toInt()+pOffsetX, nodeData[2].toInt()+pOffsetY, newProgPath);
+                newProgPath->insertNode(newProgPathNode, nodeData[0].toInt());
+
+                selectedObjects.append(newProgPath->getNode(i));
             }
-            case 2: // Entrance
-            {
-                Entrance* newEntr = new Entrance(params[3].toInt()+pOffsetX, params[4].toInt()+pOffsetY, params[7].toInt(), params[8].toInt(), params[1].toInt(), params[5].toInt(), params[6].toInt(), params[2].toInt(), params[9].toInt(), 0, 0);
-                level->entrances.append(newEntr);
-                selectedObjects.append(newEntr);
-                break;
-            }
-            case 4: // Location
-            {
-                Location* newLoc = new Location(params[2].toInt()+pOffsetX, params[3].toInt()+pOffsetY, params[4].toInt(), params[5].toInt(), params[1].toInt());
-                level->locations.append(newLoc);
-                selectedObjects.append(newLoc);
-                break;
-            }
-            default: { break; }
+            break;
+        }
+        default: { break; }
         }
     }
 

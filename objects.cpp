@@ -1885,6 +1885,14 @@ void Zone::setBackground(tempZoneBackground background)
     this->bgUnk1 = background.unk1;
 }
 
+QString Zone::toString(qint32 xOffset, qint32 yOffset) const
+{
+    return QString("3:%1:%2:%3:%4:%5:%6:%7:%8:%9:%10:%11:%12:%13:%14:%15:%16:%17:%18:%19:%20:%21").arg(x+xOffset).arg(y+yOffset)
+            .arg(width).arg(height).arg(id).arg(progPathId).arg(musicId).arg(multiplayerTracking).arg(unk1).arg(upperBound)
+            .arg(lowerBound).arg(unkUpperBound).arg(unkLowerBound).arg(upScrolling).arg(xScrollRate).arg(yScrollRate).arg(bgXPos)
+            .arg(bgYPos).arg(bgName).arg(bgUnk1);
+}
+
 
 // Location
 Location::Location(qint32 x, qint32 y, qint32 width, qint32 height, qint32 id)
@@ -1940,6 +1948,36 @@ void Path::removeNode(PathNode *node)
     nodes.removeOne(node);
 }
 
+QString Path::toString(qint32 xOffset, qint32 yOffset)
+{
+    QString output = QString("5:%1:%2:").arg(getid()).arg(getLoop());
+
+    QString nodeString;
+
+    int i = 0;
+    foreach (PathNode* node, getNodes())
+    {
+        nodeString.append(QString::number(getIndexOfNode(node)) + ",");
+        nodeString.append(QString::number(node->getx() + xOffset) + ",");
+        nodeString.append(QString::number(node->gety() + yOffset) + ",");
+        nodeString.append(QString::number(node->getSpeed()) + ",");
+        nodeString.append(QString::number(node->getAccel()) + ",");
+        nodeString.append(QString::number(node->getUnk1()));
+
+        i++;
+
+        if (i < getNumberOfNodes())
+            nodeString.append(";");
+    }
+
+    if (xOffset > 0)
+        qDebug() << nodeString;
+
+    output.append(nodeString);
+
+    return output;
+}
+
 QList<PathNode*> Path::getNodes() const { return nodes; }
 
 // Path Node
@@ -1961,6 +1999,12 @@ PathNode::PathNode(PathNode *node, Path* parentPath)
     accel = node->getAccel();
     unk1 = node->getUnk1();
     this->parentPath = parentPath;
+}
+
+QString PathNode::toString(qint32 xOffset, qint32 yOffset) const
+{
+    Path path = getParentPath();
+    return path.toString(xOffset, yOffset);
 }
 
 // Progress Path
@@ -1991,6 +2035,33 @@ void ProgressPath::removeNode(ProgressPathNode *node)
     nodes.removeOne(node);
 }
 
+QString ProgressPath::toString(qint32 xOffset, qint32 yOffset)
+{
+    QString output = QString("6:%1:%2:").arg(getid()).arg(getAlternatePathFlag());
+
+    QString nodeString;
+
+    int i = 0;
+    foreach (ProgressPathNode* node, getNodes())
+    {
+        nodeString.append(QString::number(getIndexOfNode(node)) + ",");
+        nodeString.append(QString::number(node->getx() + xOffset) + ",");
+        nodeString.append(QString::number(node->gety() + yOffset));
+
+        i++;
+
+        if (i < getNumberOfNodes())
+            nodeString.append(";");
+    }
+
+    if (xOffset > 0)
+        qDebug() << nodeString;
+
+    output.append(nodeString);
+
+    return output;
+}
+
 QList<ProgressPathNode*> ProgressPath::getNodes() const { return nodes; }
 
 // Progress Path Node
@@ -2006,4 +2077,10 @@ ProgressPathNode::ProgressPathNode(ProgressPathNode *node, ProgressPath *parentP
     x = node->getx();
     y = node->gety();
     this->parentPath = parentPath;
+}
+
+QString ProgressPathNode::toString(qint32 xOffset, qint32 yOffset) const
+{
+    ProgressPath progPath = getParentPath();
+    return progPath.toString(xOffset, yOffset);
 }

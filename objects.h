@@ -170,10 +170,10 @@ struct tempZoneBounding
 struct tempZoneBackground
 {
     quint16 id;
-    quint8 xScrollRate;
-    quint8 yScrollRate;
-    quint8 xPos;
-    quint8 yPos;
+    qint8 xScrollRate;
+    qint8 yScrollRate;
+    qint8 xPos;
+    qint8 yPos;
     QString name;
     qint8 unk1;
 };
@@ -200,12 +200,13 @@ public:
     qint32 getUnkUpperBound() const { return unkUpperBound; }
     qint32 getUnkLowerBound() const { return unkLowerBound; }
     quint32 getUpScrolling() const { return upScrolling; }
-    quint8 getXScrollRate() const { return xScrollRate; }
-    quint8 getYScrollRate() const { return yScrollRate; }
-    quint8 getBgXPos() const { return bgXPos; }
-    quint8 getBgYPos() const { return bgYPos; }
+    qint8 getXScrollRate() const { return xScrollRate; }
+    qint8 getYScrollRate() const { return yScrollRate; }
+    qint8 getBgXPos() const { return bgXPos; }
+    qint8 getBgYPos() const { return bgYPos; }
     QString getBgName() const { return bgName; }
     quint8 getBgUnk1() const { return unk1; }
+    QString toString(qint32 xOffset, qint32 yOffset) const;
     void setID(quint8 id) { this->id = id; }
     void setProgPathId(quint8 progPathId) { this->progPathId = progPathId; }
     void setMusicID(quint8 musicId) { this->musicId = musicId; }
@@ -216,7 +217,12 @@ public:
     void setLowerBound(qint32 lowerBound) { this->lowerBound = lowerBound; }
     void setUnkUpperBound(qint32 unkUpperBound) { this->unkUpperBound = unkUpperBound; }
     void setUnkLowerBound(qint32 unkLowerBound) { this->unkLowerBound = unkLowerBound; }
+    void setXScrollRate(qint8 xScrollRate) { this->xScrollRate = xScrollRate; }
+    void setYScrollRate(qint8 yScrollRate) { this->yScrollRate = yScrollRate; }
+    void setBgXPos(qint8 bgXPos) { this->bgXPos = bgXPos; }
+    void setBgYPos(qint8 bgYPos) { this->bgYPos = bgYPos; }
     void setUnk1(quint32 unk1) { this->unk1 = unk1; }
+    void setBgUnk1(quint8 bgUnk1) { this->bgUnk1 = bgUnk1; }
 
 protected:
     quint8 id;
@@ -231,10 +237,10 @@ protected:
     qint32 unkLowerBound = 0;
     quint16 upScrolling = 0;
     // Background
-    quint8 xScrollRate = 0;
-    quint8 yScrollRate = 0;
-    quint8 bgXPos = 0;
-    quint8 bgYPos = 0;
+    qint8 xScrollRate = 0;
+    qint8 yScrollRate = 0;
+    qint8 bgXPos = 0;
+    qint8 bgYPos = 0;
     QString bgName = "Nohara";
     quint8 bgUnk1 = 0;
 };
@@ -273,6 +279,7 @@ public:
     Path* getParentPath() const { return parentPath; }
     void setSpeed(float speed) { this->speed = speed; }
     void setAccel(float accel) { this->accel = accel; }
+    QString toString(qint32 xOffset, qint32 yOffset) const;
 protected:
     Path* parentPath;
     float speed;
@@ -288,7 +295,7 @@ public:
     Path() {}
     Path(Path* path);
     ~Path() { foreach (PathNode* node, nodes) delete node; }
-    Path(quint16 id, quint16 unk1);
+    Path(quint16 id, quint16 loop);
     void insertNode(PathNode* node, qint32 index = -1);
     void removeNode(PathNode* node);
     quint16 getid() const { return id; }
@@ -299,6 +306,7 @@ public:
     qint32 getIndexOfNode(PathNode* node) { return nodes.indexOf(node); }
     void setId(qint32 id) { this->id = id; }
     void setLoop(qint32 loop) {this->loop = loop; }
+    QString toString(qint32 xOffset, qint32 yOffset);
 protected:
     quint16 id;
     quint16 loop;
@@ -317,6 +325,7 @@ public:
     qint32 getType() const { return 6; }
     bool isResizable() const { return false; }
     ProgressPath* getParentPath() const { return parentPath; }
+    QString toString(qint32 xOffset, qint32 yOffset) const;
 private:
     ProgressPath* parentPath;
 };
@@ -340,6 +349,7 @@ public:
     qint32 getIndexOfNode(ProgressPathNode* node) { return nodes.indexOf(node); }
     void setId(qint32 id) { this->id = id; }
     void setAlternatePathFlag(bool flag) { this->alternatePathFlag = flag; }
+    QString toString(qint32 xOffset, qint32 yOffset);
 protected:
     quint16 id;
     quint8 alternatePathFlag;

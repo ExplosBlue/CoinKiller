@@ -6,6 +6,7 @@
 #include <QLabel>
 #include <QPaintEvent>
 #include <QResizeEvent>
+#include <QTabWidget>
 
 ZoneEditorWidget::ZoneEditorWidget(QList<Zone*> *zones)
 {
@@ -22,6 +23,7 @@ ZoneEditorWidget::ZoneEditorWidget(QList<Zone*> *zones)
     selectContentsBtn = new QPushButton(SettingsManager::getInstance()->getTranslation("LevelEditor", "selectZoneContents"), this);
     connect(selectContentsBtn, SIGNAL(clicked(bool)), this, SLOT(handleSelectContentsClicked()));
 
+    settingsTabs = new QTabWidget();
 
     id = new QSpinBox();
     id->setRange(0, 255);
@@ -38,6 +40,10 @@ ZoneEditorWidget::ZoneEditorWidget(QList<Zone*> *zones)
     musicId = new QComboBox();
     musicId->addItems(musicIds.values());
     connect(musicId, SIGNAL(currentIndexChanged(QString)), this, SLOT(handleMusicIDChange(QString)));
+
+    unk1 = new QSpinBox();
+    unk1->setRange(0, 65535);
+    connect(unk1, SIGNAL(valueChanged(int)), this, SLOT(handleUnk1Change(int)));
 
     upScrolling = new QCheckBox();
     upScrolling->setText("Scroll Vertically");
@@ -59,9 +65,25 @@ ZoneEditorWidget::ZoneEditorWidget(QList<Zone*> *zones)
     unkLowerBound->setRange(-2147483648, 2147483647);
     connect(unkLowerBound, SIGNAL(valueChanged(int)), this, SLOT(handleUnkLowerBoundChange(int)));
 
-    bgRelated = new QSpinBox();
-    bgRelated->setRange(0, 99);
-    connect(bgRelated, SIGNAL(valueChanged(int)), this, SLOT(handleUnk1Change(int)));
+    xScrollRate = new QSpinBox();
+    xScrollRate->setRange(-128, 127);
+    connect(xScrollRate, SIGNAL(valueChanged(int)), this, SLOT(handleXScrollRateChanged(int)));
+
+    yScrollRate = new QSpinBox();
+    yScrollRate->setRange(-128, 127);
+    connect(yScrollRate, SIGNAL(valueChanged(int)), this, SLOT(handleYScrollRateChanged(int)));
+
+    bgXPos = new QSpinBox();
+    bgXPos->setRange(-128, 127);
+    connect(bgXPos, SIGNAL(valueChanged(int)), this, SLOT(handleBgXPosChanged(int)));
+
+    bgYPos = new QSpinBox();
+    bgYPos->setRange(-128, 127);
+    connect(bgYPos, SIGNAL(valueChanged(int)), this, SLOT(handleBgYPosChanged(int)));
+
+    bgUnk1 = new QSpinBox();
+    bgUnk1->setRange(0, 255);
+    connect(bgUnk1, SIGNAL(valueChanged(int)), this, SLOT(handleBgUnk1Change(int)));
 
     background = new QComboBox();
     loadBackgrounds();
@@ -76,54 +98,85 @@ ZoneEditorWidget::ZoneEditorWidget(QList<Zone*> *zones)
 
     layout->addWidget(selectContentsBtn);
 
-    edits = new QWidget();
-    QGridLayout* subLayout = new QGridLayout();
-    subLayout->setMargin(0);
-    edits->setLayout(subLayout);
-    layout->addWidget(edits);
+    generalTab = new QWidget();
+    QGridLayout* generalTabLayout = new QGridLayout();
+    generalTabLayout->setMargin(5);
 
-    subLayout->addWidget(new QLabel("ID:"), 0, 0, 1, 1, Qt::AlignRight);
-    subLayout->addWidget(id, 0, 1);
+    generalTabLayout->addWidget(new QLabel("ID:"), 0, 0, 1, 1, Qt::AlignRight);
+    generalTabLayout->addWidget(id, 0, 1);
 
-    subLayout->addWidget(new QLabel("Music:"), 1, 0, 1, 1, Qt::AlignRight);
-    subLayout->addWidget(musicId, 1, 1);
+    generalTabLayout->addWidget(new QLabel("Music:"), 1, 0, 1, 1, Qt::AlignRight);
+    generalTabLayout->addWidget(musicId, 1, 1);
 
-    subLayout->addWidget(new QLabel("Multiplayer Tracking:"), 2, 0, 1, 1, Qt::AlignRight);
-    subLayout->addWidget(multiplayerTracking, 2, 1);
+    generalTabLayout->addWidget(new QLabel("Multiplayer Tracking:"), 2, 0, 1, 1, Qt::AlignRight);
+    generalTabLayout->addWidget(multiplayerTracking, 2, 1);
 
-    subLayout->addWidget(new QLabel("Progress Path ID:"), 3, 0, 1, 1, Qt::AlignRight);
-    subLayout->addWidget(progPathId, 3, 1);
+    generalTabLayout->addWidget(new QLabel("Progress Path ID:"), 3, 0, 1, 1, Qt::AlignRight);
+    generalTabLayout->addWidget(progPathId, 3, 1);
 
-    subLayout->addWidget(new HorLine(), 4, 0, 1, 2);
+    generalTabLayout->addWidget(new QLabel("Unknown Value:"), 4, 0, 1, 1, Qt::AlignRight);
+    generalTabLayout->addWidget(unk1, 4, 1);
 
-    subLayout->addWidget(upScrolling, 5, 0, 1, 2, Qt::AlignRight);
+    generalTab->setLayout(generalTabLayout);
 
-    subLayout->addWidget(new QLabel("Upper Bound:"), 6, 0, 1, 1, Qt::AlignRight);
-    subLayout->addWidget(upperBound, 6, 1);
+    boundsTab  = new QWidget();
+    QGridLayout* boundsTabLayout = new QGridLayout();
+    boundsTabLayout->setMargin(5);
 
-    subLayout->addWidget(new QLabel("Lower Bound:"), 7, 0, 1, 1, Qt::AlignRight);
-    subLayout->addWidget(lowerBound, 7, 1);
+    boundsTabLayout->addWidget(upScrolling, 0, 0, 1, 2, Qt::AlignRight);
 
-    subLayout->addWidget(new QLabel("Unknown Upper Bound:"), 8, 0, 1, 1, Qt::AlignRight);
-    subLayout->addWidget(unkUpperBound, 8, 1);
+    boundsTabLayout->addWidget(new QLabel("Upper Bound:"), 1, 0, 1, 1, Qt::AlignRight);
+    boundsTabLayout->addWidget(upperBound, 1, 1);
 
-    subLayout->addWidget(new QLabel("Unknown Lower Bound:"), 9, 0, 1, 1, Qt::AlignRight);
-    subLayout->addWidget(unkLowerBound, 9, 1);
+    boundsTabLayout->addWidget(new QLabel("Lower Bound:"), 2, 0, 1, 1, Qt::AlignRight);
+    boundsTabLayout->addWidget(lowerBound, 2, 1);
 
-    subLayout->addWidget(new QLabel("Background Related:"), 10, 0, 1, 1, Qt::AlignRight);
-    subLayout->addWidget(bgRelated, 10, 1);
+    boundsTabLayout->addWidget(new QLabel("Unknown Upper Bound:"), 3, 0, 1, 1, Qt::AlignRight);
+    boundsTabLayout->addWidget(unkUpperBound, 3, 1);
 
-    subLayout->addWidget(new HorLine(), 11, 0, 1, 2);
+    boundsTabLayout->addWidget(new QLabel("Unknown Lower Bound:"), 4, 0, 1, 1, Qt::AlignRight);
+    boundsTabLayout->addWidget(unkLowerBound, 4, 1);
 
-    subLayout->addWidget(new QLabel("Background:"), 12, 0, 1, 1, Qt::AlignRight);
-    subLayout->addWidget(background, 12, 1);
+    boundsTab->setLayout(boundsTabLayout);
+
+    backgroundTab = new QWidget();
+    QGridLayout* backgroundTabLayout = new QGridLayout();
+    backgroundTabLayout->setMargin(5);
+
+    backgroundTabLayout->addWidget(new QLabel("Background X Pos:"), 0, 0, 1, 1, Qt::AlignRight);
+    backgroundTabLayout->addWidget(bgXPos, 0, 1);
+
+    backgroundTabLayout->addWidget(new QLabel("Background Y Pos:"), 1, 0, 1, 1, Qt::AlignRight);
+    backgroundTabLayout->addWidget(bgYPos, 1, 1);
+
+    backgroundTabLayout->addWidget(new QLabel("Background X Scroll:"), 2, 0, 1, 1, Qt::AlignRight);
+    backgroundTabLayout->addWidget(xScrollRate, 2, 1);
+
+    backgroundTabLayout->addWidget(new QLabel("Background Y Scroll:"), 3, 0, 1, 1, Qt::AlignRight);
+    backgroundTabLayout->addWidget(yScrollRate, 3, 1);
+
+    backgroundTabLayout->addWidget(new QLabel("Background Unknown Value:"), 4, 0, 1, 1, Qt::AlignRight);
+    backgroundTabLayout->addWidget(bgUnk1, 4, 1);
+
+    backgroundTabLayout->addWidget(new QLabel("Background:"), 5, 0, 1, 1, Qt::AlignRight);
+    backgroundTabLayout->addWidget(background, 5, 1);
 
     QHBoxLayout* bgAlign = new QHBoxLayout();
     QWidget* spacer = new QWidget();
     spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
     bgAlign->addWidget(spacer);
     bgAlign->addWidget(backgroundPreview, 1);
-    subLayout->addLayout(bgAlign, 13, 0, 1, 2);
+    backgroundTabLayout->addLayout(bgAlign, 6, 0, 1, 2);
+
+    backgroundTab->setLayout(backgroundTabLayout);
+
+    settingsTabs->addTab(generalTab, "General");
+    settingsTabs->addTab(boundsTab, "Bounds");
+    settingsTabs->addTab(backgroundTab, "Background");
+
+    layout->addWidget(settingsTabs);
+
+    settingsTabs->setCurrentIndex(0);
 
     updateList();
     updateInfo();
@@ -232,23 +285,28 @@ void ZoneEditorWidget::updateInfo()
 {
     if (editingAZone == false)
     {
-        edits->setHidden(true);
+        settingsTabs->setHidden(true);
         return;
     }
-    edits->setHidden(false);
+    settingsTabs->setHidden(false);
 
     handleChanges = false;
     id->setValue(editZone->getid());
     multiplayerTracking->setCurrentText(multiplayerTrackings.value(editZone->getMultiplayerTracking()));
     musicId->setCurrentText(musicIds.value(editZone->getMusicId()));
+    unk1->setValue(editZone->getUnk1());
     progPathId->setValue(editZone->getProgPathId());
     upScrolling->setChecked(editZone->getUpScrolling() != 0);
     upperBound->setValue(editZone->getUpperBound());
     lowerBound->setValue(editZone->getLowerBound());
     unkUpperBound->setValue(editZone->getUnkUpperBound());
     unkLowerBound->setValue(editZone->getUnkLowerBound());
+    xScrollRate->setValue(editZone->getXScrollRate());
+    yScrollRate->setValue(editZone->getYScrollRate());
+    bgXPos->setValue(editZone->getBgXPos());
+    bgYPos->setValue(editZone->getBgYPos());
     background->setCurrentText(backgrounds.value(editZone->getBgName()));
-    bgRelated->setValue(editZone->getBgUnk1());
+    bgUnk1->setValue(editZone->getBgUnk1());
     updateBgPreview();
     handleChanges = true;
 }
@@ -292,6 +350,13 @@ void ZoneEditorWidget::handleMultiPlayerTrackingChange(QString text)
     emit editMade();
 }
 
+void ZoneEditorWidget::handleUnk1Change(int val)
+{
+    if (!handleChanges) return;
+    editZone->setUnk1(val);
+    emit editMade();
+}
+
 void ZoneEditorWidget::handleUpScrollingChange(bool val)
 {
     if (!handleChanges) return;
@@ -327,10 +392,38 @@ void ZoneEditorWidget::handleUnkLowerBoundChange(int val)
     emit editMade();
 }
 
-void ZoneEditorWidget::handleUnk1Change(int val)
+void ZoneEditorWidget::handleBgUnk1Change(int val)
 {
     if (!handleChanges) return;
-    editZone->setUnk1(val);
+    editZone->setBgUnk1(val);
+    emit editMade();
+}
+
+void ZoneEditorWidget::handleXScrollRateChanged(int val)
+{
+    if (!handleChanges) return;
+    editZone->setXScrollRate(val);
+    emit editMade();
+}
+
+void ZoneEditorWidget::handleYScrollRateChanged(int val)
+{
+    if (!handleChanges) return;
+    editZone->setYScrollRate(val);
+    emit editMade();
+}
+
+void ZoneEditorWidget::handleBgXPosChanged(int val)
+{
+    if (!handleChanges) return;
+    editZone->setBgXPos(val);
+    emit editMade();
+}
+
+void ZoneEditorWidget::handleBgYPosChanged(int val)
+{
+    if (!handleChanges) return;
+    editZone->setBgYPos(val);
     emit editMade();
 }
 

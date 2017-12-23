@@ -647,7 +647,6 @@ void LevelEditorWindow::loadArea(int id, bool closeLevel, bool init)
     connect(levelView->editionModePtr(), SIGNAL(updateEditors()), this, SLOT(updateEditors()));
     connect(levelView->editionModePtr(), SIGNAL(editMade()), this, SLOT(handleEditMade()));
 
-
     ui->sidebarTabWidget->addTab(areaEditor, QIcon(basePath + "settings.png"), "");
     ui->sidebarTabWidget->addTab(tilesetPalette, QIcon(basePath + "filled_box"), "");
     ui->sidebarTabWidget->addTab(spriteEditor, QIcon(basePath + "goomba.png"), "");
@@ -658,18 +657,18 @@ void LevelEditorWindow::loadArea(int id, bool closeLevel, bool init)
     ui->sidebarTabWidget->addTab(pathEditor, QIcon(basePath + "path.png"), "");
     ui->sidebarTabWidget->addTab(progPathEditor, QIcon(basePath + "progress_path.png"), "");
 
-
     miniMap = new LevelMiniMap(this, level);
     connect(levelView, SIGNAL(updateMinimap(QRect)), miniMap, SLOT(update_(QRect)));
     connect(levelView, SIGNAL(updateMinimapBounds()), miniMap, SLOT(updateBounds()));
     connect(miniMap, SIGNAL(scrollTo(int,int)), this, SLOT(scrollTo(int,int)));
     ui->miniMap->setWidget(miniMap);
 
-    // Fix sprite loading bug when opening a new area
+    // Prevent Sprites and Paths from being potentially unselectable upon switching areas
     levelView->toggleSprites(false);
+    levelView->togglePaths(false);
     levelView->toggleSprites(true);
+    levelView->togglePaths(true);
     update();
-
 }
 
 void LevelEditorWindow::updateAreaSelector(int index)

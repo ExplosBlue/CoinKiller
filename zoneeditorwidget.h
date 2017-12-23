@@ -44,15 +44,17 @@ signals:
 private:
     QListWidget* zoneList;
 
+    QTabWidget* settingsTabs;
+
     QPushButton* selectContentsBtn;
 
     QSpinBox* id;
-    QWidget* edits;
     QComboBox* multiplayerTracking;
     QMap<int, QString> multiplayerTrackings;
     QSpinBox* progPathId;
     QComboBox* musicId;
     QMap<int, QString> musicIds;
+    QSpinBox* unk1;
 
     QComboBox* background;
     QMap<QString, QString> backgrounds;
@@ -61,13 +63,17 @@ private:
     QSpinBox* yScrollRate;
     QSpinBox* bgXPos;
     QSpinBox* bgYPos;
+    QSpinBox* bgUnk1;
 
     QSpinBox* upperBound;
     QSpinBox* lowerBound;
     QSpinBox* unkUpperBound;
     QSpinBox* unkLowerBound;
     QCheckBox* upScrolling;
-    QSpinBox* bgRelated;
+
+    QWidget* generalTab;
+    QWidget* boundsTab;
+    QWidget* backgroundTab;
 
     QList<Zone*> *zones;
     Zone* editZone;
@@ -90,13 +96,18 @@ private slots:
     void handleProgPathIDChange(int ppIDVal);
     void handleMusicIDChange(QString text);
     void handleMultiPlayerTrackingChange(QString text);
+    void handleUnk1Change(int val);
     void handleUpScrollingChange(bool val);
     void handleUpperBoundChange(int val);
     void handleLowerBoundChange(int val);
     void handleUnkUpperBoundChange(int val);
     void handleUnkLowerBoundChange(int val);
     void handleBackgroundChange(QString text);
-    void handleUnk1Change(int val);
+    void handleBgUnk1Change(int val);
+    void handleXScrollRateChanged(int val);
+    void handleYScrollRateChanged(int val);
+    void handleBgXPosChanged(int val);
+    void handleBgYPosChanged(int val);
     void handleSelectContentsClicked();
 };
 

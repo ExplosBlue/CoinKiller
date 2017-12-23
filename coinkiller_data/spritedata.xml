@@ -7,8 +7,7 @@
     <value nybble="7-8" title="Unused Value 7-8"/>
     <value nybble="9" title="Unknown Value 9"/>
     <value nybble="10" title="Autoscroll Speed"/>
-    <value nybble="11" title="Unknown Value 11"/>
-    <value nybble="12" title="Midway Starting Node"/>
+    <value nybble="11-12" title="Midway Starting Node"/>
     <value nybble="13-14" title="Unknown Value 13-14"/>
     <value nybble="15" title="Unknown Value 15"/>
     <value nybble="16" title="Unknown Value 16"/>
@@ -328,7 +327,10 @@
       <entry value="4">Fire Flower and Gold Flower</entry>
     </list>
   </sprite>
-  <sprite id="27" name="POW Block" notes="Actor:  0x0B2 &#13;&#10;Description: A block that will send a shockwave when something collides with it.&#13;&#10;Event Triggerable: No&#13;&#10;Affected by Gold Ring: No&#13;&#10;Requirements: N/A"/>
+  <sprite id="27" name="POW Block" notes="Actor:  0x0B2 &#13;&#10;Description: A block that will send a shockwave when something collides with it.&#13;&#10;Event Triggerable: No&#13;&#10;Affected by Gold Ring: No&#13;&#10;Requirements: N/A">
+    <value nybble="5" title="Unused Checkbox 5"/>
+    <value nybble="6" title="Unused Checkbox 6"/>
+  </sprite>
   <sprite id="28" name="Movement-controlled POW Block" notes="Actor: 0x0B3&#13;&#10;Description: A movement controlled POW block.&#13;&#10;Event Triggerable: No&#13;&#10;Affected by Gold Ring: No&#13;&#10;Requirements: Must have a movement ID set.">
     <value nybble="21-22" title="Movement ID"/>
   </sprite>
@@ -685,7 +687,6 @@
   </sprite>
   <sprite id="61" name="Red Coin" notes="Actor: 0x0D6&#13;&#10;Description: A Red Coin that is appears when a red coin ring triggers it.&#13;&#10;Event Triggerable: Yes&#13;&#10;Affected by Gold Ring: No &#13;&#10;Requirements: Must have A triggering ID set.">
     <value nybble="1-2" title="Triggering Event ID" comment="What triggers the coin activating."/>
-    <value nybble="5" title="Unknown Value 5"/>
     <checkbox nybble="7" title="Falling" comment="Is the coin falling? (Paracoin)"/>
     <list nybble="10" title="Movement Type (Falling)" comment="0 makes the coin normal, or makes it fall in a straight line. 1 and 2 make the coin into a paracoin, and both are at a different sync.">
       <entry value="0">Normal/Falling</entry>
@@ -756,8 +757,12 @@
       <entry value="2">Left</entry>
       <entry value="3">Right</entry>
     </list>
-    <value nybble="10" title="Speed??"/>
-    <value nybble="20" title="Unknown Value 20"/>
+    <list nybble="10" title="Speed??">
+      <entry value="0">???</entry>
+      <entry value="1">???</entry>
+      <entry value="2">???</entry>
+    </list>
+    <checkbox nybble="20" title="Unknown Checkbox 20"/>
   </sprite>
   <sprite id="69" name="Door - Normal" notes="A normal door that can be used for entering."/>
   <sprite id="70" name="Door - Castle Boss" notes="A boss door designed for a castle boss."/>
@@ -951,7 +956,7 @@
     </list>
   </sprite>
   <sprite id="95" name="Blooper" notes="A swimming squid that swims at a 45 degree angle in the direction specified.">
-    <value nybble="5" title="Unknown Value 5"/>
+    <value nybble="5" title="Unknown Value 5" comment="This value is subtracted by 1 in the game and then compared to 0xB (11)."/>
     <list nybble="6" title="Swim Direction" comment="The direction the blooper swims in.">
       <entry value="0">Left</entry>
       <entry value="1">Right</entry>
@@ -977,7 +982,25 @@
   </sprite>
   <sprite id="100" name="Rotation-controlled ? Block" notes="A ? block that can be assigned to a rotation controller to rotate.">
     <value nybble="1-2" title="Triggering Event ID"/>
-    <checkbox nybble="12" title="Upside Down" comment="When checked, the block will appear upside down."/>
+    <list nybble="12" title="Behavior" comment="The behavior of this rotating ? block.">
+      <entry value="0">Normal</entry>
+      <entry value="1">???</entry>
+      <entry value="2">Flip Vertically</entry>
+      <entry value="3">???</entry>
+      <entry value="4">Rotate Facing Controller</entry>
+      <entry value="5">???</entry>
+      <entry value="6">???</entry>
+      <entry value="7">???</entry>
+      <entry value="8">???</entry>
+      <entry value="9">???</entry>
+      <entry value="10">???</entry>
+      <entry value="11">???</entry>
+      <entry value="12">???</entry>
+      <entry value="13">???</entry>
+      <entry value="14">???</entry>
+      <entry value="15">???</entry>
+    </list>
+    <value nybble="13" title="Unknown Value 13"/>
     <list nybble="14" title="Contents" comment="3, 9, 12 and 15 are all empty blocks">
       <entry value="0">Nothing</entry>
       <entry value="1">Coin</entry>
@@ -1065,6 +1088,7 @@
       <entry value="14">Arrow Right-Down</entry>
       <entry value="15">Arrow Right-Down</entry>
     </list>
+    <value nybble="8" title="Unknown Value 8"/>
   </sprite>
   <sprite id="110" name="Dry Bones" notes="Actor: 0x0fa">
     <value nybble="5" title="Unknown Value 5"/>
@@ -1255,6 +1279,8 @@
   <sprite id="138" name="Paragoomba">
     <checkbox nybble="10" title="Z-Order Change" comment="When Checked, The Paragoomba spawns on Layer 2."/>
     <checkbox nybble="15" title="Crash" comment="Check this to crash the game."/>
+    <checkbox nybble="17" title="Unused Checkbox 17"/>
+    <checkbox nybble="18" title="Unused Checkbox 18"/>
   </sprite>
   <sprite id="139" name="Goomba Tower">
     <checkbox nybble="5" title="Wider Hitbox"/>
@@ -1353,7 +1379,10 @@
     <value nybble="6" title="Unknown Value 6"/>
     <value nybble="18" title="Unknown Value 18"/>
   </sprite>
-  <sprite id="150" name="Seesaw Lift" notes="A yellow colored girder that tilts when the player stands on it, like a seesaw."/>
+  <sprite id="150" name="Seesaw Lift" notes="A yellow colored girder that tilts when the player stands on it, like a seesaw.">
+    <value nybble="5" title="Unused Nybble 5"/>
+    <value nybble="16" title="Unused Nybble 16"/>
+  </sprite>
   <sprite id="151" name="Scale Lift">
     <value nybble="1-2" title="Triggering Event ID" comment="Needs an as-of-yet undetermined nybble to be set to 1 for this to work"/>
     <value nybble="5" title="Right side rope height"/>
@@ -1870,7 +1899,9 @@
       <entry value="2">Right</entry>
     </list>
   </sprite>
-  <sprite id="196" name="Coin Cheep" notes="A Coin Cheep."/>
+  <sprite id="196" name="Coin Cheep" notes="A Coin Cheep.">
+    <value nybble="7" title="Unused Value 7"/>
+  </sprite>
   <sprite id="197" name="Jumping Cheep Cheep">
     <value nybble="1-2" title="Triggering Event ID"/>
     <value nybble="5" title="Unknown Value 5" comment="Setting this to 1 caused it to not show up."/>
@@ -1929,7 +1960,24 @@
   </sprite>
   <sprite id="203" name="Rotation-controlled Brick Block">
     <value nybble="1-2" title="Triggering Event ID"/>
-    <checkbox nybble="12" title="Upside Down" comment="When checked, the block will appear upside down."/>
+    <list nybble="12" title="Behavior" comment="The behavior of this brick block.">
+      <entry value="0">Normal</entry>
+      <entry value="1">???</entry>
+      <entry value="2">Flip Vertically</entry>
+      <entry value="3">???</entry>
+      <entry value="4">Rotate Facing Controller</entry>
+      <entry value="5">???</entry>
+      <entry value="6">???</entry>
+      <entry value="7">???</entry>
+      <entry value="8">???</entry>
+      <entry value="9">???</entry>
+      <entry value="10">???</entry>
+      <entry value="11">???</entry>
+      <entry value="12">???</entry>
+      <entry value="13">???</entry>
+      <entry value="14">???</entry>
+      <entry value="15">???</entry>
+    </list>
     <list nybble="14" title="Contents" comment="3, 9, 12 and 15 are all empty blocks">
       <entry value="0">Nothing</entry>
       <entry value="1">Coin</entry>
@@ -2162,7 +2210,7 @@
       <entry value="2">Three</entry>
     </list>
     <value nybble="9" title="Unknown Value 9"/>
-    <list nybble="12" title="Behavior">
+    <list nybble="12" title="Behavior" comment="The behavior of this star coin.">
       <entry value="0">Normal</entry>
       <entry value="1">???</entry>
       <entry value="2">Flip Vertically</entry>
@@ -2414,12 +2462,16 @@
     <value nybble="11" title="Unknown Value 11" comment="Checkbox?"/>
   </sprite>
   <sprite id="240" name="Urchin" notes="Does not rotate while moving">
-    <value nybble="1-2" title="Triggering Event ID" comment="Starts moving when this flag id is activated"/>
+    <value nybble="1-2" title="Triggering Event ID" comment="Starts moving when this Event ID is activated."/>
     <value nybble="5" title="Unknown Value 5" comment="Checkbox?"/>
-    <checkbox nybble="6" title="Big"/>
+    <checkbox nybble="6" title="Large"/>
     <value nybble="7" title="Unknown Value 7" comment="Checkbox?"/>
-    <checkbox nybble="8" title="Moves Down?" comment="Moves down when checked?"/>
-    <value nybble="9" title="Unknown Value 9"/>
+    <value nybble="8" title="Unknown Value 8"/>
+    <list nybble="9" title="Behavior">
+      <entry value="0">Up/Down</entry>
+      <entry value="1">Left/Right</entry>
+      <entry value="2">Stationary</entry>
+    </list>
     <value nybble="10" title="Movement Speed?"/>
     <value nybble="12" title="Unknown Value 12"/>
   </sprite>
@@ -2466,12 +2518,47 @@
     <value nybble="18" title="Unknown Value 18"/>
   </sprite>
   <sprite id="249" name="Rotation-controlled Rectangle Lift - Normal/Tower">
-    <value nybble="12" title="Rotation Speed"/>
+    <list nybble="12" title="Behavior" comment="The behavior of this rotating block.">
+      <entry value="0">Normal</entry>
+      <entry value="1">???</entry>
+      <entry value="2">Flip Vertically</entry>
+      <entry value="3">???</entry>
+      <entry value="4">Rotate Facing Controller</entry>
+      <entry value="5">???</entry>
+      <entry value="6">???</entry>
+      <entry value="7">???</entry>
+      <entry value="8">???</entry>
+      <entry value="9">???</entry>
+      <entry value="10">???</entry>
+      <entry value="11">???</entry>
+      <entry value="12">???</entry>
+      <entry value="13">???</entry>
+      <entry value="14">???</entry>
+      <entry value="15">???</entry>
+    </list>
     <value nybble="14" title="Height"/>
     <value nybble="16" title="Width"/>
     <value nybble="22" title="Rotation ID"/>
   </sprite>
   <sprite id="250" name="Rotation-controlled Rectangle Lift  - Ghost House, Checkered">
+    <list nybble="12" title="Behavior" comment="The behavior of this rotating lift.">
+      <entry value="0">Normal</entry>
+      <entry value="1">???</entry>
+      <entry value="2">Flip Vertically</entry>
+      <entry value="3">???</entry>
+      <entry value="4">Rotate Facing Controller</entry>
+      <entry value="5">???</entry>
+      <entry value="6">???</entry>
+      <entry value="7">???</entry>
+      <entry value="8">???</entry>
+      <entry value="9">???</entry>
+      <entry value="10">???</entry>
+      <entry value="11">???</entry>
+      <entry value="12">???</entry>
+      <entry value="13">???</entry>
+      <entry value="14">???</entry>
+      <entry value="15">???</entry>
+    </list>
     <value nybble="14" title="Height"/>
     <value nybble="16" title="Width"/>
     <value nybble="21-22" title="Movement ID"/>
@@ -2555,7 +2642,24 @@
     <checkbox nybble="6" title="Is Dry Bowser"/>
   </sprite>
   <sprite id="259" name="Rotation-controlled Hard Block">
-    <checkbox nybble="12" title="Unknown 12" comment="Rotates normally, except the object does not become unlevel."/>
+    <list nybble="12" title="Behavior" comment="The behavior of this rotating hard block.">
+      <entry value="0">Normal</entry>
+      <entry value="1">???</entry>
+      <entry value="2">Flip Vertically</entry>
+      <entry value="3">???</entry>
+      <entry value="4">Rotate Facing Controller</entry>
+      <entry value="5">???</entry>
+      <entry value="6">???</entry>
+      <entry value="7">???</entry>
+      <entry value="8">???</entry>
+      <entry value="9">???</entry>
+      <entry value="10">???</entry>
+      <entry value="11">???</entry>
+      <entry value="12">???</entry>
+      <entry value="13">???</entry>
+      <entry value="14">???</entry>
+      <entry value="15">???</entry>
+    </list>
     <list nybble="13" title="Type" comment="3 only has the appearance of a Brick Block. Seems to repeat after 3.">
       <entry value="0">Stone</entry>
       <entry value="1">Rotation Pivot</entry>
@@ -2823,7 +2927,7 @@
       <entry value="2">Three</entry>
     </list>
     <value nybble="9" title="Unknown 9"/>
-    <list nybble="12" title="Behavior">
+    <list nybble="12" title="Behavior" comment="The behavior of this rotating moon coin.">
       <entry value="0">Normal</entry>
       <entry value="1">???</entry>
       <entry value="2">Flip Vertically</entry>
