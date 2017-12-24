@@ -59,8 +59,6 @@ private:
     QComboBox* background;
     QMap<QString, QString> backgrounds;
     BgPreview* backgroundPreview;
-    QSpinBox* xScrollRate;
-    QSpinBox* yScrollRate;
     QSpinBox* bgXPos;
     QSpinBox* bgYPos;
     QSpinBox* bgUnk1;
@@ -104,8 +102,6 @@ private slots:
     void handleUnkLowerBoundChange(int val);
     void handleBackgroundChange(QString text);
     void handleBgUnk1Change(int val);
-    void handleXScrollRateChanged(int val);
-    void handleYScrollRateChanged(int val);
     void handleBgXPosChanged(int val);
     void handleBgYPosChanged(int val);
     void handleSelectContentsClicked();

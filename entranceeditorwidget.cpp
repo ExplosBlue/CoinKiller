@@ -34,6 +34,14 @@ EntranceEditorWidget::EntranceEditorWidget(QList<Entrance*> *entrances)
     camYOffset->setRange(-32768, 32767);
     connect(camYOffset, SIGNAL(valueChanged(int)), this, SLOT(handleCamYChange(int)));
 
+    unk1 = new QSpinBox();
+    unk1->setRange(0, 255);
+    connect(unk1, SIGNAL(valueChanged(int)), this, SLOT(handleUnk1Change(int)));
+
+    unk2 = new QSpinBox();
+    unk2->setRange(0, 255);
+    connect(unk2, SIGNAL(valueChanged(int)), this, SLOT(handleUnk2Change(int)));
+
     enterable = new QCheckBox("Enterable");
     connect(enterable, SIGNAL(toggled(bool)), this, SLOT(handleEnterableChange(bool)));
 
@@ -74,11 +82,17 @@ EntranceEditorWidget::EntranceEditorWidget(QList<Entrance*> *entrances)
     subLayout->addWidget(new QLabel("Camera Y:"), 4, 2, 1, 1, Qt::AlignRight);
     subLayout->addWidget(camYOffset, 4, 3, 1, 1);
 
-    subLayout->addWidget(new HorLine(), 5, 0, 1, 4);
+    subLayout->addWidget(new QLabel("Unknown 1:"), 5, 0, 1, 1, Qt::AlignRight);
+    subLayout->addWidget(unk1, 5, 1, 1, 1);
 
-    subLayout->addWidget(enterable, 6, 0, 1, 2);
+    subLayout->addWidget(new QLabel("Unknown 2:"), 5, 2, 1, 1, Qt::AlignRight);
+    subLayout->addWidget(unk2, 5, 3, 1, 1);
 
-    subLayout->addWidget(returnToWM, 6, 2, 1, 2);
+    subLayout->addWidget(new HorLine(), 6, 0, 1, 4);
+
+    subLayout->addWidget(enterable, 7, 0, 1, 2);
+
+    subLayout->addWidget(returnToWM, 7, 2, 1, 2);
 
     updateList();
     updateInfo();
@@ -154,6 +168,8 @@ void EntranceEditorWidget::updateInfo()
     destArea->setValue(editEntrance->getDestArea());
     camXOffset->setValue(editEntrance->getCameraX());
     camYOffset->setValue(editEntrance->getCameraY());
+    unk1->setValue(editEntrance->getUnk1());
+    unk2->setValue(editEntrance->getUnk2());
     enterable->setChecked((editEntrance->getSettings() & 128) >> 7 == false);
     returnToWM->setChecked((editEntrance->getSettings() & 16) >> 4 == 1);
     handleChanges = true;
@@ -211,6 +227,20 @@ void EntranceEditorWidget::handleCamYChange(int camYVal)
 {
     if (!handleChanges) return;
     editEntrance->setCameraY(camYVal);
+    emit editMade();
+}
+
+void EntranceEditorWidget::handleUnk1Change(int unk1Val)
+{
+    if (!handleChanges) return;
+    editEntrance->setUnk1(unk1Val);
+    emit editMade();
+}
+
+void EntranceEditorWidget::handleUnk2Change(int unk2Val)
+{
+    if (!handleChanges) return;
+    editEntrance->setUnk2(unk2Val);
     emit editMade();
 }
 

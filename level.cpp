@@ -114,10 +114,8 @@ Level::Level(Game *game, SarcFilesystem* archive, int area, QString lvlName)
     {
         tempZoneBackground background;
         background.id = header->read16();
-        background.xScrollRate = header->read8();
-        background.yScrollRate = header->read8();
-        background.xPos = header->read8();
-        background.yPos = header->read8();
+        background.yPos = header->read16();
+        background.xPos = header->read16();
         header->skip(2);
         header->readStringASCII(background.name, 16);
         background.unk1 = header->read16();
@@ -602,10 +600,8 @@ qint8 Level::save()
     {
         Zone* z = zones[i];
         header->write16(i);
-        header->write8(z->getXScrollRate());
-        header->write8(z->getYScrollRate());
-        header->write8(z->getBgXPos());
-        header->write8(z->getBgYPos());
+        header->write16(z->getBgYPos());
+        header->write16(z->getBgXPos());
         header->write16(0);
         header->writeStringASCII(z->getBgName(), 16);
         header->write16(z->getBgUnk1());

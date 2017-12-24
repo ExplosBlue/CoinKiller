@@ -558,6 +558,9 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
     case 251: // Treasure Chest
         ret = new NormalImageRenderer(spr, "treasure_chest.png");
         break;
+    case 252: // Item
+        ret = new ItemRenderer(spr);
+        break;
     case 253: // Larry Battle Platform
         ret = new LarryPlatformRenderer(spr);
         break;
@@ -2501,6 +2504,47 @@ void ItemBlockRenderer::render(QPainter *painter, QRect *)
             painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), 20, 20, ImageCache::getInstance()->get(TileOverlay, "movement.png"));
 }
 
+// Sprite 252: Larry Battle Platform
+ItemRenderer::ItemRenderer(const Sprite *spr)
+{
+    this->spr = spr;
+}
+
+void ItemRenderer::render(QPainter *painter, QRect *)
+{
+    QString item;
+    switch (spr->getNybble(10))
+    {
+    case 2:
+        item  = "fire_flower.png";
+        break;
+    case 4:
+        item  = "super_leaf.png";
+        break;
+    case 5:
+        item  = "gold_flower.png";
+        break;
+    case 6:
+        item  = "mini_mushroom.png";
+        break;
+    case 7:
+        item  = "super_star.png";
+        break;
+    case 9:
+        item = "mega_mushroom.png";
+        break;
+    case 11:
+        item = "1up_mushroom.png";
+        break;
+    default:
+        item = "super_mushroom.png";
+        break;
+    }
+
+    painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), ImageCache::getInstance()->get(SpriteImg, "item/" + item));
+
+}
+
 // Sprite 253: Larry Battle Platform
 LarryPlatformRenderer::LarryPlatformRenderer(const Sprite *spr)
 {
@@ -2550,7 +2594,7 @@ void HardBlockRenderer::render(QPainter *painter, QRect *)
 
         tileset->drawTile(tempPainter, tileGrid, tileId, 0, 0, 1, 0);
         painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), 20, 20, block);
-        painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), 20, 20, QPixmap(QCoreApplication::applicationDirPath() + "/coinkiller_data/tileoverlays/rotation.png"));
+        painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), 20, 20,ImageCache::getInstance()->get(TileOverlay, "rotation.png"));
     }
 }
 

@@ -37,7 +37,7 @@ public:
     bool renameFile(QString path, QString newName);
     bool renameDir(QString path, QString newName);
 
-    bool copyFile(QString path, QString newPath) { return false; } // TODO
+    bool copyFile(QString path, QString newPath) { Q_UNUSED(path); Q_UNUSED(newPath); return false; } // TODO
 
 private:
     FileBase* sarc;

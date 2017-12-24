@@ -32,6 +32,8 @@ private:
     QSpinBox* destArea;
     QSpinBox* camXOffset;
     QSpinBox* camYOffset;
+    QSpinBox* unk1;
+    QSpinBox* unk2;
     QCheckBox* enterable;
     QCheckBox* returnToWM;
 
@@ -56,6 +58,8 @@ private slots:
     void handleDestAreaChange(int destAreaVal);
     void handleCamXChange(int camXVal);
     void handleCamYChange(int camYVal);
+    void handleUnk1Change(int unk1Val);
+    void handleUnk2Change(int unk2Val);
     void handleEnterableChange(bool enterableVal);
     void handleReturnToWMChange(bool returnToWMVal);
 };

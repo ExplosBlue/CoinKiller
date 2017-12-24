@@ -65,20 +65,12 @@ ZoneEditorWidget::ZoneEditorWidget(QList<Zone*> *zones)
     unkLowerBound->setRange(-2147483648, 2147483647);
     connect(unkLowerBound, SIGNAL(valueChanged(int)), this, SLOT(handleUnkLowerBoundChange(int)));
 
-    xScrollRate = new QSpinBox();
-    xScrollRate->setRange(-128, 127);
-    connect(xScrollRate, SIGNAL(valueChanged(int)), this, SLOT(handleXScrollRateChanged(int)));
-
-    yScrollRate = new QSpinBox();
-    yScrollRate->setRange(-128, 127);
-    connect(yScrollRate, SIGNAL(valueChanged(int)), this, SLOT(handleYScrollRateChanged(int)));
-
     bgXPos = new QSpinBox();
-    bgXPos->setRange(-128, 127);
+    bgXPos->setRange(-32768, 32767);
     connect(bgXPos, SIGNAL(valueChanged(int)), this, SLOT(handleBgXPosChanged(int)));
 
     bgYPos = new QSpinBox();
-    bgYPos->setRange(-128, 127);
+    bgYPos->setRange(-32768, 32767);
     connect(bgYPos, SIGNAL(valueChanged(int)), this, SLOT(handleBgYPosChanged(int)));
 
     bgUnk1 = new QSpinBox();
@@ -114,7 +106,7 @@ ZoneEditorWidget::ZoneEditorWidget(QList<Zone*> *zones)
     generalTabLayout->addWidget(new QLabel("Progress Path ID:"), 3, 0, 1, 1, Qt::AlignRight);
     generalTabLayout->addWidget(progPathId, 3, 1);
 
-    generalTabLayout->addWidget(new QLabel("Unknown Value:"), 4, 0, 1, 1, Qt::AlignRight);
+    generalTabLayout->addWidget(new QLabel("Unknown 1:"), 4, 0, 1, 1, Qt::AlignRight);
     generalTabLayout->addWidget(unk1, 4, 1);
 
     generalTab->setLayout(generalTabLayout);
@@ -143,30 +135,24 @@ ZoneEditorWidget::ZoneEditorWidget(QList<Zone*> *zones)
     QGridLayout* backgroundTabLayout = new QGridLayout();
     backgroundTabLayout->setMargin(5);
 
-    backgroundTabLayout->addWidget(new QLabel("Background X Pos:"), 0, 0, 1, 1, Qt::AlignRight);
+    backgroundTabLayout->addWidget(new QLabel("Background X Offset:"), 0, 0, 1, 1, Qt::AlignRight);
     backgroundTabLayout->addWidget(bgXPos, 0, 1);
 
-    backgroundTabLayout->addWidget(new QLabel("Background Y Pos:"), 1, 0, 1, 1, Qt::AlignRight);
+    backgroundTabLayout->addWidget(new QLabel("Background Y Offset:"), 1, 0, 1, 1, Qt::AlignRight);
     backgroundTabLayout->addWidget(bgYPos, 1, 1);
 
-    backgroundTabLayout->addWidget(new QLabel("Background X Scroll:"), 2, 0, 1, 1, Qt::AlignRight);
-    backgroundTabLayout->addWidget(xScrollRate, 2, 1);
+    backgroundTabLayout->addWidget(new QLabel("Background Unknown 1:"), 3, 0, 1, 1, Qt::AlignRight);
+    backgroundTabLayout->addWidget(bgUnk1, 3, 1);
 
-    backgroundTabLayout->addWidget(new QLabel("Background Y Scroll:"), 3, 0, 1, 1, Qt::AlignRight);
-    backgroundTabLayout->addWidget(yScrollRate, 3, 1);
-
-    backgroundTabLayout->addWidget(new QLabel("Background Unknown Value:"), 4, 0, 1, 1, Qt::AlignRight);
-    backgroundTabLayout->addWidget(bgUnk1, 4, 1);
-
-    backgroundTabLayout->addWidget(new QLabel("Background:"), 5, 0, 1, 1, Qt::AlignRight);
-    backgroundTabLayout->addWidget(background, 5, 1);
+    backgroundTabLayout->addWidget(new QLabel("Background:"), 4, 0, 1, 1, Qt::AlignRight);
+    backgroundTabLayout->addWidget(background, 4, 1);
 
     QHBoxLayout* bgAlign = new QHBoxLayout();
     QWidget* spacer = new QWidget();
     spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
     bgAlign->addWidget(spacer);
     bgAlign->addWidget(backgroundPreview, 1);
-    backgroundTabLayout->addLayout(bgAlign, 6, 0, 1, 2);
+    backgroundTabLayout->addLayout(bgAlign, 5, 0, 1, 2);
 
     backgroundTab->setLayout(backgroundTabLayout);
 
@@ -175,8 +161,6 @@ ZoneEditorWidget::ZoneEditorWidget(QList<Zone*> *zones)
     settingsTabs->addTab(backgroundTab, "Background");
 
     layout->addWidget(settingsTabs);
-
-    settingsTabs->setCurrentIndex(0);
 
     updateList();
     updateInfo();
@@ -276,7 +260,7 @@ void ZoneEditorWidget::updateList()
 
     zoneList->clear();
     foreach (Zone* zone, *zones)
-        zoneList->addItem(QString("%1 (at %2,%3)").arg(zone->getid()).arg(to16(zone->getx())).arg(to16(zone->gety())));
+        zoneList->addItem(QString("%1 (at %2,%3) (W: %4 H: %5)").arg(zone->getid()).arg(to16(zone->getx())).arg(to16(zone->gety())).arg(to16(zone->getwidth())).arg(to16(zone->getheight())));
 
     zoneList->setCurrentIndex(index);
 }
@@ -301,8 +285,6 @@ void ZoneEditorWidget::updateInfo()
     lowerBound->setValue(editZone->getLowerBound());
     unkUpperBound->setValue(editZone->getUnkUpperBound());
     unkLowerBound->setValue(editZone->getUnkLowerBound());
-    xScrollRate->setValue(editZone->getXScrollRate());
-    yScrollRate->setValue(editZone->getYScrollRate());
     bgXPos->setValue(editZone->getBgXPos());
     bgYPos->setValue(editZone->getBgYPos());
     background->setCurrentText(backgrounds.value(editZone->getBgName()));
@@ -396,20 +378,6 @@ void ZoneEditorWidget::handleBgUnk1Change(int val)
 {
     if (!handleChanges) return;
     editZone->setBgUnk1(val);
-    emit editMade();
-}
-
-void ZoneEditorWidget::handleXScrollRateChanged(int val)
-{
-    if (!handleChanges) return;
-    editZone->setXScrollRate(val);
-    emit editMade();
-}
-
-void ZoneEditorWidget::handleYScrollRateChanged(int val)
-{
-    if (!handleChanges) return;
-    editZone->setYScrollRate(val);
     emit editMade();
 }
 

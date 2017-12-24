@@ -329,7 +329,7 @@
   </sprite>
   <sprite id="27" name="POW Block" notes="Actor:  0x0B2 &#13;&#10;Description: A block that will send a shockwave when something collides with it.&#13;&#10;Event Triggerable: No&#13;&#10;Affected by Gold Ring: No&#13;&#10;Requirements: N/A">
     <value nybble="5" title="Unused Checkbox 5"/>
-    <value nybble="6" title="Unused Checkbox 6"/>
+    <checkbox nybble="6" title="Automatically Triggered" comment="When checked, the powblock will act as if it has been hit upon being loaded."/>
   </sprite>
   <sprite id="28" name="Movement-controlled POW Block" notes="Actor: 0x0B3&#13;&#10;Description: A movement controlled POW block.&#13;&#10;Event Triggerable: No&#13;&#10;Affected by Gold Ring: No&#13;&#10;Requirements: Must have a movement ID set.">
     <value nybble="21-22" title="Movement ID"/>
@@ -1088,7 +1088,7 @@
       <entry value="14">Arrow Right-Down</entry>
       <entry value="15">Arrow Right-Down</entry>
     </list>
-    <value nybble="8" title="Unknown Value 8"/>
+    <value nybble="8" title="Fall speed" comment="Behaviour must be set to 2 for this to work otherwise the game will crash."/>
   </sprite>
   <sprite id="110" name="Dry Bones" notes="Actor: 0x0fa">
     <value nybble="5" title="Unknown Value 5"/>
@@ -1240,6 +1240,9 @@
   </sprite>
   <sprite id="127" name="Bowser Flame" notes="Existing In-Game Sprite Data: Incomplete?">
     <checkbox nybble="6" title="Dry Bowser Flame" comment="If checked, flame is blue instead of orange."/>
+    <checkbox nybble="7" title="Unused Checkbox 7"/>
+    <checkbox nybble="8" title="Unused Checkbox 8"/>
+    <checkbox nybble="10" title="Unused Checkbox 10"/>
   </sprite>
   <sprite id="128" name="Dry Bowser" notes="The final boss of World Star."/>
   <sprite id="129" name="Big Dry Bowser" notes="The big version of the final boss in World Star."/>
@@ -1354,7 +1357,10 @@
       <entry value="0">Small</entry>
       <entry value="1">Big</entry>
     </list>
+    <value nybble="9" title="Unused Value 9" comment="Possible values up to 3."/>
     <checkbox nybble="10" title="Spins Clockwise"/>
+    <checkbox nybble="11" title="Unused Checkbox 11"/>
+    <checkbox nybble="12" title="Unused Checkbox 12"/>
   </sprite>
   <sprite id="148" name="Move-when-on Boat Lift" notes="Only moves right.">
     <list nybble="8" title="Movement">
@@ -1380,8 +1386,8 @@
     <value nybble="18" title="Unknown Value 18"/>
   </sprite>
   <sprite id="150" name="Seesaw Lift" notes="A yellow colored girder that tilts when the player stands on it, like a seesaw.">
-    <value nybble="5" title="Unused Nybble 5"/>
-    <value nybble="16" title="Unused Nybble 16"/>
+    <value nybble="5" title="Tilt Distance" comment="Sets the maximum tilt distance for the platform."/>
+    <value nybble="16" title="Platform Width" comment="Sets the width of the platform. Values &lt; 7 produce smaller width, values &gt; 7 produce larger widths. (This is buggy and unused, The texture is stretched)"/>
   </sprite>
   <sprite id="151" name="Scale Lift">
     <value nybble="1-2" title="Triggering Event ID" comment="Needs an as-of-yet undetermined nybble to be set to 1 for this to work"/>
@@ -1900,7 +1906,7 @@
     </list>
   </sprite>
   <sprite id="196" name="Coin Cheep" notes="A Coin Cheep.">
-    <value nybble="7" title="Unused Value 7"/>
+    <value nybble="7" title="Swim Speed" comment="Higher values are slower, values &gt;= 4 are buggy."/>
   </sprite>
   <sprite id="197" name="Jumping Cheep Cheep">
     <value nybble="1-2" title="Triggering Event ID"/>
@@ -2291,7 +2297,10 @@
     <value nybble="12" title="Location ID"/>
   </sprite>
   <sprite id="227" name="Floating Barrel" notes="A simple floating barrel."/>
-  <sprite id="228" name="Boo" notes="A ghost that will hide itself and will not move while the player looks at it. Will continue pursuit when the player has their back turned."/>
+  <sprite id="228" name="Boo" notes="A ghost that will hide itself and will not move while the player looks at it. Will continue pursuit when the player has their back turned.">
+    <value nybble="5" title="Unused Value 5"/>
+    <value nybble="6" title="Unused Value 6"/>
+  </sprite>
   <sprite id="229" name="Big Boo">
     <value nybble="8" title="Unknown Value 8" comment="Checkbox?"/>
   </sprite>

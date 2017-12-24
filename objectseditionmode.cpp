@@ -853,7 +853,7 @@ void ObjectsEditonMode::paste(int currX, int currY, int currW, int currH)
         }
         case 2: // Entrance
         {
-            Entrance* newEntr = new Entrance(params[3].toInt()+pOffsetX, params[4].toInt()+pOffsetY, params[7].toInt(), params[8].toInt(), params[1].toInt(), params[5].toInt(), params[6].toInt(), params[2].toInt(), params[9].toInt(), 0, 0);
+            Entrance* newEntr = new Entrance(params[3].toInt()+pOffsetX, params[4].toInt()+pOffsetY, params[7].toInt(), params[8].toInt(), params[1].toInt(), params[5].toInt(), params[6].toInt(), params[2].toInt(), params[9].toInt(), params[10].toInt(), params[11].toInt());
             level->entrances.append(newEntr);
             selectedObjects.append(newEntr);
             break;
@@ -868,12 +868,10 @@ void ObjectsEditonMode::paste(int currX, int currY, int currW, int currH)
             newZone->setUnkUpperBound(params[12].toInt());
             newZone->setUnkLowerBound(params[13].toInt());
             newZone->setUpScrolling(params[14].toInt());
-            newZone->setXScrollRate(params[15].toInt());
-            newZone->setYScrollRate(params[16].toInt());
-            newZone->setBgXPos(params[17].toInt());
-            newZone->setBgYPos(params[18].toInt());
-            newZone->setBackgroundName(params[19]);
-            newZone->setBgUnk1(params[20].toInt());
+            newZone->setBgYPos(params[15].toInt());
+            newZone->setBgXPos(params[16].toInt());
+            newZone->setBackgroundName(params[17]);
+            newZone->setBgUnk1(params[18].toInt());
 
             level->zones.append(newZone);
             selectedObjects.append(newZone);

@@ -1486,11 +1486,54 @@ void Sprite::setRect()
         height = 63;
         offsetx = -41;
         break;
+    case 247: // Invisible Bouncy Block
+        width = 20 + (getNybble(10)*20);
+        height = 20;
+        break;
     case 251: // Treasure Chest
         width = 48;
         height = 32;
         offsetx = -14;
         offsety = -12;
+        break;
+    case 252: // Item
+        switch (getNybble(10))
+        {
+        case 2: case 5:
+            width = 26;
+            height = 24;
+            offsetx = -2;
+            offsety =-4;
+            break;
+        case 4:
+            width = 24;
+            height = 21;
+            offsetx = -2;
+            offsety = -1;
+            break;
+        case 6:
+            width = 20;
+            height = 20;
+            break;
+        case 7:
+            width = 24;
+            height = 23;
+            offsetx = -3;
+            offsety = -3;
+            break;
+        case 9:
+            width = 49;
+            height = 41;
+            offsetx = -14;
+            offsety = -21;
+            break;
+        default:
+            width = 23;
+            height = 22;
+            offsetx = -3;
+            offsety = -2;
+            break;
+        }
         break;
     case 253: // Larry Battle Platform
         height = 10;
@@ -1815,7 +1858,11 @@ Entrance::Entrance(Entrance *entr)
 }
 
 // Format: 2:ID:Type:X:Y:DestArea:DestEntr:CamX:CamY:Settings
-QString Entrance::toString(qint32 xOffset, qint32 yOffset) const { return QString("2:%1:%2:%3:%4:%5:%6:%7:%8:%9").arg(id).arg(entrType).arg(x+xOffset).arg(y+yOffset).arg(destArea).arg(destEntr).arg(cameraX).arg(cameraY).arg(settings); }
+QString Entrance::toString(qint32 xOffset, qint32 yOffset) const
+{
+    return QString("2:%1:%2:%3:%4:%5:%6:%7:%8:%9:%10:%11").arg(id).arg(entrType).arg(x+xOffset).arg(y+yOffset).arg(destArea)
+            .arg(destEntr).arg(cameraX).arg(cameraY).arg(settings).arg(unk1).arg(unk2);
+}
 
 
 // Zone
@@ -1848,8 +1895,6 @@ Zone::Zone(Zone *zone)
     unkUpperBound = zone->getUnkUpperBound();
     unkLowerBound = zone->getUnkLowerBound();
     upScrolling = zone->getUpScrolling();
-    xScrollRate = zone->getXScrollRate();
-    yScrollRate = zone->getYScrollRate();
     bgXPos = zone->getBgXPos();
     bgYPos = zone->getBgYPos();
     bgName = zone->getBgName();
@@ -1877,8 +1922,7 @@ void Zone::setBounding(tempZoneBounding bounding)
 
 void Zone::setBackground(tempZoneBackground background)
 {
-    this->xScrollRate = background.xScrollRate;
-    this->yScrollRate = background.yScrollRate;
+
     this->bgXPos = background.xPos;
     this->bgYPos = background.yPos;
     this->bgName = background.name;
@@ -1887,10 +1931,10 @@ void Zone::setBackground(tempZoneBackground background)
 
 QString Zone::toString(qint32 xOffset, qint32 yOffset) const
 {
-    return QString("3:%1:%2:%3:%4:%5:%6:%7:%8:%9:%10:%11:%12:%13:%14:%15:%16:%17:%18:%19:%20:%21").arg(x+xOffset).arg(y+yOffset)
+    return QString("3:%1:%2:%3:%4:%5:%6:%7:%8:%9:%10:%11:%12:%13:%14:%15:%16:%17:%18:%19").arg(x+xOffset).arg(y+yOffset)
             .arg(width).arg(height).arg(id).arg(progPathId).arg(musicId).arg(multiplayerTracking).arg(unk1).arg(upperBound)
-            .arg(lowerBound).arg(unkUpperBound).arg(unkLowerBound).arg(upScrolling).arg(xScrollRate).arg(yScrollRate).arg(bgXPos)
-            .arg(bgYPos).arg(bgName).arg(bgUnk1);
+            .arg(lowerBound).arg(unkUpperBound).arg(unkLowerBound).arg(upScrolling).arg(bgYPos)
+            .arg(bgXPos).arg(bgName).arg(bgUnk1);
 }
 
 

@@ -799,6 +799,16 @@ protected:
     RoundedRectRenderer *nullTile;
 };
 
+// Sprite 252: Item
+class ItemRenderer: public ObjectRenderer
+{
+public:
+    ItemRenderer(const Sprite *spr);
+    void render(QPainter *painter, QRect *drawrect);
+protected:
+    const Sprite *spr;
+};
+
 // Sprite 253: Larry Battle Platform
 class LarryPlatformRenderer: public ObjectRenderer
 {

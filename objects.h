@@ -141,6 +141,8 @@ public:
     void setCameraY(qint16 cameraY) { this->cameraY = cameraY; }
     void setSettings(quint8 settings) { this->settings = settings; }
     void setSettingsBit(bool value, qint32 bit) { settings ^= (-(qint32)value ^ settings) & (1 << bit); }
+    void setUnk1(quint8 unk1) { this->unk1 = unk1; }
+    void setUnk2(quint8 unk2) { this->unk2 = unk2; }
 protected:
     qint16 cameraX;
     qint16 cameraY;
@@ -170,10 +172,8 @@ struct tempZoneBounding
 struct tempZoneBackground
 {
     quint16 id;
-    qint8 xScrollRate;
-    qint8 yScrollRate;
-    qint8 xPos;
-    qint8 yPos;
+    qint16 yPos;
+    qint16 xPos;
     QString name;
     qint8 unk1;
 };
@@ -200,12 +200,10 @@ public:
     qint32 getUnkUpperBound() const { return unkUpperBound; }
     qint32 getUnkLowerBound() const { return unkLowerBound; }
     quint32 getUpScrolling() const { return upScrolling; }
-    qint8 getXScrollRate() const { return xScrollRate; }
-    qint8 getYScrollRate() const { return yScrollRate; }
-    qint8 getBgXPos() const { return bgXPos; }
-    qint8 getBgYPos() const { return bgYPos; }
+    qint16 getBgXPos() const { return bgXPos; }
+    qint16 getBgYPos() const { return bgYPos; }
     QString getBgName() const { return bgName; }
-    quint8 getBgUnk1() const { return unk1; }
+    quint8 getBgUnk1() const { return bgUnk1; }
     QString toString(qint32 xOffset, qint32 yOffset) const;
     void setID(quint8 id) { this->id = id; }
     void setProgPathId(quint8 progPathId) { this->progPathId = progPathId; }
@@ -217,10 +215,8 @@ public:
     void setLowerBound(qint32 lowerBound) { this->lowerBound = lowerBound; }
     void setUnkUpperBound(qint32 unkUpperBound) { this->unkUpperBound = unkUpperBound; }
     void setUnkLowerBound(qint32 unkLowerBound) { this->unkLowerBound = unkLowerBound; }
-    void setXScrollRate(qint8 xScrollRate) { this->xScrollRate = xScrollRate; }
-    void setYScrollRate(qint8 yScrollRate) { this->yScrollRate = yScrollRate; }
-    void setBgXPos(qint8 bgXPos) { this->bgXPos = bgXPos; }
-    void setBgYPos(qint8 bgYPos) { this->bgYPos = bgYPos; }
+    void setBgXPos(qint16 bgXPos) { this->bgXPos = bgXPos; }
+    void setBgYPos(qint16 bgYPos) { this->bgYPos = bgYPos; }
     void setUnk1(quint32 unk1) { this->unk1 = unk1; }
     void setBgUnk1(quint8 bgUnk1) { this->bgUnk1 = bgUnk1; }
 
@@ -237,10 +233,8 @@ protected:
     qint32 unkLowerBound = 0;
     quint16 upScrolling = 0;
     // Background
-    qint8 xScrollRate = 0;
-    qint8 yScrollRate = 0;
-    qint8 bgXPos = 0;
-    qint8 bgYPos = 0;
+    qint16 bgXPos = 0;
+    qint16 bgYPos = 0;
     QString bgName = "Nohara";
     quint8 bgUnk1 = 0;
 };
