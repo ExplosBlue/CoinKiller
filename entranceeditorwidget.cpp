@@ -188,6 +188,7 @@ void EntranceEditorWidget::handleTypeChanged(int typeVal)
 {
     if (!handleChanges) return;
     editEntrance->setEntrType(typeVal);
+    editEntrance->setRect();
     updateList();
     emit updateLevelView();
     emit editMade();

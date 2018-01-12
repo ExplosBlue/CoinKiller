@@ -102,7 +102,7 @@ public:
     quint8 getNybble(qint32 id) const;
     void setRect();
     QString toString(qint32 xOffset, qint32 yOffset) const;
-    qint32 getNybbleData(qint32 startNybble, qint32 endNybble);
+    qint32 getNybbleData(qint32 startNybble, qint32 endNybble) const;
     void setNybbleData(qint32 data, qint32 startNybble, qint32 endNybble);
 protected:
     qint32 id;
@@ -134,7 +134,7 @@ public:
     quint8 getUnk1() const { return unk1; }
     quint8 getUnk2() const { return unk2; }
     void setId(quint8 id) { this->id = id; }
-    void setEntrType(quint8 entrType) { this->entrType = entrType; }
+    void setEntrType(quint8 entrType) { this->entrType = entrType; this->setRect(); }
     void setDestEntr(quint8 destEntr) { this->destEntr = destEntr; }
     void setDestArea(quint8 destArea) { this->destArea = destArea; }
     void setCameraX(qint16 cameraX) { this->cameraX = cameraX; }
@@ -143,6 +143,7 @@ public:
     void setSettingsBit(bool value, qint32 bit) { settings ^= (-(qint32)value ^ settings) & (1 << bit); }
     void setUnk1(quint8 unk1) { this->unk1 = unk1; }
     void setUnk2(quint8 unk2) { this->unk2 = unk2; }
+    void setRect();
 protected:
     qint16 cameraX;
     qint16 cameraY;

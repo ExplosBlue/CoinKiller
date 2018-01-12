@@ -44,6 +44,8 @@ public:
     void setLayer(int selLayer) { this->selLayer = selLayer; }
     void setSprite(int selSprite);
 
+    void toggleSelectAfterPlacement(bool toggle) { this->selectAfterPlacement = toggle; }
+
 private:
 
     QList<Object*> selectedObjects;
@@ -124,6 +126,8 @@ private:
     quint8 layerMask;
     bool pathInteraction;
     bool spriteInteraction;
+
+    bool selectAfterPlacement;
 
 };
 

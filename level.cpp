@@ -146,6 +146,7 @@ Level::Level(Game *game, SarcFilesystem* archive, int area, QString lvlName)
         header->skip(2);
 
         Entrance* entr = new Entrance(to20(x), to20(y), cameraX, cameraY, id, destArea, destEntr, entrType, settings, entrUnk1, entrUnk2);
+        entr->setRect();
         entrances.append(entr);
     }
 
@@ -169,6 +170,7 @@ Level::Level(Game *game, SarcFilesystem* archive, int area, QString lvlName)
 
         spr->setRect();
         sprites.append(spr);
+        sortCameraLimits(spr);
     }
 
     // Block 8: Sprites Used List (no need to read this)
@@ -1008,7 +1010,7 @@ Location* Level::newLocation(int x, int y)
             break;
         }
     }
-    return new Location(toNext16Compatible(x), toNext16Compatible(y), 4, 4, id);
+    return new Location(toNext16Compatible(x), toNext16Compatible(y), 40, 40, id);
 }
 
 Path* Level::newPath()
@@ -1045,4 +1047,56 @@ ProgressPath* Level::newProgressPath()
         }
     }
     return new ProgressPath(id, 0);
+}
+
+void Level::sortCameraLimits(Sprite *spr)
+{
+    int id = spr->getid();
+
+    if (id != 156 && id != 157 && id != 160 && id != 161)
+        return;
+
+    if (id == 156)
+        leftCamLimits.append(spr);
+
+    if (id == 157)
+        rightCamLimits.append(spr);
+
+    if (id == 160)
+        bottomCamLimits.append(spr);
+
+    if (id == 161)
+        topCamLimits.append(spr);
+
+    // Sort right limits from smallest to largest xPos
+    for (int i = 0; i < rightCamLimits.size()-1; i++)
+    {
+        if (rightCamLimits[i]->getx() > rightCamLimits[i+1]->getx())
+        {
+            rightCamLimits.swap(i, i+1);
+            int j = i;
+            while (j > 0)
+            {
+                if (rightCamLimits[j-1]->getx() > rightCamLimits[j]->getx())
+                    rightCamLimits.swap(j-1, j);
+                j--;
+            }
+        }
+    }
+
+    // Sort bottom limits from smallest to largest yPos
+    for (int i = 0; i < bottomCamLimits.size()-1; i++)
+    {
+        if (bottomCamLimits[i]->gety() > bottomCamLimits[i+1]->gety())
+        {
+            bottomCamLimits.swap(i, i+1);
+            int j = i;
+            while (j > 0)
+            {
+                if (bottomCamLimits[j-1]->gety() > bottomCamLimits[j]->gety())
+                    bottomCamLimits.swap(j-1, j);
+                j--;
+            }
+        }
+    }
 }

@@ -10,6 +10,7 @@
 #include <QListWidget>
 #include <QComboBox>
 #include <QGridLayout>
+#include <QLineEdit>
 
 class SpriteIdWidget : public QWidget
 {
@@ -28,6 +29,7 @@ public slots:
 
 private slots:
     void handleIndexChange(QTreeWidgetItem* spriteItem);
+    void search(QString text);
 
 
 private:
@@ -36,6 +38,7 @@ private:
     QList<Sprite*> *sprites;
     QTreeWidget* spriteTree;
     QComboBox* viewComboBox;
+    QLineEdit* searchEdit;
 
     QStringList headerLables;
 

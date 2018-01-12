@@ -120,6 +120,8 @@ private slots:
 
     void on_actionResetBackgroundColor_triggered();
 
+    void on_actionSelectAfterPlacement_toggled(bool arg1);
+
 private:
     Ui::LevelEditorWindow *ui;
 

@@ -61,7 +61,6 @@ protected:
     QString text;
     QColor color;
     QTextOption align;
-
 };
 
 class CircleRenderer: public ObjectRenderer
@@ -78,6 +77,21 @@ protected:
     int height;
     int offsetx;
     int offsety;
+};
+
+class MovIndicatorRenderer: public ObjectRenderer
+{
+public:
+    MovIndicatorRenderer();
+    MovIndicatorRenderer(int x, int y, int distX, int distY, bool vertical, QColor color);
+    void render(QPainter *painter);
+protected:
+    int x;
+    int y;
+    int distX;
+    int distY;
+    bool vertical;
+    QColor color;
 };
 
 
@@ -181,8 +195,19 @@ protected:
     QString contents;
 };
 
+// Sprite 36: Arc Lava Bubble
+class ArcLavaBubbleRenderer: public SpriteRenderer
+{
+public:
+    ArcLavaBubbleRenderer(const Sprite *spr);
+    void render(QPainter *painter, QRect *drawrect);
+protected:
+    const Sprite* spr;
+};
+
+
 // Sprite 38: Reznor Wheel
-class ReznorWheelRenderer: public ObjectRenderer
+class ReznorWheelRenderer: public SpriteRenderer
 {
 public:
     ReznorWheelRenderer(const Sprite *spr);
@@ -192,7 +217,7 @@ protected:
 };
 
 // Sprite 28/60/101/204: Movement Controlled Sprites
-class MovementSpriteRenderer: public ObjectRenderer
+class MovementSpriteRenderer: public SpriteRenderer
 {
 public:
     MovementSpriteRenderer(const Sprite *spr, QString fileName);
@@ -203,7 +228,7 @@ protected:
 };
 
 // Sprite 39: Reznor Battle Disapearing Blocks
-class ReznorBlockRenderer: public ObjectRenderer
+class ReznorBlockRenderer: public SpriteRenderer
 {
 public:
     ReznorBlockRenderer(const Sprite *spr);
@@ -228,7 +253,7 @@ protected:
 };
 
 // Sprite 51: Fuzzy
-class FuzzyRenderer: public ObjectRenderer
+class FuzzyRenderer: public SpriteRenderer
 {
 public:
     FuzzyRenderer(const Sprite *spr);
@@ -238,7 +263,7 @@ protected:
 };
 
 // Sprite 59/62/100/203/220/259/303: Rotation Controlled Sprites
-class RotationSpriteRenderer: public ObjectRenderer
+class RotationSpriteRenderer: public SpriteRenderer
 {
 public:
     RotationSpriteRenderer(const Sprite *spr, QString fileName);
@@ -249,7 +274,7 @@ protected:
 };
 
 // Sprite 61: RedCoin
-class RedCoinRenderer: public ObjectRenderer
+class RedCoinRenderer: public SpriteRenderer
 {
 public:
     RedCoinRenderer(const Sprite *spr, QString filename);
@@ -260,7 +285,7 @@ protected:
 };
 
 // Sprite 78: Firebar
-class FireBarRenderer: public ObjectRenderer
+class FireBarRenderer: public SpriteRenderer
 {
 public:
     FireBarRenderer(const Sprite *spr);
@@ -271,7 +296,7 @@ protected:
 };
 
 // Sprites 84/85/86/87/88: Flags
-class FlagRenderer: public ObjectRenderer
+class FlagRenderer: public SpriteRenderer
 {
 public:
     FlagRenderer(const Sprite *spr);
@@ -282,7 +307,7 @@ private:
 };
 
 // Sprite 93: Scuttlebug
-class ScuttlebugRenderer: public ObjectRenderer
+class ScuttlebugRenderer: public SpriteRenderer
 {
 public:
     ScuttlebugRenderer(const Sprite *spr, const Zone *zone);
@@ -299,11 +324,11 @@ public:
     FlipperRenderer(const Sprite *spr);
     void render(QPainter *painter, QRect *drawrect);
 protected:
-    NormalImageRenderer *img;
+    const Sprite *spr;
 };
 
 // Sprite 97: End of Level Flag
-class GoalRenderer: public ObjectRenderer
+class GoalRenderer: public SpriteRenderer
 {
 public:
     GoalRenderer(const Sprite *spr);
@@ -322,10 +347,11 @@ public:
     void render(QPainter *painter, QRect *drawrect);
 protected:
     const Sprite *spr;
+    RoundedRectRenderer *rect;
 };
 
 // Sprite 109: Signboard
-class SignboardRenderer: public ObjectRenderer
+class SignboardRenderer: public SpriteRenderer
 {
 public:
     SignboardRenderer(const Sprite *spr);
@@ -336,7 +362,7 @@ protected:
 };
 
 // Sprite 114: Floating Box
-class FloatingBoxRenderer: public ObjectRenderer
+class FloatingBoxRenderer: public SpriteRenderer
 {
 public:
     FloatingBoxRenderer(const Sprite *spr);
@@ -356,8 +382,18 @@ protected:
     const Sprite *spr;
 };
 
+// Sprite 115: Bullet Bill Turret
+class BulletBillTurretRenderer: public SpriteRenderer
+{
+public:
+    BulletBillTurretRenderer(const Sprite *spr);
+    void render(QPainter *painter, QRect *drawrect);
+protected:
+    const Sprite *spr;
+};
+
 // Sprite 118: Bullet Bill
-class BulletBillRenderer: public ObjectRenderer
+class BulletBillRenderer: public SpriteRenderer
 {
 public:
     BulletBillRenderer(const Sprite *spr);
@@ -368,7 +404,7 @@ protected:
 };
 
 // Sprite 119: Banzai Bill
-class BanzaiBillRenderer: public ObjectRenderer
+class BanzaiBillRenderer: public SpriteRenderer
 {
 public:
     BanzaiBillRenderer(const Sprite *spr);
@@ -379,7 +415,7 @@ protected:
 };
 
 // Sprite 120: Up-Down Mushroom
-class UpDownMushroomRenderer: public ObjectRenderer
+class UpDownMushroomRenderer: public SpriteRenderer
 {
 public:
     UpDownMushroomRenderer(const Sprite *spr);
@@ -389,7 +425,7 @@ protected:
 };
 
 // Sprite 121: Expanding Mushroom
-class ExpandMushroomRenderer: public ObjectRenderer
+class ExpandMushroomRenderer: public SpriteRenderer
 {
 public:
     ExpandMushroomRenderer(const Sprite *spr);
@@ -411,7 +447,7 @@ protected:
 
 
 // Sprite 124: Mushroom Platform
-class MushroomPlatformRenderer: public ObjectRenderer
+class MushroomPlatformRenderer: public SpriteRenderer
 {
 public:
     MushroomPlatformRenderer(const Sprite *spr);
@@ -421,7 +457,7 @@ protected:
 };
 
 // Sprite 127: Bowser Flame
-class BowserFlameRenderer: public ObjectRenderer
+class BowserFlameRenderer: public SpriteRenderer
 {
 public:
     BowserFlameRenderer(const Sprite *spr);
@@ -432,7 +468,7 @@ protected:
 };
 
 // Sprite 134: Ruins Plat Rickshaw
-class RuinsRickRenderer: public ObjectRenderer
+class RuinsRickRenderer: public SpriteRenderer
 {
 public:
     RuinsRickRenderer(const Sprite *spr);
@@ -465,7 +501,7 @@ protected:
 };
 
 // Sprite 139: Goomba Tower
-class GoombaTowerRenderer: public ObjectRenderer
+class GoombaTowerRenderer: public SpriteRenderer
 {
 public:
     GoombaTowerRenderer(const Sprite *spr);
@@ -478,7 +514,7 @@ protected:
 };
 
 // Sprite 144/145: Horizontal/Vertical Lift
-class LiftRenderer: public ObjectRenderer
+class LiftRenderer: public SpriteRenderer
 {
 public:
     LiftRenderer(const Sprite *spr);
@@ -488,7 +524,7 @@ protected:
 };
 
 // Sprite 146: Track Controlled Lift
-class TrackLiftRenderer: public ObjectRenderer
+class TrackLiftRenderer: public SpriteRenderer
 {
 public:
     TrackLiftRenderer(const Sprite *spr);
@@ -498,7 +534,7 @@ protected:
 };
 
 // Sprite 147: 3 Plat Rickshaw
-class ThreePlatRickRenderer: public ObjectRenderer
+class ThreePlatRickRenderer: public SpriteRenderer
 {
 public:
     ThreePlatRickRenderer(const Sprite *spr);
@@ -509,7 +545,7 @@ protected:
 };
 
 // Sprite 151: Scale Platform
-class ScalePlatformRenderer: public ObjectRenderer
+class ScalePlatformRenderer: public SpriteRenderer
 {
 public:
     ScalePlatformRenderer(const Sprite *spr);
@@ -519,7 +555,7 @@ protected:
 };
 
 // Sprite 152: Path Controlled Lift With Peepa
-class PeepaLiftRenderer: public ObjectRenderer
+class PeepaLiftRenderer: public SpriteRenderer
 {
 public:
     PeepaLiftRenderer(const Sprite *spr);
@@ -529,7 +565,7 @@ protected:
 };
 
 // Sprite 154: 4 Plat Rickshaw
-class FourPlatRickRenderer: public ObjectRenderer
+class FourPlatRickRenderer: public SpriteRenderer
 {
 public:
     FourPlatRickRenderer(const Sprite *spr);
@@ -540,7 +576,7 @@ protected:
 };
 
 // Sprite 156/157: Vertical Camera Limits
-class VCameraLimitRenderer: public ObjectRenderer
+class VCameraLimitRenderer: public SpriteRenderer
 {
 public:
     VCameraLimitRenderer(int leftX, int rightX, int yPos, int yRenderOffset, bool permiable);
@@ -554,7 +590,7 @@ protected:
 };
 
 // Sprite 160/161: Horizontal Camera Limits
-class HCameraLimitRenderer: public ObjectRenderer
+class HCameraLimitRenderer: public SpriteRenderer
 {
 public:
     HCameraLimitRenderer(int topY, int bottomY, int xPos, int xRenderOffset, bool permiable);
@@ -568,7 +604,7 @@ protected:
 };
 
 // Sprite 159: Spike Top
-class SpikeTopRenderer: public ObjectRenderer
+class SpikeTopRenderer: public SpriteRenderer
 {
 public:
     SpikeTopRenderer(const Sprite *spr);
@@ -579,7 +615,7 @@ protected:
 };
 
 // Sprite 163: Climbing Koopa - Horizontal
-class ClimbKoopaHorRenderer: public ObjectRenderer
+class ClimbKoopaHorRenderer: public SpriteRenderer
 {
 public:
     ClimbKoopaHorRenderer(const Sprite *spr);
@@ -590,7 +626,7 @@ protected:
 };
 
 // Sprite 164: Climbing Koopa - Vertical
-class ClimbKoopaVertRenderer: public ObjectRenderer
+class ClimbKoopaVertRenderer: public SpriteRenderer
 {
 public:
     ClimbKoopaVertRenderer(const Sprite *spr);
@@ -601,7 +637,7 @@ protected:
 };
 
 // Sprite 165: Koopa Troopa
-class KoopaTroopaRenderer: public ObjectRenderer
+class KoopaTroopaRenderer: public SpriteRenderer
 {
 public:
     KoopaTroopaRenderer(const Sprite *spr);
@@ -612,7 +648,7 @@ protected:
 };
 
 // Sprite 175/176/177/178/179/180: Grounded Piranha Plants
-class PlantRenderer: public ObjectRenderer
+class PlantRenderer: public SpriteRenderer
 {
 public:
     PlantRenderer(const Sprite *spr, QString filename);
@@ -624,7 +660,7 @@ protected:
 };
 
 // Sprite 185: Koopa Paratroopa
-class KoopaParatroopaRenderer: public ObjectRenderer
+class KoopaParatroopaRenderer: public SpriteRenderer
 {
 public:
     KoopaParatroopaRenderer(const Sprite *spr);
@@ -632,6 +668,17 @@ public:
 protected:
     const Object *obj;
     NormalImageRenderer *img;
+};
+
+// Sprite 187: Path Controlled Rect Lift
+class PathRecLiftRenderer: public SpriteRenderer
+{
+public:
+    PathRecLiftRenderer(const Sprite *spr, Tileset *tileset);
+    void render(QPainter *painter, QRect *drawrect);
+protected:
+    const Sprite *spr;
+    Tileset *tileset;
 };
 
 // Sprite 189: RecLiftRenderer
@@ -717,11 +764,10 @@ public:
     void render(QPainter *painter, QRect *drawrect);
 protected:
     const Sprite *spr;
-    NormalImageRenderer *img;
 };
 
 // Sprite 221/223/225: Switches
-class SwitchRenderer: public ObjectRenderer
+class SwitchRenderer: public SpriteRenderer
 {
 public:
     SwitchRenderer(const Sprite *spr, QString filename);
@@ -787,6 +833,27 @@ protected:
     NormalImageRenderer* img;
 };
 
+// Sprite 248: Move Once On Ghost House Platform
+class MoveOnGhostPlatRenderer: public SpriteRenderer
+{
+public:
+    MoveOnGhostPlatRenderer(const Sprite *spr);
+    void render(QPainter *painter, QRect *drawrect);
+protected:
+    const Sprite *spr;
+};
+
+// Sprite 249: Rotation Controlled Rectangle Lift
+class RotRecLiftRenderer: public SpriteRenderer
+{
+public:
+    RotRecLiftRenderer(const Sprite *spr, QString path);
+    void render(QPainter *painter, QRect *drawrect);
+protected:
+    const Sprite *spr;
+    QString path;
+};
+
 // Sprites 100/101/203/204/267/275/276: Item Blocks
 class ItemBlockRenderer: public SpriteRenderer
 {
@@ -800,7 +867,7 @@ protected:
 };
 
 // Sprite 252: Item
-class ItemRenderer: public ObjectRenderer
+class ItemRenderer: public SpriteRenderer
 {
 public:
     ItemRenderer(const Sprite *spr);
@@ -810,7 +877,7 @@ protected:
 };
 
 // Sprite 253: Larry Battle Platform
-class LarryPlatformRenderer: public ObjectRenderer
+class LarryPlatformRenderer: public SpriteRenderer
 {
 public:
     LarryPlatformRenderer(const Sprite *spr);
@@ -820,7 +887,7 @@ protected:
 };
 
 // Sprite 259: Rotation Controlled Hard Block
-class HardBlockRenderer: public ObjectRenderer
+class HardBlockRenderer: public SpriteRenderer
 {
 public:
     HardBlockRenderer(const Sprite *spr, Tileset *tileset);
@@ -842,6 +909,26 @@ protected:
     const Zone *zone;
 };
 
+// Sprite 268: Rectangle Lift - Lava
+class LavaRectLiftRenderer: public SpriteRenderer
+{
+public:
+    LavaRectLiftRenderer(const Sprite *spr);
+    void render(QPainter *painter, QRect *drawrect);
+protected:
+    const Sprite *spr;
+};
+
+// Sprite 273: Coin Roulette Block
+class CoinRouletteRenderer: public SpriteRenderer
+{
+public:
+    CoinRouletteRenderer(const Sprite *spr);
+    void render(QPainter *painter, QRect *drawrect);
+protected:
+    const Sprite *spr;
+};
+
 // Sprite 280: + Clock
 class ClockRenderer: public SpriteRenderer
 {
@@ -850,6 +937,18 @@ public:
     void render(QPainter *painter, QRect *drawrect);
 protected:
     const Sprite *spr;
+};
+
+
+// Sprites 283/307/308: Event Activated Rectangle Lifts
+class EventRecLiftRenderer: public SpriteRenderer
+{
+public:
+    EventRecLiftRenderer(const Sprite *spr, QString path);
+    void render(QPainter *painter, QRect *drawrect);
+protected:
+    const Sprite *spr;
+    NormalImageRenderer *img;
 };
 
 // Sprite 297: Horizontal Rail Controlled Fence
@@ -884,15 +983,25 @@ protected:
     NormalImageRenderer* img;
 };
 
-
 // Sprite 311: Coin Meteor
-class CoinMeteorRenderer: public ObjectRenderer
+class CoinMeteorRenderer: public SpriteRenderer
 {
 public:
     CoinMeteorRenderer(const Sprite *spr);
     void render(QPainter *painter, QRect *drawrect);
 protected:
     const Object *obj;
+    NormalImageRenderer *img;
+};
+
+// Sprite 313: Underwater Rectangle Lift
+class UnderwaterRecLiftRenderer: public SpriteRenderer
+{
+public:
+    UnderwaterRecLiftRenderer(const Sprite *spr);
+    void render(QPainter *painter, QRect *drawrect);
+protected:
+    const Sprite *spr;
     NormalImageRenderer *img;
 };
 

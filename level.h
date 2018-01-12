@@ -76,12 +76,25 @@ public:
     int getAreaID() { return area; }
     void setAreaID(int id) { this->area = id; }
 
+    // Camera Limits
+    void sortCameraLimits(Sprite* spr);
+
+    QList<Sprite*> getLeftCamLimits() { return leftCamLimits; }
+    QList<Sprite*> getRightCamLimits() { return rightCamLimits; }
+    QList<Sprite*> getBottomCamLimits() { return bottomCamLimits; }
+    QList<Sprite*> getTopCamLimits() { return topCamLimits; }
+
 private:
     SarcFilesystem* archive;
     QString lvlName;
     int area;
 
     quint8 getNextZoneID(Object* obj);
+
+    QList<Sprite*> leftCamLimits;
+    QList<Sprite*> rightCamLimits;
+    QList<Sprite*> bottomCamLimits;
+    QList<Sprite*> topCamLimits;
 };
 
 #endif // LEVEL_H

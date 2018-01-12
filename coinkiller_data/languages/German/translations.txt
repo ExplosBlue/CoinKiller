@@ -79,6 +79,7 @@ renderCameraLimits=Render Camera Limits
 selectZoneContents=Inhalt auswählen
 setBgColor=Hintergrundfarbe ändern
 resetBgColor=rücksetzen farbe ändern
+selectAfterPlacement=Select Objects when Placed
 
 [TilesetEditor]
 tileset=Tileset

@@ -200,6 +200,9 @@ void LevelEditorWindow::loadTranslations()
 
     ui->actionResetBackgroundColor->setText(settings->getTranslation("LevelEditor", "resetBgColor"));
     ui->actionResetBackgroundColor->setToolTip(settings->getTranslation("LevelEditor", "resetBgColor"));
+
+    ui->actionSelectAfterPlacement->setText(settings->getTranslation("LevelEditor", "selectAfterPlacement"));
+    ui->actionSelectAfterPlacement->setToolTip(settings->getTranslation("LevelEditor", "selectAfterPlacement"));
 }
 
 // Actions
@@ -392,6 +395,12 @@ void LevelEditorWindow::setSelSprite(int spriteId)
     levelView->objEditionModePtr()->setSprite(spriteId);
 }
 
+void LevelEditorWindow::on_actionSelectAfterPlacement_toggled(bool toggle)
+{
+    levelView->objEditionModePtr()->toggleSelectAfterPlacement(toggle);
+    settings->set("SelectAfterPlacement", toggle);
+}
+
 void LevelEditorWindow::setObjectEdition(Object* obj)
 {
     deselect();
@@ -579,12 +588,16 @@ void LevelEditorWindow::loadArea(int id, bool closeLevel, bool init)
     ui->actionToggleLayer2->setChecked(true);
     ui->actionToggleSprites->setChecked(true);
     ui->actionTogglePaths->setChecked(true);
+    ui->actionSelectAfterPlacement->setChecked(settings->get("SelectAfterPlacement").toBool());
     levelView->setLayerMask(layerMask);
     levelView->toggleGrid(ui->actionGrid->isChecked());
     levelView->toggleCheckerboard(ui->actionCheckerboard->isChecked());
     levelView->toggleRenderLiquids(ui->actionRenderLiquids->isChecked());
     levelView->toggleRenderCameraLimits(ui->actionRenderCameraLimits->isChecked());
     levelView->setBackgroundColor(settings->getColor("lewColor"));
+    levelView->objEditionModePtr()->toggleSelectAfterPlacement(settings->get("SelectAfterPlacement").toBool());
+    levelView->toggleSprites(ui->actionToggleSprites->isChecked());
+    levelView->togglePaths(ui->actionTogglePaths->isChecked());
 
     zoom = 1.0;
 
@@ -663,11 +676,6 @@ void LevelEditorWindow::loadArea(int id, bool closeLevel, bool init)
     connect(miniMap, SIGNAL(scrollTo(int,int)), this, SLOT(scrollTo(int,int)));
     ui->miniMap->setWidget(miniMap);
 
-    // Prevent Sprites and Paths from being potentially unselectable upon switching areas
-    levelView->toggleSprites(false);
-    levelView->togglePaths(false);
-    levelView->toggleSprites(true);
-    levelView->togglePaths(true);
     update();
 }
 

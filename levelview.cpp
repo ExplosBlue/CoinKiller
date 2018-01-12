@@ -331,63 +331,12 @@ void LevelView::paintEvent(QPaintEvent* evt)
         {
             for (int i = 0; i < level->sprites.size(); i++)
             {
-                QList<Sprite*> leftLimits;
-                QList<Sprite*> rightLimits;
+                QList<Sprite*> leftCamLimits = level->getLeftCamLimits();
+                QList<Sprite*> rightCamLimits = level->getRightCamLimits();
+                QList<Sprite*> topCamLimits = level->getTopCamLimits();
+                QList<Sprite*> bottomCamLimits = level->getBottomCamLimits();
 
-                QList<Sprite*> bottomLimits;
-                QList<Sprite*> topLimits;
-
-                foreach (Sprite* s, level->sprites)
-                {
-                    if (s->getid() != 156 && s->getid() != 157 && s->getid() != 160 && s->getid() != 161)
-                        continue;
-
-                    if (s->getid() == 156)
-                        leftLimits.append(s);
-
-                    if (s->getid() == 157)
-                        rightLimits.append(s);
-
-                    if (s->getid() == 160)
-                        bottomLimits.append(s);
-
-                    if (s->getid() == 161)
-                        topLimits.append(s);
-                }
-
-                // Sort right limits from smallest to largest xPos
-                for (int i = 0; i < rightLimits.size()-1; i++)
-                {
-                    if (rightLimits[i]->getx() > rightLimits[i+1]->getx())
-                    {
-                        rightLimits.swap(i, i+1);
-                        int j = i;
-                        while (j > 0)
-                        {
-                            if (rightLimits[j-1]->getx() > rightLimits[j]->getx())
-                                rightLimits.swap(j-1, j);
-                            j--;
-                        }
-                    }
-                }
-
-                // Sort bottom limits from smallest to largest yPos
-                for (int i = 0; i < bottomLimits.size()-1; i++)
-                {
-                    if (bottomLimits[i]->gety() > bottomLimits[i+1]->gety())
-                    {
-                        bottomLimits.swap(i, i+1);
-                        int j = i;
-                        while (j > 0)
-                        {
-                            if (bottomLimits[j-1]->gety() > bottomLimits[j]->gety())
-                                bottomLimits.swap(j-1, j);
-                            j--;
-                        }
-                    }
-                }
-
-                foreach (Sprite* left, leftLimits)
+                foreach (Sprite* left, leftCamLimits)
                 {
                     int leftX = left->getx();
                     int rightX = 0;
@@ -395,7 +344,7 @@ void LevelView::paintEvent(QPaintEvent* evt)
                     bool noPair = true;
                     bool permiable = false;
                     int yRenderOffset = 0;
-                    foreach (Sprite* right, rightLimits)
+                    foreach (Sprite* right, rightCamLimits)
                     {
                         if (left->gety() != right->gety())
                             continue;
@@ -420,12 +369,15 @@ void LevelView::paintEvent(QPaintEvent* evt)
 
                     if (!noPair)
                     {
+                        if (!drawrect.intersects(QRect(leftX, yPos, rightX, yPos+yRenderOffset)))
+                            continue;
+
                         VCameraLimitRenderer VCameraLimitRenderer(leftX, rightX, yPos, yRenderOffset, permiable);
                         VCameraLimitRenderer.render(&painter, &drawrect);
                     }
                 }
 
-                foreach (Sprite* top, topLimits)
+                foreach (Sprite* top, topCamLimits)
                 {
                     int topY = top->gety();
                     int bottomY = 0;
@@ -433,7 +385,7 @@ void LevelView::paintEvent(QPaintEvent* evt)
                     bool noPair = true;
                     bool permiable = false;
                     int xRenderOffset = 0;
-                    foreach (Sprite* bottom, bottomLimits)
+                    foreach (Sprite* bottom, bottomCamLimits)
                     {
                         if (top->getx() != bottom->getx())
                             continue;
@@ -458,6 +410,9 @@ void LevelView::paintEvent(QPaintEvent* evt)
 
                     if (!noPair)
                     {
+                        if (!drawrect.intersects(QRect(xPos, topY, xPos+xRenderOffset, bottomY)))
+                            continue;
+
                         HCameraLimitRenderer HCameraLimitRenderer(topY, bottomY, xPos, xRenderOffset, permiable);
                         HCameraLimitRenderer.render(&painter, &drawrect);
                     }
@@ -470,7 +425,7 @@ void LevelView::paintEvent(QPaintEvent* evt)
     {
         const Entrance* entr = level->entrances.at(i);
 
-        QRect entrrect(entr->getx(), entr->gety(), 20, 20);
+        QRect entrrect(entr->getx(), entr->gety(), entr->getwidth(), entr->getheight());
 
         if (!drawrect.intersects(entrrect))
             continue;

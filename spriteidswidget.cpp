@@ -18,10 +18,17 @@ SpriteIdWidget::SpriteIdWidget(QList<Sprite*> *sprites)
     viewComboBox->addItems(viewTypes);
     connect(viewComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(setView(int)));
 
+    QLabel* searchLabel = new QLabel("Search:");
+    searchLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    searchEdit = new QLineEdit();
+    connect(searchEdit, SIGNAL(textEdited(QString)), this, SLOT(search(QString)));
+
     QGridLayout* topLayout = new QGridLayout();
     topLayout->setSpacing(6);
     topLayout->addWidget(viewLabel, 0, 0);
     topLayout->addWidget(viewComboBox, 0, 1);
+    topLayout->addWidget(searchLabel, 1, 0);
+    topLayout->addWidget(searchEdit, 1, 1);
 
     spriteTree = new QTreeWidget();
     spriteTree->setColumnCount(1);
@@ -39,6 +46,19 @@ SpriteIdWidget::SpriteIdWidget(QList<Sprite*> *sprites)
     updateList();
 
     connect(spriteTree, SIGNAL(currentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)), this, SLOT(handleIndexChange(QTreeWidgetItem*)));
+}
+
+void SpriteIdWidget::search(QString text)
+{
+    for (int i = 0; i < spriteTree->topLevelItemCount(); i++)
+    {
+        QTreeWidgetItem *item = spriteTree->topLevelItem(i);
+
+        if (item->text(0).contains(text, Qt::CaseInsensitive) || item->text(1).contains(text, Qt::CaseInsensitive))
+            item->setHidden(false);
+        else
+            item->setHidden(true);
+    }
 }
 
 void SpriteIdWidget::updateEditor()

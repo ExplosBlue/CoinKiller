@@ -127,6 +127,7 @@ TilesetChooser::TilesetChooser(Level *level, Game *game)
         tab->setModel(game->getTilesetModel(i, true));
         tab->model()->setObjectName(QString("%1").arg(i));
         tab->setColumnWidth(0, 150);
+        tab->setSortingEnabled(true);
 
         QString title;
         if (i == 0) title = "Standard";

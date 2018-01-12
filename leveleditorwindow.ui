@@ -62,8 +62,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>1230</width>
-              <height>81</height>
+              <width>1184</width>
+              <height>212</height>
              </rect>
             </property>
            </widget>
@@ -81,8 +81,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>56</width>
-          <height>597</height>
+          <width>90</width>
+          <height>580</height>
          </rect>
         </property>
        </widget>
@@ -97,7 +97,7 @@
      <x>0</x>
      <y>0</y>
      <width>1305</width>
-     <height>35</height>
+     <height>36</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -149,6 +149,7 @@
     </property>
     <addaction name="actionSetBackgroundColor"/>
     <addaction name="actionResetBackgroundColor"/>
+    <addaction name="actionSelectAfterPlacement"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -484,10 +485,21 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>&lt;&amp;RenderCameraLimits&gt;</string>
+    <string>&lt;R&amp;enderCameraLimits&gt;</string>
    </property>
    <property name="toolTip">
     <string>&lt;RenderCameraLimits&gt;</string>
+   </property>
+  </action>
+  <action name="actionSelectAfterPlacement">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&lt;SelectAfterPlacement&gt;</string>
+   </property>
+   <property name="toolTip">
+    <string>&lt;SelectAfterPlacement&gt;</string>
    </property>
   </action>
  </widget>

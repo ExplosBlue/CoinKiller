@@ -273,8 +273,26 @@ void Sprite::setRect()
         offsety = +10 - height/2;
         break;
     case 18: // Tile God
-        width = qMax(getNybble(15) * 20, 20);
-        height = qMax(getNybble(13) * 20, 20);
+        width = 20;
+        height = 20;
+
+        if (getNybble(15) > 1)
+            width += (getNybble(15)-1)*20;
+
+        if (getNybble(19) > 1)
+        {
+            width += (getNybble(19)-1)*20;
+            offsetx = -(getNybble(19)-1)*20;
+        }
+
+        if (getNybble(13) > 1)
+            height += (getNybble(13)-1)*20;
+
+        if (getNybble(17) > 1)
+        {
+            height += (getNybble(17)-1)*20;
+            offsety = -(getNybble(17)-1)*20;
+        }
         break;
     case 19: // Desert Crater
         width = 65;
@@ -309,10 +327,30 @@ void Sprite::setRect()
         offsetx = -5;
         offsety = -13;
         break;
+    case 34: // Sledge Bro
+        width = 43;
+        height = 53;
+        offsetx = 44;
+        offsety = 7;
+        break;
     case 35: // Lava Bubble
         width = 20;
         height = 21;
         offsety = 10;
+        break;
+    case 36: // Arc Lava Bubble
+        width = 26;
+        height = 35;
+        offsety = 10;
+        renderOffsetH = 300;
+        renderOffsetW = 300;
+        renderOffsetX = -274;
+        renderOffsetY = -210;
+        if (getNybble(9) == 1)
+        {
+            offsetx = -6;
+            renderOffsetX = 274;
+        }
         break;
     case 38: // Reznor Wheel
         if(getNybble(6) == 1)
@@ -519,6 +557,12 @@ void Sprite::setRect()
         height = 82;
         offsetx = -537;
         break;
+    case 65: // Morton Pipe
+        width = 80;
+        height = 180;
+        offsetx = -40;
+        offsety = -180;
+        break;
     case 66: case 67: // Pipe Cannons
         width = 40;
         height = 80;
@@ -601,6 +645,12 @@ void Sprite::setRect()
         offsetx = -21;
         offsety = -20;
         break;
+    case 91: // Coin Coffer
+        width = 33;
+        height = 33;
+        offsetx = -27;
+        offsety = -13;
+        break;
     case 92: // Grinder
         width = 49;
         height = 49;
@@ -614,34 +664,42 @@ void Sprite::setRect()
         offsety = -21;
         break;
     case 94: // Flipper (One way gate)
-       if (getNybble(5) == 1 || getNybble(5) == 0) //Left Down + Right Down
-       {
-            width = 20;
-            height = 66;
-            offsety = -45;
-       }
-       else if (getNybble(5) == 2 || getNybble(5) == 3) //Right Up + Left Up
-       {
-            width = 20;
-            height = 66;
-       }
-       else if (getNybble(5) == 4 || getNybble(5) == 5) //Up Left + Down Left
-       {
-            width = 62;
-            height = 20;
-       }
-       else //Up Right + Down Right
-       {
-            width = 62;
-            height = 20;
-            offsetx = -42;
-       }
+        {
+            int sizeInc = 0;
+            if (getNybble(4) != 1)
+                sizeInc = 7;
+            switch (getNybble(5))
+            {
+            case 0: case 1:
+                offsety = -40 - sizeInc;
+                Q_FALLTHROUGH();
+            case 2: case 3:
+                width = 20;
+                height = 60 + sizeInc;
+                break;
+            case 6: case 7:
+                offsetx = -40 - sizeInc;
+                Q_FALLTHROUGH();
+            case 4: case 5:
+                width = 60 + sizeInc;
+                height = 20;
+                break;
+            default:
+                break;
+            }
+        }
         break;
     case 95: // Blooper
         width = 28;
         height = 36;
         offsetx = -4;
         offsety = -9;
+        break;
+    case 96: // Blooper Nanny
+        width = 50;
+        height = 50;
+        offsetx = -14;
+        offsety = -16;
         break;
     case 97: // End of Level Flag
         width = 62;
@@ -653,6 +711,16 @@ void Sprite::setRect()
         width = 89;
         height = 41;
         offsety = -20;
+        break;
+    case 102: // Iggy
+        width = 72;
+        height = 71;
+        offsetx = 15;
+        offsety = 89;
+        break;
+    case 104: // Lakitu
+        width = 36;
+        height = 52;
         break;
     case 107: // Path-Controlled Climbable fence
         width = 240;
@@ -707,6 +775,14 @@ void Sprite::setRect()
         height = (2 + getNybble(4)) * 20;
         if (getNybble(10) == 0)
             offsety = -height+20;
+        break;
+    case 116: // Bullet Bill Turret
+        width = 32;
+        height = 20 + (getNybble(9)*20);
+        if (getNybble(9) >= 7)
+            height = 160;
+        offsetx = -6;
+        offsety = -height+20;
         break;
     case 117: // Banzai Bill Launcher
         width = 80;
@@ -828,7 +904,7 @@ void Sprite::setRect()
 
         break;
     case 124: // Mushroom Platform
-        width = 60 + 20*getNybble(6);
+        width = 68 + 20*getNybble(6);
         height = 100 + 20*getNybble(10);
         if (getNybble(8) == 2)
         {
@@ -934,6 +1010,18 @@ void Sprite::setRect()
         offsetx = -5;
         offsety = -6;
         break;
+    case 141: // Larry
+        width = 62;
+        height = 63;
+        offsetx = -35;
+        offsety = -33;
+        break;
+    case 142: // Lemmy
+        width = 63;
+        height = 81;
+        offsetx = -34;
+        offsety = -61;
+        break;
     case 143: // Conveyor Belt Switch
         width = 28;
         height = 42;
@@ -947,21 +1035,23 @@ void Sprite::setRect()
             width = (getNybble(5)-1)*20 + 40;
         height = 22;
         //Down and right
-        if (getNybble(7) == 1)
+        if (getNybble(9) == 1)
         {
             if(getid() == 145)
-                renderOffsetH = 22 + (getNybble(7)*20);
-            renderOffsetW = width - (getNybble(7)*20);
+                renderOffsetH = (getNybble(7)*20);
+            else
+                renderOffsetW = -(getNybble(7)*20);
         }
         else
         {
             if(getid() == 145)
-                renderOffsetH = 22 - (getNybble(7)*20);
-            renderOffsetW = width + (getNybble(7)*20);
+                renderOffsetH = -(getNybble(7)*20);
+            else
+                renderOffsetW = (getNybble(7)*20);
         }
 
-        renderOffsetX = width/2;
-        renderOffsetY = height/2;
+        //renderOffsetX = width/2;
+        //renderOffsetY = height/2;
         break;
     case 146: // Track Controlled Lift
         if(getNybble(15) == 0)
@@ -1059,9 +1149,15 @@ void Sprite::setRect()
         {
             width = 174;
             height = 130;
-            offsetx = -40;
+            offsetx = -80;
             offsety = -54;
         }
+        break;
+    case 155: // Ludwig
+        width = 53;
+        height = 57;
+        offsetx = -52;
+        offsety = -37;
         break;
     case 159: // Spike Top
         if(getNybble(4) == 1)
@@ -1086,6 +1182,12 @@ void Sprite::setRect()
             height = 25;
             offsety = -5;
         }
+        break;
+    case 162: // Morton
+        width = 67;
+        height = 67;
+        offsetx = -38;
+        offsety = 53;
         break;
     case 163: // Climbing Koopa - Vertical
         width = 27;
@@ -1250,21 +1352,41 @@ void Sprite::setRect()
         offsetx = 10 - width/2;
         offsety = +10 - height/2;
         break;
-    case 189: case 190: case 191: case 192: case 193: // Rect Blocks
-        width = getNybble(15)*20+20;
-        if (width == 20) width = 40;
-        height = getNybble(13)*20+20;
-        if (height == 20) height = 40;
-        if (getNybble(9) == 1 || getNybble(9) == 3) { height += 20; offsety-=20; }
-        if (getNybble(9) == 2 || getNybble(9) == 3) height += 20;
-        if (getNybble(9) == 4 || getNybble(9) == 6) { width += 20; offsetx-=20; }
-        if (getNybble(9) == 5 || getNybble(9) == 6) width += 20;
-        if (id == 192)
-        {
-            width += 6;
-            offsetx -= 3;
-        }
+    case 187: // Path controlled rect block
+        width = 20 + getNybble(15)*20;
+        height = 20 + getNybble(13)*20;
         break;
+    case 189: case 190: case 191: case 192: case 193: case 282: // Rect Blocks
+        {
+            width = getNybble(15)*20+20;
+            if (width == 20) width = 40;
+            height = getNybble(13)*20+20;
+            if (height == 20) height = 40;
+            int distance = qMax((getNybble(16)*20), (getNybbleData(4, 5)*20));
+            switch (getNybble(11))
+            {
+            case 1: case 5: case 9: case 13: // Left
+                renderOffsetW = width + distance;
+                renderOffsetX = -(width + distance);
+                break;
+            case 2: case 6: case 10: case 14: // Up
+                renderOffsetH = height + distance;
+                renderOffsetY = -(height + distance);
+                break;
+            case 3: case 7: case 11: case 15: // Down
+                renderOffsetH = height + distance;
+                break;
+            default: // Right
+                renderOffsetW = width + distance;
+                break;
+            }
+            if (id == 192)
+            {
+                width += 6;
+                offsetx -= 3;
+            }
+        break;
+        }
     case 194: // Cheep Cheep
         if(getNybble(5) == 1 || getNybble(5) == 8)
         {
@@ -1310,6 +1432,12 @@ void Sprite::setRect()
         width = 40;
         height = 56;
         offsety = 2;
+        break;
+    case 207: // Underwater Rock
+        width = 80;
+        height = 82;
+        offsetx = 10;
+        offsety = 1;
         break;
     case 209: // Swinging Rope
         width = 20;
@@ -1369,12 +1497,96 @@ void Sprite::setRect()
         offsety = -20;
         break;
     case 215: // Bob-omb Cannon
-        width = 31;
-        height = 32;
-        if (getNybble(5) != 1) offsetx = -1;
-        else offsetx = -10;
-        offsety = -12;
-        break;
+        {
+            switch (getNybble(4))
+            {
+            case 0:
+                width = 31;
+                height = 32;
+                offsetx = -1;
+                offsety = -12;
+                if (getNybble(5) == 1)
+                    offsetx = -10;
+                break;
+            case 1:
+                width = 31;
+                height = 32;
+                offsetx = -1;
+                if (getNybble(5) == 1)
+                    offsetx = -10;
+                break;
+            case 2:
+                width = 31;
+                height = 34;
+                offsetx  = -1;
+                offsety = -9;
+                if (getNybble(5) == 1)
+                {
+                    width = 34;
+                    height = 31;
+                    offsetx = 5;
+                    offsety = 0;
+                }
+                break;
+            case 3:
+                width = 34;
+                height = 31;
+                offsetx = -19;
+                if (getNybble(5) == 1)
+                {
+                    width = 31;
+                    height = 34;
+                    offsetx = -10;
+                    offsety = -9;
+                }
+                break;
+            case 4:
+                width = 34;
+                height = 31;
+                offsetx = -19;
+                break;
+            case 5:
+                width = 34;
+                height = 31;
+                offsetx = 5;
+                break;
+            case 6: case 10: case 11:
+                width = 30;
+                height = 24;
+                offsetx = -20;
+                offsety = 8;
+                break;
+            case 7: case 12: case 13:
+                width = 30;
+                height = 24;
+                offsetx = 10;
+                offsety = 8;
+                break;
+            case 8:
+                width = 32;
+                height = 31;
+                offsetx = -22;
+                if (getNybble(5) == 1)
+                    offsety = 10;
+                break;
+            case 9:
+                width = 32;
+                height = 31;
+                offsetx = 10;
+                if (getNybble(5) == 1)
+                    offsety = 9;
+                break;
+            case 14: case 15:
+                width = 24;
+                height = 30;
+                offsetx = -1;
+                offsety = -10;
+                break;
+            default:
+                break;
+            }
+            break;
+        }
     case 216: // Boss Shutter
         width = 34;
         height = 60;
@@ -1456,8 +1668,8 @@ void Sprite::setRect()
     case 236: // Mega Spiked Ball
         width = 154;
         height = 154;
-        offsetx = -23;
-        offsety = -7;
+        offsetx = 23;
+        offsety = 3;
         break;
     case 240: // Urchin
         if (getNybble(5) != 1)
@@ -1486,9 +1698,27 @@ void Sprite::setRect()
         height = 63;
         offsetx = -41;
         break;
+    case 245: // Wendy
+        width = 55;
+        height = 49;
+        offsetx = -40;
+        offsety = -29;
+        break;
     case 247: // Invisible Bouncy Block
         width = 20 + (getNybble(10)*20);
         height = 20;
+        break;
+    case 248: // Move Once On Ghost House Platform
+        width = getNybble(5)*20 + 40;
+        height = getNybble(6)*20 + 40;
+        break;
+    case 249: // Rotation Controlled Rectangle Lift - Tower
+        width = getNybble(15)*20+60;
+        height = getNybble(13)*20+60;
+        break;
+    case 250: // Rotation Controlled Rectangle Lift - GhostHouse (checkered)
+        width = getNybble(15)*20+60;
+        height = getNybble(13)*20+60;
         break;
     case 251: // Treasure Chest
         width = 48;
@@ -1553,6 +1783,36 @@ void Sprite::setRect()
         width = 60;
         height = 20;
         break;
+    case 268: // Rectangle Lift - Lava
+    {
+        width = 250;
+        height = 80;
+        if (getNybble(13) == 1)
+        {
+            width = 100;
+            height = 603;
+        }
+
+        int distance = qMax((getNybbleData(15, 16)*20), (getNybbleData(4, 5)*20));
+        switch (getNybble(11))
+        {
+        case 1: case 5: case 9: case 13: // Left
+            renderOffsetW = width + distance;
+            renderOffsetX = -(width + distance);
+            break;
+        case 2: case 6: case 10: case 14: // Up
+            renderOffsetH = height + distance;
+            renderOffsetY = -(height + distance);
+            break;
+        case 3: case 7: case 11: case 15: // Down
+            renderOffsetH = height + distance;
+            break;
+        default: // Right
+            renderOffsetW = width + distance;
+            break;
+        }
+        break;
+    }
     case 269: // Gold Ship
         width = 285;
         height = 96;
@@ -1569,10 +1829,17 @@ void Sprite::setRect()
         offsety = 40;
         break;
     case 273: // Coin Roulette Block
-        width = 31;
+        width = 30;
         height = 30;
         offsetx = -5;
         offsety = -5;
+        if (getNybble(13) == 2)
+        {
+            width = 46;
+            height = 46;
+            offsetx = -13;
+            offsety = -13;
+        }
         break;
     case 274: // Flying Gold Block Spawn Point
         width = 28;
@@ -1605,6 +1872,30 @@ void Sprite::setRect()
         width = 280;
         height = 60;
         break;
+    case 283: // Rectangle Lift Larry Battle
+        {
+        width = 60;
+        height = 100;
+        int distance = getNybble(16)*20;
+        switch (getNybble(11))
+        {
+        case 1: case 5: case 9: case 13: // Left
+            renderOffsetW = width + distance;
+            renderOffsetX = -(width + distance);
+            break;
+        case 2: case 6: case 10: case 14: // Up
+            renderOffsetH = height + distance;
+            renderOffsetY = -(height + distance);
+            break;
+        case 3: case 7: case 11: case 15: // Down
+            renderOffsetH = height + distance;
+            break;
+        default: // Right
+            renderOffsetW = width + distance;
+            break;
+        }
+        break;
+        }
     case 284: // Chandelier Lift - Small
         width = 170;
         height = 50;
@@ -1734,6 +2025,56 @@ void Sprite::setRect()
             offsetx = 56;
         }
         break;
+    case 307: // Event Activated Rect Lift - Ruins
+        {
+            width = 80;
+            height = 80;
+
+            int distance = getNybbleData(4, 5)*20;
+            switch (getNybble(11))
+            {
+            case 1: case 5: case 9: case 13: // Left
+                renderOffsetW = width + distance;
+                renderOffsetX = -(width + distance);
+                break;
+            case 2: case 6: case 10: case 14: // Up
+                renderOffsetH = height + distance;
+                renderOffsetY = -(height + distance);
+                break;
+            case 3: case 7: case 11: case 15: // Down
+                renderOffsetH = height + distance;
+                break;
+            default: // Right
+                renderOffsetW = width + distance;
+                break;
+            }
+            break;
+        }
+    case 308: // Event Activated Rect Lift - Sand
+        {
+            width = 120;
+            height = 140;
+
+            int distance = getNybbleData(4, 5)*20;
+            switch (getNybble(11))
+            {
+            case 1: case 5: case 9: case 13: // Left
+                renderOffsetW = width + distance;
+                renderOffsetX = -(width + distance);
+                break;
+            case 2: case 6: case 10: case 14: // Up
+                renderOffsetH = height + distance;
+                renderOffsetY = -(height + distance);
+                break;
+            case 3: case 7: case 11: case 15: // Down
+                renderOffsetH = height + distance;
+                break;
+            default: // Right
+                renderOffsetW = width + distance;
+                break;
+            }
+            break;
+        }
     case 311: // Coin Meteor
         if(getNybble(5) == 1)
         {
@@ -1750,6 +2091,38 @@ void Sprite::setRect()
             offsety = -20-(getNybble(7)*30);
         }
         break;
+    case 313: // Underwater Rectangle Lift
+        {
+            if (getNybble(13) == 1)
+            {
+                width = 80;
+                height = 180;
+            }
+            else
+            {
+                width = 40;
+                height = 220;
+            }
+            int distance = getNybbleData(4, 5)*20;
+            switch (getNybble(11))
+            {
+            case 1: case 5: case 9: case 13: // Left
+                renderOffsetW = width + distance;
+                renderOffsetX = -(width + distance);
+                break;
+            case 2: case 6: case 10: case 14: // Up
+                renderOffsetH = height + distance;
+                renderOffsetY = -(height + distance);
+                break;
+            case 3: case 7: case 11: case 15: // Down
+                renderOffsetH = height + distance;
+                break;
+            default: // Right
+                renderOffsetW = width + distance;
+                break;
+            }
+            break;
+        }
     case 314: // Ruins rickshaw
         if (getNybble(5) != 1)
         {
@@ -1765,6 +2138,52 @@ void Sprite::setRect()
             offsetx = -90;
             offsety = -80;
         }
+        break;
+    case 315: // Peach
+        width = 33;
+        height = 56;
+        offsetx = 5;
+        offsety = 24;
+        break;
+    case 318: // Event Controlled Rectangle Lift
+        {
+            width = 320;
+            switch (getNybble(13))
+            {
+            case 1:
+                height = 40;
+                break;
+            case 2:
+                height = 80;
+                break;
+            default:
+                height = 60;
+                break;
+            }
+            int distance = getNybbleData(4, 5)*20;
+            switch (getNybble(11))
+            {
+            case 1: case 5: case 9: case 13: // Left
+                renderOffsetW = width + distance;
+                renderOffsetX = -(width + distance);
+                break;
+            case 2: case 6: case 10: case 14: // Up
+                renderOffsetH = height + distance;
+                renderOffsetY = -(height + distance);
+                break;
+            case 3: case 7: case 11: case 15: // Down
+                renderOffsetH = height + distance;
+                break;
+            default: // Right
+                renderOffsetW = width + distance;
+                break;
+            }
+            break;
+        }
+    case 321: // Snow Mushroom Platform
+        width = 68 + 20*getNybble(6);
+        height = 100 + 20*getNybble(9);
+        offsetx = 10 - (width / 2);
         break;
     case 322: // Big Grinder
         width = 86;
@@ -1798,7 +2217,7 @@ void Sprite::setNybble(qint32 id, quint8 nbr)
     else spriteData[id/2] = ((spriteData[id/2] & 0xF0) | nbr);
 }
 
-qint32 Sprite::getNybbleData(qint32 startNybble, qint32 endNybble)
+qint32 Sprite::getNybbleData(qint32 startNybble, qint32 endNybble) const
 {
     qint32 data = 0;
 
@@ -1855,6 +2274,38 @@ Entrance::Entrance(Entrance *entr)
     settings = entr->getSettings();
     unk1 = entr->getUnk1();
     unk2 = entr->getUnk2();
+    setRect();
+}
+
+void Entrance::setRect()
+{
+    width = 20;
+    height = 20;
+    offsetx = 0;
+    offsety = 0;
+
+    switch(entrType)
+    {
+    case 3: case 4: // Pipe up & Pipe down
+        width = 40;
+        break;
+    case 5: case 6: // Pipe left & Pipe right
+        height = 40;
+        break;
+    case 11: case 13: // Mispositioned Entrances
+        offsetx = -10;
+        offsety = -20;
+        break;
+    case 12: // Mispositioned Entrance
+        offsety = -20;
+        break;
+    default:
+        width = 20;
+        height = 20;
+        offsetx = 0;
+        offsety = 0;
+        break;
+    }
 }
 
 // Format: 2:ID:Type:X:Y:DestArea:DestEntr:CamX:CamY:Settings

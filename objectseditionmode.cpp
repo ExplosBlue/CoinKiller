@@ -31,7 +31,8 @@ void ObjectsEditonMode::mouseDown(int x, int y, Qt::MouseButtons buttons, Qt::Ke
             level->objects[selLayer].append(bgdatobj);
             newObject = bgdatobj;
             creatNewObject = true;
-            selectedObjects.append(bgdatobj);
+            if (selectAfterPlacement)
+                selectedObjects.append(bgdatobj);
         }
         else if (drawType == 1)
         {
@@ -44,19 +45,24 @@ void ObjectsEditonMode::mouseDown(int x, int y, Qt::MouseButtons buttons, Qt::Ke
             if (ypos < 0) ypos = 0;
             spr->setPosition(xpos, ypos);
             level->sprites.append(spr);
-            selectedObjects.append(spr);
+            level->sortCameraLimits(spr);
+            if (selectAfterPlacement)
+                selectedObjects.append(spr);
         }
         else if (drawType == 2)
         {
             Entrance* entr = level->newEntrance(x-10, y-10);
+            entr->setRect();
             level->entrances.append(entr);
-            selectedObjects.append(entr);
+            if (selectAfterPlacement)
+                selectedObjects.append(entr);
         }
         else if (drawType == 3)
         {
             Zone* zone = level->newZone(x-200, y-120);
             level->zones.append(zone);
-            selectedObjects.append(zone);
+            if (selectAfterPlacement)
+                selectedObjects.append(zone);
         }
         else if (drawType == 4)
         {
@@ -64,7 +70,8 @@ void ObjectsEditonMode::mouseDown(int x, int y, Qt::MouseButtons buttons, Qt::Ke
             level->locations.append(loc);
             newObject = loc;
             creatNewObject = true;
-            selectedObjects.append(loc);
+            if (selectAfterPlacement)
+                selectedObjects.append(loc);
         }
         else if (drawType == 5)
         {
@@ -72,7 +79,8 @@ void ObjectsEditonMode::mouseDown(int x, int y, Qt::MouseButtons buttons, Qt::Ke
             level->paths.append(path);
             PathNode* node = new PathNode(qMax(toNext10(x-10), 0), qMax(toNext10(y-10), 0), 0, 0, 0, path);
             path->insertNode(node);
-            selectedObjects.append(node);
+            if (selectAfterPlacement)
+                selectedObjects.append(node);
         }
         else if (drawType == 6)
         {
@@ -80,7 +88,8 @@ void ObjectsEditonMode::mouseDown(int x, int y, Qt::MouseButtons buttons, Qt::Ke
             level->progressPaths.append(path);
             ProgressPathNode* node = new ProgressPathNode(qMax(toNext10(x-10), 0), qMax(toNext10(y-10), 0), path);
             path->insertNode(node);
-            selectedObjects.append(node);
+            if (selectAfterPlacement)
+                selectedObjects.append(node);
         }
 
         checkEmits();
@@ -848,19 +857,20 @@ void ObjectsEditonMode::paste(int currX, int currY, int currW, int currH)
             for (int i=0; i<12; i++) newSpr->setByte(i, params[i+4].toUInt());
             newSpr->setRect();
             level->sprites.append(newSpr);
+            level->sortCameraLimits(newSpr);
             selectedObjects.append(newSpr);
             break;
         }
         case 2: // Entrance
         {
             Entrance* newEntr = new Entrance(params[3].toInt()+pOffsetX, params[4].toInt()+pOffsetY, params[7].toInt(), params[8].toInt(), params[1].toInt(), params[5].toInt(), params[6].toInt(), params[2].toInt(), params[9].toInt(), params[10].toInt(), params[11].toInt());
+            newEntr->setRect();
             level->entrances.append(newEntr);
             selectedObjects.append(newEntr);
             break;
         }
         case 3: // Zone
         {
-            // This positions the zone wrong TODO: Figure out how to offset correctly
             Zone* newZone = new Zone(params[1].toInt()+pOffsetX, params[2].toInt()+pOffsetY, params[3].toInt(), params[4].toInt(), params[5].toInt(), params[6].toInt(), params[7].toInt(), params[8].toInt(), params[9].toInt());
 
             newZone->setUpperBound(params[10].toInt());
