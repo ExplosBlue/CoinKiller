@@ -7,6 +7,7 @@
 #include <QPaintEvent>
 #include <QResizeEvent>
 #include <QTabWidget>
+#include <QSpacerItem>
 
 ZoneEditorWidget::ZoneEditorWidget(QList<Zone*> *zones)
 {
@@ -18,12 +19,19 @@ ZoneEditorWidget::ZoneEditorWidget(QList<Zone*> *zones)
     loadMusicIDs();
 
     zoneList = new QListWidget();
+    zoneList->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     connect(zoneList, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(handleZoneListIndexChange(QListWidgetItem*)));
 
     selectContentsBtn = new QPushButton(SettingsManager::getInstance()->getTranslation("LevelEditor", "selectZoneContents"), this);
     connect(selectContentsBtn, SIGNAL(clicked(bool)), this, SLOT(handleSelectContentsClicked()));
 
+    screenshotBtn = new QPushButton(SettingsManager::getInstance()->getTranslation("LevelEditor", "screenshotZone"), this);
+    connect(screenshotBtn, SIGNAL(clicked(bool)), this, SLOT(handleScreenshotClicked()));
+
     settingsTabs = new QTabWidget();
+    QSizePolicy policy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
+    policy.setVerticalStretch(0);
+    settingsTabs->setSizePolicy(policy);
 
     id = new QSpinBox();
     id->setRange(0, 255);
@@ -88,7 +96,10 @@ ZoneEditorWidget::ZoneEditorWidget(QList<Zone*> *zones)
 
     layout->addWidget(zoneList);
 
-    layout->addWidget(selectContentsBtn);
+    QHBoxLayout* btnsLayout = new QHBoxLayout();
+    btnsLayout->addWidget(selectContentsBtn);
+    btnsLayout->addWidget(screenshotBtn);
+    layout->addLayout(btnsLayout);
 
     generalTab = new QWidget();
     QGridLayout* generalTabLayout = new QGridLayout();
@@ -109,6 +120,8 @@ ZoneEditorWidget::ZoneEditorWidget(QList<Zone*> *zones)
     generalTabLayout->addWidget(new QLabel("Unknown 1:"), 4, 0, 1, 1, Qt::AlignRight);
     generalTabLayout->addWidget(unk1, 4, 1);
 
+    generalTabLayout->addItem(new QSpacerItem(0, 0, QSizePolicy::Minimum, QSizePolicy::MinimumExpanding), 5, 0);
+
     generalTab->setLayout(generalTabLayout);
 
     boundsTab  = new QWidget();
@@ -128,6 +141,8 @@ ZoneEditorWidget::ZoneEditorWidget(QList<Zone*> *zones)
 
     boundsTabLayout->addWidget(new QLabel("Unknown Lower Bound:"), 4, 0, 1, 1, Qt::AlignRight);
     boundsTabLayout->addWidget(unkLowerBound, 4, 1);
+
+    boundsTabLayout->addItem(new QSpacerItem(0, 0, QSizePolicy::Minimum, QSizePolicy::MinimumExpanding), 5, 0);
 
     boundsTab->setLayout(boundsTabLayout);
 
@@ -267,12 +282,11 @@ void ZoneEditorWidget::updateList()
 
 void ZoneEditorWidget::updateInfo()
 {
+    settingsTabs->setHidden(!editingAZone);
+    selectContentsBtn->setHidden(!editingAZone);
+
     if (editingAZone == false)
-    {
-        settingsTabs->setHidden(true);
         return;
-    }
-    settingsTabs->setHidden(false);
 
     handleChanges = false;
     id->setValue(editZone->getid());
@@ -407,4 +421,10 @@ void ZoneEditorWidget::handleSelectContentsClicked()
 {
     if (!handleChanges) return;
     emit selectZoneContents(editZone);
+}
+
+void ZoneEditorWidget::handleScreenshotClicked()
+{
+    if (!handleChanges) return;
+    emit screenshot(QRect(editZone->getx(), editZone->gety(), editZone->getwidth(), editZone->getheight()));
 }

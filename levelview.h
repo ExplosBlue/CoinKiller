@@ -68,6 +68,7 @@ signals:
 public slots:
     void selectObj(Object* obj);
     void selectZoneContents(Zone* zone);
+    void screenshot(QRect rect);
 
 protected:
     void paintEvent(QPaintEvent *) Q_DECL_OVERRIDE;
@@ -78,6 +79,9 @@ protected:
     void keyPressEvent(QKeyEvent *) Q_DECL_OVERRIDE;
 
 private:
+
+    void paint(QPainter& painter, QRect rect, float zoomLvl, bool selections);
+
     Level* level;
 
     QRect drawrect;

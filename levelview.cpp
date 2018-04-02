@@ -57,14 +57,29 @@ LevelView::~LevelView()
     delete objectEditionMode;
 }
 
+
+
 void LevelView::paintEvent(QPaintEvent* evt)
 {
     QPainter painter(this);
-    painter.scale(zoom,zoom);
+    paint(painter, evt->rect().adjusted(0,0,20,20), zoom, true);
+    emit updateMinimap(drawrect);
+}
 
-    drawrect = QRect(evt->rect().x()/zoom, evt->rect().y()/zoom, evt->rect().width()/zoom+20, evt->rect().height()/zoom+20);
+void LevelView::screenshot(QRect rect)
+{
+    QImage img(rect.size(), QImage::Format_RGBA8888);
+    QPainter painter(&img);
+    painter.translate(-rect.x(), -rect.y());
+    paint(painter, rect, 1.0f, false);
+    QApplication::clipboard()->setImage(img);
+}
 
-    //qDebug("draw %d,%d %d,%d", drawrect.x(), drawrect.y(), drawrect.width(), drawrect.height());
+void LevelView::paint(QPainter& painter, QRect rect, float zoomLvl, bool selections)
+{
+    painter.scale(zoomLvl,zoomLvl);
+
+    drawrect = QRect(rect.x()/zoomLvl, rect.y()/zoomLvl, rect.width()/zoomLvl, rect.height()/zoomLvl);
 
     painter.fillRect(drawrect, backgroundColor);
     tileGrid.clear();
@@ -420,6 +435,7 @@ void LevelView::paintEvent(QPaintEvent* evt)
             }
         }
     }
+
     // Render Entrances
     for (int i = 0; i < level->entrances.size(); i++)
     {
@@ -546,7 +562,8 @@ void LevelView::paintEvent(QPaintEvent* evt)
     }
 
     // Render Edition Mode Stuff
-    mode->render(&painter);
+    if (selections)
+        mode->render(&painter);
 
     // Render Grid
     if (grid)
@@ -607,8 +624,6 @@ void LevelView::paintEvent(QPaintEvent* evt)
 
         painter.setRenderHint(QPainter::Antialiasing);
     }
-
-    emit updateMinimap(drawrect);
 }
 
 

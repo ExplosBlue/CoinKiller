@@ -62,8 +62,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>1184</width>
-              <height>212</height>
+              <width>1211</width>
+              <height>118</height>
              </rect>
             </property>
            </widget>
@@ -81,8 +81,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>90</width>
-          <height>580</height>
+          <width>68</width>
+          <height>620</height>
          </rect>
         </property>
        </widget>
@@ -97,7 +97,7 @@
      <x>0</x>
      <y>0</y>
      <width>1305</width>
-     <height>36</height>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -496,10 +496,18 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>&lt;SelectAfterPlacement&gt;</string>
+    <string>&lt;S&amp;electAfterPlacement&gt;</string>
    </property>
    <property name="toolTip">
     <string>&lt;SelectAfterPlacement&gt;</string>
+   </property>
+  </action>
+  <action name="actionTakeScreenshot">
+   <property name="text">
+    <string>Take Screenshot</string>
+   </property>
+   <property name="toolTip">
+    <string>Take Screenshot</string>
    </property>
   </action>
  </widget>

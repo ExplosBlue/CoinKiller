@@ -40,6 +40,7 @@ signals:
     void selectedZoneChanged(Object* zone);
     void selectZoneContents(Zone* zone);
     void editMade();
+    void screenshot(QRect);
 
 private:
     QListWidget* zoneList;
@@ -47,6 +48,7 @@ private:
     QTabWidget* settingsTabs;
 
     QPushButton* selectContentsBtn;
+    QPushButton* screenshotBtn;
 
     QSpinBox* id;
     QComboBox* multiplayerTracking;
@@ -105,6 +107,7 @@ private slots:
     void handleBgXPosChanged(int val);
     void handleBgYPosChanged(int val);
     void handleSelectContentsClicked();
+    void handleScreenshotClicked();
 };
 
 #endif // ZONEEDITORWIDGET_H

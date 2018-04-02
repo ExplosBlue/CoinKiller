@@ -630,6 +630,7 @@ void LevelEditorWindow::loadArea(int id, bool closeLevel, bool init)
     connect(zoneEditor, SIGNAL(selectedZoneChanged(Object*)), levelView, SLOT(selectObj(Object*)));
     connect(zoneEditor, SIGNAL(selectZoneContents(Zone*)), levelView, SLOT(selectZoneContents(Zone*)));
     connect(zoneEditor, SIGNAL(editMade()), this, SLOT(handleEditMade()));
+    connect(zoneEditor, SIGNAL(screenshot(QRect)), levelView, SLOT(screenshot(QRect)));
 
     // Setup Location Editor
     locationEditor = new LocationEditorWidget(&level->locations);

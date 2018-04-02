@@ -80,6 +80,7 @@ selectZoneContents=Inhalt auswählen
 setBgColor=Hintergrundfarbe ändern
 resetBgColor=rücksetzen farbe ändern
 selectAfterPlacement=Select Objects when Placed
+screenshotZone=Screenshot
 
 [TilesetEditor]
 tileset=Tileset
