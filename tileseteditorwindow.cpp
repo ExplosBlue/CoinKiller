@@ -958,6 +958,7 @@ void TilesetEditorWindow::on_actionExportImage_triggered()
     QString filename = QFileDialog::getSaveFileName(this, "Export Tileset Image", QDir::currentPath(), "PNG Files (*.png)");
 
     QImage img = QImage(420, 420, tileset->getImage()->format());
+    img.fill(QColor(0,0,0,0));
     QPainter painter;
     painter.begin(&img);
 
