@@ -150,6 +150,7 @@
     <addaction name="actionSetBackgroundColor"/>
     <addaction name="actionResetBackgroundColor"/>
     <addaction name="actionSelectAfterPlacement"/>
+    <addaction name="actionHideStatusbar"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -502,12 +503,12 @@
     <string>&lt;SelectAfterPlacement&gt;</string>
    </property>
   </action>
-  <action name="actionTakeScreenshot">
-   <property name="text">
-    <string>Take Screenshot</string>
+  <action name="actionHideStatusbar">
+   <property name="checkable">
+    <bool>true</bool>
    </property>
-   <property name="toolTip">
-    <string>Take Screenshot</string>
+   <property name="text">
+    <string>&lt;Hide Statusbar&gt;</string>
    </property>
   </action>
  </widget>

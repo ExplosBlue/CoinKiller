@@ -284,6 +284,7 @@ void ZoneEditorWidget::updateInfo()
 {
     settingsTabs->setHidden(!editingAZone);
     selectContentsBtn->setHidden(!editingAZone);
+    screenshotBtn->setHidden(!editingAZone);
 
     if (editingAZone == false)
         return;

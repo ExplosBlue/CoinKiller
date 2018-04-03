@@ -68,11 +68,11 @@ void LevelView::paintEvent(QPaintEvent* evt)
 
 void LevelView::screenshot(QRect rect)
 {
-    QImage img(rect.size(), QImage::Format_RGBA8888);
-    QPainter painter(&img);
+    QPixmap pix(rect.size());
+    QPainter painter(&pix);
     painter.translate(-rect.x(), -rect.y());
     paint(painter, rect, 1.0f, false);
-    QApplication::clipboard()->setImage(img);
+    QApplication::clipboard()->setPixmap(pix);
 }
 
 void LevelView::paint(QPainter& painter, QRect rect, float zoomLvl, bool selections)
@@ -705,6 +705,14 @@ void LevelView::moveEvent(QMoveEvent *)
 
 void LevelView::keyPressEvent(QKeyEvent* evt)
 {
+    // Allow scrolling on ScrollView
+    if (evt->key() == Qt::Key_Up || evt->key() == Qt::Key_Down ||
+        evt->key() == Qt::Key_Left || evt->key() == Qt::Key_Right)
+    {
+        evt->ignore();
+        return;
+    }
+
     mode->keyPress(evt);
 }
 

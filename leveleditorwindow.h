@@ -122,6 +122,8 @@ private slots:
 
     void on_actionSelectAfterPlacement_toggled(bool arg1);
 
+    void on_actionHideStatusbar_toggled(bool hide);
+
 private:
     Ui::LevelEditorWindow *ui;
 

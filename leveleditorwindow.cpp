@@ -25,6 +25,7 @@
 #include <QMessageBox>
 #include <QScrollBar>
 #include <QColorDialog>
+#include <QStatusBar>
 
 LevelEditorWindow::LevelEditorWindow(LevelManager* lvlMgr, int initialArea) :
     QMainWindow(lvlMgr->getParent()),
@@ -97,6 +98,7 @@ LevelEditorWindow::LevelEditorWindow(LevelManager* lvlMgr, int initialArea) :
     ui->actionCheckerboard->setChecked(settings->get("checkerboard", false).toBool());
     ui->actionRenderLiquids->setChecked(settings->get("renderLiquids", true).toBool());
     ui->actionRenderCameraLimits->setChecked(settings->get("renderCameraLimits", true).toBool());
+    ui->actionHideStatusbar->setChecked(settings->get("lvleditorHideStatusBar", false).toBool());
 
     editStatus->setText("Ready!"); // todo: do translation shit
 }
@@ -203,6 +205,9 @@ void LevelEditorWindow::loadTranslations()
 
     ui->actionSelectAfterPlacement->setText(settings->getTranslation("LevelEditor", "selectAfterPlacement"));
     ui->actionSelectAfterPlacement->setToolTip(settings->getTranslation("LevelEditor", "selectAfterPlacement"));
+
+    ui->actionHideStatusbar->setText(settings->getTranslation("LevelEditor", "hideStatusbar"));
+    ui->actionHideStatusbar->setToolTip(settings->getTranslation("LevelEditor", "hideStatusbar"));
 }
 
 // Actions
@@ -802,6 +807,12 @@ void LevelEditorWindow::on_actionResetBackgroundColor_triggered()
         levelView->setBackgroundColor(QColor(119,136,153));
         settings->setColor("lewColor", QColor(119,136,153));
     }
+}
+
+void LevelEditorWindow::on_actionHideStatusbar_toggled(bool hide)
+{
+    settings->set("lvleditorHideStatusBar", hide);
+    ui->statusbar->setHidden(hide);
 }
 
 void LevelEditorWindow::closeEvent(QCloseEvent *event)

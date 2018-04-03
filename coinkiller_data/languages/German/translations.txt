@@ -78,9 +78,10 @@ renderLiquids=Flüssigkeiten darstellen
 renderCameraLimits=Render Camera Limits
 selectZoneContents=Inhalt auswählen
 setBgColor=Hintergrundfarbe ändern
-resetBgColor=rücksetzen farbe ändern
-selectAfterPlacement=Select Objects when Placed
+resetBgColor=Hintergrundfarbe zurücksetzen
+selectAfterPlacement=Objekte nach platzieren auswählen
 screenshotZone=Screenshot
+hideStatusbar=Statuszeile Ausblenden
 
 [TilesetEditor]
 tileset=Tileset
