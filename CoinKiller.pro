@@ -4,9 +4,16 @@
 #
 #-------------------------------------------------
 
+KDE_BLUR = 0    # 1 to enable blur (requires KDE)
+
 QT       += core gui\
             xml\
             network
+
+greaterThan(KDE_BLUR, 0) {
+    QT      += KWindowSystem
+    DEFINES += USE_KDE_BLUR
+}
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 

@@ -27,6 +27,10 @@
 #include <QColorDialog>
 #include <QStatusBar>
 
+#ifdef USE_KDE_BLUR
+    #include <KF5/KWindowSystem/KWindowEffects>
+#endif
+
 LevelEditorWindow::LevelEditorWindow(LevelManager* lvlMgr, int initialArea) :
     QMainWindow(lvlMgr->getParent()),
     ui(new Ui::LevelEditorWindow)
@@ -101,6 +105,26 @@ LevelEditorWindow::LevelEditorWindow(LevelManager* lvlMgr, int initialArea) :
     ui->actionHideStatusbar->setChecked(settings->get("lvleditorHideStatusBar", false).toBool());
 
     editStatus->setText("Ready!"); // todo: do translation shit
+
+#ifdef USE_KDE_BLUR
+    if (KWindowEffects::isEffectAvailable(KWindowEffects::BlurBehind))
+    {
+        setAttribute(Qt::WA_TranslucentBackground);
+
+        QString style =
+            "QToolBar, QStatusBar, QMenuBar, #sidebar { background-color: #31363b; }"
+            "#centralwidget { background-color: rgba(0, 0, 0, 50%); }";
+
+        setStyleSheet(style);
+
+        KWindowEffects::enableBlurBehind(winId(), true);
+    }
+
+    ui->levelViewArea->setFrameShape(QScrollArea::NoFrame);
+    ui->levelViewArea->setLineWidth(0);
+    ui->levelViewArea->setFrameShadow(QScrollArea::Plain);
+#endif
+
 }
 
 LevelEditorWindow::~LevelEditorWindow()
@@ -600,6 +624,14 @@ void LevelEditorWindow::loadArea(int id, bool closeLevel, bool init)
     levelView->toggleRenderLiquids(ui->actionRenderLiquids->isChecked());
     levelView->toggleRenderCameraLimits(ui->actionRenderCameraLimits->isChecked());
     levelView->setBackgroundColor(settings->getColor("lewColor"));
+
+#ifdef USE_KDE_BLUR
+    QString style =
+        "QToolBar, QStatusBar, QMenuBar, #sidebar { background-color: #31363b; }"
+        "#centralwidget { background-color: rgba(0, 0, 0, 50%); }";
+    setStyleSheet(style);
+#endif
+
     levelView->objEditionModePtr()->toggleSelectAfterPlacement(settings->get("SelectAfterPlacement").toBool());
     levelView->toggleSprites(ui->actionToggleSprites->isChecked());
     levelView->togglePaths(ui->actionTogglePaths->isChecked());
@@ -790,7 +822,12 @@ void LevelEditorWindow::scrollTo(int x, int y)
 
 void LevelEditorWindow::on_actionSetBackgroundColor_triggered()
 {
-    QColor bgColor = QColorDialog::getColor(settings->getColor("lewColor", QColor(119,136,153)), this, "Select Background Color",  QColorDialog::DontUseNativeDialog);
+    QColorDialog::ColorDialogOptions options = QColorDialog::DontUseNativeDialog;
+#ifdef USE_KDE_BLUR
+    options |= QColorDialog::ShowAlphaChannel;
+#endif
+
+    QColor bgColor = QColorDialog::getColor(settings->getColor("lewColor", QColor(119,136,153)), this, "Select Background Color", options);
     if(bgColor.isValid())
     {
         levelView->setBackgroundColor(bgColor);

@@ -62,7 +62,7 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>1211</width>
+              <width>750</width>
               <height>118</height>
              </rect>
             </property>
@@ -73,6 +73,15 @@
        </layout>
       </widget>
       <widget class="QScrollArea" name="levelViewArea">
+       <property name="frameShape">
+        <enum>QFrame::StyledPanel</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Sunken</enum>
+       </property>
+       <property name="lineWidth">
+        <number>1</number>
+       </property>
        <property name="widgetResizable">
         <bool>true</bool>
        </property>
@@ -81,7 +90,7 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>68</width>
+          <width>529</width>
           <height>620</height>
          </rect>
         </property>
@@ -508,7 +517,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>&lt;Hide Statusbar&gt;</string>
+    <string>&lt;&amp;Hide Statusbar&gt;</string>
    </property>
   </action>
  </widget>

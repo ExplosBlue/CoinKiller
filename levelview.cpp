@@ -49,6 +49,10 @@ LevelView::LevelView(QWidget *parent, Level* level) : QWidget(parent)
     renderCameraLimits = false;
     renderSprites = true;
     renderPaths = true;
+
+#ifdef USE_KDE_BLUR
+    setBackgroundColor(QColor(0,0,0,0));
+#endif
 }
 
 LevelView::~LevelView()
@@ -82,6 +86,7 @@ void LevelView::paint(QPainter& painter, QRect rect, float zoomLvl, bool selecti
     drawrect = QRect(rect.x()/zoomLvl, rect.y()/zoomLvl, rect.width()/zoomLvl, rect.height()/zoomLvl);
 
     painter.fillRect(drawrect, backgroundColor);
+    //painter.fillRect(drawrect, QColor(0,0,0,0));
     tileGrid.clear();
 
     // Render Checkerboard
