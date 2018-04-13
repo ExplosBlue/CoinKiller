@@ -23,6 +23,7 @@
 #include "game.h"
 #include "settingsmanager.h"
 #include "filedownloader.h"
+#include "clickablelabel.h"
 
 namespace Ui {
 class MainWindow;
@@ -64,6 +65,10 @@ private slots:
 
     void on_maximisedCheckbox_toggled(bool checked);
 
+    void on_statusLabel_clicked();
+
+    void on_loadLastCheckbox_clicked(bool checked);
+
 private:
     Ui::MainWindow *ui;
 
@@ -74,6 +79,9 @@ private:
 
     FileDownloader* sdDownloader;
 
+    ClickableLabel* statusLabel;
+
+    void loadGame(const QString& path);
     void setGameLoaded(bool loaded);
     bool startupClose = false;
     bool checkForMissingFiles();

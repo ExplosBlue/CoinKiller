@@ -18,6 +18,18 @@
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QVBoxLayout" name="verticalLayout">
+    <property name="leftMargin">
+     <number>3</number>
+    </property>
+    <property name="topMargin">
+     <number>3</number>
+    </property>
+    <property name="rightMargin">
+     <number>3</number>
+    </property>
+    <property name="bottomMargin">
+     <number>3</number>
+    </property>
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
@@ -123,18 +135,25 @@
          </layout>
         </item>
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout">
-          <item>
+         <layout class="QGridLayout" name="gridLayout">
+          <item row="0" column="0">
            <widget class="QCheckBox" name="nightModeCheckbox">
             <property name="text">
              <string>&lt;NightMode&gt;</string>
             </property>
            </widget>
           </item>
-          <item>
+          <item row="0" column="1">
            <widget class="QCheckBox" name="maximisedCheckbox">
             <property name="text">
              <string>&lt;Maximised&gt;</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QCheckBox" name="loadLastCheckbox">
+            <property name="text">
+             <string>&lt;LoadLastOnStart&gt;</string>
             </property>
            </widget>
           </item>
@@ -142,7 +161,7 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="tab">
+      <widget class="QWidget" name="toolsTab">
        <attribute name="title">
         <string>&lt;Tools&gt;</string>
        </attribute>
@@ -166,18 +185,18 @@
      <x>0</x>
      <y>0</y>
      <width>436</width>
-     <height>36</height>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
     <property name="title">
-     <string>&lt;&amp;File&gt;</string>
+     <string>&lt;F&amp;ile&gt;</string>
     </property>
     <addaction name="actionLoadUnpackedROMFS"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
-     <string>&lt;&amp;Help&gt;</string>
+     <string>&lt;He&amp;lp&gt;</string>
     </property>
     <addaction name="actionAbout"/>
    </widget>
@@ -188,6 +207,9 @@
   <action name="actionLoadUnpackedROMFS">
    <property name="text">
     <string>&lt;&amp;Load unpacked ROMFS&gt;</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
    </property>
   </action>
   <action name="actionAbout">

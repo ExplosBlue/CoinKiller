@@ -49,6 +49,7 @@ LevelEditorWindow::LevelEditorWindow(LevelManager* lvlMgr, int initialArea) :
     ui->toolBar->insertWidget(ui->actionAddArea, areaSelector);
     connect(areaSelector, SIGNAL(currentIndexChanged(int)), this, SLOT(handleAreaIndexChange(int)));
 
+    editStatus = new QLabel(this);
     ui->statusbar->addWidget(editStatus);
     //connect(editStatus, SIGNAL(updateLevelLabel(QString)), editStatus, SLOT(setText(QString)));
 
@@ -110,14 +111,8 @@ LevelEditorWindow::LevelEditorWindow(LevelManager* lvlMgr, int initialArea) :
     if (KWindowEffects::isEffectAvailable(KWindowEffects::BlurBehind))
     {
         setAttribute(Qt::WA_TranslucentBackground);
-
-        QString style =
-            "QToolBar, QStatusBar, QMenuBar, #sidebar { background-color: #31363b; }"
-            "#centralwidget { background-color: rgba(0, 0, 0, 50%); }";
-
-        setStyleSheet(style);
-
         KWindowEffects::enableBlurBehind(winId(), true);
+        setBlurStylesheet();
     }
 
     ui->levelViewArea->setFrameShape(QScrollArea::NoFrame);
@@ -626,10 +621,7 @@ void LevelEditorWindow::loadArea(int id, bool closeLevel, bool init)
     levelView->setBackgroundColor(settings->getColor("lewColor"));
 
 #ifdef USE_KDE_BLUR
-    QString style =
-        "QToolBar, QStatusBar, QMenuBar, #sidebar { background-color: #31363b; }"
-        "#centralwidget { background-color: rgba(0, 0, 0, 50%); }";
-    setStyleSheet(style);
+    setBlurStylesheet();
 #endif
 
     levelView->objEditionModePtr()->toggleSelectAfterPlacement(settings->get("SelectAfterPlacement").toBool());
@@ -881,3 +873,16 @@ void LevelEditorWindow::closeEvent(QCloseEvent *event)
     }
     else event->accept();
 }
+
+#ifdef USE_KDE_BLUR
+void LevelEditorWindow::setBlurStylesheet()
+{
+    QString bgColor = QWidget::palette().color(QWidget::backgroundRole()).name();
+
+    QString style =
+        "QToolBar, QStatusBar, QMenuBar, #sidebar, #splitter::handle { background-color: " + bgColor + "; }"
+        "#centralwidget { background-color: rgba(0,0,0,0); }";
+
+    setStyleSheet(style);
+}
+#endif

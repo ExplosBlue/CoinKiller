@@ -2402,13 +2402,19 @@
     </list>
     <value nybble="21-22" title="Rotation ID"/>
   </sprite>
-  <sprite id="221" name="! Switch" notes="See ? Switch for settings">
+  <sprite id="221" name="! Switch" notes="Doesn't seem to have &quot;Triggering Flag&quot;.">
     <value nybble="1-2" title="Target Event ID"/>
-    <checkbox nybble="5" title="Shift Half a Tile Right" comment="Shifts the switch half a tile to the right."/>
+    <checkbox nybble="5" title="Shift Half a Tile Right" comment="Shifts the switch half a tile to the right. Unused port from NSMBW."/>
     <checkbox nybble="6" title="Upside Down" comment="Makes the switch upside down."/>
     <checkbox nybble="8" title="Reusable" comment="Allows the switch to be used multiple times."/>
     <checkbox nybble="9" title="Not Timed" comment="Disables the timer on the switch."/>
-    <checkbox nybble="11" title="Gravity Affected" comment="Causes the switch to fall if nothing is below it."/>
+    <list nybble="11" title="Behavior">
+      <entry value="0">Normal</entry>
+      <entry value="1">Gravity Affected</entry>
+      <entry value="8">Unknown 8</entry>
+      <entry value="9">No Music Interrupt</entry>
+      <entry value="10">Gravity Affected and No Music Interrupt</entry>
+    </list>
     <value nybble="12" title="Location ID"/>
   </sprite>
   <sprite id="222" name="Brick Block containing ! Switch" notes="See ? Switch for settings">

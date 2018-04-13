@@ -3,9 +3,15 @@
 
 #include <QHash>
 
-Game::Game(FilesystemBase* fs)
+Game::Game(const QString& path)
 {
-    this->fs = fs;
+    this->fs = new ExternalFilesystem(path);
+    this->path = path;
+}
+
+Game::~Game()
+{
+    delete fs;
 }
 
 

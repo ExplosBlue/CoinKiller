@@ -56,7 +56,8 @@ SOURCES += main.cpp\
     sarcexplorerwindow.cpp \
     newtilesetdialog.cpp \
     imagecache.cpp \
-    spriteidswidget.cpp
+    spriteidswidget.cpp \
+    clickablelabel.cpp
 
 HEADERS  += mainwindow.h \
     filesystembase.h \
@@ -97,7 +98,8 @@ HEADERS  += mainwindow.h \
     sarcexplorerwindow.h \
     newtilesetdialog.h \
     imagecache.h \
-    spriteidswidget.h
+    spriteidswidget.h \
+    clickablelabel.h
 
 FORMS    += mainwindow.ui \
     leveleditorwindow.ui \

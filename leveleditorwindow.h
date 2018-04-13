@@ -148,7 +148,7 @@ private:
 
     QComboBox* areaSelector;
 
-    QLabel* editStatus = new QLabel(this);
+    QLabel* editStatus;
 
     void updateAreaSelector(int index = -1);
 
@@ -159,6 +159,11 @@ private:
     bool closeLvlOnClose = true;
 
     bool unsavedChanges = false;
+
+#ifdef USE_KDE_BLUR
+    void setBlurStylesheet();
+#endif
+
 };
 
 #endif // LEVELEDITORWINDOW_H

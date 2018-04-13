@@ -25,6 +25,7 @@
 #include <QNetworkAccessManager>
 #include <QNetworkRequest>
 #include <QNetworkReply>
+#include <QDesktopServices>
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
@@ -55,6 +56,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
     setWindowTitle("CoinKiller");
 
+    statusLabel = new ClickableLabel(this);
+    ui->statusBar->addWidget(statusLabel);
+    connect(statusLabel, SIGNAL(doubleClicked()), this, SLOT(on_statusLabel_clicked()));
+
     QCoreApplication::setOrganizationName("Blarg City");
     QCoreApplication::setApplicationName("CoinKiller");
     settings = SettingsManager::init(this);
@@ -67,6 +72,13 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->nightModeCheckbox->setChecked(settings->get("nightmode", false).toBool());
     ui->maximisedCheckbox->setChecked(settings->get("maximised", false).toBool());
+    ui->loadLastCheckbox->setChecked(settings->get("loadLastOnStart", false).toBool());
+
+    if (!settings->get("dev", false).toBool())
+        ui->tabWidget->removeTab(3);
+
+    if (settings->get("loadLastOnStart", false).toBool() && !settings->getLastRomFSPath().isEmpty())
+        loadGame(settings->getLastRomFSPath());
 }
 
 MainWindow::~MainWindow()
@@ -84,6 +96,8 @@ MainWindow::~MainWindow()
 
 void MainWindow::setGameLoaded(bool loaded)
 {
+    if (!loaded)
+        statusLabel->setText("No ROMFS loaded.");
     ui->tab_tilesets->setEnabled(loaded);
     gameLoaded = loaded;
 }
@@ -91,33 +105,36 @@ void MainWindow::setGameLoaded(bool loaded)
 void MainWindow::on_actionAbout_triggered()
 {
     QMessageBox::information(this, "About that thing you're using",
-                             "CoinKiller v1.0 -- by StapleButter, RicBent and Explos\n\nhttp://kuribo64.net/ or whatever\n\nDefault Icons by Icons8\n\noh and this is free software, if you paid for it, you got scammed");
+                                   "CoinKiller v1.0 -- by StapleButter, RicBent and Explos\n\n"
+                                   "http://kuribo64.net/\n\n"
+                                   "Default Icons by Icons8\n\n"
+                                   "This is free software, if you paid for it, you got scammed");
 }
 
-void MainWindow::on_actionLoadUnpackedROMFS_triggered()
+void MainWindow::loadGame(const QString& path)
 {
-    // full tile: 24x24
-    // gfx: 20x20
+    settings->setLastRomFSPath(path);
 
-    QString basepath = settings->getLastRomFSPath();
-
-    QString dirpath = QFileDialog::getExistingDirectory(this, settings->getTranslation("MainWindow", "selectUnpackedRomFSFolder"), basepath);
-    if (dirpath.isNull())
-        return; // whatever
-
-    settings->setLastRomFSPath(dirpath);
-
-
-    FilesystemBase* fs = new ExternalFilesystem(dirpath);
-    game = new Game(fs);
+    game = new Game(path);
 
     setGameLoaded(true);
+    statusLabel->setText(QString("%1: %2").arg("Loaded").arg(path));
 
     ui->levelList->setModel(game->getCourseModel());
 
     ui->tilesetView->setHeaderHidden(false);
     ui->tilesetView->setModel(game->getTilesetModel());
     ui->tilesetView->setColumnWidth(0, 200);
+}
+
+void MainWindow::on_actionLoadUnpackedROMFS_triggered()
+{
+    QString basepath = settings->getLastRomFSPath();
+
+    QString dirpath = QFileDialog::getExistingDirectory(this, settings->getTranslation("MainWindow", "selectUnpackedRomFSFolder"), basepath);
+    if (dirpath.isNull())
+        return;
+    loadGame(dirpath);
 }
 
 void MainWindow::on_actionDebug_test_triggered()
@@ -198,6 +215,7 @@ void MainWindow::loadTranslations()
     ui->openSarcExplorerBtn->setText(settings->getTranslation("SarcExplorer", "sarcExplorer"));
     ui->nightModeCheckbox->setText(settings->getTranslation("MainWindow", "NightMode"));
     ui->maximisedCheckbox->setText(settings->getTranslation("MainWindow", "Maximised"));
+    ui->loadLastCheckbox->setText(settings->getTranslation("MainWindow", "LoadLast"));
 }
 
 void MainWindow::on_updateSpriteData_clicked()
@@ -335,4 +353,18 @@ void MainWindow::setStyleSheetFromPath(QString path)
 void MainWindow::on_maximisedCheckbox_toggled(bool checkState)
 {
     settings->set("maximised", checkState);
+}
+
+void MainWindow::on_loadLastCheckbox_clicked(bool checked)
+{
+     settings->set("loadLastOnStart", checked);
+}
+
+void MainWindow::on_statusLabel_clicked()
+{
+    if (!gameLoaded || game == NULL)
+        return;
+
+    QString path = QString("file://%1").arg(QDir::toNativeSeparators(game->getPath()));
+    QDesktopServices::openUrl(path);
 }
