@@ -979,15 +979,33 @@ void TilesetEditorWindow::on_actionImportImage_triggered()
 {
     QString convertDir(QCoreApplication::applicationDirPath() + "/coinkiller_data/ts_convert/");
 
+#ifdef _WIN32
     if (!QFile(convertDir + "convert.exe").exists())
     {
-        QMessageBox::warning(this, "CoinKiller", "CoinKiller requires convert.exe from ImageMagick to be placed at " + convertDir + "!");
+        QMessageBox::warning(this, "CoinKiller", "CoinKiller requires convert.exe from ImageMagick to be placed at " + convertDir + " to convert tileset images!");
         return;
     }
+#elif __linux__
+    if (system("command -v convert > /dev/null 2>&1") != 0 && !QFile(convertDir + "convert").exists())
+    {
+        QMessageBox::warning(this, "CoinKiller", "CoinKiller requires convert from ImageMagick to be installed to convert tileset images!");
+        return;
+    }
+    if (system("command -v wine > /dev/null 2>&1") != 0)
+    {
+        QMessageBox::warning(this, "CoinKiller", "CoinKiller requires wine to be installed to convert tileset images!");
+        return;
+    }
+#else
+    QMessageBox::warning(this, "CoinKiller", "Tileset importing is not supported on your operating system!" QMessageBox::Ok);
+    return;
+#endif
 
     if (!QFile(convertDir + "ctr_TexturePackager32.exe").exists())
     {
-        QMessageBox::warning(this, "CoinKiller", "CoinKiller requires ctr_TexturePackager32.exe to be placed at " + convertDir + "!\n\nWe can not help you finding that file, but the filename should be enough to do some research on your own.");
+        QMessageBox::warning(this, "CoinKiller",
+                             "CoinKiller requires ctr_TexturePackager32.exe to be placed at " + convertDir + " to convert tileset images!\n\n"
+                             "We can not help you finding that file, but the filename should be enough to do some research on your own.");
         return;
     }
 
@@ -1037,8 +1055,12 @@ void TilesetEditorWindow::on_actionImportImage_triggered()
 
     // Convert to TGA
     QProcess pngToTga;
+#ifdef _WIN32
     pngToTga.start(convertDir+"convert.exe", QStringList() << (convertDir+tileset->getName()+".png") << (convertDir+tileset->getName()+".tga"));
-    while (!pngToTga.waitForFinished()) {}
+#elif __linux__
+    pngToTga.start("convert", QStringList() << (convertDir+tileset->getName()+".png") << (convertDir+tileset->getName()+".tga"));
+#endif
+    while (!pngToTga.waitForFinished()) { QThread::sleep(250); }
 
     QFile png(convertDir + tileset->getName() + ".png");
     png.remove();
@@ -1056,19 +1078,36 @@ void TilesetEditorWindow::on_actionImportImage_triggered()
               << "</ctr_texturepackager>" << endl;
     }
 
-    QMessageBox* msgBox = new QMessageBox(QMessageBox::Information, "CoinKiller", "Converting TGA to CTPK. Please wait...\n\nThe converting to CTPK may take up to several minutes depending on the quality you selected!", 0, this);
-    msgBox->setStandardButtons(0);
+    QMessageBox* msgBox = new QMessageBox(QMessageBox::Information, "CoinKiller",
+                                          "Converting TGA to CTPK. Please wait...\n\n"
+                                          "The converting to CTPK may take up to several minutes depending on the quality you selected!",
+                                          QMessageBox::Cancel, this);
+
 
     QProcess tgaToCtpk;
+#ifdef _WIN32
     tgaToCtpk.start(convertDir+"ctr_TexturePackager32.exe", QStringList() << "-i" << (convertDir+"package.xml") << "-o" << (convertDir+tileset->getName()+".ctpk"));
+#elif __linux__
+    tgaToCtpk.setWorkingDirectory(convertDir);
+    tgaToCtpk.start("wine", QStringList() << "ctr_TexturePackager32.exe" << "-i" << (convertDir+"package.xml") << "-o" << (convertDir+tileset->getName()+".ctpk"));
+#endif
 
     msgBox->show();
+    isConvertCancelled = false;
+    connect(msgBox, SIGNAL(finished(int)), this, SLOT(convertCancelled()));
+
     qApp->processEvents();
 
-    while (!tgaToCtpk.waitForFinished(100))
+    bool killed = false;
+    while (!tgaToCtpk.waitForFinished(500))
     {
         qApp->processEvents();
-    };
+        if (isConvertCancelled)
+        {
+            killed = true;
+            break;
+        }
+    }
 
     msgBox->close();
     delete msgBox;
@@ -1076,6 +1115,9 @@ void TilesetEditorWindow::on_actionImportImage_triggered()
     QFile tga(convertDir + tileset->getName() + ".tga");
     tga.remove();
     pkg.remove();
+
+    if (killed)
+        return;
 
     if (!QFile(convertDir + tileset->getName() + ".ctpk").exists())
     {
@@ -1090,6 +1132,11 @@ void TilesetEditorWindow::on_actionImportImage_triggered()
 
     tilesetPicker->setTilesetImage(tileset->getImage());
     setupObjectsModel(true);
+}
+
+void TilesetEditorWindow::convertCancelled()
+{
+    isConvertCancelled = true;
 }
 
 void TilesetEditorWindow::on_actionSetBackgroundColor_triggered()

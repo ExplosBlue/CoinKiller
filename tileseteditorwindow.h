@@ -154,6 +154,12 @@ private:
 
     SettingsManager* settings;
     void loadTranslations();
+
+
+    bool isConvertCancelled;
+
+private slots:
+    void convertCancelled();
 };
 
 #endif // TILESETEDITORWINDOW_H
