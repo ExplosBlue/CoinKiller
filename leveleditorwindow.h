@@ -18,6 +18,7 @@
 #include <QMainWindow>
 #include <QListView>
 #include <QComboBox>
+#include <QDockWidget>
 
 #include "filesystem.h"
 #include "levelview.h"
@@ -47,6 +48,11 @@ public:
     explicit LevelEditorWindow(LevelManager* lvlMgr, int initialArea);
     ~LevelEditorWindow();
     void closeEvent(QCloseEvent *event);
+
+#ifdef USE_KDE_BLUR
+protected:
+    void paintEvent(QPaintEvent* evt) override;
+#endif
 
 public slots:
     void setObjectEdition(Object* obj);
@@ -124,6 +130,12 @@ private slots:
 
     void on_actionHideStatusbar_toggled(bool hide);
 
+    void on_actionShowMinimap_toggled(bool checked);
+
+    void on_actionShowToolbox_toggled(bool checked);
+
+    void updateDockedWidgetCheckboxes();
+
 private:
     Ui::LevelEditorWindow *ui;
 
@@ -163,6 +175,11 @@ private:
 #ifdef USE_KDE_BLUR
     void setBlurStylesheet();
 #endif
+
+    QDockWidget* toolboxDock;
+    QTabWidget* toolboxTabs;
+
+    QDockWidget* minimapDock;
 
 };
 

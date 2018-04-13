@@ -5,6 +5,8 @@
 LevelMiniMap::LevelMiniMap(QWidget *parent, Level *level) : QWidget(parent)
 {
     this->level = level;
+    setMinimumSize(100, 100);
+
     updateBounds();
 }
 

@@ -57,6 +57,7 @@ sDatErrorFile=Aktuallisieren der Spritedata fehlgeschlagen:\n\nspritedata.xml ko
 
 [LevelEditor]
 view=Ansicht
+window=Fenster
 raiseToTop=Nach oben verschieben
 lowerToBottom=Nach unten verschieben
 raiseLayer=Ebene erhöhen
@@ -83,6 +84,8 @@ resetBgColor=Hintergrundfarbe zurücksetzen
 selectAfterPlacement=Objekte nach platzieren auswählen
 screenshotZone=Screenshot
 hideStatusbar=Statuszeile Ausblenden
+showToolbox=Toolbox anzeigen
+showMinimap=Minimap anzeigen
 
 [TilesetEditor]
 tileset=Tileset

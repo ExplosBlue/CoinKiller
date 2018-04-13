@@ -86,15 +86,26 @@ LevelEditorWindow::LevelEditorWindow(LevelManager* lvlMgr, int initialArea) :
     ui->actionDeleteCurrentArea->setIcon(QIcon(basePath + "remove.png"));
     ui->actionSetBackgroundColor->setIcon(QIcon(basePath + "colors.png"));
     ui->actionResetBackgroundColor->setIcon(QIcon(basePath + "delete_colors.png"));
+    ui->actionToggleLayer1->setIcon(QIcon(basePath + "layer1.png"));
+    ui->actionToggleLayer2->setIcon(QIcon(basePath + "layer2.png"));
+    ui->actionToggleSprites->setIcon(QIcon(basePath + "sprite.png"));
+    ui->actionTogglePaths->setIcon(QIcon(basePath + "path.png"));
 
-    QList<int> splitterSizes;
-    splitterSizes.append(350);
-    splitterSizes.append(999999999);
-    ui->splitter->setSizes(splitterSizes);
-    ui->splitter->setCollapsible(0, false);
+    toolboxDock = new QDockWidget("Toolbox", this);
+    toolboxDock->setObjectName("toolboxDock");
+    toolboxTabs = new QTabWidget(this);
+    toolboxDock->setWidget(toolboxTabs);
 
-    ui->sidebar->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Ignored);
-    ui->sidebar->setMinimumSize(350, 20);
+    minimapDock = new QDockWidget("Minimap", this);
+    minimapDock->setObjectName("minimapDock");
+
+    addDockWidget(Qt::LeftDockWidgetArea, toolboxDock);
+    addDockWidget(Qt::LeftDockWidgetArea, minimapDock);
+
+    restoreState(settings->get("lvleditorState").toByteArray());
+    updateDockedWidgetCheckboxes();
+    connect(toolboxDock, SIGNAL(visibilityChanged(bool)), this, SLOT(updateDockedWidgetCheckboxes()));
+    connect(minimapDock, SIGNAL(visibilityChanged(bool)), this, SLOT(updateDockedWidgetCheckboxes()));
 
     loadArea(initialArea, false, true);
 
@@ -136,6 +147,7 @@ void LevelEditorWindow::loadTranslations()
     ui->menuFile->setTitle(settings->getTranslation("General", "file"));
     ui->menuEdit->setTitle(settings->getTranslation("General", "edit"));
     ui->menuView->setTitle(settings->getTranslation("LevelEditor", "view"));
+    ui->menuWindow->setTitle(settings->getTranslation("LevelEditor", "window"));
     ui->menuSettings->setTitle(settings->getTranslation("General", "settings"));
 
     ui->actionSave->setText(settings->getTranslation("General", "save"));
@@ -227,6 +239,12 @@ void LevelEditorWindow::loadTranslations()
 
     ui->actionHideStatusbar->setText(settings->getTranslation("LevelEditor", "hideStatusbar"));
     ui->actionHideStatusbar->setToolTip(settings->getTranslation("LevelEditor", "hideStatusbar"));
+
+    ui->actionShowToolbox->setText(settings->getTranslation("LevelEditor", "showToolbox"));
+    ui->actionShowToolbox->setToolTip(settings->getTranslation("LevelEditor", "showToolbox"));
+
+    ui->actionShowMinimap->setText(settings->getTranslation("LevelEditor", "showMinimap"));
+    ui->actionShowMinimap->setToolTip(settings->getTranslation("LevelEditor", "showMinimap"));
 }
 
 // Actions
@@ -431,38 +449,38 @@ void LevelEditorWindow::setObjectEdition(Object* obj)
 
     if (is<BgdatObject*>(obj))
     {
-        ui->sidebarTabWidget->setCurrentIndex(1);
+        toolboxTabs->setCurrentIndex(1);
         tilesetPalette->select(dynamic_cast<BgdatObject*>(obj));
     }
     else if (is<Sprite*>(obj))
     {
-        ui->sidebarTabWidget->setCurrentIndex(2);
+        toolboxTabs->setCurrentIndex(2);
         spriteEditor->select(dynamic_cast<Sprite*>(obj));
         spriteEditor->spriteDataEditorPtr()->select(dynamic_cast<Sprite*>(obj));
     }
     if (is<Entrance*>(obj))
     {
-        ui->sidebarTabWidget->setCurrentIndex(4);
+        toolboxTabs->setCurrentIndex(4);
         entranceEditor->select(dynamic_cast<Entrance*>(obj));
     }
     else if (is<Zone*>(obj))
     {
-        ui->sidebarTabWidget->setCurrentIndex(5);
+        toolboxTabs->setCurrentIndex(5);
         zoneEditor->select(dynamic_cast<Zone*>(obj));
     }
     else if (is<Location*>(obj))
     {
-        ui->sidebarTabWidget->setCurrentIndex(6);
+        toolboxTabs->setCurrentIndex(6);
         locationEditor->select(dynamic_cast<Location*>(obj));
     }
     else if (is<PathNode*>(obj))
     {
-        ui->sidebarTabWidget->setCurrentIndex(7);
+        toolboxTabs->setCurrentIndex(7);
         pathEditor->select(dynamic_cast<PathNode*>(obj));
     }
     else if (is<ProgressPathNode*>(obj))
     {
-        ui->sidebarTabWidget->setCurrentIndex(8);
+        toolboxTabs->setCurrentIndex(8);
         progPathEditor->select(dynamic_cast<ProgressPathNode*>(obj));
     }
 }
@@ -592,10 +610,10 @@ void LevelEditorWindow::loadArea(int id, bool closeLevel, bool init)
         delete levelView;
         delete miniMap;
 
-        for(int i = ui->sidebarTabWidget->count() - 1; i >= 0; i--)
+        for(int i = toolboxTabs->count() - 1; i >= 0; i--)
         {
-            QWidget* deleteWidget = ui->sidebarTabWidget->widget(i);
-            ui->sidebarTabWidget->removeTab(i);
+            QWidget* deleteWidget = toolboxTabs->widget(i);
+            toolboxTabs->removeTab(i);
             delete deleteWidget;
         }
     }
@@ -690,21 +708,22 @@ void LevelEditorWindow::loadArea(int id, bool closeLevel, bool init)
     connect(levelView->editionModePtr(), SIGNAL(updateEditors()), this, SLOT(updateEditors()));
     connect(levelView->editionModePtr(), SIGNAL(editMade()), this, SLOT(handleEditMade()));
 
-    ui->sidebarTabWidget->addTab(areaEditor, QIcon(basePath + "settings.png"), "");
-    ui->sidebarTabWidget->addTab(tilesetPalette, QIcon(basePath + "filled_box"), "");
-    ui->sidebarTabWidget->addTab(spriteEditor, QIcon(basePath + "goomba.png"), "");
-    ui->sidebarTabWidget->addTab(spriteIds, QIcon(basePath + "ids.png"), "");
-    ui->sidebarTabWidget->addTab(entranceEditor, QIcon(basePath + "entrance.png"), "");
-    ui->sidebarTabWidget->addTab(zoneEditor, QIcon(basePath + "zone.png"), "");
-    ui->sidebarTabWidget->addTab(locationEditor, QIcon(basePath + "location.png"), "");
-    ui->sidebarTabWidget->addTab(pathEditor, QIcon(basePath + "path.png"), "");
-    ui->sidebarTabWidget->addTab(progPathEditor, QIcon(basePath + "progress_path.png"), "");
+    toolboxTabs->addTab(areaEditor, QIcon(basePath + "settings.png"), "");
+    toolboxTabs->addTab(tilesetPalette, QIcon(basePath + "filled_box"), "");
+    toolboxTabs->addTab(spriteEditor, QIcon(basePath + "sprite.png"), "");
+    toolboxTabs->addTab(spriteIds, QIcon(basePath + "ids.png"), "");
+    toolboxTabs->addTab(entranceEditor, QIcon(basePath + "entrance.png"), "");
+    toolboxTabs->addTab(zoneEditor, QIcon(basePath + "zone.png"), "");
+    toolboxTabs->addTab(locationEditor, QIcon(basePath + "location.png"), "");
+    toolboxTabs->addTab(pathEditor, QIcon(basePath + "path.png"), "");
+    toolboxTabs->addTab(progPathEditor, QIcon(basePath + "progress_path.png"), "");
 
     miniMap = new LevelMiniMap(this, level);
     connect(levelView, SIGNAL(updateMinimap(QRect)), miniMap, SLOT(update_(QRect)));
     connect(levelView, SIGNAL(updateMinimapBounds()), miniMap, SLOT(updateBounds()));
     connect(miniMap, SIGNAL(scrollTo(int,int)), this, SLOT(scrollTo(int,int)));
-    ui->miniMap->setWidget(miniMap);
+    //ui->miniMap->setWidget(miniMap);
+    minimapDock->setWidget(miniMap);
 
     update();
 }
@@ -872,17 +891,61 @@ void LevelEditorWindow::closeEvent(QCloseEvent *event)
         }
     }
     else event->accept();
+
+    if (event->isAccepted())
+    {
+        settings->set("lvleditorState", saveState());
+    }
+}
+
+void LevelEditorWindow::on_actionShowToolbox_toggled(bool checked)
+{
+    toolboxDock->setHidden(!checked);
+}
+
+void LevelEditorWindow::on_actionShowMinimap_toggled(bool checked)
+{
+    minimapDock->setHidden(!checked);
+}
+
+void LevelEditorWindow::updateDockedWidgetCheckboxes()
+{
+    ui->actionShowToolbox->setChecked(!toolboxDock->isHidden());
+    ui->actionShowMinimap->setChecked(!minimapDock->isHidden());
 }
 
 #ifdef USE_KDE_BLUR
 void LevelEditorWindow::setBlurStylesheet()
 {
-    QString bgColor = QWidget::palette().color(QWidget::backgroundRole()).name();
+    setStyleSheet("#centralwidget { background-color: rgba(0,0,0,0); }");
+}
 
-    QString style =
-        "QToolBar, QStatusBar, QMenuBar, #sidebar, #splitter::handle { background-color: " + bgColor + "; }"
-        "#centralwidget { background-color: rgba(0,0,0,0); }";
+void LevelEditorWindow::paintEvent(QPaintEvent* evt)
+{
+    QColor bgColor = QWidget::palette().color(QWidget::backgroundRole());
 
-    setStyleSheet(style);
+    QPoint origin = ui->levelViewArea->mapToGlobal(ui->levelViewArea->pos()) - ui->menubar->mapToGlobal(ui->menubar->pos());
+    QRect clearRect(origin.x(), origin.y(), ui->levelViewArea->width(), ui->levelViewArea->height());
+
+    int barWidth = ui->levelViewArea->verticalScrollBar()->width();
+    int barHeight = ui->levelViewArea->horizontalScrollBar()->height();
+    QPoint scrollBoxPos = origin + QPoint(ui->levelViewArea->width() - barWidth, ui->levelViewArea->height() - barHeight);
+    QRect scrollBoxFix(scrollBoxPos.x(), scrollBoxPos.y(), barWidth, barHeight);
+
+    QPainter painter;
+    painter.begin(this);
+
+    QPainterPath path;
+    path.setFillRule(Qt::OddEvenFill);
+    path.addRect(evt->rect());
+    path.addRect(clearRect);
+    path.addRect(scrollBoxFix);
+    painter.setBrush(bgColor);
+    painter.setPen(bgColor);
+    painter.drawPath(path);
+
+    painter.end();
+
+    //ui->levelViewArea->horizontalScrollBar()->height()
 }
 #endif

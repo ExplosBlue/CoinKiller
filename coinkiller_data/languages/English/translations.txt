@@ -57,6 +57,7 @@ sDatErrorFile=Updating the spritedata failed:\n\nCould not open spritedata.xml f
 
 [LevelEditor]
 view=View
+window=Window
 raiseToTop=Raise to Top
 lowerToBottom=Raise to Bottom
 raiseLayer=Raise Layer
@@ -83,6 +84,8 @@ resetBgColor=Reset Background Color
 selectAfterPlacement=Select Objects when Placed
 screenshotZone=Screenshot
 hideStatusbar=Hide Statusbar
+showToolbox=Show Toolbox
+showMinimap=Show Minimap
 
 [TilesetEditor]
 tileset=Tileset
