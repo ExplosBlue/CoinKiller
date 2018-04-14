@@ -102,7 +102,7 @@ private slots:
 
     void setSelSprite(int spriteId);
 
-    void on_sidebarTabWidget_currentChanged(int index);
+    void on_toolboxTabs_currentChanged(int index);
 
     void on_actionAddArea_triggered();
 

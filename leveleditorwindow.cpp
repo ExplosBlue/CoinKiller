@@ -94,6 +94,7 @@ LevelEditorWindow::LevelEditorWindow(LevelManager* lvlMgr, int initialArea) :
     toolboxDock = new QDockWidget("Toolbox", this);
     toolboxDock->setObjectName("toolboxDock");
     toolboxTabs = new QTabWidget(this);
+    connect(toolboxTabs, SIGNAL(currentChanged(int)), this, SLOT(on_toolboxTabs_currentChanged(int)));
     toolboxDock->setWidget(toolboxTabs);
 
     minimapDock = new QDockWidget("Minimap", this);
@@ -507,7 +508,7 @@ void LevelEditorWindow::updateEditors()
     spriteIds->updateEditor();
 }
 
-void LevelEditorWindow::on_sidebarTabWidget_currentChanged(int index)
+void LevelEditorWindow::on_toolboxTabs_currentChanged(int index)
 {    
     if (index == 0 || index == 3)
         levelView->objEditionModePtr()->setDrawType(-1);

@@ -1104,6 +1104,7 @@ void TilesetEditorWindow::on_actionImportImage_triggered()
         qApp->processEvents();
         if (isConvertCancelled)
         {
+            tgaToCtpk.terminate();
             killed = true;
             break;
         }
