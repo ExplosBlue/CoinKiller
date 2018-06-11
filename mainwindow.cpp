@@ -74,9 +74,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->maximisedCheckbox->setChecked(settings->get("maximised", false).toBool());
     ui->loadLastCheckbox->setChecked(settings->get("loadLastOnStart", false).toBool());
 
-    if (!settings->get("dev", false).toBool())
-        ui->tabWidget->removeTab(3);
-
     if (settings->get("loadLastOnStart", false).toBool() && !settings->getLastRomFSPath().isEmpty())
         loadGame(settings->getLastRomFSPath());
 }

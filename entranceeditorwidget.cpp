@@ -15,6 +15,7 @@ EntranceEditorWidget::EntranceEditorWidget(QList<Entrance*> *entrances)
     connect(id, SIGNAL(valueChanged(int)), this, SLOT(handleIDChanged(int)));
 
     type = new QComboBox();
+    type->setSizeAdjustPolicy(QComboBox::SizeAdjustPolicy::AdjustToMinimumContentsLengthWithIcon);
     type->addItems(entranceTypes);
     connect(type, SIGNAL(currentIndexChanged(int)), this, SLOT(handleTypeChanged(int)));
 

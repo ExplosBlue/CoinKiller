@@ -30,6 +30,7 @@ AreaEditorWidget::AreaEditorWidget(Level* level, Game *game)
     timeLimit = new QSpinBox();
     timeLimit->setRange(0, 999);
     connect(timeLimit, SIGNAL(valueChanged(int)), this, SLOT(handleTimeLimitChange(int)));
+    timeLimit->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);  // All Controls at maximum possible width
     layout->addWidget(timeLimit, 0, 1);
 
     layout->addWidget(new QLabel("Coin Rush Time Limit:"), 1, 0, 1, 1, Qt::AlignRight);

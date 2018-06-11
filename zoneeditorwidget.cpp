@@ -47,6 +47,7 @@ ZoneEditorWidget::ZoneEditorWidget(QList<Zone*> *zones)
 
     musicId = new QComboBox();
     musicId->addItems(musicIds.values());
+    musicId->setSizeAdjustPolicy(QComboBox::SizeAdjustPolicy::AdjustToMinimumContentsLengthWithIcon);
     connect(musicId, SIGNAL(currentIndexChanged(QString)), this, SLOT(handleMusicIDChange(QString)));
 
     unk1 = new QSpinBox();
@@ -86,6 +87,7 @@ ZoneEditorWidget::ZoneEditorWidget(QList<Zone*> *zones)
     connect(bgUnk1, SIGNAL(valueChanged(int)), this, SLOT(handleBgUnk1Change(int)));
 
     background = new QComboBox();
+    background->setSizeAdjustPolicy(QComboBox::SizeAdjustPolicy::AdjustToMinimumContentsLengthWithIcon);
     loadBackgrounds();
     connect(background, SIGNAL(currentIndexChanged(QString)), this, SLOT(handleBackgroundChange(QString)));
 
@@ -104,6 +106,7 @@ ZoneEditorWidget::ZoneEditorWidget(QList<Zone*> *zones)
     generalTab = new QWidget();
     QGridLayout* generalTabLayout = new QGridLayout();
     generalTabLayout->setMargin(5);
+    id->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);  // All Controls at maximum possible width
 
     generalTabLayout->addWidget(new QLabel("ID:"), 0, 0, 1, 1, Qt::AlignRight);
     generalTabLayout->addWidget(id, 0, 1);
@@ -127,20 +130,21 @@ ZoneEditorWidget::ZoneEditorWidget(QList<Zone*> *zones)
     boundsTab  = new QWidget();
     QGridLayout* boundsTabLayout = new QGridLayout();
     boundsTabLayout->setMargin(5);
+    upperBound->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);  // All Controls at maximum possible width
 
-    boundsTabLayout->addWidget(upScrolling, 0, 0, 1, 2, Qt::AlignRight);
+    boundsTabLayout->addWidget(new QLabel("Upper Bound:"), 0, 0, 1, 1, Qt::AlignRight);
+    boundsTabLayout->addWidget(upperBound, 0, 1);
 
-    boundsTabLayout->addWidget(new QLabel("Upper Bound:"), 1, 0, 1, 1, Qt::AlignRight);
-    boundsTabLayout->addWidget(upperBound, 1, 1);
+    boundsTabLayout->addWidget(new QLabel("Lower Bound:"), 1, 0, 1, 1, Qt::AlignRight);
+    boundsTabLayout->addWidget(lowerBound, 1, 1);
 
-    boundsTabLayout->addWidget(new QLabel("Lower Bound:"), 2, 0, 1, 1, Qt::AlignRight);
-    boundsTabLayout->addWidget(lowerBound, 2, 1);
+    boundsTabLayout->addWidget(new QLabel("Unknown Upper Bound:"), 2, 0, 1, 1, Qt::AlignRight);
+    boundsTabLayout->addWidget(unkUpperBound, 2, 1);
 
-    boundsTabLayout->addWidget(new QLabel("Unknown Upper Bound:"), 3, 0, 1, 1, Qt::AlignRight);
-    boundsTabLayout->addWidget(unkUpperBound, 3, 1);
+    boundsTabLayout->addWidget(new QLabel("Unknown Lower Bound:"), 3, 0, 1, 1, Qt::AlignRight);
+    boundsTabLayout->addWidget(unkLowerBound, 3, 1);
 
-    boundsTabLayout->addWidget(new QLabel("Unknown Lower Bound:"), 4, 0, 1, 1, Qt::AlignRight);
-    boundsTabLayout->addWidget(unkLowerBound, 4, 1);
+    boundsTabLayout->addWidget(upScrolling, 4, 1, 1, 2, Qt::AlignLeft);
 
     boundsTabLayout->addItem(new QSpacerItem(0, 0, QSizePolicy::Minimum, QSizePolicy::MinimumExpanding), 5, 0);
 
@@ -149,14 +153,15 @@ ZoneEditorWidget::ZoneEditorWidget(QList<Zone*> *zones)
     backgroundTab = new QWidget();
     QGridLayout* backgroundTabLayout = new QGridLayout();
     backgroundTabLayout->setMargin(5);
+    bgXPos->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);  // All Controls at maximum possible width
 
-    backgroundTabLayout->addWidget(new QLabel("Background X Offset:"), 0, 0, 1, 1, Qt::AlignRight);
+    backgroundTabLayout->addWidget(new QLabel("X Offset:"), 0, 0, 1, 1, Qt::AlignRight);
     backgroundTabLayout->addWidget(bgXPos, 0, 1);
 
-    backgroundTabLayout->addWidget(new QLabel("Background Y Offset:"), 1, 0, 1, 1, Qt::AlignRight);
+    backgroundTabLayout->addWidget(new QLabel("Y Offset:"), 1, 0, 1, 1, Qt::AlignRight);
     backgroundTabLayout->addWidget(bgYPos, 1, 1);
 
-    backgroundTabLayout->addWidget(new QLabel("Background Unknown 1:"), 3, 0, 1, 1, Qt::AlignRight);
+    backgroundTabLayout->addWidget(new QLabel("Unknown:"), 3, 0, 1, 1, Qt::AlignRight);
     backgroundTabLayout->addWidget(bgUnk1, 3, 1);
 
     backgroundTabLayout->addWidget(new QLabel("Background:"), 4, 0, 1, 1, Qt::AlignRight);
@@ -218,6 +223,7 @@ void ZoneEditorWidget::loadMusicIDs()
     QTextStream in(&file);
     in.setCodec("UTF-8");
 
+    musicIds.clear();
     while(!in.atEnd())
     {
         QStringList idStrings = in.readLine().split(":");
