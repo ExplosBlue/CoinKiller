@@ -509,6 +509,35 @@ bool SarcFilesystem::renameDir(QString path, QString newPath)
     return true;
 }
 
+bool SarcFilesystem::changeFileDir(QString path, QString newPath)
+{
+    if (newPath[0] == '/')
+        newPath.remove(0,1);
+
+    if (path[0] == '/')
+        path.remove(0,1);
+
+    if (!files.contains(path))
+        return false;
+
+    if (files.contains(newPath))
+        return false;
+
+    InternalSarcFile* thisfile = files.value(path);
+
+    if (thisfile == NULL)
+        throw std::logic_error("thisfile is NULL, shouldn't happen");
+
+    thisfile->name = newPath;
+
+    files.remove(path);
+    files.insert(thisfile->name, thisfile);
+
+    repack();
+
+    return true;
+}
+
 quint32 SarcFilesystem::filenameHash(QString& name)
 {
     quint32 ret = 0;

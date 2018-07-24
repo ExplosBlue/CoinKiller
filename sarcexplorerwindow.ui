@@ -23,19 +23,50 @@
      </widget>
     </item>
     <item>
-     <widget class="QLabel" name="warningLabel">
-      <property name="text">
-       <string>This Explorer is still a bit buggy. I warned you.</string>
-      </property>
-     </widget>
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+       <widget class="QPushButton" name="exportButton">
+        <property name="text">
+         <string>Export</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="importButton">
+        <property name="text">
+         <string>Import</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <item>
+       <widget class="QPushButton" name="insertFolderButton">
+        <property name="text">
+         <string>Insert Folder</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="insertButton">
+        <property name="text">
+         <string>Insert File</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="deleteButton">
+        <property name="text">
+         <string>Delete File</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </item>
    </layout>
   </widget>
-  <action name="actionExport">
-   <property name="text">
-    <string>export</string>
-   </property>
-  </action>
  </widget>
  <resources/>
  <connections/>

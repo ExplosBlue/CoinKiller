@@ -36,6 +36,7 @@ public:
     bool deleteFile(QString path);
     bool renameFile(QString path, QString newName);
     bool renameDir(QString path, QString newName);
+    bool changeFileDir(QString path, QString newName);
 
     bool copyFile(QString path, QString newPath) { Q_UNUSED(path); Q_UNUSED(newPath); return false; } // TODO
 

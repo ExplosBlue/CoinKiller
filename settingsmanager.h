@@ -40,6 +40,12 @@ public:
     QString getLastRomFSPath() { return settings.value("LastRomFSPath", "").toString(); }
     void setLastRomFSPath(QString dirpath) { settings.setValue("LastRomFSPath", dirpath); }
 
+    QString getLastSarcFilePath() { return settings.value("LastSarcFilePath", "").toString(); }
+    void setLastSarcFilePath(QString dirpath) { settings.setValue("LastSarcFilePath", dirpath); }
+
+    QString getLastSarcExpPath() { return settings.value("LastSarcExpPath", "").toString(); }
+    void setLastSarcExpPath(QString dirpath) { settings.setValue("LastSarcExpPath", dirpath); }
+
     QVariant get(const QString &key, const QVariant &defaultValue = QVariant());
     void set(const QString &key, const QVariant &value);
 

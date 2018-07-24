@@ -254,10 +254,21 @@ void MainWindow::sdDownload_finished(QNetworkReply::NetworkError error)
 
 void MainWindow::on_openSarcExplorerBtn_clicked()
 {
-    QString sarcFilePath = QFileDialog::getOpenFileName(this, settings->getTranslation("SarcExplorer", "selectArchive"), settings->getLastRomFSPath(), settings->getTranslation("SarcExplorer", "sarcArchives") + " (*.sarc)");
+    QString basePath = "";
+    if (!settings->getLastSarcFilePath().isEmpty())
+        basePath = settings->getLastSarcFilePath();
+    else
+        basePath = QCoreApplication::applicationDirPath();
+
+    QString sarcFilePath = QFileDialog::getOpenFileName(this, settings->getTranslation("SarcExplorer", "selectArchive"), basePath, settings->getTranslation("SarcExplorer", "sarcArchives") + " (*.sarc)");
 
     if (sarcFilePath.isEmpty() || sarcFilePath.isEmpty())
         return;
+
+    QStringList lastPath = sarcFilePath.split('/');
+    lastPath.removeLast();
+    QString last = lastPath.join("/");
+    settings->setLastSarcFilePath(last);
 
     SarcExplorerWindow* sarcExplorer = new SarcExplorerWindow(this, sarcFilePath, settings);
     sarcExplorer->show();

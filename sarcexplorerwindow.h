@@ -32,12 +32,25 @@ private:
 
     QString iconsPath;
 
+    QString basePath;
+
     void setupFileTree(QStandardItem* node, QString path);
-    void setIconOfNode(QStandardItem *node);
-    void renameChildNodes(QStandardItem *node, QString oldName, QString newName);
+    void setIconOfNode(QStandardItem* node);
+    void renameChildNodes(QStandardItem* node, QString oldName, QString newName);
+    void exportFile(QStandardItem* node, QString filePath);
+    void renameFile(QStandardItem* node);
+    void changeDirectory(QStandardItem* node);
+    void deleteFile(QStandardItem* node);
+    void deleteFolder(QStandardItem* node);
 
 private slots:
-    void renameFile(QStandardItem* node);
+    void itemChanged(QStandardItem* node);
+    void on_exportButton_clicked();
+    void on_importButton_clicked();
+    void on_insertButton_clicked();
+    void on_insertFolderButton_clicked();
+    void on_deleteButton_clicked();
+    void selectedFileChanged();
 };
 
 #endif // SARCEXPLORERWINDOW_H
