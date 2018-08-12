@@ -68,6 +68,8 @@ public:
     SpriteDefinition getSpriteDef(int nbr) { return spriteDefs[nbr]; }
     SpriteDefinition* getSpriteDefPtr(int nbr) { return &spriteDefs[nbr]; }
 
+    int spriteCount() { return spriteDefs.size(); }
+
 private:
     QList<spriteView> spriteViews;
     QList<SpriteDefinition> spriteDefs;

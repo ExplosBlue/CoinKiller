@@ -13,7 +13,12 @@
   </sprite>
   <sprite id="1" name="Pipe Bubbles" notes="Actor: 0x056&#13;&#10;Description: Bubbles that come out of a pipe.&#13;&#10;Event Triggerable: Yes&#13;&#10;Affected by Gold Ring: No&#13;&#10;Requirements: N/A">
     <value nybble="1-2" title="Triggering Event ID" comment="Turns off while the specified Event ID is activated."/>
-    <value nybble="5" title="Unknown 5"/>
+    <list nybble="5" title="Strength" comment="Controls the strength of the flow.">
+      <entry value="0">Strongest</entry>
+      <entry value="1">Strong</entry>
+      <entry value="2">Weak</entry>
+      <entry value="3">Weakest</entry>
+    </list>
     <list nybble="6" title="Orientation" comment="Which way the pipe its placed on is facing.">
       <entry value="0">Pipe Up</entry>
       <entry value="1">Pipe Down</entry>
@@ -89,7 +94,12 @@
   </sprite>
   <sprite id="11" name="Water Flow" notes="Actor: 0x057&#13;&#10;Description: A Current that will push or pull the player through water.&#13;&#10;Event Triggerable: Yes&#13;&#10;Affected by Gold Ring: No&#13;&#10;Requirements: Must have a location ID set.">
     <value nybble="1-2" title="Triggering Event ID" comment="This Event ID triggers the flow turning off."/>
-    <value nybble="5" title="Unknown Value 5"/>
+    <list nybble="5" title="Strength" comment="Controls the strength of the flow.">
+      <entry value="0">Strongest</entry>
+      <entry value="1">Strong</entry>
+      <entry value="2">Weak</entry>
+      <entry value="3">Weakest</entry>
+    </list>
     <list nybble="6" title="Direction" comment="The direction of the water flow.">
       <entry value="0">Down</entry>
       <entry value="1">Up</entry>
@@ -99,18 +109,18 @@
     <value nybble="11-12" title="Location ID" comment="What location the water flow should be in."/>
   </sprite>
   <sprite id="12" name="Lava" notes="Actor: 0x040&#13;&#10;Description: Lava that kills the player once in contact.&#13;&#10;Event Triggerable: Yes&#13;&#10;Affected by Gold Ring: No&#13;&#10;Requirements: N/A">
-    <value nybble="1-2" title="Triggering Event ID (Rising)" comment="This Event ID makes the liquid rise."/>
-    <value nybble="7" title="Rising Height" comment="In blocks."/>
-    <list nybble="8" title="Liquid Behavior" comment="Values of 0-7 Produces normal lava, Values of 8-15 produces topless lava (unused).">
+    <value nybble="1-2" title="Triggering Event ID" comment="If this Event ID is 0, and speed/direction is not said to No Movement, the sprite will endlessly move. Uses switch timer."/>
+    <value nybble="7" title="Movement Distance" comment="The base movement distance, in tiles."/>
+    <list nybble="8" title="Liquid Behavior" comment="The liquid's behavior.">
       <entry value="0">Normal</entry>
-      <entry value="1">Normal?</entry>
+      <entry value="1">Rises and Lowers</entry>
       <entry value="4">Unknown 4</entry>
       <entry value="5">Unknown 5</entry>
-      <entry value="8">Topless Lava</entry>
+      <entry value="8">Topless Liquid</entry>
     </list>
-    <value nybble="9" title="Rising Delay" comment="In ticks."/>
+    <value nybble="9" title="Rising Delay" comment="Time it takes before the liquid rises."/>
     <value nybble="10" title="Movement Distance Overflow" comment="Value*16 is added to the movement distance."/>
-    <list nybble="11" title="Speed/Direction" comment="Determines the rising/lowering speed of the lava and the direction it will move.">
+    <list nybble="11" title="Speed/Direction" comment="The speed and direction of liquid movement.">
       <entry value="0">No Movement</entry>
       <entry value="1">Up Normal</entry>
       <entry value="2">Up Fast</entry>
@@ -128,19 +138,19 @@
       <entry value="14">Down Slower</entry>
       <entry value="15">Down Normal</entry>
     </list>
-    <value nybble="13" title="Lowering Delay" comment="In ticks."/>
+    <value nybble="12" title="Lowering Delay" comment="Time it takes before the liquid lowers."/>
   </sprite>
-  <sprite id="13" name="Poison Water" notes="Actor: 0x041&#13;&#10;Description: Poison water that kills the player on contact.&#13;&#10;Event Triggerable: Yes&#13;&#10;Affected by Gold Ring: No &#13;&#10;Requirements: N/A">
-    <value nybble="1-2" title="Triggering Event ID (Rising)" comment="This Event ID makes the liquid rise."/>
-    <value nybble="7" title="Rising Height" comment="Value*1 is added to the movement distance."/>
-    <list nybble="8" title="Liquid Behavior" comment="Values of 0-7 Produces normal poison, Values of 8-15 produces topless poison (unused).">
+  <sprite id="13" name="Poison" notes="Actor: 0x041&#13;&#10;Description: Poison water that kills the player on contact.&#13;&#10;Event Triggerable: Yes&#13;&#10;Affected by Gold Ring: No &#13;&#10;Requirements: N/A">
+    <value nybble="1-2" title="Triggering Event ID" comment="If this Event ID is 0, and speed/direction is not said to No Movement, the sprite will endlessly move. Uses switch timer."/>
+    <value nybble="7" title="Movement Distance" comment="The base movement distance, in tiles."/>
+    <list nybble="8" title="Liquid Behavior" comment="The liquid's behavior.">
       <entry value="0">Normal</entry>
-      <entry value="1">Normal?</entry>
-      <entry value="8">Topless Poison</entry>
+      <entry value="1">Rises and Lowers</entry>
+      <entry value="8">Topless Liquid</entry>
     </list>
-    <value nybble="9" title="Rising Delay" comment="In ticks."/>
+    <value nybble="9" title="Rising Delay" comment="Time it takes before the liquid rises."/>
     <value nybble="10" title="Movement Distance Overflow" comment="Value*16 is added to the movement distance."/>
-    <list nybble="11" title="Speed/Direction" comment="Determines the rising/lowering speed of the poison and the direction it will move.">
+    <list nybble="11" title="Speed/Direction" comment="The speed and direction of liquid movement.">
       <entry value="0">No Movement</entry>
       <entry value="1">Up Normal</entry>
       <entry value="2">Up Fast</entry>
@@ -158,23 +168,20 @@
       <entry value="14">Down Slower</entry>
       <entry value="15">Down Normal</entry>
     </list>
-    <value nybble="12" title="Time to Stay Risen" comment="In ticks."/>
-    <value nybble="13" title="Lowering Delay" comment="In ticks."/>
+    <value nybble="12" title="Lowering Delay" comment="Time it takes before the liquid lowers."/>
   </sprite>
   <sprite id="14" name="Cloud FG Effect" notes="Actor: 0x042&#13;&#10;Description: A horizontal line of clouds.&#13;&#10;Event Triggerable: No&#13;&#10;Affected by Gold Ring: No &#13;&#10;Requirements: N/A"/>
   <sprite id="15" name="Water" notes="Actor: 0x03F&#13;&#10;Description: Water that the player can swim in.&#13;&#10;Event Triggerable: Yes&#13;&#10;Affected by Gold Ring: No &#13;&#10;Requirements: N/A">
-    <value nybble="1-2" title="Triggering Event ID (Rising)" comment="This Event ID makes the liquid rise."/>
-    <value nybble="3-4" title="Target Event ID"/>
-    <value nybble="6" title="Unknown Value 6" comment="Does nothing."/>
-    <value nybble="7" title="Movement Distance" comment="Value*1 is added to the movement distance."/>
-    <list nybble="8" title="Type" comment="Values of 0-7 Produces normal water, Values of 8-15 produces underwater spesific water.">
+    <value nybble="1-2" title="Triggering Event ID" comment="If this Event ID is 0, and speed/direction is not said to No Movement, the sprite will endlessly move. Uses switch timer."/>
+    <value nybble="7" title="Movement Distance" comment="The base movement distance, in tiles."/>
+    <list nybble="8" title="Liquid Behavior" comment="The liquid's behavior.">
       <entry value="0">Normal</entry>
-      <entry value="1">Normal?</entry>
+      <entry value="1">Rises and Lowers</entry>
       <entry value="8">Underwater Lighting</entry>
     </list>
-    <value nybble="9" title="Rising Delay" comment="In ticks."/>
+    <value nybble="9" title="Rising Delay" comment="Time it takes before the liquid rises."/>
     <value nybble="10" title="Movement Distance Overflow" comment="Value*16 is added to the movement distance."/>
-    <list nybble="11" title="Speed/Direction" comment="Determines the rising/lowering speed of the water and the direction it will move.">
+    <list nybble="11" title="Speed/Direction" comment="The speed and direction of liquid movement.">
       <entry value="0">No Movement</entry>
       <entry value="1">Up Normal</entry>
       <entry value="2">Up Fast</entry>
@@ -192,8 +199,7 @@
       <entry value="14">Down Slower</entry>
       <entry value="15">Down Normal</entry>
     </list>
-    <value nybble="12" title="Time to Stay Risen" comment="In ticks."/>
-    <value nybble="13" title="Lowering Delay" comment="In ticks."/>
+    <value nybble="12" title="Lowering Delay" comment="Time it takes before the liquid lowers."/>
   </sprite>
   <sprite id="16" name="Amp" notes="Actor: 0x131&#13;&#10;Description: An electric orb that will hurt the player on contact.&#13;&#10;Event Triggerable: No&#13;&#10;Affected by Gold Ring: No &#13;&#10;Requirements: N/A">
     <checkbox nybble="5" title="Shift 1/2 Block Right" comment="Useless."/>
@@ -1000,7 +1006,7 @@
     <value nybble="1-2" title="Triggering Event ID"/>
   </sprite>
   <sprite id="92" name="Grinder" notes="A saw-like object that runs on rails that moves at certain speeds and directions.">
-    <value nybble="1-2" title="Triggering Event ID" comment="It is best to use this when the grinder is set to appear offscreen."/>
+    <value nybble="1-2" title="Triggering Event ID" comment="Spawned if on."/>
     <value nybble="5" title="Speed"/>
     <list nybble="6" title="Start Direction">
       <entry value="0">Left/Up</entry>
@@ -1122,17 +1128,17 @@
   </sprite>
   <sprite id="107" name="Path-controlled Climbable Fence">
     <value nybble="5" title="Path ID" comment="Sets which path the fence should follow."/>
-    <list nybble="12" title="End Behavior?">
-      <entry value="0">???</entry>
-      <entry value="1">???</entry>
-      <entry value="2">???</entry>
-    </list>
     <value nybble="13" title="Row 3 Layout (Bitfield)" comment="In a horizontal view, each row is a set of 4. This number converted to binary represents the layout. (0 = no fence, 1 = fence)."/>
     <value nybble="14" title="Row 4 Layout (Bitfield)" comment="In a horizontal view, each row is a set of 4. This number converted to binary represents the layout. (0 = no fence, 1 = fence)."/>
     <value nybble="15" title="Row 1 Layout (Bitfield)" comment="In a horizontal view, each row is a set of 4. This number converted to binary represents the layout. (0 = no fence, 1 = fence)."/>
     <value nybble="16" title="Row 2 Layout (Bitfield)" comment="In a horizontal view, each row is a set of 4. This number converted to binary represents the layout. (0 = no fence, 1 = fence)."/>
     <value nybble="17" title="Unknown Value 17"/>
-    <checkbox nybble="19" title="Moves When Touched" mask="2" comment="Determines Starting Behaviour. Values repeat."/>
+    <list nybble="19" title="Start Behaviour" comment="Determines Starting Behaviour. Values repeat.">
+      <entry value="0">Moves when Touched</entry>
+      <entry value="1">Already Moving</entry>
+      <entry value="2">Moves when Touched</entry>
+      <entry value="3">Already Moving</entry>
+    </list>
   </sprite>
   <sprite id="108" name="Spider Web">
     <value nybble="1-2" title="Triggering Event ID"/>
@@ -1140,7 +1146,7 @@
     <value nybble="6" title="Width" comment="Never used as anything but &quot;2&quot;"/>
   </sprite>
   <sprite id="109" name="Signboard" notes="&quot;Post&quot; part will be behind layer 2 tiles.">
-    <list nybble="5" title="Behavior" comment="1=Whole sign is behind certain things, 2 = vertical movement only.">
+    <list nybble="5" title="Behavior" comment="1 - Whole sign is behind certain things, 2 - vertical movement only.">
       <entry value="0">Normal</entry>
       <entry value="1">Z order change</entry>
       <entry value="2">Gravity affected</entry>
@@ -1164,7 +1170,7 @@
       <entry value="14">Arrow Right-Down</entry>
       <entry value="15">Arrow Right-Down</entry>
     </list>
-    <value nybble="8" title="Fall speed" comment="Behaviour must be set to 2 for this to work otherwise the game will crash."/>
+    <value nybble="8" title="Fall speed" comment="Game will crash if this is &gt;0 and Behaviour isn't set to &quot;Gravity affected&quot;."/>
   </sprite>
   <sprite id="110" name="Dry Bones" notes="Actor: 0x0fa">
     <value nybble="5" title="Unknown Value 5"/>
@@ -1313,7 +1319,7 @@
   <sprite id="126" name="Bowser and Dry Bowser Battles - Controller">
     <value nybble="5" title="Unknown Value 5"/>
     <checkbox nybble="6" title="World 9 specifics" comment="Only checked in 9-16 A3. Must cause all differences from the battle in W6."/>
-    <value nybble="7" title="Unknown Value 7"/>
+    <value nybble="7" title="Entrance ID (Exit)" comment="The ID of the entrance used once the fight is complete."/>
   </sprite>
   <sprite id="127" name="Bowser Flame" notes="Existing In-Game Sprite Data: Incomplete?">
     <checkbox nybble="6" title="Dry Bowser Flame" comment="If checked, flame is blue instead of orange."/>
@@ -1388,8 +1394,8 @@
     <value nybble="1-2" title="Triggering Event ID" comment="Used as 1."/>
   </sprite>
   <sprite id="142" name="Lemmy Koopa"/>
-  <sprite id="143" name="Conveyor Belt Switch" notes="A switch that switches the direction of a conveyor belt.">
-    <value nybble="1-2" title="Target Event ID"/>
+  <sprite id="143" name="Conveyor Belt Switch" notes="A switch that is used to switch the direction of switchable conveyor belts.">
+    <value nybble="1-2" title="Target Event ID" comment="Reverses the state of this event when hit."/>
   </sprite>
   <sprite id="144" name="Horizontally-moving Lift">
     <value nybble="6" title="Width" comment="(Value + 1)"/>
@@ -1458,7 +1464,10 @@
   </sprite>
   <sprite id="149" name="Changeable Direction Platform" notes="It is still at first, it starts moving when landed on. After that it reverses direction when landed on.">
     <value nybble="1-2" title="Triggering Event ID (Ending)" comment="When this flag is triggered, the platform will disappear."/>
-    <value nybble="5" title="Starting Direction" comment="A value of 10 causes platform to move down, Needs more testing."/>
+    <list nybble="5" title="Direction Type" comment="A value of 10 causes platform to move down, Needs more testing.">
+      <entry value="0">Up/Down</entry>
+      <entry value="1">Up-right/Down-right</entry>
+    </list>
     <value nybble="6" title="Unknown Value 6"/>
     <value nybble="18" title="Unknown Value 18"/>
   </sprite>
@@ -1476,10 +1485,13 @@
   <sprite id="152" name="Path-controlled Lift - with Peepa">
     <value nybble="5" title="Path ID" comment="Value*1 is added to the Path ID."/>
     <value nybble="6" title="Platform Length" comment="Length of the platform."/>
-    <checkbox nybble="7" title="Unknown Checkbox 7"/>
+    <value nybble="7" title="Path Node" comment="Value +1 is added,"/>
     <value nybble="8" title="Path ID Overflow" comment="Value*16 is added to the Path ID."/>
     <value nybble="12" title="Unknown Value 12"/>
-    <value nybble="15" title="Unknown Value 15"/>
+    <list nybble="15" title="Peepa Behavior">
+      <entry value="0">Appear While on Lift Only</entry>
+      <entry value="3">Shown based on Start Behavior</entry>
+    </list>
     <list nybble="16" title="Number of Peepas" comment="Determines how many peepas will be holding the platform. Values repeat.">
       <entry value="0">Two Peepas</entry>
       <entry value="1">One Peepa</entry>
@@ -1491,7 +1503,7 @@
       <entry value="3">Starts on top*</entry>
       <entry value="4">Disappears</entry>
     </list>
-    <value nybble="18" title="Unknown Value 18"/>
+    <checkbox nybble="18" title="Curved Movement" comment="This makes the platform turn in a more curvy fashion."/>
     <list nybble="19" title="Start Behaviour" comment="Determines Starting Behaviour. Values repeat.">
       <entry value="0">Moves when Touched</entry>
       <entry value="1">Already Moving</entry>
@@ -1556,7 +1568,7 @@
     <value nybble="9" title="Unknown Value 9"/>
     <value nybble="10" title="Unknown Value 10"/>
     <value nybble="11" title="Unknown Value 11"/>
-    <value nybble="12" title="Unknown Value 12"/>
+    <checkbox nybble="12" title="Ceiling Buzzy Automatically Moves" comment="If the buzzy beetle is set to a ceiling, this option makes it automatically move towards you."/>
   </sprite>
   <sprite id="159" name="Spike Top" notes="A buzzy beetle, but with a red shell with a spike on top.">
     <list nybble="5" title="Starting Orientation" comment="A value higher than 3 causes the game to crash upon loading the sprite.">
@@ -2016,8 +2028,12 @@
       <entry value="4">Swims Right</entry>
       <entry value="8">Eep Cheep</entry>
     </list>
-    <value nybble="7" title="Unknown Value 7"/>
-    <checkbox nybble="11" title="Swims Left"/>
+    <checkbox nybble="7" title="Slower Swim Speed"/>
+    <list nybble="11" title="Direction">
+      <entry value="0">Towards Player</entry>
+      <entry value="1">Left</entry>
+      <entry value="2">Right</entry>
+    </list>
   </sprite>
   <sprite id="195" name="Big Cheep Cheep">
     <list nybble="6" title="Type">
@@ -2034,13 +2050,18 @@
   <sprite id="196" name="Coin Cheep" notes="A Coin Cheep.">
     <value nybble="7" title="Swim Speed" comment="Higher values are slower, values &gt;= 4 are buggy. [Unused]"/>
   </sprite>
-  <sprite id="197" name="Jumping Cheep Cheep">
+  <sprite id="197" name="Jumping Cheep Cheep" notes="Distance is randomised, the cheep cheep will always jump either 7, 8 or 9 tiles ahead of where it is placed.">
     <value nybble="1-2" title="Triggering Event ID"/>
-    <value nybble="5" title="Unknown Value 5" comment="Setting this to 1 caused it to not show up."/>
-    <value nybble="6" title="Distance Related" comment="Setting this to 1 caused it to jump, but not gain as much distance as the other values. [Unused]"/>
+    <value nybble="5" title="Unknown Value 5" comment="Setting this to any value above 1 caused it to not show up."/>
+    <value nybble="6" title="Unknown Value 6" comment="If this is greater than 3 the Cheep Cheep will jump directly up."/>
     <value nybble="8" title="Unknown Value 8"/>
-    <value nybble="11" title="Direction" comment="For some reason, values higher than 1 are used, even though it affects nothing."/>
-    <value nybble="12" title="Jumping Distance" comment="Sprite position X - Value is where it will begin jumping. It will land on where the sprite is placed."/>
+    <list nybble="11" title="Direction" comment="Values Repeat.">
+      <entry value="0">Right</entry>
+      <entry value="1">Left</entry>
+      <entry value="2">Right</entry>
+      <entry value="3">Left</entry>
+    </list>
+    <value nybble="12" title="Horizontal Offset" comment="Spawns n number of blocks to the left of where it was placed."/>
   </sprite>
   <sprite id="198" name="Jumping Cheep Cheep Spawner OR Spawn Area">
     <value nybble="6" title="Unknown Value 6" comment="Checkbox?"/>
@@ -2061,10 +2082,10 @@
     <value nybble="9" title="Circle Radius" comment="Value +1.5"/>
     <value nybble="10" title="Number of Cheep Cheeps" comment="The number of Cheep Cheeps in the circle. Value +1"/>
     <value nybble="12" title="Unknown Value 12"/>
-    <value nybble="13" title="Koopa 5-8 Gap Position" comment="The gap where the player can jump through. Is a bitfield."/>
-    <value nybble="14" title="Koopa 1-4 Gap Position" comment="The gap where the player can jump through. Is a bitfield."/>
-    <value nybble="15" title="Koopa 13-16 Gap Position" comment="The gap where the player can jump through. Is a bitfield."/>
-    <value nybble="16" title="Koopa 9-12 Gap Position" comment="The gap where the player can jump through. Is a bitfield."/>
+    <value nybble="13" title="Cheep Cheep 5-8 Gap Position" comment="The gap where the player can jump through. Is a bitfield."/>
+    <value nybble="14" title="Cheep Cheep 1-4 Gap Position" comment="The gap where the player can jump through. Is a bitfield."/>
+    <value nybble="15" title="Cheep Cheep 13-16 Gap Position" comment="The gap where the player can jump through. Is a bitfield."/>
+    <value nybble="16" title="Cheep Cheep 9-12 Gap Position" comment="The gap where the player can jump through. Is a bitfield."/>
     <list nybble="18" title="Gap Replacement" comment="Coins in circle jump up 1 tile after level fade-in.">
       <entry value="0">Empty</entry>
       <entry value="1">Coins</entry>
@@ -2078,9 +2099,9 @@
     <value nybble="11" title="Unknown Value 11"/>
     <value nybble="21-22" title="Movement ID"/>
   </sprite>
-  <sprite id="201" name="Cheep Cheep Spawner OR Spawn Area" notes="A Cheep Cheep spawner that can be used with or without a location.">
+  <sprite id="201" name="Cheep Cheep Spawn Area" notes="A Cheep Cheep spawner that uses locations.">
     <checkbox nybble="5" title="Spawn Deep Cheeps" comment="When checked deep cheeps will be spawned instead."/>
-    <checkbox nybble="6" title="Unused Checkbox 6" comment="Does nothing, probably Dummy Value"/>
+    <checkbox nybble="6" title="Restrict to Location" comment="When checked cheep cheeps will only spawn within the bounds of the location, when unchecked they can spawn anywhere on the screen."/>
     <value nybble="7" title="Location ID"/>
     <checkbox nybble="8" title="No Cheeps Spawn" comment="When checked nothing will be spawned. (Useless)"/>
   </sprite>
@@ -2205,7 +2226,7 @@
   <sprite id="209" name="Swinging Rope">
     <value nybble="5" title="Swinging Amount"/>
     <value nybble="6" title="Length" comment="Value + 4."/>
-    <value nybble="8" title="Unknown Value 8"/>
+    <value nybble="8" title="Sync Timing" comment="Adds a delay to the rope swinging."/>
   </sprite>
   <sprite id="210" name="Tightrope" notes="This appeared in NSMB.">
     <value nybble="11" title="Rope Length"/>
@@ -2369,7 +2390,12 @@
       <entry value="1">Two</entry>
       <entry value="2">Three</entry>
     </list>
-    <value nybble="8" title="Unknown Value 8"/>
+    <list nybble="8" title="Z Order">
+      <entry value="0">Layer 1</entry>
+      <entry value="1">Layer 2 No Collision</entry>
+      <entry value="2">Layer 2</entry>
+      <entry value="3">Layer 1 No Collision</entry>
+    </list>
     <value nybble="10" title="Unknown Value 10"/>
     <checkbox nybble="11" title="Unused Checkbox 11"/>
     <value nybble="12" title="Unknown Value 12"/>
@@ -2932,7 +2958,7 @@
   </sprite>
   <sprite id="272" name="Peach Cage For Cutscene" notes="The cage peach is in for a cutscene."/>
   <sprite id="273" name="Coin Roulette Block" notes="Pops when touched by Mega Mario or a Spiked Ball.">
-    <value nybble="1-2" title="Triggering Event ID" comment="Is appeared with no &quot;flourish&quot; while this flag is on."/>
+    <value nybble="1-2" title="Triggering Event ID" comment="Spawned if on with no &quot;flourish&quot;."/>
     <checkbox nybble="13" title="Destroyable" comment="When checked the roulette block can be destroyed by other sprites."/>
     <list nybble="14" title="Type" comment="Values greater than 3 are repeated.">
       <entry value="0">Starts on five</entry>
@@ -2986,8 +3012,8 @@
       <entry value="14">Mushroom/Coin</entry>
     </list>
   </sprite>
-  <sprite id="277" name="Switchable Conveyor Belt" notes="A conveyor belt switch. This will reverse the current path a conveyor belt is taking.">
-    <value nybble="1-2" title="Triggering Event ID" comment="The event that shares this ID will be the event this switch activates."/>
+  <sprite id="277" name="Switchable Conveyor Belt" notes="Goes left by default.">
+    <value nybble="1-2" title="Triggering Event ID" comment="Moves in reverse while this event is on."/>
   </sprite>
   <sprite id="278" name="Assist Block" notes="Pops when touched by Mega Mario.&#13;&#10;Files:&#13;&#10;\Model\map_obj\block_assist.bcres">
     <checkbox nybble="5" title="Unknown Checkbox 5" comment="Used only in 6-16 and 9-16, the two final bowser levels that have two checkpoints. This flag is set at the second checkpoint."/>
@@ -3115,10 +3141,10 @@
     <checkbox nybble="19" title="Already Moving" comment="If checked, the fence will be moving without Mario touching it."/>
   </sprite>
   <sprite id="291" name="Path-controlled Climbable Fence (medium)">
-    <value nybble="5" title="Path ID" comment="may have an overflow nybble(maybe?)"/>
+    <value nybble="5" title="Path ID" comment="may have an overflow nybble"/>
     <value nybble="12" title="Unknown 12"/>
-    <list nybble="17" title="Ending Behavior">
-      <entry value="0">Falls Off</entry>
+    <list nybble="17" title="Path End Behavior">
+      <entry value="0">Fall Off</entry>
       <entry value="1">Go Back</entry>
       <entry value="2">Stop</entry>
     </list>
@@ -3412,11 +3438,25 @@
   </sprite>
   <sprite id="319" name="Staff Credits - Koopa Clown Car" notes="The Koopa Clown Car actor used for the staff credits."/>
   <sprite id="320" name="Move-once-on Path-controlled Lift">
-    <value nybble="5" title="Path ID"/>
-    <value nybble="6" title="Width + 1" comment="Value 0 is the same as 1."/>
+    <value nybble="5" title="Path ID" comment="Value*1 is added to the Path ID."/>
+    <value nybble="6" title="Platform Length" comment="Length of the platform."/>
+    <value nybble="7" title="Path Node" comment="Value +1 is added."/>
+    <value nybble="8" title="Path ID Overflow" comment="Value*16 is added to the Path ID."/>
     <value nybble="15" title="Unknown Value 15"/>
     <value nybble="16" title="Unknown Value 16"/>
-    <checkbox nybble="19" title="Moves automatically" comment="The lift will begin moving along the path right as it is spawned."/>
+    <list nybble="17" title="End Behaviour" comment="The behavior of the platform after it hits the last node. (* starts at the top, goes down, and disappears.)">
+      <entry value="0">Falls</entry>
+      <entry value="1">Loops</entry>
+      <entry value="2">Falls</entry>
+      <entry value="3">Starts on top*</entry>
+      <entry value="4">Disappears</entry>
+    </list>
+    <list nybble="19" title="Start Behaviour" comment="Determines Starting Behaviour. Values repeat.">
+      <entry value="0">Moves when Touched</entry>
+      <entry value="1">Already Moving</entry>
+      <entry value="2">Moves when Touched</entry>
+      <entry value="3">Already Moving</entry>
+    </list>
   </sprite>
   <sprite id="321" name="Mushroom Platform - Snow" notes="Actor: 0x02f">
     <value nybble="5-6" title="Tilt Speed" comment="Value Modulo 64. Speed increases for values 1-32, then decreases for values 33-63."/>
@@ -3443,7 +3483,7 @@
     <value nybble="10" title="Stem Length" comment="Value + 4"/>
   </sprite>
   <sprite id="322" name="Big Grinder" notes="Actor: 0x148">
-    <value nybble="2" title="Triggering Event ID" comment="Appeared if on. No &quot;flourish&quot; for appearing/disappearing."/>
+    <value nybble="2" title="Triggering Event ID" comment="Spawned if on with no &quot;flourish&quot;."/>
     <value nybble="5" title="Speed"/>
     <value nybble="6" title="Unknown Value 6" comment="Used in 3-16 as 0 or 1"/>
     <value nybble="20" title="Location ID" comment="Purpose unknown."/>

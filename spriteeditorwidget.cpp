@@ -118,7 +118,7 @@ void SpriteEditorWidget::search(QString text)
 void SpriteEditorWidget::handleIndexChange(QTreeWidgetItem *item)
 {
     int data = item->data(0, Qt::UserRole).toInt();
-    if (data >= 0 && data <= 325)
+    if (data >= 0 && data <= spriteData.spriteCount())
         emit(selectedSpriteChanged(data));
     emit editMade();
 }
