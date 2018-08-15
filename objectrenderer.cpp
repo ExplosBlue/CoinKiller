@@ -750,6 +750,9 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
     case 322: // Big Grinder
         ret = new NormalImageRenderer(spr, "big_grinder.png");
         break;
+    case 326: // Mr. Sun
+        ret = new NormalImageRenderer(spr, "next/mr_sun.png");
+        break;
     case 329: // Ball 'n' chain
         ret = new BallChainRenderer(spr);
         break;
@@ -3437,7 +3440,6 @@ void BallChainRenderer::render(QPainter* painter, QRect* drawrect)
 {
     QPixmap img(ImageCache::getInstance()->get(SpriteImg, "next/ball_chain.png"));
     img = img.transformed(QTransform().rotate(spr->getNybbleData(12,14)));
-
 
     painter->drawPixmap(QRect(spr->getx()-img.width()/2 + 10, spr->gety()-img.height()/2 + 10, img.width(), img.height()), img);
 }

@@ -2191,6 +2191,12 @@ void Sprite::setRect()
         offsetx = -23;
         offsety = -23;
         break;
+    case 326: // Mr. Sun
+        width = 73;
+        height = 73;
+        offsetx = -26;
+        offsety = -17;
+        break;
     default:
         width = 20;
         height = 20;
