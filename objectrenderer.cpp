@@ -750,6 +750,9 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
     case 322: // Big Grinder
         ret = new NormalImageRenderer(spr, "big_grinder.png");
         break;
+    case 329: // Ball 'n' chain
+        ret = new BallChainRenderer(spr);
+        break;
     default:
         ret = new RoundedRectRenderer(spr, QString("%1").arg(spr->getid()), QColor(0,90,150,150));
         break;
@@ -3422,6 +3425,23 @@ void UnderwaterRecLiftRenderer::render(QPainter *painter, QRect *drawrect)
 
     img->render(painter, drawrect);
 }
+
+
+// Sprite 329: Ball 'n' Chain
+BallChainRenderer::BallChainRenderer(const Sprite* spr)
+{
+    this->spr = spr;
+}
+
+void BallChainRenderer::render(QPainter* painter, QRect* drawrect)
+{
+    QPixmap img(ImageCache::getInstance()->get(SpriteImg, "next/ball_chain.png"));
+    img = img.transformed(QTransform().rotate(spr->getNybbleData(12,14)));
+
+
+    painter->drawPixmap(QRect(spr->getx()-img.width()/2 + 10, spr->gety()-img.height()/2 + 10, img.width(), img.height()), img);
+}
+
 
 // Entrance Renderer
 EntranceRenderer::EntranceRenderer(const Entrance *entrance)

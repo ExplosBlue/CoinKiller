@@ -1005,6 +1005,17 @@ protected:
     NormalImageRenderer *img;
 };
 
+// Sprite 329: Ball 'n' Chain
+class BallChainRenderer: public SpriteRenderer
+{
+public:
+    BallChainRenderer(const Sprite* spr);
+    void render(QPainter* painter, QRect* drawrect);
+protected:
+    const Sprite* spr;
+};
+
+
 class EntranceRenderer : public ObjectRenderer
 {
 public:
