@@ -3027,6 +3027,7 @@
       <entry value="0">50 Mario Seconds (Green)</entry>
       <entry value="1">10 Mario Seconds (Blue)</entry>
     </list>
+	<checkbox nybble="8" title="Spawns outside Coin Rush" comment="Requires SMBNext ASM hacks."/>
   </sprite>
   <sprite id="281" name="Path-controlled Ice Lift">
     <value nybble="21-22" title="Movement ID"/>
@@ -5546,5 +5547,17 @@
         <entry value="0">Counter Clockwise</entry>
         <entry value="1">Clockwise</entry>
       </list>
+  </sprite>
+  <sprite id="330" name="Muncher" notes="Requires SMBNext ASM hacks.">
+    <list nybble="5" title="Rotation" comment="Sets rotation to value * 45.">
+      <entry value="0">0 Degrees</entry>
+      <entry value="1">45 Degrees</entry>
+      <entry value="2">90 Degrees</entry>
+      <entry value="3">135 Degrees</entry>
+      <entry value="4">180 Degrees</entry>
+      <entry value="5">225 Degrees</entry>
+      <entry value="6">270 Degrees</entry>
+      <entry value="7">315 Degrees</entry>
+    </list>
   </sprite>
 </sprites>
