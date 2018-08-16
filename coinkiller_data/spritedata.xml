@@ -3027,6 +3027,7 @@
       <entry value="0">50 Mario Seconds (Green)</entry>
       <entry value="1">10 Mario Seconds (Blue)</entry>
     </list>
+	<checkbox nybble="8" title="Spawns outside Coin Rush" comment="Requires SMBNext ASM hacks."/>
   </sprite>
   <sprite id="281" name="Path-controlled Ice Lift">
     <value nybble="21-22" title="Movement ID"/>
