@@ -1,10 +1,10 @@
+J_Kihon_Test:Overworld (BETA)
 J_Kihon:Overworld
 J_Chika:Underground
 J_Setsugen:Snow
 J_Suichu:Underwater
 J_Yougan:Lava
 J_Gold:Gold
-J_Kihon_Test:Overworld (BETA)
 M_Chika:Underground
 M_Gake:Mountains
 M_Gake_Setsugen:Snowy Mountains
@@ -12,50 +12,100 @@ M_Jungle:Forest
 M_Kaigan:Beach
 M_Kaigan_Obake:Haunted Beach
 M_Kazan:Volcano
-M_Kinopio_Normal:Bonus House Ground
+M_Kinopio_Normal:Toad House
 M_Koopa:Final Castle
-M_Nohara:Overworld/Grassland
-M_Nohara_BigTree:Overworld/Grassland with Trees
-M_Nohara_Onpu:Overworld/Grassland with Note Block
+M_Nohara:Overworld
+M_Nohara_BigTree:Overworld w/ Trees
+M_Nohara_Onpu:Overworld w/ Note Blocks
 M_Nohara2:Sky
 M_Obake:Ghosthouse Interior
 M_Obake_Soto:Ghosthouse Exterior
 M_Rainbow:Rainbow Bonus
 M_Sabaku:Desert
 M_Sabaku_Chika:Desert Underground
-M_Setsugen:Snow/Winterlands
+M_Setsugen:Snow
 M_Shiro:Castle
 M_Shiro_Boss:Castle (Bossfight)
-M_Shiro_Yogan:Castle (Lava)
-M_SkyTower:Sky (Building with grass on top)
+M_SkyTower:Sky Bricks
 M_Sora:Bonus
 M_Suichu:Underwater
 M_Toride:Tower
 M_Toride_Blue:Tower (Underwater)
 M_Toride_Red:Tower (Lava)
-M_Totempole:Totem poles
+M_Totempole:Totem Poles
 M_WarpZone:Cannon
-S1_Iseki:Desert decoration 2 (various other platforms)
+S1_Iseki:Desert Deco 2
 S1_Kanaami:Fences
-S1_Kinoko:Mushrooms (blocks, stems and platforms)
-S1_Kinoko_Snow:Snowy mushrooms (stems and platforms)
+S1_Kinoko:Mushrooms/Sky
+S1_Kinoko_Snow:Snowy Mushrooms
 S1_Kori:Ice
-S1_Obake_Room:Ghost house decoration
-S1_Obake_Soto:Haunted garden
-S1_Rail_Black:Black rails
-S1_Rail_Gray:Grey rails
-S1_Rail_Gray_Mae:Grey rails
-S1_Rail_White:White rails
-S1_Sabaku:Desert decoration (stones and cacti)
-S1_SkyTower:Sky building decoration
-S1_Suichu:Underwater decoration
-S1_Toride:Castle wall and fence
-S2_Assist:Various decoration tiles
+S1_Obake_Room:Ghost House Deco
+S1_Obake_Soto:Ghost House Exterior Deco
+S1_Rail_Black:Black Rails
+S1_Rail_Gray:Grey Rails
+S1_Rail_Gray_Mae:Grey Rails
+S1_Rail_White:White Rails
+S1_Sabaku:Desert Deco 1
+S1_SkyTower:Sky Brick Deco
+S1_Suichu:Underwater Deco
+S1_Toride:Castle Wall/Fence
 S2_Kanaami:Fences
-S2_Kinoko_variation:Big and small mushrooms
-S2_Obake_Room:Ghost house decoration
-S2_Obake_Soto:Haunted garden
-S2_Rail_Black:Black rails
-S2_Rail_Gray:Grey rails
-S2_Rail_White:White rails
-S2_Sabaku:Desert decoration (stones and cacti)
+S2_Kinoko_variation:Mushrooms
+S2_Obake_Room:Ghost House Deco
+S2_Obake_Soto:Ghost House Exterior Deco
+S2_Rail_Black:Black Rails
+S2_Rail_Gray:Grey Rails
+S2_Rail_White:White Rails
+S2_Sabaku:Desert Deco 1
+J_Autumn:Autumn
+J_Candy:Candy
+J_Desert:Desert
+J_Ghost:Ghost
+J_Jungle:Jungle
+J_Jungle_Cave:Jungle Cave
+M_Autumn:Autumn
+M_Blue_Ice_U:NSMBU White Snow
+M_Candy:Next Candy
+M_Chika_Green:Next Underground (Green)
+M_Chromatic:Colored Pipes 1
+M_Desert:Next Desert (Slow Sand)
+M_FreezeflameAlt:Next Freezeflame
+M_Hikousen:NSMBWii Airship
+M_Jungle_Next:Next Jungle
+M_Jungle_Next_Ghost:Next Jungle (Ghost)
+M_Oasis_Next:Next Oasis
+M_Oasis_Next_Sunset:Next Oasis (Sunset)
+M_Rail_Black:Black Rails
+M_Shiro_Lava:Castle (Lava)
+M_Shiro_Setsugen:Castle (Snow)
+M_Shiro_Yogan:Castle (Sand)
+M_Sky_Autumn_NSMBU:NSMBU Sky (Autumn)
+M_Sky_Blue_NSMBU:NSMBU Sky (Blue)
+M_Sky_Orange_NSMBU:NSMBU Sky (Sunset)
+M_Snow_NSMBU: NSMBU Purple Snow
+M_Snow_Plains_Next:Next Snow Plains
+M_Water_U:NSMBU Underwater
+S1_Beach_Extra_NSMBU:NSMBU Beach Deco
+S1_Board:Autumn Deco
+S1_Chromatic:Colored Pipes 2
+S1_Hikousen:Airship Deco
+S1_Muncher:Next Munchers
+S1_Popsicle:Next Popsicles
+S1_Rocks_Blue_Gray_NSMBU:NSMBU Rocks (Snow)
+S1_Rocks_Blue_NSMBU:NSMBU Rocks (Underground)
+S1_Rocks_Bright_Lava_NSMBU:NSMBU Rocks (Lava)
+S1_Rocks_Brown_NSMBU:NSMBU Rocks (Overworld)
+S1_Rocks_Green_NSMBU:NSMBU Rocks (Green Underground)
+S1_Rocks_Dark_Brown_NSLU:NSLU Rocks (Dark Overworld)
+S1_sewer_background:NSMBWii Sewer Deco
+S2_Assist:Various Tiles
+S2_Beach_Hut_NSLU:NSLU Beach Huts
+S2_Candy_Deco:Next Candy Deco
+S2_Chromatic:Colored Pipes 3
+S2_Desert:Next Desert Deco
+S2_Jungle_Next:Next Jungle Deco
+S2_Rocks_Blue_Gray_NSMBU:NSMBU Rocks (Snow)
+S2_Sabaku_Totem:NSMBU Desert Totems
+S2_Sewer:NSMBWii Sewer
+S2_Snow_Decor:NSMBU Snow Deco
+S2_Kinoko_variation:Mushrooms
