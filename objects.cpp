@@ -1454,13 +1454,16 @@ void Sprite::setRect()
         }
         int offset;
         if (getNybble(11) == 0)
+        {
             height = 20;
+            offsety = -10;
+        }
         else if (getNybble(11) <= 7)
         {
             for(offset = 0; offset < getNybble(11); offset++)
             {
                 height = (offset*20)+40;
-                offsety = -(offset*20)-20;
+                offsety = -(offset*20)-30;
             }
         }
         else
@@ -1468,6 +1471,7 @@ void Sprite::setRect()
             offset = 160;
             for (int i = 8; i != getNybble(11); i++) offset -= 20;
             height = offset+20;
+            offsety = -10;
         }
         offsetx = -10;
         break;
