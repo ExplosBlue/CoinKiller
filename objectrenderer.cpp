@@ -2297,18 +2297,18 @@ void TightropeRenderer::render(QPainter *painter, QRect *)
     if (spr->getNybble(11) <=7)
     {
         for(heightoffset = 0; heightoffset < spr->getNybble(11); heightoffset++);
-        painter->drawLine(spr->getx(), spr->gety()+10, spr->getx()+ropelength-4, spr->gety()+10-(heightoffset*20));
-        painter->drawPixmap(QRect(spr->getx()-8+ropelength,spr->gety()+2-(heightoffset*20), 16, 16), ImageCache::getInstance()->get(SpriteImg, "rope_joint.png"));
+        painter->drawLine(spr->getx(), spr->gety(), spr->getx()+ropelength-4, spr->gety()-(heightoffset*20));
+        painter->drawPixmap(QRect(spr->getx()-8+ropelength,spr->gety()-10-(heightoffset*20), 16, 16), ImageCache::getInstance()->get(SpriteImg, "rope_joint.png"));
     }
     else
     {
         heightoffset = 160;
         for (int i = 8; i != spr->getNybble(11); i++) heightoffset -= 20;
-        painter->drawLine(spr->getx(), spr->gety()+10, spr->getx()+ropelength-4, spr->gety()+10+heightoffset);
-        painter->drawPixmap(QRect(spr->getx()-8+ropelength,spr->gety()+2+heightoffset, 16, 16), ImageCache::getInstance()->get(SpriteImg, "rope_joint.png"));
+        painter->drawLine(spr->getx(), spr->gety(), spr->getx()+ropelength-4, spr->gety()+heightoffset);
+        painter->drawPixmap(QRect(spr->getx()-8+ropelength,spr->gety()-10+heightoffset, 16, 16), ImageCache::getInstance()->get(SpriteImg, "rope_joint.png"));
     }
 
-    painter->drawPixmap(QRect(spr->getx()-8,spr->gety()+2, 16, 16), ImageCache::getInstance()->get(SpriteImg, "rope_joint.png"));
+    painter->drawPixmap(QRect(spr->getx()-8,spr->gety()-10, 16, 16), ImageCache::getInstance()->get(SpriteImg, "rope_joint.png"));
 
     painter->setPen(Qt::NoPen);
 }
