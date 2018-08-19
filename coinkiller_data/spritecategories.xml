@@ -18,6 +18,7 @@
 			<attach sprite="29"/> <!-- Bob-omb -->
 			<attach sprite="184"/> <!-- Parabomb -->
 			<attach sprite="215"/> <!-- Parabomb Cannon -->
+			<attach sprite="330"/> <!-- Muncher -->
 		</category>
 		<category name="Athletic/Sky">
 			<attach sprite="51"/> <!-- Fuzzy -->
@@ -29,6 +30,7 @@
 			<attach sprite="115-119"/> <!-- Bullet Bill Enemies -->
 			<attach sprite="185"/> <!-- Koopa Paratroopa -->
 			<attach sprite="186"/> <!-- Koopa Circle -->
+			<attach sprite="330"/> <!-- Muncher -->
 		</category>
 		<category name="Castle/Tower">
 			<attach sprite="12"/> <!-- Lava -->
@@ -61,6 +63,7 @@
 			<attach sprite="255"/> <!-- Bowser Head Statue -->
 			<attach sprite="266"/> <!-- Flash-attack Koopalings in Clown Car -->
 			<attach sprite="322"/> <!-- Big Grinder -->
+			<attach sprite="329"/> <!-- Ball n Chain -->
 		</category>
 		<category name="Desert">
 			<attach sprite="9"/> <!-- Whomp -->
@@ -75,6 +78,7 @@
 			<attach sprite="215"/> <!-- Parabomb Cannon -->
 			<attach sprite="232-233"/> <!-- Spiny -->
 			<attach sprite="244"/> <!-- Chain Chomp -->
+			<attach sprite="326"/> <!-- Mr. Sun -->
 		</category>
 		<category name="Underground">
 			<attach sprite="8"/> <!-- Swooper -->
@@ -85,6 +89,7 @@
 			<attach sprite="82"/> <!-- Fire Snake -->
 			<attach sprite="158"/> <!-- Buzzy Beetle -->
 			<attach sprite="159"/> <!-- Spike Top -->
+			<attach sprite="330"/> <!-- Muncher -->
 		</category>
 		<category name="Volcano/Lava">
 			<attach sprite="9"/> <!-- Whomp -->
@@ -135,6 +140,7 @@
 			<attach sprite="215"/> <!-- Parabomb  Cannon -->
 			<attach sprite="244"/> <!-- Chain Chomp -->
 			<attach sprite="270-271"/> <!-- Icy Balls -->
+			<attach sprite="330"/> <!-- Muncher -->
 		</category>
 		<category name="Jungle">
 			<attach sprite="13"/> <!-- Poison -->
@@ -228,7 +234,7 @@
 			<attach sprite="10, 30, 37, 38, 39, 49, 50, 65, 67, 102, 125, 126, 128, 129, 130, 131, 132, 133, 134, 141, 142, 155, 162, 211, 212, 216, 245, 246, 253, 258, 260, 261, 262, 263, 264, 265, 266, 272, 283, 299, 301, 306, 310, 315, 319, 323"/> <!--  -->
         </category>
         <category name="Resource Loaders/Disablers">
-			<attach sprite="288, 295, 298, 312, 325"/> <!--  -->
+			<attach sprite="288, 295, 298, 312, 325, 327, 328"/> <!--  -->
         </category>
         <category name="Generators">
 			<attach sprite="68, 238, 237"/> <!--  -->
@@ -278,4 +284,12 @@
 			<attach sprite="309, 304, 324, 256"/> <!--  -->
         </category>
     </view>
+	<view name="SMBNext Code Hacks">
+		<category name="Custom Sprites">
+			<attach sprite="326-330"/>
+		</category>
+		<category name="Edited Sprites">
+			<attach sprite="280, 44"/>
+		</category>
+	</view>
 </views>

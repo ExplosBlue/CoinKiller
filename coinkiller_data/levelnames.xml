@@ -33,7 +33,7 @@
         <level file="2-3" name="World 2-3" />
         <level file="2-8" name="World 2-A" />
         <level file="2-14" name="World 2-Airship" />
-        <level file="2-12" name="World 2-Ghost House" />
+        <level file="2-12" name="World 2-Challenge House" />
         <level file="2-4" name="World 2-4" />
         <level file="2-5" name="World 2-5" />
         <level file="2-9" name="World 2-B" />
@@ -52,11 +52,11 @@
         </category>
     </category>
 
-    <category name="World A - UNNAMED">
+    <category name="World A - Violet Rock Island">
         <level file="7-29" name="World A-Remake" />
         <level file="7-1" name="World A-1" />
         <level file="7-2" name="World A-2" />
-        <level file="7-12" name="World A-Ghost House" />
+        <level file="7-12" name="World A-Challenge House" />
         <level file="7-8" name="World A-A" />
         <level file="7-3" name="World A-3" />
         <level file="7-24" name="World A-Cannon" />
@@ -85,7 +85,7 @@
         <level file="3-14" name="World 3-Airship" />
         <level file="3-24" name="World 3-Cannon" />
         <level file="3-4" name="World 3-4" />
-        <level file="3-12" name="World 3-Ghost House" />
+        <level file="3-12" name="World 3-Challenge House" />
         <level file="3-5" name="World 3-5" />
         <level file="3-9" name="World 3-B" />
         <level file="3-16" name="World 3-Castle" />
@@ -105,7 +105,7 @@
     <category name="World 4 - Cosy Chilly Hilltops">
         <level file="4-29" name="World 4-Remake" />
         <level file="4-1" name="World 4-1" />
-        <level file="4-12" name="World 4-Ghost House" />
+        <level file="4-12" name="World 4-Challenge House" />
         <level file="4-2" name="World 4-2" />
         <level file="4-8" name="World 4-A" />
         <level file="4-14" name="World 4-Airship" />
@@ -133,7 +133,7 @@
         <level file="8-1" name="World B-1" />
         <level file="8-8" name="World B-A" />
         <level file="8-24" name="World B-Cannon" />
-        <level file="8-12" name="World B-Ghost House" />
+        <level file="8-12" name="World B-Challenge House" />
         <level file="8-2" name="World B-2" />
         <level file="8-3" name="World B-3" />
         <level file="8-9" name="World B-B" />
@@ -157,7 +157,7 @@
         <level file="5-29" name="World 5-Remake" />
         <level file="5-1" name="World 5-1" />
         <level file="5-2" name="World 5-2" />
-        <level file="5-12" name="World 5-Ghost House" />
+        <level file="5-12" name="World 5-Challenge House" />
         <level file="5-3" name="World 5-3" />
         <level file="5-14" name="World 5-Airship" />
         <level file="5-4" name="World 5-4" />
@@ -180,7 +180,7 @@
     <category name="World 6 - Lava-Split Ashlands">
         <level file="6-29" name="World 6-Remake" />
         <level file="6-1" name="World 6-1" />
-        <level file="6-12" name="World 6-Ghost House" />
+        <level file="6-12" name="World 6-Challenge House" />
         <level file="6-2" name="World 6-2" />
         <level file="6-9" name="World 6-B" />
         <level file="6-3" name="World 6-3" />
@@ -219,7 +219,7 @@
         <level file="6-27" name="Credits" />
     </category>
 
-    <category name="Downloadable Content (DLC)">
+    <category name="Extra Stage Packs">
 
         <category name="Steam Gardens Pack">
             <level file="dlc/10-1" name="Course 1" />
@@ -283,27 +283,114 @@
 
     </category>
 
-    <category name="Unused">
-        <level file="1-12" name="World 1-Castle (Beta)" />
-		<level file="8-4" name="World Mushroom-2 (Beta)" />
-		<level file="7-5" name="World 4-Tower (Beta)" />
-        <level file="5-9" name="World Flower-B (Beta)" />
-        <level file="5-22" name="World 5-Extra Life Toad House (Unused)" />
-        <level file="6-10" name="World 6-Castle (Beta 1)" />
-        <level file="9-10" name="World 6-Castle (Beta 2)" />
-        <level file="7-4" name="World Star-5 (Beta)" />
-        <level file="9-8" name="World Star-6 (Beta)" />
-        <level file="9-9" name="World Star-7 (Beta)" />
-    </category>
-
-  <category name="Beta SMBN Levels">
+  <category name="SMBNext Extras">
            <level file="Beta1-2" name="World 1-2 Beta" />
            <level file="Beta1-Tower-One" name="World 1-Tower Beta 1" />
            <level file="Beta1-Tower-Two" name="World 1-Tower Beta 2" />
-		<level file="Beta2-4" name="World 2-4 Unused (Unused)" />
-        <level file="Beta2-A" name="World 2-A Unused (Crashes)" />
+		<level file="Beta2-4" name="World 2-4 Unused" />
 		<level file="BetaA-Castle" name="World A-Castle (Unused)" />
 
   </category>
-
+  
+  <category name="World 1 - Redwood Gorge (Hard Mode)">
+        <level file="hard/1-1" name="World 1-1 (Hard Mode)" />
+        <level file="hard/1-2" name="World 1-2 (Hard Mode)" />
+        <level file="hard/1-3" name="World 1-3 (Hard Mode)" />
+        <level file="hard/1-14" name="World 1-Airship (Hard Mode)" />
+        <level file="hard/1-4" name="World 1-4 (Hard Mode)" />
+        <level file="hard/1-5" name="World 1-5 (Hard Mode)" />
+        <level file="hard/1-8" name="World 1-A (Hard Mode)" />
+        <level file="hard/1-16" name="World 1-Castle (Hard Mode)" />
+  </category>
+  
+  <category name="World 2 - Dune-Dry Sandland (Hard Mode)">
+        <level file="hard/2-1" name="World 2-1 (Hard Mode)" />
+        <level file="hard/2-2" name="World 2-2 (Hard Mode)" />
+        <level file="hard/2-3" name="World 2-3 (Hard Mode)" />
+        <level file="hard/2-8" name="World 2-A (Hard Mode)" />
+        <level file="hard/2-14" name="World 2-Airship (Hard Mode)" />
+        <level file="hard/2-4" name="World 2-4 (Hard Mode)" />
+        <level file="hard/2-5" name="World 2-5 (Hard Mode)" />
+        <level file="hard/2-9" name="World 2-B (Hard Mode)" />
+        <level file="hard/2-16" name="World 2-Castle (Hard Mode)" />
+    </category>
+	
+	<category name="World A - Violet Rock Island (Hard Mode)">
+        <level file="hard/7-1" name="World A-1 (Hard Mode)" />
+        <level file="hard/7-2" name="World A-2 (Hard Mode)" />
+        <level file="hard/7-8" name="World A-A (Hard Mode)" />
+        <level file="hard/7-3" name="World A-3 (Hard Mode)" />
+        <level file="hard/7-9" name="World A-B (Hard Mode)" />
+        <level file="hard/7-16" name="World A-Castle (Hard Mode)" />
+    </category>
+	
+	<category name="World 3 - Ghastly Green Jungle (Hard Mode)">
+        <level file="hard/3-1" name="World 3-1 (Hard Mode)" />
+        <level file="hard/3-2" name="World 3-2 (Hard Mode)" />
+        <level file="hard/3-3" name="World 3-3 (Hard Mode)" />
+        <level file="hard/3-8" name="World 3-A (Hard Mode)" />
+        <level file="hard/3-14" name="World 3-Airship (Hard Mode)" />
+        <level file="hard/3-4" name="World 3-4 (Hard Mode)" />
+        <level file="hard/3-5" name="World 3-5 (Hard Mode)" />
+        <level file="hard/3-9" name="World 3-B (Hard Mode)" />
+        <level file="hard/3-16" name="World 3-Castle (Hard Mode)" />
+    </category>
+	
+	<category name="World 4 - Cosy Chilly Hilltops (Hard Mode)">
+        <level file="hard/4-1" name="World 4-1 (Hard Mode)" />
+        <level file="hard/4-2" name="World 4-2 (Hard Mode)" />
+        <level file="hard/4-8" name="World 4-A (Hard Mode)" />
+        <level file="hard/4-14" name="World 4-Airship (Hard Mode)" />
+        <level file="hard/4-3" name="World 4-3 (Hard Mode)" />
+        <level file="hard/4-4" name="World 4-4 (Hard Mode)" />
+        <level file="hard/4-10" name="World 4-C (Hard Mode)" />
+        <level file="hard/4-5" name="World 4-5 (Hard Mode)" />
+        <level file="hard/4-9" name="World 4-B (Hard Mode)" />
+        <level file="hard/4-16" name="World 4-Castle (Hard Mode)" />
+    </category>
+	
+	<category name="World B - Crumbleberg Ruins (Hard Mode)">
+        <level file="hard/8-1" name="World B-1 (Hard Mode)" />
+        <level file="hard/8-8" name="World B-A (Hard Mode)" />
+        <level file="hard/8-2" name="World B-2 (Hard Mode)" />
+        <level file="hard/8-3" name="World B-3 (Hard Mode)" />
+        <level file="hard/8-9" name="World B-B (Hard Mode)" />
+        <level file="hard/8-16" name="World B-Castle (Hard Mode)" />
+    </category>
+	
+	<category name="World 5 - Sweet Caketop Heights (Hard Mode)">
+        <level file="hard/5-1" name="World 5-1 (Hard Mode)" />
+        <level file="hard/5-2" name="World 5-2 (Hard Mode)" />
+        <level file="hard/5-3" name="World 5-3 (Hard Mode)" />
+        <level file="hard/5-14" name="World 5-Airship (Hard Mode)" />
+        <level file="hard/5-4" name="World 5-4 (Hard Mode)" />
+        <level file="hard/5-8" name="World 5-A (Hard Mode)" />
+        <level file="hard/5-5" name="World 5-5 (Hard Mode)" />
+        <level file="hard/5-6" name="World 5-6 (Hard Mode)" />
+        <level file="hard/5-16" name="World 5-Castle (Hard Mode)" />
+    </category>
+	
+	<category name="World 6 - Lava-Split Ashlands Hard Mode)">
+        <level file="hard/6-1" name="World 6-1 (Hard Mode)" />
+        <level file="hard/6-2" name="World 6-2 (Hard Mode)" />
+        <level file="hard/6-9" name="World 6-B (Hard Mode)" />
+        <level file="hard/6-3" name="World 6-3 (Hard Mode)" />
+        <level file="hard/6-8" name="World 6-A (Hard Mode)" />
+        <level file="hard/6-14" name="World 6-Airship (Hard Mode)" />
+        <level file="hard/6-4" name="World 6-4 (Hard Mode)" />
+        <level file="hard/6-5" name="World 6-5 (Hard Mode)" />
+        <level file="hard/6-16" name="World 6-Castle (Hard Mode)" />
+    </category>
+	
+	<category name="World S - Rainbow Road (Hard Mode)">
+        <level file="hard/9-1" name="World S-1 (Hard Mode)" />
+        <level file="hard/9-2" name="World S-2 (Hard Mode)" />
+        <level file="hard/9-3" name="World S-3 (Hard Mode)" />
+        <level file="hard/9-4" name="World S-4 (Hard Mode)" />
+        <level file="hard/9-5" name="World S-5 (Hard Mode)" />
+        <level file="hard/9-6" name="World S-6 (Hard Mode)" />
+        <level file="hard/9-7" name="World S-7 (Hard Mode)" />
+        <level file="hard/9-16" name="World S-Castle (Hard Mode)" />
+    </category>
+	
 </levels>

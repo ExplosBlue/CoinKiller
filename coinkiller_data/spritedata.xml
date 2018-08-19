@@ -5,7 +5,12 @@
     <value nybble="5" title="Unknown Value 5" comment="Max value used is 1."/>
     <value nybble="6" title="Path ID"/>
     <value nybble="9" title="Unknown Value 9" comment="Max value used is 2."/>
-    <value nybble="10" title="Autoscroll Speed"/>
+    <list nybble="10" title="Ending Behavior">
+      <entry value="0">Unlocks Camera Movement</entry>
+      <entry value="1">Move to First Node</entry>
+      <entry value="2">Stops all camera movement</entry>
+      <entry value="3">Unlocks Y Axis Movement</entry>
+    </list>
     <value nybble="11-12" title="Midway Starting Node"/>
     <value nybble="13-14" title="Unknown Value 13-14" comment="Max value used is 4."/>
     <value nybble="15" title="Unknown Value 15" comment="Max value used is 1."/>
@@ -5559,5 +5564,6 @@
       <entry value="6">270 Degrees</entry>
       <entry value="7">315 Degrees</entry>
     </list>
+	<checkbox nybble="6" title="Large Muncher" comment="Spawns a 2x2 muncher."/>
   </sprite>
 </sprites>

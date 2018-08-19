@@ -89,7 +89,6 @@ S1_Beach_Extra_NSMBU:NSMBU Beach Deco
 S1_Board:Autumn Deco
 S1_Chromatic:Colored Pipes 2
 S1_Hikousen:Airship Deco
-S1_Muncher:Next Munchers
 S1_Popsicle:Next Popsicles
 S1_Rocks_Blue_Gray_NSMBU:NSMBU Rocks (Snow)
 S1_Rocks_Blue_NSMBU:NSMBU Rocks (Underground)
@@ -104,8 +103,8 @@ S2_Candy_Deco:Next Candy Deco
 S2_Chromatic:Colored Pipes 3
 S2_Desert:Next Desert Deco
 S2_Jungle_Next:Next Jungle Deco
+S2_Kinoko_variation:Mushrooms
 S2_Rocks_Blue_Gray_NSMBU:NSMBU Rocks (Snow)
 S2_Sabaku_Totem:NSMBU Desert Totems
 S2_Sewer:NSMBWii Sewer
 S2_Snow_Decor:NSMBU Snow Deco
-S2_Kinoko_variation:Mushrooms
