@@ -756,6 +756,9 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
     case 329: // Ball 'n' chain
         ret = new BallChainRenderer(spr);
         break;
+    case 330: // Muncher
+        ret = new MunchRenderer(spr);
+        break;
     default:
         ret = new RoundedRectRenderer(spr, QString("%1").arg(spr->getid()), QColor(0,90,150,150));
         break;
@@ -3442,6 +3445,27 @@ void BallChainRenderer::render(QPainter* painter, QRect* drawrect)
     img = img.transformed(QTransform().rotate(spr->getNybbleData(12,14)));
 
     painter->drawPixmap(QRect(spr->getx()-img.width()/2 + 10, spr->gety()-img.height()/2 + 10, img.width(), img.height()), img);
+}
+
+// Sprite 330: Muncher
+MunchRenderer::MunchRenderer(const Sprite* spr)
+{
+    this->spr = spr;
+}
+
+void MunchRenderer::render(QPainter* painter, QRect* drawrect)
+{
+    QString imgfile = "next/muncher.png";
+    int munchOffset = 10;
+    if (spr->getNybble(5) & 1)
+    {
+        imgfile = "next/muncher_large.png";
+        munchOffset = 20;
+    }
+
+    QPixmap img(ImageCache::getInstance()->get(SpriteImg, imgfile));
+    img = img.transformed(QTransform().rotate(spr->getNybble(4)*45));
+    painter->drawPixmap(QRect(spr->getx()-img.width()/2 + munchOffset, spr->gety()-img.height()/2 + munchOffset, img.width(), img.height()), img);
 }
 
 

@@ -2201,6 +2201,20 @@ void Sprite::setRect()
         offsetx = -26;
         offsety = -17;
         break;
+    case 330: // Muncher
+    {
+        if (getNybble(5) & 1)
+        {
+            width = 40;
+            height = 41;
+        }
+        else
+        {
+            width = 20;
+            height = 20;
+        }
+        break;
+    }
     default:
         width = 20;
         height = 20;
