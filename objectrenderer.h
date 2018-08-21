@@ -1015,6 +1015,16 @@ protected:
     const Sprite* spr;
 };
 
+// Sprite 330: Muncher
+class MunchRenderer: public SpriteRenderer
+{
+public:
+    MunchRenderer(const Sprite* spr);
+    void render(QPainter* painter, QRect* drawrect);
+protected:
+    const Sprite* spr;
+};
+
 
 class EntranceRenderer : public ObjectRenderer
 {
