@@ -73,6 +73,7 @@ public:
 private:
     QList<spriteView> spriteViews;
     QList<SpriteDefinition> spriteDefs;
+    QList<SpriteDefinition> spriteDefsNext;
 };
 
 #endif // SPRITEDATA_H

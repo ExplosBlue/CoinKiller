@@ -2,6 +2,8 @@
 
 SpriteData::SpriteData()
 {
+    bool customSprites = true;
+
     // Load Sprite Definitions
     QDomDocument xmlSpriteData;
     QFile f1(QCoreApplication::applicationDirPath() + "/coinkiller_data/spritedata.xml");
@@ -18,13 +20,51 @@ SpriteData::SpriteData()
         spriteElement = spriteElement.nextSiblingElement();
     }
 
+    // Load Custom Sprite Definitions
+    QDomDocument xmlSpriteDataNext;
+    QFile f2(QCoreApplication::applicationDirPath() + "/coinkiller_data/spritedataNext.xml");
+    if (!f2.open(QIODevice::ReadOnly))
+        customSprites = false;
+    else
+    {
+        xmlSpriteDataNext.setContent(&f2);
+        f1.close();
+    }
+
+    if (customSprites)
+    {
+        QDomElement spriteElementNext = xmlSpriteDataNext.documentElement().firstChild().toElement();
+        while (!spriteElementNext.isNull())
+        {
+            spriteDefsNext.append(SpriteDefinition(spriteElementNext));
+
+            spriteElementNext = spriteElementNext.nextSiblingElement();
+        }
+
+        // Replace Spritedata For Existing Sprites With Custom Data
+        foreach (SpriteDefinition retailSpr, spriteDefs)
+        {
+            foreach (SpriteDefinition nextSpr, spriteDefsNext)
+            {
+                if (retailSpr.getID() == nextSpr.getID())
+                    spriteDefs.replace(retailSpr.getID(), nextSpr);
+            }
+        }
+        // Add Spritedata For New Sprites
+        foreach (SpriteDefinition nextSpr, spriteDefsNext)
+        {
+            if (nextSpr.getID() > 325)
+                spriteDefs.append(nextSpr);
+        }
+    }
+
     // Load Sprite Views
     QDomDocument xmlSpriteViews;
-    QFile f2(QCoreApplication::applicationDirPath() + "/coinkiller_data/spritecategories.xml");
-    if (!f2.open(QIODevice::ReadOnly))
+    QFile f3(QCoreApplication::applicationDirPath() + "/coinkiller_data/spritecategories.xml");
+    if (!f3.open(QIODevice::ReadOnly))
         return;
-    xmlSpriteViews.setContent(&f2);
-    f2.close();
+    xmlSpriteViews.setContent(&f3);
+    f3.close();
 
     // Add "All (Sorted by Number)" View
     spriteView allView;
@@ -43,6 +83,9 @@ SpriteData::SpriteData()
         spriteView view;
         view.name = viewElement.attribute("name");
 
+        if (view.name == "SMBNext Code Hacks" && !customSprites)
+            break;
+
         QDomNodeList cats = viewElement.elementsByTagName("category");
         for (int c = 0; c < cats.size(); c++)
         {
@@ -59,23 +102,38 @@ SpriteData::SpriteData()
                 {
                     QStringList a = attachStr.split('-');
                     for (int i = a[0].toInt(); i < a[1].toInt()+1; i++)
+                    {
+                        if (i > 325 && !customSprites)
+                            break;
+
                         category.sprites.append(i);
+                    }
                 }
                 else if (attachStr.contains(','))
                 {
                     QStringList a = attachStr.split(',');
                     foreach (QString str, a)
+                    {
+                        if (str.toInt() > 325 && !customSprites)
+                            break;
+
                         category.sprites.append(str.toInt());
+                    }
                 }
                 else
+                {
+                    if (attachStr.toInt() > 325 && !customSprites)
+                        break;
+
                     category.sprites.append(attachStr.toInt());
+                }
             }
 
             view.categories.append(category);
         }
 
         spriteViews.append(view);
-    } 
+    }
 }
 
 SpriteDefinition::SpriteDefinition(QDomElement spriteElement)
