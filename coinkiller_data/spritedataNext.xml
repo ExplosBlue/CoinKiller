@@ -1,5 +1,32 @@
 <?xml version="1.0"?>
 <sprites>
+  <sprite id="29" name="Bob-omb" notes="Actor: 0x101&#13;&#10;Description: A walking bomb enemy that explodes when jumped on.&#13;&#10;Event Triggerable: No&#13;&#10;Affected by Gold Ring: No &#13;&#10;Requirements: N/A&#13;&#10;">
+    <list nybble="11" title="Behaviour" comment="[Unused]">
+      <entry value="0">Normal</entry>
+      <entry value="1">Jump When Spawned</entry>
+      <entry value="2">Shot From Cannon</entry>
+      <entry value="3">Frozen</entry>
+    </list>
+    <checkbox nybble="20" title="Face Right" comment="If 1 or above, the bob-omb will face right."/>
+	<list nybble="24" title="Scale" comment="Requires SMBNext ASM hacks.">
+	  <entry value="0">1.0x</entry>
+	  <entry value="1">0.25x</entry>
+	  <entry value="2">0.50x</entry>
+	  <entry value="3">0.75x</entry>
+	  <entry value="4">1.0x</entry>
+	  <entry value="5">1.25x</entry>
+	  <entry value="6">1.50x</entry>
+	  <entry value="7">1.75x</entry>
+	  <entry value="8">2.0x</entry>
+	  <entry value="9">2.5x</entry>
+	  <entry value="10">3.0x</entry>
+	  <entry value="11">4.0x</entry>
+	  <entry value="12">5.0x</entry>
+	  <entry value="13">6.0x</entry>
+	  <entry value="14">7.0x</entry>
+	  <entry value="15">8.0x</entry>
+	</list>
+  </sprite>
   <sprite id="280" name="+ Clock" notes="Actor: 0x192&#13;&#10;Notes: Only spawns in Coin Rush.&#13;&#10;Todo: check for unused nybbles and values.">
     <list nybble="6" title="Type">
       <entry value="0">50 Mario Seconds (Green)</entry>
@@ -2076,4 +2103,53 @@
     </list>
 	<checkbox nybble="6" title="Large Muncher" comment="Spawns a 2x2 muncher."/>
   </sprite>
-</sprites>  
+    <sprite id="331" name="Cannonball" notes="Requires SMBNext ASM hacks.">
+    <value nybble="3-4" title="Triggering Event ID" comment="Leaving this at 0 will activate the cannonball instantly."/>  
+    <checkbox nybble="6" title="Big"/>
+    <list nybble="5" title="Direction" comment="Sets rotation to value * 45.">
+      <entry value="0">Up</entry>
+      <entry value="1">Up-Right</entry>
+      <entry value="2">Right</entry>
+      <entry value="3">Down-Right</entry>
+      <entry value="4">Right</entry>
+      <entry value="5">Down-Left</entry>
+      <entry value="6">Left</entry>
+      <entry value="7">Up-Left</entry>
+    </list>
+    <value nybble="13-15" title="Direction (Degrees)" comment="Starting from top, clockwise. Overwrites direction set by nybble 5."/>
+    <list nybble="8" title="Speed">
+      <entry value="0">Medium</entry>
+      <entry value="1">Very Slow</entry>
+      <entry value="2">Slower</entry>
+      <entry value="3">Slow</entry>
+      <entry value="4">Medium</entry>
+      <entry value="5">Fast</entry>
+      <entry value="6">Faster</entry>
+      <entry value="7">Very Fast</entry>
+    </list>
+  </sprite>
+<sprite id="332" name="Skewer - Down" notes="Requires SMBNext ASM Hacks. Actor: 0x19A&#13;&#10;Description: A Skewer that moves down.&#13;&#10;Event Triggerable: No&#13;&#10;Affected by Gold Ring: No &#13;&#10;Requirements: N/A">
+    <value nybble="5-6" title="Return Delay" comment="The time it takes to come back."/>
+    <value nybble="7-8" title="Launch Delay" comment="The time it takes to launch."/>
+    <list nybble="9" title="Distance" comment="Controls distance.">
+      <entry value="0">16 Tiles</entry>
+      <entry value="1">7 Tiles</entry>
+      <entry value="2">14 Tiles</entry>
+      <entry value="3">10 Tiles</entry>
+    </list>
+    <checkbox nybble="10" title="Z-Order Change" comment="When checked, the skewer will appear behind certain sprites."/>
+    <value nybble="11-12" title="Movement Speed" comment="Controls both back and forth movement speed."/>
+  </sprite>
+<sprite id="333" name="Skewer - Up" notes="Requires SMBNext ASM Hacks. Actor: 0x19A&#13;&#10;Description: A Skewer that moves up.&#13;&#10;Event Triggerable: No&#13;&#10;Affected by Gold Ring: No &#13;&#10;Requirements: N/A">
+    <value nybble="5-6" title="Return Delay" comment="The time it takes to come back."/>
+    <value nybble="7-8" title="Launch Delay" comment="The time it takes to launch."/>
+    <list nybble="9" title="Distance" comment="Controls distance.">
+      <entry value="0">16 Tiles</entry>
+      <entry value="1">7 Tiles</entry>
+      <entry value="2">14 Tiles</entry>
+      <entry value="3">10 Tiles</entry>
+    </list>
+    <checkbox nybble="10" title="Z-Order Change" comment="When checked, the skewer will appear behind certain sprites."/>
+    <value nybble="11-12" title="Movement Speed" comment="Controls both back and forth movement speed."/>
+  </sprite>
+</sprites>

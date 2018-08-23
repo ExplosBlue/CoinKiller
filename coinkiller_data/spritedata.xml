@@ -775,18 +775,28 @@
     <value nybble="21-22" title="Rotation ID"/>
   </sprite>
   <sprite id="63" name="Skewer - Left" notes="Actor: 0x19A&#13;&#10;Description: A Skewer that moves left.&#13;&#10;Event Triggerable: No&#13;&#10;Affected by Gold Ring: No &#13;&#10;Requirements: N/A">
-    <value nybble="5-6" title="Launch Speed"/>
-    <value nybble="7-8" title="Unknown 7-8"/>
-    <value nybble="9-10" title="Launch Delay"/>
-    <checkbox nybble="10" title="Z-Order Change" comment="When checked, The Skewer will appear on layer 2."/>
-    <value nybble="11-12" title="Return Delay"/>
+    <value nybble="5-6" title="Return Delay" comment="The time it takes to come back."/>
+    <value nybble="7-8" title="Launch Delay" comment="The time it takes to launch."/>
+    <list nybble="9" title="Distance" comment="Controls distance.">
+      <entry value="0">16 Tiles</entry>
+      <entry value="1">7 Tiles</entry>
+      <entry value="2">14 Tiles</entry>
+      <entry value="3">10 Tiles</entry>
+    </list>
+    <checkbox nybble="10" title="Z-Order Change" comment="When checked, the skewer will appear behind certain sprites."/>
+    <value nybble="11-12" title="Movement Speed" comment="Controls both back and forth movement speed."/>
   </sprite>
   <sprite id="64" name="Skewer - Right" notes="Actor: 0x19B&#13;&#10;Description: A Skewer that moves right.&#13;&#10;Event Triggerable: No&#13;&#10;Affected by Gold Ring: No &#13;&#10;Requirements: N/A">
-    <value nybble="5-6" title="Launch Speed"/>
-    <value nybble="7-8" title="Unknown Value 7-8"/>
-    <value nybble="9-10" title="Launch Delay"/>
-    <checkbox nybble="10" title="Z-Order Change" comment="When checked, The Skewer will appear on layer 2."/>
-    <value nybble="11-12" title="Return Delay"/>
+    <value nybble="5-6" title="Return Delay" comment="The time it takes to come back."/>
+    <value nybble="7-8" title="Launch Delay" comment="The time it takes to launch."/>
+    <list nybble="9" title="Distance" comment="Controls distance.">
+      <entry value="0">16 Tiles</entry>
+      <entry value="1">7 Tiles</entry>
+      <entry value="2">14 Tiles</entry>
+      <entry value="3">10 Tiles</entry>
+    </list>
+    <checkbox nybble="10" title="Z-Order Change" comment="When checked, the skewer will appear behind certain sprites."/>
+    <value nybble="11-12" title="Movement Speed" comment="Controls both back and forth movement speed."/>
   </sprite>
   <sprite id="65" name="Morton Koopa Jr. - Respawn Pipe" notes="Actor: 0x093 &#13;&#10;Description: The respawning pipe that is used in Morton's Castle battle.&#13;&#10;Event Triggerable: No&#13;&#10;Affected by Gold Ring: No &#13;&#10;Requirements: N/A"/>
   <sprite id="66" name="Pipe Cannon">
@@ -1284,8 +1294,9 @@
     <value nybble="12" title="Sync ID" comment="All platforms with the same ID will all expand/contract together. Requires sprite 98(Movement Controller - Group) To be present."/>
   </sprite>
   <sprite id="123" name="Bouncy Mushroom" notes="Previously appeared in the original NSMB.">
+    <value nybble="3-4" title="Triggering Event ID" comment="When triggered the mushroom will spawn."/>
     <checkbox nybble="5" title="Only Solid from Top"/>
-    <checkbox nybble="16" title="Longer Platform" comment="todo: Give detail on sizes."/>
+    <checkbox nybble="16" title="Longer Platform"/>
   </sprite>
   <sprite id="124" name="Mushroom Platform">
     <value nybble="5-6" title="Tilt Speed" comment="Value Modulo 64. Speed increases for values 1-32, then decreases for values 33-63."/>

@@ -195,6 +195,16 @@ protected:
     QString contents;
 };
 
+// Sprite 29: Bob-omb
+class BobOmbRenderer: public SpriteRenderer
+{
+public:
+    BobOmbRenderer(const Sprite *spr);
+    void render(QPainter *painter, QRect *drawrect);
+protected:
+    const Sprite *spr;
+};
+
 // Sprite 36: Arc Lava Bubble
 class ArcLavaBubbleRenderer: public SpriteRenderer
 {
@@ -1025,6 +1035,15 @@ protected:
     const Sprite* spr;
 };
 
+// Sprite 331: Cannonball
+class CannonBallRenderer: public SpriteRenderer
+{
+public:
+    CannonBallRenderer(const Sprite* spr);
+    void render(QPainter* painter, QRect* drawrect);
+protected:
+    const Sprite* spr;
+};
 
 class EntranceRenderer : public ObjectRenderer
 {

@@ -316,10 +316,33 @@ void Sprite::setRect()
         offsety = -5;
         break;
     case 29: // Bob-omb
-        width = 29;
         height = 29;
-        offsetx = -5;
-        offsety = -8;
+        width = 29;
+        if (getNybble(23) <= 3 && getNybble(23) >= 1)
+        {
+            height = 20;
+            width = 20;
+        }
+        // Almost exact same calculations done here as with the BobOmbRenderer class.
+        else if (getNybble(23) >= 5 && getNybble(23) <= 7)
+        {
+            height = 7.25*getNybble(23);
+            width = 7.25*getNybble(23);
+        }
+        else if  (getNybble(23) == 8 || getNybble(23) == 9)
+        {
+            int baseValue = getNybble(23) - 4;
+            height = 14.5*baseValue;
+            width = 14.5*baseValue;
+        }
+        else if (getNybble(23) >= 10)
+        {
+            int baseValue = getNybble(23) - 7;
+            height = 29*baseValue;
+            width = 29*baseValue;
+        }
+        offsetx = -width/2 + 10;
+        offsety = -height + 20;
         break;
     case 31: case 32: case 33: // Boomerang/Fire/Hammer Bro.
         width = 27;
@@ -2215,6 +2238,19 @@ void Sprite::setRect()
         }
         break;
     }
+    case 331: // Cannonball
+        width = 20;
+        height = 20;
+        offsetx = 0;
+        offsety = 0;
+        if (getNybble(5) & 1)
+        {
+            width = 40;
+            height = 40;
+            offsetx = -10;
+            offsety = -10;
+        }
+        break;
     default:
         width = 20;
         height = 20;

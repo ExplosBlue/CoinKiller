@@ -73,7 +73,7 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
         ret = new MovementSpriteRenderer(spr, "pow_block.png");
         break;
     case 29: // Bob-omb
-        ret = new NormalImageRenderer(spr, "bob-omb.png");
+        ret = new BobOmbRenderer(spr);
         break;
     case 31: // Boomerang Bro.
         ret = new NormalImageRenderer(spr, "boomerang_bro.png");
@@ -759,6 +759,9 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
     case 330: // Muncher
         ret = new MunchRenderer(spr);
         break;
+    case 331: // Cannonball
+        ret = new CannonBallRenderer(spr);
+        break;
     default:
         ret = new RoundedRectRenderer(spr, QString("%1").arg(spr->getid()), QColor(0,90,150,150));
         break;
@@ -1360,6 +1363,110 @@ RedCoinRenderer::RedCoinRenderer(const Sprite *spr, QString filename)
 void RedCoinRenderer::render(QPainter *painter, QRect *drawrect)
 {
     img->render(painter, drawrect);
+}
+
+// Sprite 29: Bob-Omb
+BobOmbRenderer::BobOmbRenderer(const Sprite *spr)
+{
+    this->spr = spr;
+}
+
+void BobOmbRenderer::render(QPainter *painter, QRect *drawrect)
+{
+    QPixmap img(ImageCache::getInstance()->get(SpriteImg, "next/bob-omb.png"));
+
+    float dimension = 29;
+    int offsetx = 0;
+    int offsety = 0;
+
+    // Performing calculations to determine image scales for each scale pattern group.
+    if (spr->getNybble(23) >= 1 && spr->getNybble(23) <= 7)
+    {
+        dimension = 7.25*spr->getNybble(23);
+    }
+    else if (spr->getNybble(23) == 8 || spr->getNybble(23) == 9)
+    {
+        int baseValue = spr->getNybble(23) - 4;
+        dimension = 14.5*baseValue;
+    }
+    else if (spr->getNybble(23) >= 10)
+    {
+        int baseValue = spr->getNybble(23) - 7;
+        dimension = 29*baseValue;
+    }
+
+    if (spr->getNybble(19) == 1)
+    {
+        img = img.transformed(QTransform().scale(-1, 1));
+    }
+
+    int size = spr->getNybble(23);
+
+    // Checks each size setting and offsets accordingly.
+    switch (size){
+        case (1) :
+            offsetx = -6;
+            offsety = -13;
+            break;
+        case (2) :
+            offsetx = -3;
+            offsety = -6;
+            break;
+        case (3) :
+            offsetx = 1;
+            offsety = 0;
+            break;
+        case (5) :
+            offsetx = 9;
+            offsety = 15;
+            break;
+        case (6) :
+            offsetx = 12;
+            offsety = 23;
+            break;
+        case (7) :
+            offsetx = 16;
+            offsety = 30;
+            break;
+        case (8) :
+            offsetx = 20;
+            offsety = 38;
+            break;
+        case (9) :
+            offsetx = 25;
+            offsety = 52;
+            break;
+        case (10) :
+            offsetx = 35;
+            offsety = 67;
+            break;
+        case (11) :
+            offsetx = 49;
+            offsety = 96;
+            break;
+        case (12) :
+            offsetx = 63;
+            offsety = 125;
+            break;
+        case (13) :
+            offsetx = 78;
+            offsety = 153;
+            break;
+        case (14) :
+            offsetx = 94;
+            offsety = 182;
+            break;
+        case (15) :
+            offsetx = 108;
+            offsety = 211;
+            break;
+        default :
+            offsetx = 5;
+            offsety = 8;
+            break;
+    }
+
+    painter->drawPixmap(QRect(spr->getx() - offsetx, spr->gety() - offsety, dimension, dimension), img);
 }
 
 // Sprite 78: Firebar
@@ -3466,6 +3573,25 @@ void MunchRenderer::render(QPainter* painter, QRect* drawrect)
     QPixmap img(ImageCache::getInstance()->get(SpriteImg, imgfile));
     img = img.transformed(QTransform().rotate(spr->getNybble(4)*45));
     painter->drawPixmap(QRect(spr->getx()-img.width()/2 + munchOffset, spr->gety()-img.height()/2 + munchOffset, img.width(), img.height()), img);
+}
+
+// Sprite 331: CannonBall
+CannonBallRenderer::CannonBallRenderer(const Sprite* spr)
+{
+    this->spr = spr;
+}
+
+void CannonBallRenderer::render(QPainter* painter, QRect* drawrect)
+{
+    QPixmap img(ImageCache::getInstance()->get(SpriteImg, "next/cannon_ball.png"));
+    int dimension = 20;
+
+    if (spr->getNybble(5) & 1)
+    {
+        dimension = 40;
+    }
+
+    painter->drawPixmap(QRect(spr->getx() - dimension/2 + 10, spr->gety() - dimension/2 + 10, dimension, dimension), img);
 }
 
 
