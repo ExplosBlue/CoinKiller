@@ -151,10 +151,10 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
         ret = new RotationSpriteRenderer(spr, "red_coin.png");
         break;
     case 63: // Skewer Left
-        ret = new NormalImageRenderer(spr, "skewer_left.png");
+        ret = new SkewerRenderer(spr);
         break;
     case 64: // Skewer Right
-        ret = new NormalImageRenderer(spr, "skewer_right.png");
+        ret = new SkewerRenderer(spr);
         break;
     case 65: // Morton Pipe
         ret = new NormalImageRenderer(spr, "morton_pipe.png");
@@ -761,6 +761,12 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
         break;
     case 331: // Cannonball
         ret = new CannonBallRenderer(spr);
+        break;
+    case 332: // Skewer Down
+        ret = new SkewerRenderer(spr);
+        break;
+    case 333: // Skewer Up
+        ret = new SkewerRenderer(spr);
         break;
     default:
         ret = new RoundedRectRenderer(spr, QString("%1").arg(spr->getid()), QColor(0,90,150,150));
@@ -1403,70 +1409,152 @@ void BobOmbRenderer::render(QPainter *painter, QRect *drawrect)
     int size = spr->getNybble(23);
 
     // Checks each size setting and offsets accordingly.
-    switch (size){
-        case (1) :
+    switch (size)
+    {
+        case 1:
             offsetx = -6;
             offsety = -13;
             break;
-        case (2) :
+        case 2:
             offsetx = -3;
             offsety = -6;
             break;
-        case (3) :
+        case 3:
             offsetx = 1;
             offsety = 0;
             break;
-        case (5) :
+        case 5:
             offsetx = 9;
             offsety = 15;
             break;
-        case (6) :
+        case 6:
             offsetx = 12;
             offsety = 23;
             break;
-        case (7) :
+        case 7:
             offsetx = 16;
             offsety = 30;
             break;
-        case (8) :
+        case 8:
             offsetx = 20;
             offsety = 38;
             break;
-        case (9) :
+        case 9:
             offsetx = 25;
             offsety = 52;
             break;
-        case (10) :
+        case 10:
             offsetx = 35;
             offsety = 67;
             break;
-        case (11) :
+        case 11:
             offsetx = 49;
             offsety = 96;
             break;
-        case (12) :
+        case 12:
             offsetx = 63;
             offsety = 125;
             break;
-        case (13) :
+        case 13:
             offsetx = 78;
             offsety = 153;
             break;
-        case (14) :
+        case 14:
             offsetx = 94;
             offsety = 182;
             break;
-        case (15) :
+        case 15:
             offsetx = 108;
             offsety = 211;
             break;
-        default :
+        default:
             offsetx = 5;
             offsety = 8;
             break;
     }
 
     painter->drawPixmap(QRect(spr->getx() - offsetx, spr->gety() - offsety, dimension, dimension), img);
+}
+
+// Sprite 63/64/332/333: Skewer
+SkewerRenderer::SkewerRenderer(const Sprite *spr)
+{
+    this->spr = spr;
+}
+
+void SkewerRenderer::render(QPainter *painter, QRect *drawrect)
+{
+    int initialXOffset = 0;
+    int initialYOffset = 0;
+    int endXOffset = 0;
+    int endYOffset = 0;
+    int imgXOffset = 0;
+    int imgYOffset = 0;
+    bool direction = false;
+    QString img;
+    if (spr->getid() == 63 || spr->getid() == 64)
+    {
+        img = "skewer_left.png";
+        initialYOffset = spr->getheight()/2;
+        endYOffset = spr->getheight()/2;
+        switch (spr->getNybble(8))
+        {
+            case 1:
+                endXOffset = -140;
+                break;
+            case 2:
+                endXOffset = -280;
+                break;
+            case 3:
+                endXOffset = -200;
+                break;
+            default:
+                endXOffset = -320;
+                break;
+        }
+    }
+    if (spr->getid() == 64)
+    {
+        img = "skewer_right.png";
+        endXOffset = abs(endXOffset) + 20;
+        imgXOffset = -spr->getwidth() + 20;
+    }
+
+    if (spr->getid() == 332 || spr->getid() == 333)
+    {
+        img = "next/skewer_down.png";
+        initialXOffset = spr->getwidth()/2;
+        endXOffset = spr->getwidth()/2;
+        imgYOffset = -537;
+        initialYOffset = 20;
+        direction = true;
+        switch (spr->getNybble(8))
+        {
+            case 1:
+                endYOffset = 160;
+                break;
+            case 2:
+                endYOffset = 300;
+                break;
+            case 3:
+                endYOffset = 220;
+                break;
+            default:
+                endYOffset = 340;
+                break;
+        }
+    }
+    if (spr->getid() == 333)
+    {
+        img = "next/skewer_up.png";
+        initialYOffset = 20;
+        endYOffset = initialYOffset - endYOffset;
+        imgYOffset = -spr->getheight() + 557;
+    }
+    MovIndicatorRenderer track(spr->getx()+initialXOffset, spr->gety()+initialYOffset, spr->getx()+endXOffset, spr->gety()+endYOffset, direction, QColor(244, 250, 255));
+    QPixmap image(ImageCache::getInstance()->get(SpriteImg, img));
+    track.render(painter);
+    painter->drawPixmap(QRect(spr->getx() + imgXOffset, spr->gety() + imgYOffset, spr->getwidth(), spr->getheight()), image);
 }
 
 // Sprite 78: Firebar
@@ -3593,7 +3681,6 @@ void CannonBallRenderer::render(QPainter* painter, QRect* drawrect)
 
     painter->drawPixmap(QRect(spr->getx() - dimension/2 + 10, spr->gety() - dimension/2 + 10, dimension, dimension), img);
 }
-
 
 // Entrance Renderer
 EntranceRenderer::EntranceRenderer(const Entrance *entrance)

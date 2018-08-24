@@ -1045,6 +1045,16 @@ protected:
     const Sprite* spr;
 };
 
+// Sprite 63/64/332/333: Skewer
+class SkewerRenderer: public SpriteRenderer
+{
+public:
+    SkewerRenderer(const Sprite* spr);
+    void render(QPainter* painter, QRect* drawrect);
+protected:
+    const Sprite* spr;
+};
+
 class EntranceRenderer : public ObjectRenderer
 {
 public:

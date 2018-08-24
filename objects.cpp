@@ -2251,6 +2251,15 @@ void Sprite::setRect()
             offsety = -10;
         }
         break;
+    case 332: // Skewer Down
+        width = 82;
+        height = 557;
+        offsety = -537;
+        break;
+    case 333: // Skewer Up
+        width = 82;
+        height = 557;
+        break;
     default:
         width = 20;
         height = 20;
