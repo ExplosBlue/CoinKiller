@@ -151,10 +151,10 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
         ret = new RotationSpriteRenderer(spr, "red_coin.png");
         break;
     case 63: // Skewer Left
-        ret = new NormalImageRenderer(spr, "skewer_left.png");
+        ret = new SkewerRenderer(spr);
         break;
     case 64: // Skewer Right
-        ret = new NormalImageRenderer(spr, "skewer_right.png");
+        ret = new SkewerRenderer(spr);
         break;
     case 65: // Morton Pipe
         ret = new NormalImageRenderer(spr, "morton_pipe.png");
@@ -1351,6 +1351,54 @@ RedCoinRenderer::RedCoinRenderer(const Sprite *spr, QString filename)
 void RedCoinRenderer::render(QPainter *painter, QRect *drawrect)
 {
     img->render(painter, drawrect);
+}
+
+// Sprite 63/64: Skewer
+SkewerRenderer::SkewerRenderer(const Sprite *spr)
+{
+    this->spr = spr;
+}
+
+void SkewerRenderer::render(QPainter *painter, QRect *drawrect)
+{
+    int initialXOffset = 0;
+    int initialYOffset = 0;
+    int endXOffset = 0;
+    int endYOffset = 0;
+    int imgXOffset = 0;
+    int imgYOffset = 0;
+    QString img;
+    if (spr->getid() & 63 || spr->getid() & 64)
+    {
+        img = "skewer_left.png";
+        initialYOffset = spr->getheight()/2;
+        endYOffset = spr->getheight()/2;
+        switch (spr->getNybble(8))
+        {
+            case 1:
+                endXOffset = -140;
+                break;
+            case 2:
+                endXOffset = -280;
+                break;
+            case 3:
+                endXOffset = -200;
+                break;
+            default:
+                endXOffset = -320;
+                break;
+        }
+    }
+    if (spr->getid() & 64)
+    {
+        img = "skewer_right.png";
+        endXOffset = abs(endXOffset) + 20;
+        imgXOffset = -spr->getwidth() + 20;
+    }
+    MovIndicatorRenderer track(spr->getx()+initialXOffset, spr->gety()+initialYOffset, spr->getx()+endXOffset, spr->gety()+endYOffset, false, QColor(244, 250, 255));
+    QPixmap image(ImageCache::getInstance()->get(SpriteImg, img));
+    track.render(painter);
+    painter->drawPixmap(QRect(spr->getx() + imgXOffset, spr->gety() + imgYOffset, spr->getwidth(), spr->getheight()), image);
 }
 
 // Sprite 78: Firebar
