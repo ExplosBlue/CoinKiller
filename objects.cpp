@@ -1092,10 +1092,15 @@ void Sprite::setRect()
         offsetx = -3;
         break;
     case 150: // Seesaw Lift
-        width = 280;
-        height = 20;
-        offsetx = 20;
-        break;
+            height = 20;
+
+            if (getNybble(15) == 0)
+            {
+                offsetx = 20;
+                width = 280;
+            }
+            else width = getNybble(15) * 40;
+            break;
     case 151: // Scale Lift
         if(getNybble(5) == 0)
         {
