@@ -301,8 +301,8 @@ void Sprite::setRect()
         offsety = 19;
         break;
     case 22: // Special Exit Controller
-        width = qMax(getNybble(7) * 20, 20);
-        height = qMax(getNybble(4) * 20, 20);
+        width = 20 + (getNybble(7) * 20);
+        height = 20 + (getNybble(4) * 20);
         break;
     case 24: case 25: // Flying Question Block
         width = 28;
