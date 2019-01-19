@@ -903,7 +903,8 @@ void Sprite::setRect()
         }
 
         break;
-    case 124: // Mushroom Platform
+    case 321:
+    case 124: // Mushroom Platform & Snowy Mushroom Platform
         width = 68 + 20*getNybble(6);
         height = 100 + 20*getNybble(10);
         if (getNybble(8) == 2)
@@ -2189,11 +2190,6 @@ void Sprite::setRect()
             }
             break;
         }
-    case 321: // Snow Mushroom Platform
-        width = 68 + 20*getNybble(6);
-        height = 100 + 20*getNybble(9);
-        offsetx = 10 - (width / 2);
-        break;
     case 322: // Big Grinder
         width = 86;
         height = 86;

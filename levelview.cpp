@@ -49,6 +49,7 @@ LevelView::LevelView(QWidget *parent, Level* level) : QWidget(parent)
     renderCameraLimits = false;
     renderSprites = true;
     renderPaths = true;
+    renderLocations = true;
 
 #ifdef USE_KDE_BLUR
     setBackgroundColor(QColor(0,0,0,0));
@@ -195,24 +196,27 @@ void LevelView::paint(QPainter& painter, QRect rect, float zoomLvl, bool selecti
     painter.setRenderHint(QPainter::Antialiasing);
 
     // Render Locations
-    for (int i = 0; i < level->locations.size(); i++)
+    if (renderLocations)
     {
-        const Location* loc = level->locations.at(i);
+        for (int i = 0; i < level->locations.size(); i++)
+        {
+            const Location* loc = level->locations.at(i);
 
-        QRect locrect(loc->getx(), loc->gety(), loc->getwidth(), loc->getheight());
+            QRect locrect(loc->getx(), loc->gety(), loc->getwidth(), loc->getheight());
 
-        if (!drawrect.intersects(locrect))
-            continue;
+            if (!drawrect.intersects(locrect))
+                continue;
 
-        painter.fillRect(locrect, QBrush(QColor(85,80,185,50)));
+            painter.fillRect(locrect, QBrush(QColor(85,80,185,50)));
 
-        painter.setPen(QColor(0,0,0));
-        painter.drawRect(locrect);
+            painter.setPen(QColor(0,0,0));
+            painter.drawRect(locrect);
 
-        QString locText = QString("%1").arg(loc->getid());
-        painter.setFont(QFont("Arial", 10, QFont::Bold));
-        painter.setPen(QColor(255,255,255));
-        painter.drawText(locrect.adjusted(5,5,0,0), locText);
+            QString locText = QString("%1").arg(loc->getid());
+            painter.setFont(QFont("Arial", 10, QFont::Bold));
+            painter.setPen(QColor(255,255,255));
+            painter.drawText(locrect.adjusted(5,5,0,0), locText);
+        }
     }
 
     if (renderSprites)
@@ -739,6 +743,13 @@ void LevelView::togglePaths(bool toggle)
 {
     renderPaths = toggle;
     editionModePtr()->togglePaths(toggle);
+    update();
+}
+
+void LevelView::toggleLocations(bool toggle)
+{
+    renderLocations = toggle;
+    editionModePtr()->toggleLocations(toggle);
     update();
 }
 

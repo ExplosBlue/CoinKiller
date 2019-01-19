@@ -71,6 +71,7 @@ fullscreen=Schermo Intero
 layer=Layer
 sprites=Sprites
 paths=Paths
+locations=Toggle Locations
 area=Area
 addArea=Aggiungi Area
 removeArea=Rimuovi Area

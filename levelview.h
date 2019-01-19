@@ -42,6 +42,7 @@ public:
     void toggleRenderCameraLimits(bool toggle) { renderCameraLimits = toggle; update(); }
     void toggleSprites(bool toggle);
     void togglePaths(bool toggle);
+    void toggleLocations(bool toggle);
     qint8 saveLevel();
     void copy();
     void paste();
@@ -99,6 +100,7 @@ private:
     bool renderCameraLimits;
     bool renderSprites;
     bool renderPaths;
+    bool renderLocations;
 
     quint8 layerMask;
 

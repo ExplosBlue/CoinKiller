@@ -33,6 +33,7 @@ public:
     void setLayerMask(quint8 mask) { layerMask = mask; }
     void toggleSprites(bool toggle) { spriteInteraction = toggle; }
     void togglePaths(bool toggle) { pathInteraction = toggle; }
+    void toggleLocations(bool toggle) { locationInteraction = toggle; }
 
     void select(Object* obj);
     void selectAll();
@@ -126,6 +127,7 @@ private:
     quint8 layerMask;
     bool pathInteraction;
     bool spriteInteraction;
+    bool locationInteraction;
 
     bool selectAfterPlacement;
 

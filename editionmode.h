@@ -42,6 +42,7 @@ public:
     virtual void setLayerMask(quint8) {}
     virtual void toggleSprites(bool) {}
     virtual void togglePaths(bool) {}
+    virtual void toggleLocations(bool) {}
 
     virtual void select(Object*) {}
     virtual void selectAll() {}
