@@ -1852,22 +1852,15 @@ MushroomPlatformRenderer::MushroomPlatformRenderer(const Sprite *spr)
 void MushroomPlatformRenderer::render(QPainter *painter, QRect *)
 {
     QString basepath = "mushroom_platform";
-    int stemSize = 0;
 
-    if (spr->getid() == 321)
-    {
-        basepath = "snow_mushroom_platform";
-        stemSize = spr->getNybble(9);
-    }
-    else
-        stemSize = spr->getNybble(10);
+    if (spr->getid() == 321) basepath = "snow_mushroom_platform";
 
     QPixmap platform(spr->getwidth(), 20);
     platform.fill(Qt::transparent);
     QPainter platformPainter(&platform);
 
     int stretchHeight = 0;
-    if (spr->getNybble(8) == 2 && spr->getid() == 124)
+    if (spr->getNybble(8) == 2)
     {
         switch (spr->getNybble(9))
         {
@@ -1900,7 +1893,7 @@ void MushroomPlatformRenderer::render(QPainter *painter, QRect *)
     // Draw the stem
     painter->drawPixmap(QRect(spr->getx(), spr->gety()+5-stretchHeight, 20, 80), ImageCache::getInstance()->get(SpriteImg, basepath + "/stem_top_extended.png"));
     painter->drawPixmap(QRect(spr->getx(), spr->gety()+20-stretchHeight, 20, 80), ImageCache::getInstance()->get(SpriteImg, basepath + "/stem_top.png"));
-    for (int i = 0; i < stemSize+(stretchHeight/20); i++)
+    for (int i = 0; i < spr->getNybble(10) + (stretchHeight/20); i++)
         painter->drawPixmap(QRect(spr->getx(), spr->gety()+100+i*20-stretchHeight, 20, 20), ImageCache::getInstance()->get(SpriteImg, basepath + "/stem.png"));
 
     if (spr->getNybble(7) > 8)
