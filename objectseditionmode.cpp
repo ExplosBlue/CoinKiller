@@ -881,7 +881,7 @@ void ObjectsEditonMode::paste(int currX, int currY, int currW, int currH)
             newZone->setBgYPos(params[15].toInt());
             newZone->setBgXPos(params[16].toInt());
             newZone->setBackgroundName(params[17]);
-            newZone->setBgUnk1(params[18].toInt());
+            newZone->setBgParallaxMode(params[18].toInt());
 
             level->zones.append(newZone);
             selectedObjects.append(newZone);

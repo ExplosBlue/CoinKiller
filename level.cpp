@@ -118,8 +118,7 @@ Level::Level(Game *game, SarcFilesystem* archive, int area, QString lvlName)
         background.xPos = header->read16();
         header->skip(2);
         header->readStringASCII(background.name, 16);
-        background.unk1 = header->read16();
-
+        background.parallaxMode = header->read16();
         header->skip(2);
         backgrounds.append(background);
     }
@@ -606,7 +605,7 @@ qint8 Level::save()
         header->write16(z->getBgXPos());
         header->write16(0);
         header->writeStringASCII(z->getBgName(), 16);
-        header->write16(z->getBgUnk1());
+        header->write16(z->getBgParallaxMode());
         header->write16(0);
     }
 

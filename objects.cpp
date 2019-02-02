@@ -2354,7 +2354,7 @@ Zone::Zone(Zone *zone)
     bgXPos = zone->getBgXPos();
     bgYPos = zone->getBgYPos();
     bgName = zone->getBgName();
-    bgUnk1 = zone->getBgUnk1();
+    bgParallaxMode = zone->getBgParallaxMode();
 }
 
 bool Zone::clickDetection(qint32 xcheck, qint32 ycheck)
@@ -2382,7 +2382,7 @@ void Zone::setBackground(tempZoneBackground background)
     this->bgXPos = background.xPos;
     this->bgYPos = background.yPos;
     this->bgName = background.name;
-    this->bgUnk1 = background.unk1;
+    this->bgParallaxMode = background.parallaxMode;
 }
 
 QString Zone::toString(qint32 xOffset, qint32 yOffset) const
@@ -2390,7 +2390,7 @@ QString Zone::toString(qint32 xOffset, qint32 yOffset) const
     return QString("3:%1:%2:%3:%4:%5:%6:%7:%8:%9:%10:%11:%12:%13:%14:%15:%16:%17:%18:%19").arg(x+xOffset).arg(y+yOffset)
             .arg(width).arg(height).arg(id).arg(progPathId).arg(musicId).arg(multiplayerTracking).arg(unk1).arg(upperBound)
             .arg(lowerBound).arg(unkUpperBound).arg(unkLowerBound).arg(upScrolling).arg(bgYPos)
-            .arg(bgXPos).arg(bgName).arg(bgUnk1);
+            .arg(bgXPos).arg(bgName).arg(bgParallaxMode);
 }
 
 

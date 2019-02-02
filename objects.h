@@ -176,7 +176,7 @@ struct tempZoneBackground
     qint16 yPos;
     qint16 xPos;
     QString name;
-    qint8 unk1;
+    qint8 parallaxMode;
 };
 
 class Zone: public Object
@@ -204,7 +204,7 @@ public:
     qint16 getBgXPos() const { return bgXPos; }
     qint16 getBgYPos() const { return bgYPos; }
     QString getBgName() const { return bgName; }
-    quint8 getBgUnk1() const { return bgUnk1; }
+    quint8 getBgParallaxMode() const { return bgParallaxMode; }
     QString toString(qint32 xOffset, qint32 yOffset) const;
     void setID(quint8 id) { this->id = id; }
     void setProgPathId(quint8 progPathId) { this->progPathId = progPathId; }
@@ -219,7 +219,7 @@ public:
     void setBgXPos(qint16 bgXPos) { this->bgXPos = bgXPos; }
     void setBgYPos(qint16 bgYPos) { this->bgYPos = bgYPos; }
     void setUnk1(quint32 unk1) { this->unk1 = unk1; }
-    void setBgUnk1(quint8 bgUnk1) { this->bgUnk1 = bgUnk1; }
+    void setBgParallaxMode(quint8 bgParallaxMode) { this->bgParallaxMode = bgParallaxMode; }
 
 protected:
     quint8 id;
@@ -237,7 +237,7 @@ protected:
     qint16 bgXPos = 0;
     qint16 bgYPos = 0;
     QString bgName = "Nohara";
-    quint8 bgUnk1 = 0;
+    quint8 bgParallaxMode = 0;
 };
 
 

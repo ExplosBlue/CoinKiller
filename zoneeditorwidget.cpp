@@ -82,9 +82,13 @@ ZoneEditorWidget::ZoneEditorWidget(QList<Zone*> *zones)
     bgYPos->setRange(-32768, 32767);
     connect(bgYPos, SIGNAL(valueChanged(int)), this, SLOT(handleBgYPosChanged(int)));
 
-    bgUnk1 = new QSpinBox();
-    bgUnk1->setRange(0, 255);
-    connect(bgUnk1, SIGNAL(valueChanged(int)), this, SLOT(handleBgUnk1Change(int)));
+    bgParallaxMode = new QComboBox();
+    bgParallaxMode->addItem("Y Offset Off, All Parallx On");
+    bgParallaxMode->addItem("Y Offset On, All Parallx On");
+    bgParallaxMode->addItem("Y Offset On, All Parallx Off");
+    bgParallaxMode->addItem("Y Offset On, Y Parallx Off");
+    bgParallaxMode->addItem("Y Offset On, X Parallx Off");
+    connect(bgParallaxMode, SIGNAL(currentIndexChanged(int)), this, SLOT(handleBgParallaxModeChange(int)));
 
     background = new QComboBox();
     background->setSizeAdjustPolicy(QComboBox::SizeAdjustPolicy::AdjustToMinimumContentsLengthWithIcon);
@@ -161,8 +165,8 @@ ZoneEditorWidget::ZoneEditorWidget(QList<Zone*> *zones)
     backgroundTabLayout->addWidget(new QLabel("Y Offset:"), 1, 0, 1, 1, Qt::AlignRight);
     backgroundTabLayout->addWidget(bgYPos, 1, 1);
 
-    backgroundTabLayout->addWidget(new QLabel("Unknown:"), 3, 0, 1, 1, Qt::AlignRight);
-    backgroundTabLayout->addWidget(bgUnk1, 3, 1);
+    backgroundTabLayout->addWidget(new QLabel("Parallax Mode:"), 3, 0, 1, 1, Qt::AlignRight);
+    backgroundTabLayout->addWidget(bgParallaxMode, 3, 1);
 
     backgroundTabLayout->addWidget(new QLabel("Background:"), 4, 0, 1, 1, Qt::AlignRight);
     backgroundTabLayout->addWidget(background, 4, 1);
@@ -309,7 +313,7 @@ void ZoneEditorWidget::updateInfo()
     bgXPos->setValue(editZone->getBgXPos());
     bgYPos->setValue(editZone->getBgYPos());
     background->setCurrentText(backgrounds.value(editZone->getBgName()));
-    bgUnk1->setValue(editZone->getBgUnk1());
+    bgParallaxMode->setCurrentIndex(editZone->getBgParallaxMode());
     updateBgPreview();
     handleChanges = true;
 }
@@ -395,10 +399,10 @@ void ZoneEditorWidget::handleUnkLowerBoundChange(int val)
     emit editMade();
 }
 
-void ZoneEditorWidget::handleBgUnk1Change(int val)
+void ZoneEditorWidget::handleBgParallaxModeChange(int val)
 {
     if (!handleChanges) return;
-    editZone->setBgUnk1(val);
+    editZone->setBgParallaxMode(val);
     emit editMade();
 }
 
