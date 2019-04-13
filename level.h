@@ -37,7 +37,7 @@ public:
 
     // Area Settings
     quint16 timeLimit;
-    quint8 toadHouseFlag;
+    quint8 levelEntranceID;
     quint16 specialLevelFlag;
     quint16 specialLevelFlag2;
     quint16 unk1;

@@ -85,7 +85,7 @@ Level::Level(Game *game, SarcFilesystem* archive, int area, QString lvlName)
     unk1 = header->read16();
     timeLimit = header->read16();
     header->skip(4);
-    toadHouseFlag = header->read8();
+    levelEntranceID = header->read8();
     unk2 = header->read8();
     specialLevelFlag = header->read8();
     specialLevelFlag2 = header->read8();
@@ -570,7 +570,7 @@ qint8 Level::save()
     header->write16(timeLimit);
     header->write8(0);
     for (int j = 0; j < 3; j++) header->write8(0x64);
-    header->write8(toadHouseFlag);
+    header->write8(levelEntranceID);
     header->write8(unk2);
     header->write8(specialLevelFlag);
     header->write8(specialLevelFlag2);

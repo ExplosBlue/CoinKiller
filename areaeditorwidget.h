@@ -44,7 +44,7 @@ private:
 
     QSpinBox* timeLimit;
     QSpinBox* coinRushtimeLimit;
-    QCheckBox* toadhouseFlag;
+    QSpinBox* levelEntranceID;
     QComboBox* specialLevelFlag1;
     QComboBox* specialLevelFlag2;
     TilesetChooser* tsChooser;
@@ -62,7 +62,7 @@ private slots:
     void handleCoinRushTimeLimitChange(int timeLimitVal);
     void handleSpecialLevelFlag1Change(QString text);
     void handleSpecialLevelFlag2Change(QString text);
-    void handleToadHouseFlagChanged(bool flag);
+    void handleLevelEntranceIDChanged(int id);
 
     void passUpdateLevelView() { emit updateLevelView(); }
     void passRelaodTilesetPicker() { emit relaodTilesetPicker(); }

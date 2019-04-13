@@ -27,6 +27,6 @@ Boss Entrance (Jumping Right)
 Boss Entrance (Falling Right)
 Door Entrance
 Unknown 2 (Crash)
-Unknown 3 (Freeze)
+Bowser Battle Exit
 Walking Right (from 4 blocks behind entrance pos. to entrance pos.)
 Walking Left (from 4 blocks behind entrance pos. to entrance pos.)
