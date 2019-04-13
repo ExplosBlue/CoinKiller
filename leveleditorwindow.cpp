@@ -90,6 +90,7 @@ LevelEditorWindow::LevelEditorWindow(LevelManager* lvlMgr, int initialArea) :
     ui->actionToggleLayer2->setIcon(QIcon(basePath + "layer2.png"));
     ui->actionToggleSprites->setIcon(QIcon(basePath + "sprite.png"));
     ui->actionTogglePaths->setIcon(QIcon(basePath + "path.png"));
+    ui->actionToggleLocations->setIcon(QIcon(basePath + "location.png"));
 
     toolboxDock = new QDockWidget("Toolbox", this);
     toolboxDock->setObjectName("toolboxDock");
@@ -212,7 +213,7 @@ void LevelEditorWindow::loadTranslations()
     ui->actionRenderCameraLimits->setToolTip(settings->getTranslation("LevelEditor", "renderCameraLimits"));
 
     ui->actionAddArea->setText(settings->getTranslation("LevelEditor", "addArea"));
-    ui->actionAddArea->setToolTip(settings->getTranslation("LevelEditor", ""));
+    ui->actionAddArea->setToolTip(settings->getTranslation("LevelEditor", "addArea"));
 
     ui->actionDeleteCurrentArea->setText(settings->getTranslation("LevelEditor", "removeArea"));
     ui->actionDeleteCurrentArea->setToolTip(settings->getTranslation("LevelEditor", "removeArea"));
@@ -228,6 +229,9 @@ void LevelEditorWindow::loadTranslations()
 
     ui->actionTogglePaths->setText(settings->getTranslation("LevelEditor", "paths"));
     ui->actionTogglePaths->setToolTip(settings->getTranslation("LevelEditor", "paths"));
+
+    ui->actionToggleLocations->setText(settings->getTranslation("LevelEditor", "locations"));
+    ui->actionToggleLocations->setToolTip(settings->getTranslation("LevelEditor", "locations"));
 
     ui->actionSetBackgroundColor->setText(settings->getTranslation("LevelEditor", "setBgColor"));
     ui->actionSetBackgroundColor->setToolTip(settings->getTranslation("LevelEditor", "setBgColor"));
@@ -275,6 +279,12 @@ void LevelEditorWindow::on_actionToggleSprites_toggled(bool toggle)
 void LevelEditorWindow::on_actionTogglePaths_toggled(bool toggle)
 {
     levelView->togglePaths(toggle);
+    update();
+}
+
+void LevelEditorWindow::on_actionToggleLocations_toggled(bool toggle)
+{
+    levelView->toggleLocations(toggle);
     update();
 }
 
@@ -631,6 +641,7 @@ void LevelEditorWindow::loadArea(int id, bool closeLevel, bool init)
     ui->actionToggleLayer2->setChecked(true);
     ui->actionToggleSprites->setChecked(true);
     ui->actionTogglePaths->setChecked(true);
+    ui->actionToggleLocations->setChecked(true);
     ui->actionSelectAfterPlacement->setChecked(settings->get("SelectAfterPlacement").toBool());
     levelView->setLayerMask(layerMask);
     levelView->toggleGrid(ui->actionGrid->isChecked());
@@ -646,6 +657,7 @@ void LevelEditorWindow::loadArea(int id, bool closeLevel, bool init)
     levelView->objEditionModePtr()->toggleSelectAfterPlacement(settings->get("SelectAfterPlacement").toBool());
     levelView->toggleSprites(ui->actionToggleSprites->isChecked());
     levelView->togglePaths(ui->actionTogglePaths->isChecked());
+    levelView->toggleLocations(ui->actionToggleLocations->isChecked());
 
     zoom = 1.0;
 

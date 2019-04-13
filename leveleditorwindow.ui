@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1305</width>
-    <height>701</height>
+    <width>1300</width>
+    <height>700</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -46,8 +46,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>1303</width>
-         <height>620</height>
+         <width>1298</width>
+         <height>634</height>
         </rect>
        </property>
       </widget>
@@ -60,8 +60,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1305</width>
-     <height>23</height>
+     <width>1300</width>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -78,6 +78,7 @@
     <addaction name="actionToggleLayer2"/>
     <addaction name="actionToggleSprites"/>
     <addaction name="actionTogglePaths"/>
+    <addaction name="actionToggleLocations"/>
     <addaction name="separator"/>
     <addaction name="actionZoom_Maximum"/>
     <addaction name="actionZoom_In"/>
@@ -169,6 +170,7 @@
    <addaction name="actionToggleLayer2"/>
    <addaction name="actionToggleSprites"/>
    <addaction name="actionTogglePaths"/>
+   <addaction name="actionToggleLocations"/>
    <addaction name="separator"/>
    <addaction name="actionAddArea"/>
    <addaction name="actionDeleteCurrentArea"/>
@@ -503,6 +505,17 @@
    </property>
    <property name="toolTip">
     <string>&lt;ShowToolbox&gt;</string>
+   </property>
+  </action>
+  <action name="actionToggleLocations">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&lt;Locations&gt;</string>
+   </property>
+   <property name="toolTip">
+    <string>&lt;ToggleLocations&gt;</string>
    </property>
   </action>
  </widget>

@@ -63,7 +63,7 @@ private:
     BgPreview* backgroundPreview;
     QSpinBox* bgXPos;
     QSpinBox* bgYPos;
-    QSpinBox* bgUnk1;
+    QComboBox* bgParallaxMode;
 
     QSpinBox* upperBound;
     QSpinBox* lowerBound;
@@ -103,7 +103,7 @@ private slots:
     void handleUnkUpperBoundChange(int val);
     void handleUnkLowerBoundChange(int val);
     void handleBackgroundChange(QString text);
-    void handleBgUnk1Change(int val);
+    void handleBgParallaxModeChange(int val);
     void handleBgXPosChanged(int val);
     void handleBgYPosChanged(int val);
     void handleSelectContentsClicked();

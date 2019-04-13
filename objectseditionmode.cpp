@@ -478,7 +478,7 @@ QList<Object*> ObjectsEditonMode::getObjectsAtPos(int x1, int y1, int x2, int y2
         if (!(layerMask & (1<<l))) continue;
         foreach (BgdatObject* bgdat, level->objects[l]) if (bgdat->clickDetection(area)) objects.append(bgdat);
     }
-    foreach (Location* loc, level->locations) if (loc->clickDetection(area)) objects.append(loc);
+    if (locationInteraction) foreach (Location* loc, level->locations) if (loc->clickDetection(area)) objects.append(loc);
     if (spriteInteraction) foreach (Sprite* spr, level->sprites) if (spr->clickDetection(area)) objects.append(spr);
     foreach (Entrance* entr, level->entrances) if (entr->clickDetection(area)) objects.append(entr);
     if (pathInteraction) foreach (Path* path, level->paths) foreach (PathNode* node, path->getNodes()) if (node->clickDetection(area)) objects.append(node);
@@ -881,7 +881,7 @@ void ObjectsEditonMode::paste(int currX, int currY, int currW, int currH)
             newZone->setBgYPos(params[15].toInt());
             newZone->setBgXPos(params[16].toInt());
             newZone->setBackgroundName(params[17]);
-            newZone->setBgUnk1(params[18].toInt());
+            newZone->setBgParallaxMode(params[18].toInt());
 
             level->zones.append(newZone);
             selectedObjects.append(newZone);

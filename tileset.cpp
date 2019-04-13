@@ -17,6 +17,7 @@
 
 #include "tileset.h"
 #include "game.h"
+#include "imagecache.h"
 
 Tileset::Tileset(Game *game, QString name)
 {
@@ -243,16 +244,13 @@ void Tileset::drawTile(QPainter& painter, TileGrid& grid, int num, int x, int y,
 
     if (drawOverrides)
     {
-        QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/tileoverrides/");
-
         int xx = num % 21;
         int yy = num / 21;
 
-        if (xx == 15 && yy == 0) { painter.drawPixmap(rdst, QPixmap(basePath + "coin.png")); return; }
-        if (xx == 16 && yy == 0) { painter.drawPixmap(rdst, QPixmap(basePath + "blue_coin.png")); return; }
-        if (xx == 10 && yy == 3) { painter.drawPixmap(rdst, QPixmap(basePath + "vine.png")); return; }
-        if (xx == 11 && yy == 0) { painter.drawPixmap(rdst, QPixmap(basePath + "solid.png")); return; }
-
+        if (xx == 15 && yy == 0) { painter.drawPixmap(rdst, ImageCache::getInstance()->get(TileOverride, "coin.png")); return; }
+        if (xx == 16 && yy == 0) { painter.drawPixmap(rdst, ImageCache::getInstance()->get(TileOverride, "blue_coin.png")); return; }
+        if (xx == 10 && yy == 3) { painter.drawPixmap(rdst, ImageCache::getInstance()->get(TileOverride, "vine.png")); return; }
+        if (xx == 11 && yy == 0) { painter.drawPixmap(rdst, ImageCache::getInstance()->get(TileOverride, "solid.png")); return; }
     }
 
     QRect rsrc(2 + ((num%21)*24), 2 + ((num/21)*24), 20, 20);
@@ -261,27 +259,25 @@ void Tileset::drawTile(QPainter& painter, TileGrid& grid, int num, int x, int y,
     grid[gridid] = grid[0xFFFFFFFF];
 
     // Draw Overlays
-    QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/tileoverlays/");
-
     if (behaviors[num][0] == 0 && behaviors[num][2] == 1) // Beanstalk Stopper
-        painter.drawPixmap(rdst, QPixmap(basePath + "beanstalk_stopper.png"));
+        painter.drawPixmap(rdst, ImageCache::getInstance()->get(TileOverlay, "beanstalk_stopper.png"));
 
     if (behaviors[num][0] == 6) // Brick Block
     {
         switch (item)
         {
-            case 1: painter.drawPixmap(rdst, QPixmap(basePath + "coin.png")); break;
-            case 2: painter.drawPixmap(rdst, QPixmap(basePath + "10_coins.png")); break;
-            case 3: painter.drawPixmap(rdst, QPixmap(basePath + "fire_flower.png")); break;
-            case 4: case 9: painter.drawPixmap(rdst, QPixmap(basePath + "super_star.png")); break;
-            case 5: painter.drawPixmap(rdst, QPixmap(basePath + "1up_mushroom.png")); break;
-            case 6: painter.drawPixmap(rdst, QPixmap(basePath + "beanstalk.png")); break;
-            case 7: painter.drawPixmap(rdst, QPixmap(basePath + "mini_mushroom.png")); break;
-            case 8: painter.drawPixmap(rdst, QPixmap(basePath + "coin_super_mushroom.png")); break;
-            case 10: painter.drawPixmap(rdst, QPixmap(basePath + "super_leaf.png")); break;
-            case 11: painter.drawPixmap(rdst, QPixmap(basePath + "trampoline.png")); break;
-            case 12: painter.drawPixmap(rdst, QPixmap(basePath + "gold_flower.png")); break;
-            case 13: painter.drawPixmap(rdst, QPixmap(basePath + "pow_coin.png")); break;
+            case 1: painter.drawPixmap(rdst, ImageCache::getInstance()->get(TileOverlay, "coin.png")); break;
+            case 2: painter.drawPixmap(rdst, ImageCache::getInstance()->get(TileOverlay, "10_coins.png")); break;
+            case 3: painter.drawPixmap(rdst, ImageCache::getInstance()->get(TileOverlay, "fire_flower.png")); break;
+            case 4: case 9: painter.drawPixmap(rdst, ImageCache::getInstance()->get(TileOverlay, "super_star.png")); break;
+            case 5: painter.drawPixmap(rdst, ImageCache::getInstance()->get(TileOverlay, "1up_mushroom.png")); break;
+            case 6: painter.drawPixmap(rdst, ImageCache::getInstance()->get(TileOverlay, "beanstalk.png")); break;
+            case 7: painter.drawPixmap(rdst, ImageCache::getInstance()->get(TileOverlay, "mini_mushroom.png")); break;
+            case 8: painter.drawPixmap(rdst, ImageCache::getInstance()->get(TileOverlay, "coin_super_mushroom.png")); break;
+            case 10: painter.drawPixmap(rdst, ImageCache::getInstance()->get(TileOverlay, "super_leaf.png")); break;
+            case 11: painter.drawPixmap(rdst, ImageCache::getInstance()->get(TileOverlay, "trampoline.png")); break;
+            case 12: painter.drawPixmap(rdst, ImageCache::getInstance()->get(TileOverlay, "gold_flower.png")); break;
+            case 13: painter.drawPixmap(rdst, ImageCache::getInstance()->get(TileOverlay, "pow_coin.png")); break;
             default: break;
         }
     }
@@ -289,17 +285,17 @@ void Tileset::drawTile(QPainter& painter, TileGrid& grid, int num, int x, int y,
     {
         switch (item)
         {
-            case 0: painter.drawPixmap(rdst, QPixmap(basePath + "coin.png")); break;
-            case 1: painter.drawPixmap(rdst, QPixmap(basePath + "fire_flower.png")); break;
-            case 2: painter.drawPixmap(rdst, QPixmap(basePath + "super_star.png")); break;
-            case 3: painter.drawPixmap(rdst, QPixmap(basePath + "1up_mushroom.png")); break;
-            case 4: painter.drawPixmap(rdst, QPixmap(basePath + "beanstalk.png")); break;
-            case 5: painter.drawPixmap(rdst, QPixmap(basePath + "trampoline.png")); break;
-            case 6: painter.drawPixmap(rdst, QPixmap(basePath + "mini_mushroom.png")); break;
-            case 7: painter.drawPixmap(rdst, QPixmap(basePath + "coin_super_mushroom.png")); break;
-            case 8: painter.drawPixmap(rdst, QPixmap(basePath + "mega_mushroom.png")); break;
-            case 9: painter.drawPixmap(rdst, QPixmap(basePath + "super_leaf.png")); break;
-            case 10: painter.drawPixmap(rdst, QPixmap(basePath + "gold_flower.png")); break;
+            case 0: painter.drawPixmap(rdst, ImageCache::getInstance()->get(TileOverlay, "coin.png")); break;
+            case 1: painter.drawPixmap(rdst, ImageCache::getInstance()->get(TileOverlay, "fire_flower.png")); break;
+            case 2: painter.drawPixmap(rdst, ImageCache::getInstance()->get(TileOverlay, "super_star.png")); break;
+            case 3: painter.drawPixmap(rdst, ImageCache::getInstance()->get(TileOverlay, "1up_mushroom.png")); break;
+            case 4: painter.drawPixmap(rdst, ImageCache::getInstance()->get(TileOverlay, "beanstalk.png")); break;
+            case 5: painter.drawPixmap(rdst, ImageCache::getInstance()->get(TileOverlay, "trampoline.png")); break;
+            case 6: painter.drawPixmap(rdst, ImageCache::getInstance()->get(TileOverlay, "mini_mushroom.png")); break;
+            case 7: painter.drawPixmap(rdst, ImageCache::getInstance()->get(TileOverlay, "coin_super_mushroom.png")); break;
+            case 8: painter.drawPixmap(rdst, ImageCache::getInstance()->get(TileOverlay, "mega_mushroom.png")); break;
+            case 9: painter.drawPixmap(rdst, ImageCache::getInstance()->get(TileOverlay, "super_leaf.png")); break;
+            case 10: painter.drawPixmap(rdst, ImageCache::getInstance()->get(TileOverlay, "gold_flower.png")); break;
             default: break;
         }
     }
@@ -307,19 +303,17 @@ void Tileset::drawTile(QPainter& painter, TileGrid& grid, int num, int x, int y,
     {
         switch (behaviors[num][2])
         {
-            case 0: painter.drawPixmap(rdst, QPixmap(basePath + "fire_flower_invisible.png")); break;
-            case 1: painter.drawPixmap(rdst, QPixmap(basePath + "super_star_invisible.png")); break;
-            case 2: painter.drawPixmap(rdst, QPixmap(basePath + "coin_invisible.png")); break;
-            case 3: painter.drawPixmap(rdst, QPixmap(basePath + "beanstalk_invisible.png")); break;
-            case 4: painter.drawPixmap(rdst, QPixmap(basePath + "1up_mushroom_invisible.png")); break;
-            case 5: painter.drawPixmap(rdst, QPixmap(basePath + "mini_mushroom_invisible.png")); break;
-            case 6: painter.drawPixmap(rdst, QPixmap(basePath + "super_leaf_invisible.png")); break;
-            case 7: painter.drawPixmap(rdst, QPixmap(basePath + "gold_flower_invisible.png")); break;
+            case 0: painter.drawPixmap(rdst, ImageCache::getInstance()->get(TileOverlay, "fire_flower_invisible.png")); break;
+            case 1: painter.drawPixmap(rdst, ImageCache::getInstance()->get(TileOverlay, "super_star_invisible.png")); break;
+            case 2: painter.drawPixmap(rdst, ImageCache::getInstance()->get(TileOverlay, "coin_invisible.png")); break;
+            case 3: painter.drawPixmap(rdst, ImageCache::getInstance()->get(TileOverlay, "beanstalk_invisible.png")); break;
+            case 4: painter.drawPixmap(rdst, ImageCache::getInstance()->get(TileOverlay, "1up_mushroom_invisible.png")); break;
+            case 5: painter.drawPixmap(rdst, ImageCache::getInstance()->get(TileOverlay, "mini_mushroom_invisible.png")); break;
+            case 6: painter.drawPixmap(rdst, ImageCache::getInstance()->get(TileOverlay, "super_leaf_invisible.png")); break;
+            case 7: painter.drawPixmap(rdst, ImageCache::getInstance()->get(TileOverlay, "gold_flower_invisible.png")); break;
             default: break;
         }
     }
-    //if (behaviors[num][0] == 33) // Clown Car Flash Safe Area
-    //    painter.drawPixmap(rdst, QPixmap(basePath + "flash_safe_area.png"));
 }
 
 void Tileset::drawRow(QPainter& painter, TileGrid& grid, ObjectDef& def, ObjectRow& row, int x, int y, int w, float zoom)
@@ -391,11 +385,9 @@ void Tileset::drawObject(QPainter& painter, TileGrid& grid, int num, int x, int 
 {
     if (num >= objectDefs.size())
     {
-        QString warningImg(QCoreApplication::applicationDirPath() + "/coinkiller_data/tileoverrides/error.png");
-
         for (int xx = 0; xx < w; xx++)
             for (int yy = 0; yy < h; yy++)
-                painter.drawPixmap(QRect((x+xx)*20, (y+yy)*20, 20, 20), QPixmap(warningImg));
+                painter.drawPixmap(QRect((x+xx)*20, (y+yy)*20, 20, 20), ImageCache::getInstance()->get(TileOverride, "error.png"));
 
         return;
     }

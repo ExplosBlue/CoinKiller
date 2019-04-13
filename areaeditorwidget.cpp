@@ -53,9 +53,11 @@ AreaEditorWidget::AreaEditorWidget(Level* level, Game *game)
     connect(specialLevelFlag2, SIGNAL(currentIndexChanged(QString)), this, SLOT(handleSpecialLevelFlag2Change(QString)));
     layout->addWidget(specialLevelFlag2, 4, 1);
 
-    toadhouseFlag = new QCheckBox("Toad House Flag");
-    connect(toadhouseFlag, SIGNAL(toggled(bool)), this, SLOT(handleToadHouseFlagChanged(bool)));
-    layout->addWidget(toadhouseFlag, 5, 1, 1, 1);
+    layout->addWidget(new QLabel("Level Entrance ID:"), 5, 0, 1, 1, Qt::AlignRight);
+    levelEntranceID = new QSpinBox();
+    levelEntranceID->setRange(0, 255);
+    connect(levelEntranceID, SIGNAL(toggled(int)), this, SLOT(handleLevelEntranceIDChanged(int)));
+    layout->addWidget(levelEntranceID, 5, 1);
 
     layout->addWidget(new HorLine(), 6, 0, 1, 2);
 
@@ -73,7 +75,7 @@ void AreaEditorWidget::updateInfo()
     handleChanges = false;
     timeLimit->setValue(level->timeLimit);
     coinRushtimeLimit->setValue(level->coinRushTimeLimit);
-    toadhouseFlag->setChecked(level->toadHouseFlag == 2);
+    levelEntranceID->setValue(level->levelEntranceID);
     specialLevelFlag1->setCurrentText(specialLevelFlags1.value(level->specialLevelFlag, "Unknown"));
     specialLevelFlag2->setCurrentText(specialLevelFlags2.value(level->specialLevelFlag2, "Unknown"));
     handleChanges = true;
@@ -107,10 +109,10 @@ void AreaEditorWidget::handleSpecialLevelFlag2Change(QString text)
     emit editMade();
 }
 
-void AreaEditorWidget::handleToadHouseFlagChanged(bool flag)
+void AreaEditorWidget::handleLevelEntranceIDChanged(int id)
 {
     if (!handleChanges) return;
-    level->toadHouseFlag = flag ? 2 : 0;
+    level->levelEntranceID = id;
     emit editMade();
 }
 

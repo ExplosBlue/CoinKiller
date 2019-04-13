@@ -3479,83 +3479,81 @@ void EntranceRenderer::render(QPainter *painter, QRect *drawrect)
     QRect textRect(entr->getx()+entr->getOffsetX()+2, entr->gety()+entr->getOffsetY()+1, entr->getwidth()-4, entr->getheight());
     QRect imgRect(entr->getx()+entr->getOffsetX(), entr->gety()+entr->getOffsetY(), 20, 20);
 
-    QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/entrances/");
-
     painter->setPen(QColor(0,0,0));
 
     switch (entr->getEntrType())
     {
     case 0: case 11: case 12: case 13: case 14:
         painter->drawText(textRect, "N", Qt::AlignLeft | Qt::AlignBottom);
-        painter->drawPixmap(imgRect, QPixmap(basePath + "normal.png"));
+        painter->drawPixmap(imgRect, ImageCache::getInstance()->get(EntranceImg, "normal.png"));
         break;
     case 1:
         painter->drawText(textRect, "C", Qt::AlignLeft | Qt::AlignBottom);
-        painter->drawPixmap(imgRect, QPixmap(basePath + "normal.png"));
+        painter->drawPixmap(imgRect, ImageCache::getInstance()->get(EntranceImg, "normal.png"));
         break;
     case 2:
-        painter->drawPixmap(imgRect, QPixmap(basePath + "door_exit.png"));
+        painter->drawPixmap(imgRect, ImageCache::getInstance()->get(EntranceImg, "door_exit.png"));
         break;
     case 3: case 16:
-        painter->drawPixmap(imgRect, QPixmap(basePath + "pipe_up.png"));
+        painter->drawPixmap(imgRect, ImageCache::getInstance()->get(EntranceImg, "pipe_up.png"));
         break;
     case 4: case 17:
-        painter->drawPixmap(imgRect, QPixmap(basePath + "pipe_down.png"));
+        painter->drawPixmap(imgRect, ImageCache::getInstance()->get(EntranceImg, "pipe_down.png"));
         break;
     case 5: case 18:
-        painter->drawPixmap(imgRect, QPixmap(basePath + "pipe_left.png"));
+        painter->drawPixmap(imgRect, ImageCache::getInstance()->get(EntranceImg, "pipe_left.png"));
         break;
     case 6: case 19:
-        painter->drawPixmap(imgRect, QPixmap(basePath + "pipe_right.png"));
+        painter->drawPixmap(imgRect, ImageCache::getInstance()->get(EntranceImg, "pipe_right.png"));
         break;
     case 7:
         painter->drawText(textRect, "F", Qt::AlignLeft | Qt::AlignBottom);
-        painter->drawPixmap(imgRect, QPixmap(basePath + "down.png"));
+        painter->drawPixmap(imgRect, ImageCache::getInstance()->get(EntranceImg, "down.png"));
         break;
     case 8:
         painter->drawText(textRect, "G", Qt::AlignLeft | Qt::AlignBottom);
-        painter->drawPixmap(imgRect, QPixmap(basePath + "down.png"));
+        painter->drawPixmap(imgRect, ImageCache::getInstance()->get(EntranceImg, "down.png"));
         break;
     case 9:
         painter->drawText(textRect, "S", Qt::AlignLeft | Qt::AlignBottom);
-        painter->drawPixmap(imgRect, QPixmap(basePath + "normal.png"));
+        painter->drawPixmap(imgRect, ImageCache::getInstance()->get(EntranceImg, "normal.png"));
         break;
     case 10:
         painter->drawText(textRect, "S", Qt::AlignLeft | Qt::AlignBottom);
-        painter->drawPixmap(imgRect, QPixmap(basePath + "swimming.png"));
+        painter->drawPixmap(imgRect, ImageCache::getInstance()->get(EntranceImg, "swimming.png"));
         break;
     case 15:
-        painter->drawPixmap(imgRect, QPixmap(basePath + "boss_door_entrance.png"));
+        painter->drawPixmap(imgRect, ImageCache::getInstance()->get(EntranceImg, "boss_door_entrance.png"));
         break;
     case 20:
         painter->drawText(textRect, "J", Qt::AlignLeft | Qt::AlignBottom);
-        painter->drawPixmap(imgRect, QPixmap(basePath + "up.png"));
+        painter->drawPixmap(imgRect, ImageCache::getInstance()->get(EntranceImg, "up.png"));
         break;
     case 21:
         painter->drawText(textRect, "V", Qt::AlignLeft | Qt::AlignBottom);
-        painter->drawPixmap(imgRect, QPixmap(basePath + "up.png"));
+        painter->drawPixmap(imgRect, ImageCache::getInstance()->get(EntranceImg, "up.png"));
         break;
     case 23: case 25: case 26:
         painter->drawText(textRect, "B", Qt::AlignLeft | Qt::AlignBottom);
-        painter->drawPixmap(imgRect, QPixmap(basePath + "normal.png"));
+        painter->drawPixmap(imgRect, ImageCache::getInstance()->get(EntranceImg, "normal.png"));
         break;
     case 24:
         painter->drawText(textRect, "J", Qt::AlignLeft | Qt::AlignBottom);
-        painter->drawPixmap(imgRect, QPixmap(basePath + "left.png"));
+        painter->drawPixmap(imgRect, ImageCache::getInstance()->get(EntranceImg, "left.png"));
         break;
     case 27:
-        painter->drawPixmap(imgRect, QPixmap(basePath + "door_entrance.png"));
+        painter->drawPixmap(imgRect, ImageCache::getInstance()->get(EntranceImg, "door_entrance.png"));
         break;
     case 30:
         painter->drawText(textRect, "W", Qt::AlignLeft | Qt::AlignBottom);
-        painter->drawPixmap(imgRect, QPixmap(basePath + "normal.png"));
+        painter->drawPixmap(imgRect, ImageCache::getInstance()->get(EntranceImg, "normal.png"));
         break;
     case 31:
         painter->drawText(textRect, "W", Qt::AlignLeft | Qt::AlignBottom);
-        painter->drawPixmap(imgRect, QPixmap(basePath + "left.png"));
+        painter->drawPixmap(imgRect, ImageCache::getInstance()->get(EntranceImg, "left.png"));
         break;
     default:painter->drawText(textRect, "?", Qt::AlignLeft | Qt::AlignBottom);
-        painter->drawPixmap(imgRect, QPixmap(basePath + "unknown.png"));
+        painter->drawPixmap(imgRect, ImageCache::getInstance()->get(EntranceImg, "unknown.png"));
         break;
     }
 

@@ -28,6 +28,7 @@ ImageCache::ImageCache()
     loadTypeFromFolder(SpriteImg, "sprites");
     loadTypeFromFolder(TileOverlay, "tileoverlays");
     loadTypeFromFolder(TileOverride, "tileoverrides");
+    loadTypeFromFolder(EntranceImg, "entrances");
 }
 
 ImageCache::~ImageCache()

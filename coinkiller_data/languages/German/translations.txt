@@ -73,6 +73,7 @@ fullscreen=Vollbild
 layer=Ebene
 sprites=Sprites
 paths=Pfade
+locations=Toggle Locations
 area=Gebiet
 addArea=Gebiet hinzufügen
 removeArea=Gebiet entfernen
