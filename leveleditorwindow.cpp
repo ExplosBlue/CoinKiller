@@ -519,13 +519,13 @@ void LevelEditorWindow::updateEditors()
 }
 
 void LevelEditorWindow::on_toolboxTabs_currentChanged(int index)
-{    
-    if (index == 0 || index == 3)
+{
+    if (index == 0)
         levelView->objEditionModePtr()->setDrawType(-1);
-    else if (index > 3)
-        levelView->objEditionModePtr()->setDrawType(index-2);
     else
+    {
         levelView->objEditionModePtr()->setDrawType(index-1);
+    }
 }
 
 void LevelEditorWindow::on_actionAddArea_triggered()
