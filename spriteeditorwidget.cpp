@@ -6,8 +6,11 @@
 #include <QStringListModel>
 #include <QMessageBox>
 
-SpriteEditorWidget::SpriteEditorWidget()
+SpriteEditorWidget::SpriteEditorWidget(QList<Sprite*> *sprites)
 {
+    QWidget* addSpriteView = new QWidget;
+    QTabWidget* tabs = new QTabWidget;
+
     QLabel* viewLabel = new QLabel("View:");
     viewLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     viewComboBox = new QComboBox();
@@ -29,9 +32,12 @@ SpriteEditorWidget::SpriteEditorWidget()
     topLayout->addWidget(searchLabel, 1, 0);
     topLayout->addWidget(searchEdit, 1, 1);
 
-    QVBoxLayout* layout = new QVBoxLayout();
-    layout->addItem(topLayout);
-    layout->addWidget(spriteTree);
+    QVBoxLayout* addSpriteLayout = new QVBoxLayout();
+    addSpriteLayout->addItem(topLayout);
+    addSpriteLayout->addWidget(spriteTree);
+
+    addSpriteView->setLayout(addSpriteLayout);
+    tabs->addTab(addSpriteView, "Add");
 
     QStringList viewNames;
 
@@ -69,13 +75,21 @@ SpriteEditorWidget::SpriteEditorWidget()
 
     viewComboBox->setModel(new QStringListModel(viewNames));
 
+    spriteIds = new SpriteIdWidget(sprites);
+    tabs->addTab(spriteIds, "In Level");
+
     editor = new SpriteDataEditorWidget(&spriteData);
+
+    QVBoxLayout* layout = new QVBoxLayout();
+    layout->addWidget(tabs);
     layout->addWidget(editor);
 
     setLayout(layout);
 
     connect(spriteTree, SIGNAL(currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)), this, SLOT(handleIndexChange(QTreeWidgetItem*)));
     connect(editor, SIGNAL(editMade()), this, SLOT(handleEditDetected()));
+    connect(spriteIds, SIGNAL(selectedSpriteChanged(Object*)), this, SLOT(handleSelectedSpriteChanged(Object*)));
+    connect(spriteIds, SIGNAL(updateLevelView()), this, SLOT(handleUpdateLevelView()));
 
 }
 
@@ -119,13 +133,13 @@ void SpriteEditorWidget::handleIndexChange(QTreeWidgetItem *item)
 {
     int data = item->data(0, Qt::UserRole).toInt();
     if (data >= 0 && data <= spriteData.spriteCount())
-        emit(selectedSpriteChanged(data));
+        emit(currentSpriteChanged(data));
     emit editMade();
 }
 
 void SpriteEditorWidget::select(Sprite *sprite)
 {
-    emit(selectedSpriteChanged(sprite->getid()));
+    emit(currentSpriteChanged(sprite->getid()));
 }
 
 void SpriteEditorWidget::handleEditDetected()
@@ -133,6 +147,20 @@ void SpriteEditorWidget::handleEditDetected()
     emit editMade();
 }
 
+void SpriteEditorWidget::handleSelectedSpriteChanged(Object* obj)
+{
+    if(dynamic_cast<Sprite*>(obj) != nullptr)
+    {
+        spriteDataEditorPtr()->deselect();
+        spriteDataEditorPtr()->select(dynamic_cast<Sprite*>(obj));
+        emit selectedSpriteChanged(obj);
+    }
+}
+
+void SpriteEditorWidget::handleUpdateLevelView()
+{
+    emit updateLevelView();
+}
 
 SpriteDataEditorWidget::SpriteDataEditorWidget(SpriteData *spriteData)
 {

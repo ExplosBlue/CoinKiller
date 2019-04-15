@@ -358,7 +358,7 @@ void LevelEditorWindow::on_actionCopy_triggered()
 
 void LevelEditorWindow::on_actionPaste_triggered()
 {
-    spriteIds->deselect();
+    spriteEditor->spriteIdsPtr()->deselect();
     levelView->paste();
     emit handleEditMade();
 }
@@ -471,27 +471,27 @@ void LevelEditorWindow::setObjectEdition(Object* obj)
     }
     if (is<Entrance*>(obj))
     {
-        toolboxTabs->setCurrentIndex(4);
+        toolboxTabs->setCurrentIndex(3);
         entranceEditor->select(dynamic_cast<Entrance*>(obj));
     }
     else if (is<Zone*>(obj))
     {
-        toolboxTabs->setCurrentIndex(5);
+        toolboxTabs->setCurrentIndex(4);
         zoneEditor->select(dynamic_cast<Zone*>(obj));
     }
     else if (is<Location*>(obj))
     {
-        toolboxTabs->setCurrentIndex(6);
+        toolboxTabs->setCurrentIndex(5);
         locationEditor->select(dynamic_cast<Location*>(obj));
     }
     else if (is<PathNode*>(obj))
     {
-        toolboxTabs->setCurrentIndex(7);
+        toolboxTabs->setCurrentIndex(6);
         pathEditor->select(dynamic_cast<PathNode*>(obj));
     }
     else if (is<ProgressPathNode*>(obj))
     {
-        toolboxTabs->setCurrentIndex(8);
+        toolboxTabs->setCurrentIndex(7);
         progPathEditor->select(dynamic_cast<ProgressPathNode*>(obj));
     }
 }
@@ -504,7 +504,7 @@ void LevelEditorWindow::deselect()
     locationEditor->deselect();
     pathEditor->deselect();
     progPathEditor->deselect();
-    spriteIds->deselect();
+    spriteEditor->spriteIdsPtr()->deselect();
 }
 
 void LevelEditorWindow::updateEditors()
@@ -515,7 +515,7 @@ void LevelEditorWindow::updateEditors()
     locationEditor->updateEditor();
     pathEditor->updateEditor();
     progPathEditor->updateEditor();
-    spriteIds->updateEditor();
+    spriteEditor->spriteIdsPtr()->updateEditor();
 }
 
 void LevelEditorWindow::on_toolboxTabs_currentChanged(int index)
@@ -673,9 +673,11 @@ void LevelEditorWindow::loadArea(int id, bool closeLevel, bool init)
     connect(areaEditor, SIGNAL(relaodTilesetPicker()), tilesetPalette, SLOT(reloadTilesets()));
 
     // Setup Sprite Picker
-    spriteEditor = new SpriteEditorWidget();
+    spriteEditor = new SpriteEditorWidget(&level->sprites);
     connect(spriteEditor->spriteDataEditorPtr(), SIGNAL(updateLevelView()), levelView, SLOT(update()));
-    connect(spriteEditor, SIGNAL(selectedSpriteChanged(int)), this, SLOT(setSelSprite(int)));
+    connect(spriteEditor, SIGNAL(currentSpriteChanged(int)), this, SLOT(setSelSprite(int)));
+    connect(spriteEditor, SIGNAL(selectedSpriteChanged(Object*)), levelView, SLOT(selectObj(Object*)));
+    connect(spriteEditor, SIGNAL(updateLevelView()), levelView, SLOT(update()));
     connect(spriteEditor, SIGNAL(editMade()), this, SLOT(handleEditMade()));
 
     // Setup Entrance Editor
@@ -710,11 +712,6 @@ void LevelEditorWindow::loadArea(int id, bool closeLevel, bool init)
     connect(progPathEditor, SIGNAL(selectedProgPathChanged(Object*)), levelView, SLOT(selectObj(Object*)));
     connect(progPathEditor, SIGNAL(editMade()), this, SLOT(handleEditMade()));
 
-    // Setup Sprite Ids Widget
-    spriteIds = new SpriteIdWidget(&level->sprites);
-    connect(spriteIds, SIGNAL(updateLevelView()), levelView, SLOT(update()));
-    connect(spriteIds, SIGNAL(selectedSpriteChanged(Object*)), levelView, SLOT(selectObj(Object*)));
-
     connect(levelView, SIGNAL(scrollTo(int,int)), this, SLOT(scrollTo(int,int)));
     connect(levelView->editionModePtr(), SIGNAL(selectdObjectChanged(Object*)), this, SLOT(setObjectEdition(Object*)));
     connect(levelView->editionModePtr(), SIGNAL(deselected()), this, SLOT(deselect()));
@@ -724,7 +721,6 @@ void LevelEditorWindow::loadArea(int id, bool closeLevel, bool init)
     toolboxTabs->addTab(areaEditor, QIcon(basePath + "settings.png"), "");
     toolboxTabs->addTab(tilesetPalette, QIcon(basePath + "filled_box"), "");
     toolboxTabs->addTab(spriteEditor, QIcon(basePath + "sprite.png"), "");
-    toolboxTabs->addTab(spriteIds, QIcon(basePath + "ids.png"), "");
     toolboxTabs->addTab(entranceEditor, QIcon(basePath + "entrance.png"), "");
     toolboxTabs->addTab(zoneEditor, QIcon(basePath + "zone.png"), "");
     toolboxTabs->addTab(locationEditor, QIcon(basePath + "location.png"), "");

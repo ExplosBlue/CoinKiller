@@ -18,6 +18,7 @@ AreaEditorWidget::AreaEditorWidget(Level* level, Game *game)
     specialLevelFlags1.insert(4, "Rainbow Course");
     specialLevelFlags1.insert(5, "Credits");
     specialLevelFlags1.insert(6, "Cannon Stage");
+    specialLevelFlags1.insert(7, "Frozen Timer");
 
     specialLevelFlags2.insert(0, "Normal");
     specialLevelFlags2.insert(1, "Ghost House");
@@ -59,13 +60,25 @@ AreaEditorWidget::AreaEditorWidget(Level* level, Game *game)
     connect(levelEntranceID, SIGNAL(toggled(int)), this, SLOT(handleLevelEntranceIDChanged(int)));
     layout->addWidget(levelEntranceID, 5, 1);
 
-    layout->addWidget(new HorLine(), 6, 0, 1, 2);
+    layout->addWidget(new QLabel("Unk1:"), 6, 0, 1, 1, Qt::AlignRight);
+    unk1Editor = new QSpinBox();
+    unk1Editor->setRange(0, 255);
+    connect(unk1Editor, SIGNAL(valueChanged(int)), this, SLOT(handleUnk1Change(int)));
+    layout->addWidget(unk1Editor, 6, 1);
+
+    layout->addWidget(new QLabel("Unk2:"), 7, 0, 1, 1, Qt::AlignRight);
+    unk2Editor = new QSpinBox();
+    unk2Editor->setRange(0, 255);
+    connect(unk2Editor, SIGNAL(valueChanged(int)), this, SLOT(handleUnk2Change(int)));
+    layout->addWidget(unk2Editor, 7, 1);
+
+    layout->addWidget(new HorLine(), 8, 0, 1, 2);
 
     tsChooser = new TilesetChooser(level, game);
     connect(tsChooser, SIGNAL(updateLevelEditor()), this, SLOT(passUpdateLevelView()));
     connect(tsChooser, SIGNAL(relaodTilesetPicker()), this, SLOT(passRelaodTilesetPicker()));
     connect(tsChooser, SIGNAL(tilesetEditMade()), this, SLOT(passTilesetEditMade()));
-    layout->addWidget(tsChooser, 8, 0, 1, 2);
+    layout->addWidget(tsChooser, 9, 0, 1, 2);
 
     updateInfo();
 }
@@ -78,6 +91,8 @@ void AreaEditorWidget::updateInfo()
     levelEntranceID->setValue(level->levelEntranceID);
     specialLevelFlag1->setCurrentText(specialLevelFlags1.value(level->specialLevelFlag, "Unknown"));
     specialLevelFlag2->setCurrentText(specialLevelFlags2.value(level->specialLevelFlag2, "Unknown"));
+    unk1Editor->setValue(level->unk1);
+    unk2Editor->setValue(level->unk2);
     handleChanges = true;
 }
 
@@ -113,6 +128,20 @@ void AreaEditorWidget::handleLevelEntranceIDChanged(int id)
 {
     if (!handleChanges) return;
     level->levelEntranceID = id;
+    emit editMade();
+}
+
+void AreaEditorWidget::handleUnk1Change(int unk)
+{
+    if (!handleChanges) return;
+    level->unk1 = unk;
+    emit editMade();
+}
+
+void AreaEditorWidget::handleUnk2Change(int unk)
+{
+    if (!handleChanges) return;
+    level->unk2 = unk;
     emit editMade();
 }
 

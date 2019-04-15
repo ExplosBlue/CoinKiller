@@ -47,6 +47,8 @@ private:
     QSpinBox* levelEntranceID;
     QComboBox* specialLevelFlag1;
     QComboBox* specialLevelFlag2;
+    QSpinBox* unk1Editor;
+    QSpinBox* unk2Editor;
     TilesetChooser* tsChooser;
 
     QMap<int, QString> specialLevelFlags1;
@@ -62,6 +64,8 @@ private slots:
     void handleCoinRushTimeLimitChange(int timeLimitVal);
     void handleSpecialLevelFlag1Change(QString text);
     void handleSpecialLevelFlag2Change(QString text);
+    void handleUnk1Change(int unk);
+    void handleUnk2Change(int unk);
     void handleLevelEntranceIDChanged(int id);
 
     void passUpdateLevelView() { emit updateLevelView(); }

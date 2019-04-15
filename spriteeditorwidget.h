@@ -3,6 +3,7 @@
 
 #include "spritedata.h"
 #include "level.h"
+#include "spriteidswidget.h"
 
 #include <QWidget>
 #include <QLabel>
@@ -116,17 +117,23 @@ class SpriteEditorWidget : public QWidget
 {
     Q_OBJECT
 public:
-    SpriteEditorWidget();
+    SpriteEditorWidget(QList<Sprite*> *sprites);
     void select(Sprite* sprite);
     SpriteDataEditorWidget* spriteDataEditorPtr() { return editor; }
+    SpriteIdWidget* spriteIdsPtr() { return spriteIds; }
 
 signals:
     void selectedSpriteChanged(int);
+    void currentSpriteChanged(int);
+    void selectedSpriteChanged(Object*);
     void editMade();
+    void updateLevelView();
 
 public slots:
     void setView(int view);
     void search(QString text);
+    void handleSelectedSpriteChanged(Object* obj);
+    void handleUpdateLevelView();
 
 private slots:
     void handleIndexChange(QTreeWidgetItem *item);
@@ -137,6 +144,7 @@ private:
     QComboBox* viewComboBox;
     QLineEdit* searchEdit;
     QTreeWidget* spriteTree;
+    SpriteIdWidget* spriteIds;
 
     SpriteDataEditorWidget* editor;
 };
