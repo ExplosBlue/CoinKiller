@@ -39,8 +39,8 @@
 #include "sarcexplorerwindow.h"
 #include "newtilesetdialog.h"
 
-MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent),
+MainWindow::MainWindow(WindowBase *parent) :
+    WindowBase(parent),
     ui(new Ui::MainWindow)
 {
     startupClose = checkForMissingFiles();

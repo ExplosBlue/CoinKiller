@@ -265,21 +265,22 @@ class PathNode: public Object
 public:
     PathNode() {}
     PathNode(PathNode* node, Path* parentPath);
-    PathNode(qint32 x, qint32 y, float speed, float accel, quint32 unk1, Path *parentPath);
+    PathNode(qint32 x, qint32 y, float speed, float accel, float delay, Path *parentPath);
     qint32 getType() const { return 5; }
     bool isResizable() const { return false; }
     float getSpeed() const { return speed; }
     float getAccel() const { return accel; }
-    float getUnk1() const { return unk1; }
+    float getDelay() const { return delay; }
     Path* getParentPath() const { return parentPath; }
     void setSpeed(float speed) { this->speed = speed; }
     void setAccel(float accel) { this->accel = accel; }
+    void setDelay(float delay) { this->delay = delay; }
     QString toString(qint32 xOffset, qint32 yOffset) const;
 protected:
     Path* parentPath;
     float speed;
     float accel;
-    quint32 unk1;
+    float delay;
 };
 
 

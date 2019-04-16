@@ -244,9 +244,9 @@ Level::Level(Game *game, SarcFilesystem* archive, int area, QString lvlName)
         header->skip(1);
         quint16 nodeOffset = header->read16();
         quint16 nodeCount = header->read16();
-        quint16 pathUnk1 = header->read16();
+        quint16 loopFlag = header->read16();
 
-        Path* path = new Path(id, pathUnk1);
+        Path* path = new Path(id, loopFlag);
 
         for (quint16 i = 0; i < nodeCount; i++)
         {
@@ -256,9 +256,9 @@ Level::Level(Game *game, SarcFilesystem* archive, int area, QString lvlName)
             qint32 y = to20(header->read16());
             float speed = header->readFloat();
             float accel = header->readFloat();
-            float unk = header->readFloat();
+            float delay = header->readFloat();
 
-            PathNode* pathN = new PathNode(x, y, speed, accel, unk, path);
+            PathNode* pathN = new PathNode(x, y, speed, accel, delay, path);
             path->insertNode(pathN);
         }
         paths.append(path);
@@ -720,7 +720,7 @@ qint8 Level::save()
             header->write16(to16(pNode->gety()));
             header->writeFloat(pNode->getSpeed());
             header->writeFloat(pNode->getAccel());
-            header->write32(pNode->getUnk1());
+            header->write32(pNode->getDelay());
             header->write32(0);
             actualNodeCount1++;
         }
@@ -820,7 +820,25 @@ void Level::remove(Object* obj)
     }
     else if (is<Sprite*>(obj))
     {
-        sprites.removeOne(dynamic_cast<Sprite*>(obj));
+        Sprite* spr = dynamic_cast<Sprite*>(obj);
+        sprites.removeOne(spr);
+        int id = spr->getid();
+
+        switch (id) {
+        case 156:
+            leftCamLimits.removeOne(spr);
+            break;
+        case 157:
+            rightCamLimits.removeOne(spr);
+            break;
+        case 160:
+            bottomCamLimits.removeOne(spr);
+            break;
+        case 161:
+            topCamLimits.removeOne(spr);
+            break;
+        }
+
         delete obj;
     }
     else if (is<Entrance*>(obj))

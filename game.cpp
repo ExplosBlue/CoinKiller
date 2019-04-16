@@ -20,7 +20,7 @@ Tileset* Game::getTileset(QString name)
     return new Tileset(this, name);
 }
 
-LevelManager* Game::getLevelManager(QWidget* parent, QString path)
+LevelManager* Game::getLevelManager(WindowBase* parent, QString path)
 {
     path.prepend("/Course/");
     if (!path.endsWith(".sarc"))

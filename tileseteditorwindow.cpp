@@ -11,8 +11,8 @@
 #include <QColorDialog>
 #include <QInputDialog>
 
-TilesetEditorWindow::TilesetEditorWindow(QWidget *parent, Tileset *tileset) :
-    QMainWindow(parent),
+TilesetEditorWindow::TilesetEditorWindow(WindowBase *parent, Tileset *tileset) :
+    WindowBase(parent),
     ui(new Ui::TilesetEditorWindow)
 {
     this->tileset = tileset;
@@ -170,6 +170,9 @@ void TilesetEditorWindow::updateSelectedOvTile(int ovTile)
         tileset->setOverlayTile(selectedTileTL, 0, 0);
     else
         tileset->setOverlayTile(selectedTileTL, ovTile, tileset->getSlot());
+
+    objectEditor->update();
+    setupObjectsModel(true);
 }
 
 
@@ -401,6 +404,8 @@ void TilesetEditorWindow::setupObjectsModel(bool keepIndex)
         TileGrid tileGrid;
         tileGrid.clear();
         tileGrid[0xFFFFFFFF] = 1;
+        tileset->Render2DTiles(true);
+        tileset->Render3DOverlay(true);
         tileset->drawObject(p, tileGrid, i, 0, 0, obj->width, obj->height, 1);
         p.end();
 
@@ -709,6 +714,8 @@ void TilesetEditorWindow::on_actionDeleteAll3DOverlays_triggered()
         tileset->setOverlayTile(i, 0, 0);
 
     tilesetPicker->setOvTile(-1);
+    objectEditor->update();
+    setupObjectsModel(true);
 }
 
 void TilesetEditorWindow::on_actionDeleteAllBehaviors_triggered()

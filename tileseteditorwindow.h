@@ -1,7 +1,6 @@
 #ifndef TILESETEDITORWINDOW_H
 #define TILESETEDITORWINDOW_H
 
-#include <QMainWindow>
 #include <QImage>
 #include <QStringListModel>
 #include <QStandardItemModel>
@@ -10,18 +9,18 @@
 #include "tileset.h"
 #include "tileseteditorwidgets.h"
 #include "settingsmanager.h"
-
+#include "windowbase.h"
 
 namespace Ui {
 class TilesetEditorWindow;
 }
 
-class TilesetEditorWindow : public QMainWindow
+class TilesetEditorWindow : public WindowBase
 {
     Q_OBJECT
 
 public:
-    explicit TilesetEditorWindow(QWidget *parent, Tileset *tileset);
+    explicit TilesetEditorWindow(WindowBase *parent, Tileset *tileset);
     ~TilesetEditorWindow();
 
 signals:

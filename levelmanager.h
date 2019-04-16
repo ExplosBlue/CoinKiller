@@ -2,6 +2,7 @@
 #define LEVELMANAGER_H
 
 #include "level.h"
+#include "windowbase.h"
 
 #include <QObject>
 
@@ -9,7 +10,7 @@ class LevelManager : public QObject
 {
     Q_OBJECT
 public:
-    LevelManager(QWidget* parentWidget, Game *game, QString lvlPath);
+    LevelManager(WindowBase* parentWidget, Game *game, QString lvlPath);
     ~LevelManager();
 
     Level* openArea(int id);
@@ -25,7 +26,7 @@ public:
     int getAreaCount();
     bool hasArea(int id);
 
-    QWidget* getParent();
+    WindowBase* getParent();
     Game* getGame();
 
 signals:
@@ -34,7 +35,7 @@ signals:
 private:
     SarcFilesystem* archive;
 
-    QWidget* parentWidget;
+    WindowBase* parentWidget;
     Game* game;
     QString lvlPath;
 

@@ -17,7 +17,7 @@ public:
     const QString& getPath() { return path; }
 
     Tileset* getTileset(QString name);
-    LevelManager* getLevelManager(QWidget* parent, QString path);
+    LevelManager* getLevelManager(WindowBase* parent, QString path);
 
     QStandardItemModel* getCourseModel();
     QStandardItemModel* getTilesetModel();

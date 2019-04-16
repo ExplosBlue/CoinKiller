@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1300</width>
+    <width>1258</width>
     <height>700</height>
    </rect>
   </property>
@@ -46,7 +46,7 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>1298</width>
+         <width>1256</width>
          <height>634</height>
         </rect>
        </property>
@@ -60,7 +60,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1300</width>
+     <width>1258</width>
      <height>21</height>
     </rect>
    </property>
@@ -91,6 +91,8 @@
     <addaction name="actionCheckerboard"/>
     <addaction name="actionRenderLiquids"/>
     <addaction name="actionRenderCameraLimits"/>
+    <addaction name="actionToggle3DOverlay"/>
+    <addaction name="actionToggle2DTile"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
@@ -516,6 +518,28 @@
    </property>
    <property name="toolTip">
     <string>&lt;ToggleLocations&gt;</string>
+   </property>
+  </action>
+  <action name="actionToggle3DOverlay">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&lt;Toggle3DOverlay&gt;</string>
+   </property>
+   <property name="toolTip">
+    <string>&lt;Toggle3DOverlay&gt;</string>
+   </property>
+  </action>
+  <action name="actionToggle2DTile">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&lt;Toggle2DTile&gt;</string>
+   </property>
+   <property name="toolTip">
+    <string>&lt;Toggle2DTile&gt;</string>
    </property>
   </action>
  </widget>

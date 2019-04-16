@@ -86,6 +86,9 @@ public:
     void setRandomizeTiles(int tile, quint8 value);
     void setObjectBehavior(int selObj, int type, int hStart, int hEnd, int vStart, int vEnd);
 
+    void Render2DTiles(bool toggle) { draw2D = toggle; }
+    void Render3DOverlay(bool toggle) { draw3D = toggle; }
+
     Game* game;
 
     QImage* getImage() { return texImage; }
@@ -113,6 +116,9 @@ private:
 
     quint8 behaviors[441][8];
     quint16 overlays3D[441];
+
+    bool draw3D;
+    bool draw2D;
 };
 
 #endif // TILESET_H

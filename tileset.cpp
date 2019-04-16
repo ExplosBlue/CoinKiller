@@ -253,9 +253,18 @@ void Tileset::drawTile(QPainter& painter, TileGrid& grid, int num, int x, int y,
         if (xx == 11 && yy == 0) { painter.drawPixmap(rdst, ImageCache::getInstance()->get(TileOverride, "solid.png")); return; }
     }
 
-    QRect rsrc(2 + ((num%21)*24), 2 + ((num/21)*24), 20, 20);
+    if (draw2D)
+    {
+        QRect rsrc(2 + ((num%21)*24), 2 + ((num/21)*24), 20, 20);
+        painter.drawImage(rdst, *texImage, rsrc);
+    }
 
-    painter.drawImage(rdst, *texImage, rsrc);
+    if (draw3D && (getOverlayTile(num) !=0))
+    {
+        QRect overlaysrc(2 + ((getOverlayTile(num)%21)*24), 2 + ((getOverlayTile(num)/21)*24), 20, 20);
+        painter.drawImage(rdst, *texImage, overlaysrc);
+    }
+
     grid[gridid] = grid[0xFFFFFFFF];
 
     // Draw Overlays

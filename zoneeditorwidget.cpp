@@ -285,7 +285,7 @@ void ZoneEditorWidget::updateList()
 
     zoneList->clear();
     foreach (Zone* zone, *zones)
-        zoneList->addItem(QString("%1 (at %2,%3) (W: %4 H: %5)").arg(zone->getid()).arg(to16(zone->getx())).arg(to16(zone->gety())).arg(to16(zone->getwidth())).arg(to16(zone->getheight())));
+        zoneList->addItem(QString("Zone %1: (at %2,%3) (W: %4 H: %5)").arg(zone->getid()).arg(to16(zone->getx())).arg(to16(zone->gety())).arg(to16(zone->getwidth())).arg(to16(zone->getheight())));
 
     zoneList->setCurrentIndex(index);
 }

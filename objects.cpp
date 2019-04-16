@@ -2462,7 +2462,7 @@ QString Path::toString(qint32 xOffset, qint32 yOffset)
         nodeString.append(QString::number(node->gety() + yOffset) + ",");
         nodeString.append(QString::number(node->getSpeed()) + ",");
         nodeString.append(QString::number(node->getAccel()) + ",");
-        nodeString.append(QString::number(node->getUnk1()));
+        nodeString.append(QString::number(node->getDelay()));
 
         i++;
 
@@ -2481,13 +2481,13 @@ QString Path::toString(qint32 xOffset, qint32 yOffset)
 QList<PathNode*> Path::getNodes() const { return nodes; }
 
 // Path Node
-PathNode::PathNode(qint32 x, qint32 y, float speed, float accel, quint32 unk1, Path* parentPath)
+PathNode::PathNode(qint32 x, qint32 y, float speed, float accel, float delay, Path* parentPath)
 {
     this->x = x;
     this->y = y;
     this->speed = speed;
     this->accel = accel;
-    this->unk1 = unk1;
+    this->delay = delay;
     this->parentPath = parentPath;
 }
 
@@ -2497,7 +2497,7 @@ PathNode::PathNode(PathNode *node, Path* parentPath)
     y = node->gety();
     speed = node->getSpeed();
     accel = node->getAccel();
-    unk1 = node->getUnk1();
+    delay = node->getDelay();
     this->parentPath = parentPath;
 }
 

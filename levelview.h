@@ -40,6 +40,8 @@ public:
     void toggleCheckerboard(bool toggle) { checkerboard = toggle; update(); }
     void toggleRenderLiquids(bool toggle) { renderLiquids = toggle; update(); }
     void toggleRenderCameraLimits(bool toggle) { renderCameraLimits = toggle; update(); }
+    void toggle3DOverlay(bool toggle) { render3DOverlay = toggle; update(); }
+    void toggle2DTile(bool toggle) { render2DTile = toggle; update(); }
     void toggleSprites(bool toggle);
     void togglePaths(bool toggle);
     void toggleLocations(bool toggle);
@@ -101,6 +103,8 @@ private:
     bool renderSprites;
     bool renderPaths;
     bool renderLocations;
+    bool render2DTile;
+    bool render3DOverlay;
 
     quint8 layerMask;
 

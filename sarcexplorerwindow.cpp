@@ -5,8 +5,8 @@
 #include <QFileDialog>
 #include <QInputDialog>
 
-SarcExplorerWindow::SarcExplorerWindow(QWidget *parent, QString path, SettingsManager* settings) :
-    QMainWindow(parent),
+SarcExplorerWindow::SarcExplorerWindow(WindowBase *parent, QString path, SettingsManager* settings) :
+    WindowBase(parent),
     ui(new Ui::SarcExplorerWindow)
 {
     this->settings = settings;
@@ -14,7 +14,7 @@ SarcExplorerWindow::SarcExplorerWindow(QWidget *parent, QString path, SettingsMa
     iconsPath = QCoreApplication::applicationDirPath() + "/coinkiller_data/icons/";
     ui->setupUi(this);
 
-    setWindowTitle(settings->getTranslation("SarcExplorer", "sarcExplorer") + " - " + path);
+    setWindowTitle("CoinKiller Next - " + settings->getTranslation("SarcExplorer", "sarcExplorer") + " - " + path);
 
     sarcFile = new ExternalFile(NULL, path);
     sarc = new SarcFilesystem(sarcFile);

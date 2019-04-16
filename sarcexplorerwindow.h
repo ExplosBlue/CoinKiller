@@ -1,7 +1,6 @@
 #ifndef SARCEXPLORERWINDOW_H
 #define SARCEXPLORERWINDOW_H
 
-#include <QMainWindow>
 #include <QTreeView>
 #include <QStandardItemModel>
 #include <QStandardItem>
@@ -9,17 +8,18 @@
 
 #include "filesystem.h"
 #include "settingsmanager.h"
+#include "windowbase.h"
 
 namespace Ui {
 class SarcExplorerWindow;
 }
 
-class SarcExplorerWindow : public QMainWindow
+class SarcExplorerWindow : public WindowBase
 {
     Q_OBJECT
 
 public:
-    explicit SarcExplorerWindow(QWidget *parent, QString path, SettingsManager *settings);
+    explicit SarcExplorerWindow(WindowBase *parent, QString path, SettingsManager *settings);
     ~SarcExplorerWindow();
 
 private:

@@ -15,7 +15,6 @@
 #ifndef LEVELEDITORWINDOW_H
 #define LEVELEDITORWINDOW_H
 
-#include <QMainWindow>
 #include <QListView>
 #include <QComboBox>
 #include <QDockWidget>
@@ -35,12 +34,13 @@
 #include "progresspatheditorwidget.h"
 #include "spriteidswidget.h"
 #include "settingsmanager.h"
+#include "windowbase.h"
 
 namespace Ui {
 class LevelEditorWindow;
 }
 
-class LevelEditorWindow : public QMainWindow
+class LevelEditorWindow : public WindowBase
 {
     Q_OBJECT
 
@@ -137,6 +137,10 @@ private slots:
     void on_actionShowToolbox_toggled(bool checked);
 
     void updateDockedWidgetCheckboxes();
+
+    void on_actionToggle3DOverlay_toggled(bool arg1);
+
+    void on_actionToggle2DTile_toggled(bool arg1);
 
 private:
     Ui::LevelEditorWindow *ui;

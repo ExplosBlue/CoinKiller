@@ -87,6 +87,8 @@ screenshotZone=Screenshot
 hideStatusbar=Hide Statusbar
 showToolbox=Show Toolbox
 showMinimap=Show Minimap
+3DOverlay=Show 3D Overlays
+2DTile=Show 2D Tiles
 
 [TilesetEditor]
 tileset=Tileset

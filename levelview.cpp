@@ -50,6 +50,8 @@ LevelView::LevelView(QWidget *parent, Level* level) : QWidget(parent)
     renderSprites = true;
     renderPaths = true;
     renderLocations = true;
+    render2DTile = true;
+    render3DOverlay = true;
 
 #ifdef USE_KDE_BLUR
     setBackgroundColor(QColor(0,0,0,0));
@@ -183,6 +185,8 @@ void LevelView::paint(QPainter& painter, QRect rect, float zoomLvl, bool selecti
             quint16 tsid = (obj->getid() >> 12) & 0x3;
             if (level->tilesets[tsid])
             {
+                level->tilesets[tsid]->Render2DTiles(render2DTile);
+                level->tilesets[tsid]->Render3DOverlay(render3DOverlay);
                 level->tilesets[tsid]->drawObject(painter, tileGrid, obj->getid()&0x0FFF, obj->getx()/20, obj->gety()/20, obj->getwidth()/20, obj->getheight()/20, 1);
             }
             else
@@ -473,6 +477,17 @@ void LevelView::paint(QPainter& painter, QRect rect, float zoomLvl, bool selecti
 
                 if (!drawrect.intersects(QRect(pathLine.x1(), pathLine.y1(), pathLine.x2()-pathLine.x1(), pathLine.y2()-pathLine.y1())))
                     continue;
+
+                QPen pen(QColor(0,255,20));
+                pen.setWidth(2);
+                painter.setPen(pen);
+                painter.drawLine(pathLine);
+            }
+
+            // Connect path end to start if loop flag is enabled
+            if (((path->getLoop() & 2) != 0) && (nodes.size() > 2))
+            {
+                QLine pathLine(QPoint(nodes[0]->getx()+10, nodes[0]->gety()+10), QPoint(nodes[nodes.size()-1]->getx()+10, nodes[nodes.size()-1]->gety()+10));
 
                 QPen pen(QColor(0,255,20));
                 pen.setWidth(2);

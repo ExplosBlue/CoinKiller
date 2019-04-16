@@ -2,7 +2,6 @@
 
 #include <QVBoxLayout>
 #include <QGridLayout>
-#include <QLabel>
 
 PathEditorWidget::PathEditorWidget(QList<Path*> *paths)
 {
@@ -30,20 +29,30 @@ PathEditorWidget::PathEditorWidget(QList<Path*> *paths)
 
     editsLayout->addWidget(new HorLine(), 2, 0, 1, 2);
 
-    editsLayout->addWidget(new QLabel("Speed:"), 3, 0, 1, 1, Qt::AlignRight);
+    currentNode = new QLabel("<b>Node: None</b>");
+    editsLayout->addWidget(currentNode, 3, 0, 1, 1);
+
+    editsLayout->addWidget(new QLabel("Speed:"), 4, 0, 1, 1, Qt::AlignRight);
 
     speed = new QDoubleSpinBox();
     speed->setRange(-1000000, 1000000);
     speed->setDecimals(8);
     speed->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-    editsLayout->addWidget(speed, 3, 1);
+    editsLayout->addWidget(speed, 4, 1);
 
-    editsLayout->addWidget(new QLabel("Acceleration:"), 4, 0, 1, 1, Qt::AlignRight);
+    editsLayout->addWidget(new QLabel("Acceleration:"), 5, 0, 1, 1, Qt::AlignRight);
 
     acceleration = new QDoubleSpinBox();
     acceleration->setRange(-1000000, 1000000);
     acceleration->setDecimals(8);
-    editsLayout->addWidget(acceleration, 4, 1);
+    editsLayout->addWidget(acceleration, 5, 1);
+
+    editsLayout->addWidget(new QLabel("Delay:"), 6, 0, 1, 1, Qt::AlignRight);
+
+    delay = new QDoubleSpinBox();
+    delay->setRange(-1000000, 1000000);
+    delay->setDecimals(8);
+    editsLayout->addWidget(delay, 6, 1);
 
     edits->setLayout(editsLayout);
     layout->addWidget(edits);
@@ -54,6 +63,7 @@ PathEditorWidget::PathEditorWidget(QList<Path*> *paths)
     connect(loop, SIGNAL(stateChanged(int)), this, SLOT(handleLoopChanged()));
     connect(speed, SIGNAL(valueChanged(double)), this, SLOT(handleSpeedChanged(double)));
     connect(acceleration, SIGNAL(valueChanged(double)), this, SLOT(handleAccelChanged(double)));
+    connect(delay, SIGNAL(valueChanged(double)), this, SLOT(handleDelayChanged(double)));
 
     updateList();
     updateInfo();
@@ -94,8 +104,11 @@ void PathEditorWidget::updateInfo()
         loop->setChecked(true);
     else
         loop->setChecked(false);
+
+    currentNode->setText(QString("<b>Node: %1</b>").arg(editPath->getIndexOfNode(editNode) + 1));
     speed->setValue(editNode->getSpeed());
     acceleration->setValue(editNode->getAccel());
+    delay->setValue(editNode->getDelay());
     handleChanges = true;
 }
 
@@ -143,6 +156,8 @@ void PathEditorWidget::handleLoopChanged()
         editPath->setLoop(2);
     else
         editPath->setLoop(0);
+
+    emit updateLevelView();
     emit editMade();
 }
 
@@ -157,5 +172,12 @@ void PathEditorWidget::handleAccelChanged(double accelVal)
 {
     if (!handleChanges) return;
     editNode->setAccel((float)accelVal);
+    emit editMade();
+}
+
+void PathEditorWidget::handleDelayChanged(double delayVal)
+{
+    if (!handleChanges) return;
+    editNode->setDelay((float)delayVal);
     emit editMade();
 }

@@ -32,7 +32,7 @@
 #endif
 
 LevelEditorWindow::LevelEditorWindow(LevelManager* lvlMgr, int initialArea) :
-    QMainWindow(lvlMgr->getParent()),
+    WindowBase(lvlMgr->getParent()),
     ui(new Ui::LevelEditorWindow)
 {
     this->lvlMgr = lvlMgr;
@@ -91,6 +91,8 @@ LevelEditorWindow::LevelEditorWindow(LevelManager* lvlMgr, int initialArea) :
     ui->actionToggleSprites->setIcon(QIcon(basePath + "sprite.png"));
     ui->actionTogglePaths->setIcon(QIcon(basePath + "path.png"));
     ui->actionToggleLocations->setIcon(QIcon(basePath + "location.png"));
+    ui->actionToggle3DOverlay->setIcon(QIcon(basePath + "3D.png"));
+    ui->actionToggle2DTile->setIcon(QIcon(basePath + "2D.png"));
 
     toolboxDock = new QDockWidget("Toolbox", this);
     toolboxDock->setObjectName("toolboxDock");
@@ -233,6 +235,12 @@ void LevelEditorWindow::loadTranslations()
     ui->actionToggleLocations->setText(settings->getTranslation("LevelEditor", "locations"));
     ui->actionToggleLocations->setToolTip(settings->getTranslation("LevelEditor", "locations"));
 
+    ui->actionToggle3DOverlay->setText(settings->getTranslation("LevelEditor", "3DOverlay"));
+    ui->actionToggle3DOverlay->setToolTip(settings->getTranslation("LevelEditor", "3DOverlay"));
+
+    ui->actionToggle2DTile->setText(settings->getTranslation("LevelEditor", "2DTile"));
+    ui->actionToggle2DTile->setToolTip(settings->getTranslation("LevelEditor", "2DTile"));
+
     ui->actionSetBackgroundColor->setText(settings->getTranslation("LevelEditor", "setBgColor"));
     ui->actionSetBackgroundColor->setToolTip(settings->getTranslation("LevelEditor", "setBgColor"));
 
@@ -287,6 +295,19 @@ void LevelEditorWindow::on_actionToggleLocations_toggled(bool toggle)
     levelView->toggleLocations(toggle);
     update();
 }
+
+void LevelEditorWindow::on_actionToggle3DOverlay_toggled(bool toggle)
+{
+    levelView->toggle3DOverlay(toggle);
+    update();
+}
+
+void LevelEditorWindow::on_actionToggle2DTile_toggled(bool toggle)
+{
+    levelView->toggle2DTile(toggle);
+    update();
+}
+
 
 void LevelEditorWindow::on_actionZoom_In_triggered()
 {
@@ -642,6 +663,8 @@ void LevelEditorWindow::loadArea(int id, bool closeLevel, bool init)
     ui->actionToggleSprites->setChecked(true);
     ui->actionTogglePaths->setChecked(true);
     ui->actionToggleLocations->setChecked(true);
+    ui->actionToggle2DTile->setChecked(true);
+    ui->actionToggle3DOverlay->setChecked(true);
     ui->actionSelectAfterPlacement->setChecked(settings->get("SelectAfterPlacement").toBool());
     levelView->setLayerMask(layerMask);
     levelView->toggleGrid(ui->actionGrid->isChecked());
@@ -719,13 +742,21 @@ void LevelEditorWindow::loadArea(int id, bool closeLevel, bool init)
     connect(levelView->editionModePtr(), SIGNAL(editMade()), this, SLOT(handleEditMade()));
 
     toolboxTabs->addTab(areaEditor, QIcon(basePath + "settings.png"), "");
+    toolboxTabs->setTabToolTip(0, "Area Settings");
     toolboxTabs->addTab(tilesetPalette, QIcon(basePath + "filled_box"), "");
+    toolboxTabs->setTabToolTip(1, "Tileset Palette");
     toolboxTabs->addTab(spriteEditor, QIcon(basePath + "sprite.png"), "");
+    toolboxTabs->setTabToolTip(2, "Sprites");
     toolboxTabs->addTab(entranceEditor, QIcon(basePath + "entrance.png"), "");
+    toolboxTabs->setTabToolTip(3, "Entrances");
     toolboxTabs->addTab(zoneEditor, QIcon(basePath + "zone.png"), "");
+    toolboxTabs->setTabToolTip(4, "Zones");
     toolboxTabs->addTab(locationEditor, QIcon(basePath + "location.png"), "");
+    toolboxTabs->setTabToolTip(5, "Locations");
     toolboxTabs->addTab(pathEditor, QIcon(basePath + "path.png"), "");
+    toolboxTabs->setTabToolTip(6, "Paths");
     toolboxTabs->addTab(progPathEditor, QIcon(basePath + "progress_path.png"), "");
+    toolboxTabs->setTabToolTip(7, "Progress Paths");
 
     miniMap = new LevelMiniMap(this, level);
     connect(levelView, SIGNAL(updateMinimap(QRect)), miniMap, SLOT(update_(QRect)));

@@ -2,7 +2,7 @@
 #include "leveleditorwindow.h"
 #include "game.h"
 
-LevelManager::LevelManager(QWidget *parentWidget, Game* game, QString lvlPath)
+LevelManager::LevelManager(WindowBase *parentWidget, Game* game, QString lvlPath)
 {
     this->parentWidget = parentWidget;
     this->lvlPath = lvlPath;
@@ -152,7 +152,7 @@ int LevelManager::removeArea(Level *level)
     return seekArea;
 }
 
-QWidget* LevelManager::getParent()
+WindowBase* LevelManager::getParent()
 {
     return parentWidget;
 }

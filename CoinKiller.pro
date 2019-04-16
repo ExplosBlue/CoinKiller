@@ -99,7 +99,8 @@ HEADERS  += mainwindow.h \
     newtilesetdialog.h \
     imagecache.h \
     spriteidswidget.h \
-    clickablelabel.h
+    clickablelabel.h \
+    windowbase.h
 
 FORMS    += mainwindow.ui \
     leveleditorwindow.ui \

@@ -148,7 +148,7 @@ void EntranceEditorWidget::updateList()
             type = entranceTypes.at(entr->getEntrType());
         else
             type = "UNKNOWN";
-        entrancesList->addItem(QString("%1: %2 (at %3,%4)").arg(entr->getid()).arg(type).arg(to16(entr->getx())).arg(to16(entr->gety())));
+        entrancesList->addItem(QString("Entrance %1: %2 (at %3,%4)").arg(entr->getid()).arg(type).arg(to16(entr->getx())).arg(to16(entr->gety())));
     }
     entrancesList->setCurrentIndex(index);
 }

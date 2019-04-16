@@ -8,6 +8,7 @@
 #include <QSpinBox>
 #include <QDoubleSpinBox>
 #include <QCheckBox>
+#include <QLabel>
 
 class PathEditorWidget : public QWidget
 {
@@ -36,10 +37,13 @@ private:
     QWidget* edits;
     QListWidget* pathList;
 
+    QLabel* currentNode;
+
     QSpinBox* id;
     QCheckBox* loop;
     QDoubleSpinBox* speed;
     QDoubleSpinBox* acceleration;
+    QDoubleSpinBox* delay;
 
     class HorLine : public QFrame { public: HorLine() { setFrameStyle(QFrame::HLine | QFrame::Sunken); } };
 
@@ -52,6 +56,7 @@ private slots:
     void handleLoopChanged();
     void handleSpeedChanged(double speedVal);
     void handleAccelChanged(double accelVal);
+    void handleDelayChanged(double delayVal);
 
 };
 

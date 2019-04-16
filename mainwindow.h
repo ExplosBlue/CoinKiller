@@ -18,23 +18,22 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <QMainWindow>
-
 #include "game.h"
 #include "settingsmanager.h"
 #include "filedownloader.h"
 #include "clickablelabel.h"
+#include "windowbase.h"
 
 namespace Ui {
 class MainWindow;
 }
 
-class MainWindow : public QMainWindow
+class MainWindow : public WindowBase
 {
     Q_OBJECT
 
 public:
-    explicit MainWindow(QWidget *parent = 0);
+    explicit MainWindow(WindowBase *parent = nullptr);
     ~MainWindow();
 
 private slots:

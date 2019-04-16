@@ -89,6 +89,8 @@ void TilesetPalette::loadTileset(int tilesetNbr)
         TileGrid tileGrid;
         tileGrid.clear();
         tileGrid[0xFFFFFFFF] = 1;
+        level->tilesets[tilesetNbr]->Render2DTiles(true);
+        level->tilesets[tilesetNbr]->Render3DOverlay(true);
         level->tilesets[tilesetNbr]->drawObject(p, tileGrid, i, 0, 0, obj->width, obj->height, 1);
         p.end();
         QStandardItem *objItem = new QStandardItem();
