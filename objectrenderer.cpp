@@ -2381,7 +2381,7 @@ void SnakeBlockRenderer::render(QPainter *painter, QRect *)
     int curY = 0;
 
     QString ice = "";
-    if (spr->getid() == 218 && spr->getNybble(17) == 1)
+    if (spr->getNybble(17) == 1)
         ice = "ice_";
 
     if (!(nextNode >= path->getNumberOfNodes()))

@@ -696,6 +696,7 @@
     <value nybble="21-22" title="Rotation ID"/>
   </sprite>
   <sprite id="55" name="Coin" notes="Actor: 0x0CF&#13;&#10;Description: A Coin.&#13;&#10;Event Triggerable: No&#13;&#10;Affected by Gold Ring: No &#13;&#10;Requirements: N/A">
+    <checkbox nybble="7" title="Temporary Coin" comment="Causes the coin to despawn after a couple of seconds, similar to a coin dropped by an enemy. [unused]"/>
     <list nybble="8" title="Z-Order" comment="Determines the Z position of the coin. Values &gt; 2 are the same as 2.">
       <entry value="0">Above layer 1</entry>
       <entry value="1">Uncollectable Below layer 1</entry>
@@ -776,6 +777,7 @@
     <value nybble="21-22" title="Rotation ID"/>
   </sprite>
   <sprite id="60" name="Movement-controlled Coin" notes="Actor: 0x0E2&#13;&#10;Description: A Coin that can be moved.&#13;&#10;Event Triggerable: No&#13;&#10;Affected by Gold Ring: No &#13;&#10;Requirements: Must have a Movement ID set.">
+    <checkbox nybble="7" title="Temporary Coin" comment="Causes the coin to despawn after a couple of seconds, similar to a coin dropped by an enemy. Is also offset up and to the left. [unused]"/>
     <list nybble="8" title="Z-Order" comment="Determines the Z position of the coin. Values &gt; 2 are the same as 2.">
       <entry value="0">Above layer 1</entry>
       <entry value="1">Uncollectable Below layer 1</entry>
@@ -1594,7 +1596,7 @@
     </list>
     <list nybble="17" title="End Behaviour" comment="The behavior of the platform after it hits the last node. (* starts at the top, goes down, and disappears.)">
       <entry value="0">Falls</entry>
-      <entry value="1">Loops</entry>
+      <entry value="1">Goes Backwards</entry>
       <entry value="2">Falls</entry>
       <entry value="3">Starts on top*</entry>
       <entry value="4">Disappears</entry>
@@ -2481,6 +2483,7 @@
     </list>
     <value nybble="10" title="Starting Path Node Overflow" comment="This nybble works as follows: For Start Node 27 (1*16+11*1), you need to fill in 1 here, and 11 at the Start Node."/>
     <checkbox nybble="17" title="Already Moving" comment="When this is checked, the snakeblock will move without the player steping onto it."/>
+    <checkbox nybble="18" title="Ice Snakeblock" comment=" If checked, the snakeblock will be an ice snakeblock. [Unused]"/>
     <list nybble="19" title="Ending Behavior" comment="Sets how the snakeblock should act when reaching the final path node. Values of 6 or greater crash the game.">
       <entry value="0">Stops</entry>
       <entry value="1">Jumps Right</entry>
@@ -3722,7 +3725,7 @@
     <value nybble="16" title="Unknown Value 16"/>
     <list nybble="17" title="End Behaviour" comment="The behavior of the platform after it hits the last node. (* starts at the top, goes down, and disappears.)">
       <entry value="0">Falls</entry>
-      <entry value="1">Loops</entry>
+      <entry value="1">Goes Backwards</entry>
       <entry value="2">Falls</entry>
       <entry value="3">Starts on top*</entry>
       <entry value="4">Disappears</entry>
