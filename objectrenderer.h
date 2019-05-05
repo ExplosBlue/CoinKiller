@@ -896,6 +896,14 @@ protected:
     const Sprite *spr;
 };
 
+// Sprite 257: Movement-Controlled Bone Platform
+class BonePlatformRenderer: public SpriteRenderer
+{
+public:
+    BonePlatformRenderer(const Sprite *spr);
+    void render(QPainter *painter, QRect* drawrect);
+};
+
 // Sprite 259: Rotation Controlled Hard Block
 class HardBlockRenderer: public SpriteRenderer
 {
