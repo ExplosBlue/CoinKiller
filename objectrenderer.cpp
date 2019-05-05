@@ -621,6 +621,9 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
     case 255: // Bowser Head Statue
         ret = new NormalImageRenderer(spr, "bowser_head_statue.png");
         break;
+    case 257: // Movement Controlled Bone Platform
+        ret = new BonePlatformRenderer(spr);
+        break;
     case 259: // Rotation Controlled Hard Block
         ret = new HardBlockRenderer(spr, tilesets[0]);
         break;
@@ -1406,8 +1409,8 @@ FireBarRenderer::FireBarRenderer(const Sprite *spr)
 {
     this->spr = spr;
 
-    int size = (spr->getNybble(5)*40) + 20;
-    int posoff = (spr->getNybble(5)*20);
+    int size = (spr->getNybble(5)*30) + 15;
+    int posoff = (spr->getNybble(5)*15);
     radius = new CircleRenderer(spr->getx()-posoff, spr->gety()-posoff, size, size, "", QColor(0,0,0));
 }
 
@@ -1424,7 +1427,7 @@ void FireBarRenderer::render(QPainter *painter, QRect *drawrect)
         radius->render(painter, drawrect);
 
     int gap = 0;
-    float angle = 0;
+    qreal angle = 0;
     int x = 0;
     int y = 0;
 
@@ -1436,15 +1439,15 @@ void FireBarRenderer::render(QPainter *painter, QRect *drawrect)
     // Calc Positions on a circle
     for (int i = 0; i < barCount; i++)
     {
-        gap = 0.75 - (1 / barCount);
+        gap = int(0.75 - (1 / barCount));
         angle = -360 * i / (barCount + gap);
         angle = qDegreesToRadians(angle)+1.5708;
 
         // Draw Firebar flame
         while (rads <= rad)
         {
-            x = qSin(angle) * ((rads * 20));
-            y = -(qCos(angle) * ((rads * 20)));
+            x = int(qSin(angle) * ((rads * 15)));
+            y = int(-(qCos(angle) * ((rads * 15))));
 
             painter->drawPixmap(spr->getx()+x, spr->gety()+y, 20, 20, ImageCache::getInstance()->get(SpriteImg, "firebar_fire.png"));
 
@@ -3123,6 +3126,38 @@ void LarryPlatformRenderer::render(QPainter *painter, QRect *)
 
     for (int i=0; i < b_width; i++)
         painter->drawPixmap(spr->getx()+spr->getOffsetX()+i*20, spr->gety()+spr->getOffsetY(), 20, 10, ImageCache::getInstance()->get(SpriteImg, "larry_platform.png"));
+}
+
+// Sprite 257: Movement Controlled Bone Platform
+BonePlatformRenderer::BonePlatformRenderer(const Sprite* spr)
+{
+    this->spr = spr;
+}
+
+void BonePlatformRenderer::render(QPainter* painter, QRect*)
+{
+    QString img_name;
+    switch (spr->getNybble(13))
+    {
+    case 1:
+        img_name = "coaster_long";
+        break;
+
+    case 2:
+        img_name = "coaster_end";
+        break;
+
+    case 3:
+        img_name = "coaster_short";
+        break;
+
+    default:
+        img_name = "coaster_head";
+        break;
+    }
+
+    painter->drawPixmap(QRect(spr->getx(), spr->gety(), spr->getwidth(), spr->getheight()), ImageCache::getInstance()->get(SpriteImg, img_name + ".png"));
+
 }
 
 // Sprite 259: Rotation Controlled hard Block

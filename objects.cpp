@@ -1789,6 +1789,29 @@ void Sprite::setRect()
         offsetx = -18;
         offsety = -1;
         break;
+    case 257: // Movement Controlled Bone Platform
+    {
+        height = 108;
+
+        switch (getNybble(13))
+        {
+        case 1:
+            width = 141;
+            break;
+        case 2:
+            width = 86;
+            break;
+        case 3:
+            width = 102;
+            break;
+        default:
+            width = 101;
+            height = 100;
+            break;
+        }
+
+        break;
+    }
     case 267: case 275: case 276: // Long Question Blocks
         width = 60;
         height = 20;
