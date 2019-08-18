@@ -104,7 +104,8 @@ void SettingsManager::loadTranslations(QString languageName)
 
     QStringList translateFiles;
     translateFiles << "entrancetypes.txt"
-                   << "levelnames.xml"
+                   << "levelnames.txt"
+                   << "worldnames.txt"
                    << "musicids.txt"
                    << "spritecategories.xml"
                    << "spritedata.xml"

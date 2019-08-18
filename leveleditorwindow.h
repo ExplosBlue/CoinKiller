@@ -33,6 +33,7 @@
 #include "patheditorwidget.h"
 #include "progresspatheditorwidget.h"
 #include "spriteidswidget.h"
+#include "eventeditorwidget.h"
 #include "settingsmanager.h"
 #include "windowbase.h"
 
@@ -163,6 +164,7 @@ private:
     PathEditorWidget* pathEditor;
     ProgressPathEditorWidget* progPathEditor;
     SpriteIdWidget* spriteIds;
+    EventEditorWidget* eventEditor;
 
     QComboBox* areaSelector;
 

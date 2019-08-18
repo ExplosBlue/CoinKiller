@@ -24,6 +24,7 @@
 #include <QFile>
 #include <QMessageBox>
 #include <limits>
+#include <QMessageBox>
 
 Level::Level(Game *game, SarcFilesystem* archive, int area, QString lvlName)
 {    
@@ -64,7 +65,7 @@ Level::Level(Game *game, SarcFilesystem* archive, int area, QString lvlName)
 
         if (tilesetname.isEmpty())
         {
-            tilesets[t] = NULL;
+            tilesets[t] = nullptr;
             continue;
         }
 
@@ -74,14 +75,14 @@ Level::Level(Game *game, SarcFilesystem* archive, int area, QString lvlName)
         }
         catch ( const std::exception & e )
         {
-            qDebug("Tileset %s not found", tilesetname.toStdString().c_str());
-            tilesets[t] = NULL;
+            QMessageBox::warning(nullptr, "CoinKiller", QString("Tileset %1 could not be found!").arg(tilesetname));
+            tilesets[t] = nullptr;
         }
     }
 
     // Block 1: Area Settings
     header->seek(blockOffsets[1]);
-    header->skip(8); // 8 Zeros
+    eventState = header->read64();
     unk1 = header->read16();
     timeLimit = header->read16();
     header->skip(4);
@@ -565,7 +566,7 @@ qint8 Level::save()
 
     // Block 1: Area Settings
     header->seek(blockOffsets[1]);
-    for (int j = 0; j < 8; j++) header->write8(0);
+    header->write64(eventState);
     header->write16(unk1);
     header->write16(timeLimit);
     header->write8(0);

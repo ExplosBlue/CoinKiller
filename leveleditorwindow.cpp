@@ -735,6 +735,9 @@ void LevelEditorWindow::loadArea(int id, bool closeLevel, bool init)
     connect(progPathEditor, SIGNAL(selectedProgPathChanged(Object*)), levelView, SLOT(selectObj(Object*)));
     connect(progPathEditor, SIGNAL(editMade()), this, SLOT(handleEditMade()));
 
+    // Setup Event Editor
+    eventEditor = new EventEditorWidget(level);
+
     connect(levelView, SIGNAL(scrollTo(int,int)), this, SLOT(scrollTo(int,int)));
     connect(levelView->editionModePtr(), SIGNAL(selectdObjectChanged(Object*)), this, SLOT(setObjectEdition(Object*)));
     connect(levelView->editionModePtr(), SIGNAL(deselected()), this, SLOT(deselect()));
@@ -757,6 +760,8 @@ void LevelEditorWindow::loadArea(int id, bool closeLevel, bool init)
     toolboxTabs->setTabToolTip(6, "Paths");
     toolboxTabs->addTab(progPathEditor, QIcon(basePath + "progress_path.png"), "");
     toolboxTabs->setTabToolTip(7, "Progress Paths");
+    toolboxTabs->addTab(eventEditor, QIcon(basePath + "event.png"), "");
+    toolboxTabs->setTabToolTip(8, "Area Event States");
 
     miniMap = new LevelMiniMap(this, level);
     connect(levelView, SIGNAL(updateMinimap(QRect)), miniMap, SLOT(update_(QRect)));

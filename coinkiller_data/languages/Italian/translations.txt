@@ -31,12 +31,14 @@ ok=OK
 cancel=Annulla
 world=Mondo
 level=Livello
-changesSaved=Changes Saved
-unsavedChanges=Unsaved Changes
-wantToSave=Do you want to save your changes?
+changesSaved=Modifiche salvate
+unsavedChanges=Modifiche non salvate
+wantToSave=Vuoi salvare le modifiche??
 
 [MainWindow]
 levels=Livelli
+addLevel=Aggiungi Livello
+removeLevel=Rimuovi Livello
 tilesets=Lista Tileset
 addTileset=Aggiungi Tileset
 removeTileset=Rimuovi Tileset
@@ -47,7 +49,8 @@ selectUnpackedRomFSFolder=Seleziona cartella ROMFS...
 aboutCoinKiller=Informazioni su CoinKiller
 languages=Lingue
 NightMode=Modalità notte
-Maximised=Start Maximised
+Maximised=Avvia massimizzato
+LoadLast=Load last ROMFS
 updateSDat=Aggiorna Spritedata.xml
 sDatWarning=Tutti i cambiamenti effettuati al file spritedata.xml\nsaranno sovrascritti!\n\nVuoi procedere?
 sDatSuccess=Il file Spritedata.xml è stato aggiornato con successo!
@@ -56,6 +59,7 @@ sDatErrorFile=L’Aggiornamento del file Spritedata.xml è fallito per\nil segue
 
 [LevelEditor]
 view=View
+window=Window
 raiseToTop=Porta tutto Su
 lowerToBottom=Porta tutto Giu
 raiseLayer=Layer Su
@@ -68,21 +72,25 @@ zoomMax=Zoom al massimo
 grid=Griglia
 checkerboard=Scacchiera
 fullscreen=Schermo Intero
-layer=Layer
-sprites=Sprites
-paths=Paths
-locations=Toggle Locations
+layer=Alterna Layer
+sprites=Alterna Sprite
+paths=Alterna Percorsi
+locations=Alterna location
 area=Area
 addArea=Aggiungi Area
 removeArea=Rimuovi Area
 renderLiquids=Renderizza Liquidi
-renderCameraLimitsRender Camera Limits
-selectZoneContents=Seleziona Contenuti
+renderCameraLimits=Renderizza Limiti
+selectZoneContents=Seleziona Contenuti zona
 setBgColor=Imposta Colore Sfondo
 resetBgColor=Resetta Colore Sfondo
 selectAfterPlacement=Select Objects when Placed
-3DOverlay=Show 3D Overlays
-2DTile=Show 2D Tiles
+screenshotZone=Screenshot
+hideStatusbar=Hide Statusbar
+showToolbox=Show Toolbox
+showMinimap=Show Minimap
+3DOverlay=Mostra overlay 3D
+2DTile=Mostra tile 2D
 
 [TilesetEditor]
 tileset=Tileset

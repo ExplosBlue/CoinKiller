@@ -22,7 +22,9 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
+    eventeditorwidget.cpp \
         mainwindow.cpp \
+    newleveldialog.cpp \
     sarcfilesystem.cpp \
     externalfilesystem.cpp \
     externalfile.cpp \
@@ -60,8 +62,10 @@ SOURCES += main.cpp\
     clickablelabel.cpp
 
 HEADERS  += mainwindow.h \
+    eventeditorwidget.h \
     filesystembase.h \
     filebase.h \
+    newleveldialog.h \
     sarcfilesystem.h \
     externalfilesystem.h \
     externalfile.h \
@@ -104,6 +108,7 @@ HEADERS  += mainwindow.h \
 
 FORMS    += mainwindow.ui \
     leveleditorwindow.ui \
+    newleveldialog.ui \
     tileseteditorwindow.ui \
     sarcexplorerwindow.ui \
     newtilesetdialog.ui

@@ -1,0 +1,13 @@
+7:Mondo Fungo
+8:Mondo Fiore
+9:Mondo Stella
+10:Assalto all'oro
+11:Sfida Monetaria A
+12:Spaccanervi
+13:Fungo Dorato
+14:Sfida Monetaria B
+15:Tempi d'oro
+16:Sfida Monetaria C
+17:Piattaforme pericolose
+18:Affretta l'ingegno
+19:SovruMario

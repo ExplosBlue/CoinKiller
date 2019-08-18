@@ -44,7 +44,7 @@ private slots:
 
     void on_actionLoadUnpackedROMFS_triggered();
 
-    void on_actionDebug_test_triggered();
+    void on_levelList_clicked(const QModelIndex &index);
 
     void on_levelList_doubleClicked(const QModelIndex &index);
 
@@ -52,7 +52,11 @@ private slots:
 
     void on_updateSpriteData_clicked();
 
-    void on_openSarcExplorerBtn_clicked();
+    void on_actionSarcExplorer_triggered();
+
+    void on_addLevelBtn_clicked();
+
+    void on_removeLevelBtn_clicked();
 
     void on_addTilesetBtn_clicked();
 

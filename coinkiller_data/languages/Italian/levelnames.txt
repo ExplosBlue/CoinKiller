@@ -1,0 +1,31 @@
+1:Mondo %1-1
+2:Mondo %1-2
+3:Mondo %1-3
+4:Mondo %1-4
+5:Mondo %1-5
+6:Mondo %1-6
+7:Mondo %1-7
+8:Mondo %1-A
+9:Mondo %1-B
+10:Mondo %1-C
+11:Mondo %1-11 Platzhalter
+12:Mondo %1-Casa Stregata
+13:Mondo %1-13
+14:Mondo %1-Torre
+15:Mondo %1-15 Platzhalter
+16:Mondo %1-Castello
+17:Mondo %1-17 Platzhalter
+18:Mondo %1-Casa Toad 1
+19:Mondo %1-Casa Toad 2
+20:Mondo %1-Casa Toad 3
+21:Mondo %1-Casa Toad 4
+22:Mondo %1-Casa Toad 5
+23:Mondo %1-23 Platzhalter
+24:Mondo %1-Cannone
+25:Mondo %1-25 Platzhalter
+26:Mondo %1-26 Platzhalter
+27:Mondo %1-Crediti
+28:Mondo %1-28 Platzhalter
+29:Mondo %1-Arcobaleno
+30:Mondo %1-30 Platzhalter
+31:Mondo %1-31 Platzhalter

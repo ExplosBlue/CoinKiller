@@ -1,4 +1,4 @@
-; Copyright 2015 StapleButter
+﻿; Copyright 2015 StapleButter
 ;
 ; This file is part of CoinKiller.
 ;
@@ -37,6 +37,8 @@ wantToSave=Willst du deine Änderungen speichern?
 
 [MainWindow]
 levels=Level
+addLevel=Level hinzufügen
+removeLevel=Level entfernen
 tilesets=Tilesets
 addTileset=Tileset hinzufügen
 removeTileset=Tileset entfernen

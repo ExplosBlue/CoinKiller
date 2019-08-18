@@ -68,6 +68,30 @@
           </attribute>
          </widget>
         </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout">
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <item>
+           <widget class="QPushButton" name="addLevelBtn">
+            <property name="text">
+             <string>&lt;Add Level&gt;</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="removeLevelBtn">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="text">
+             <string>&lt;Remove Level&gt;</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
        </layout>
       </widget>
       <widget class="QWidget" name="tab_tilesets">
@@ -161,20 +185,6 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="toolsTab">
-       <attribute name="title">
-        <string>&lt;Tools&gt;</string>
-       </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_6">
-        <item>
-         <widget class="QPushButton" name="openSarcExplorerBtn">
-          <property name="text">
-           <string>&lt;Sarc Explorer&gt;</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
      </widget>
     </item>
    </layout>
@@ -200,8 +210,15 @@
     </property>
     <addaction name="actionAbout"/>
    </widget>
+   <widget class="QMenu" name="menuTools">
+    <property name="title">
+     <string>&lt;Tools&gt;</string>
+    </property>
+    <addaction name="actionSarcExplorer"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuHelp"/>
+   <addaction name="menuTools"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionLoadUnpackedROMFS">
@@ -220,6 +237,11 @@
   <action name="actionDebug_test">
    <property name="text">
     <string>debug/test</string>
+   </property>
+  </action>
+  <action name="actionSarcExplorer">
+   <property name="text">
+    <string>&lt;Sarc Explorer&gt;</string>
    </property>
   </action>
  </widget>

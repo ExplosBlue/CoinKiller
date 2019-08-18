@@ -1,0 +1,31 @@
+1:World %1-1
+2:World %1-2
+3:World %1-3
+4:World %1-4
+5:World %1-5
+6:World %1-6
+7:World %1-7
+8:World %1-A
+9:World %1-B
+10:World %1-C
+11:World %1-11 Placeholder
+12:World %1-Ghost House
+13:World %1-13
+14:World %1-Tower
+15:World %1-15 Placeholder
+16:World %1-Castle
+17:World %1-17 Placeholder
+18:World %1-Toad House 1
+19:World %1-Toad House 2
+20:World %1-Toad House 3
+21:World %1-Toad House 4
+22:World %1-Toad House 5
+23:World %1-23 Placeholder
+24:World %1-Cannon
+25:World %1-25 Placeholder
+26:World %1-26 Placeholder
+27:World %1-Credits
+28:World %1-28 Placeholder
+29:World %1-Rainbow
+30:World %1-30 Placeholder
+31:World %1-31 Placeholder

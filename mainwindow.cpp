@@ -38,6 +38,7 @@
 #include "tileseteditorwindow.h"
 #include "sarcexplorerwindow.h"
 #include "newtilesetdialog.h"
+#include "newleveldialog.h"
 
 MainWindow::MainWindow(WindowBase *parent) :
     WindowBase(parent),
@@ -134,9 +135,9 @@ void MainWindow::on_actionLoadUnpackedROMFS_triggered()
     loadGame(dirpath);
 }
 
-void MainWindow::on_actionDebug_test_triggered()
+void MainWindow::on_levelList_clicked(const QModelIndex &index)
 {
-
+    ui->removeLevelBtn->setEnabled(index.data(Qt::UserRole+1).toString() != "");
 }
 
 void MainWindow::on_levelList_doubleClicked(const QModelIndex &index)
@@ -167,7 +168,8 @@ bool MainWindow::checkForMissingFiles()
     requiredFiles
     << "blank_course.bin"
     << "entrancetypes.txt"
-    << "levelnames.xml"
+    << "levelnames.txt"
+    << "worldnames.txt"
     << "musicids.txt"
     << "spritecategories.xml"
     << "spritedata.xml"
@@ -202,14 +204,16 @@ void MainWindow::loadTranslations()
     ui->actionAbout->setText(settings->getTranslation("MainWindow", "aboutCoinKiller"));
     ui->actionLoadUnpackedROMFS->setText(settings->getTranslation("MainWindow", "loadUnpackedRomFS"));
     ui->tabWidget->setTabText(0, settings->getTranslation("MainWindow", "levels"));
+    ui->addLevelBtn->setText(settings->getTranslation("MainWindow", "addLevel"));
+    ui->removeLevelBtn->setText(settings->getTranslation("MainWindow", "removeLevel"));
     ui->tabWidget->setTabText(1, settings->getTranslation("MainWindow", "tilesets"));
     ui->addTilesetBtn->setText(settings->getTranslation("MainWindow", "addTileset"));
     ui->removeTilesetBtn->setText(settings->getTranslation("MainWindow", "removeTileset"));
     ui->tabWidget->setTabText(2, settings->getTranslation("General", "settings"));
     ui->languagesLabel->setText(settings->getTranslation("MainWindow", "languages")+":");
     ui->updateSpriteData->setText(settings->getTranslation("MainWindow", "updateSDat"));
-    ui->tabWidget->setTabText(3, settings->getTranslation("General", "tools"));
-    ui->openSarcExplorerBtn->setText(settings->getTranslation("SarcExplorer", "sarcExplorer"));
+    ui->menuTools->setTitle(settings->getTranslation("General", "tools"));
+    ui->actionSarcExplorer->setText(settings->getTranslation("SarcExplorer", "sarcExplorer"));
     ui->nightModeCheckbox->setText(settings->getTranslation("MainWindow", "NightMode"));
     ui->maximisedCheckbox->setText(settings->getTranslation("MainWindow", "Maximised"));
     ui->loadLastCheckbox->setText(settings->getTranslation("MainWindow", "LoadLast"));
@@ -252,7 +256,7 @@ void MainWindow::sdDownload_finished(QNetworkReply::NetworkError error)
     this->setEnabled(true);
 }
 
-void MainWindow::on_openSarcExplorerBtn_clicked()
+void MainWindow::on_actionSarcExplorer_triggered()
 {
     QString basePath = "";
     if (!settings->getLastSarcFilePath().isEmpty())
@@ -272,6 +276,52 @@ void MainWindow::on_openSarcExplorerBtn_clicked()
 
     SarcExplorerWindow* sarcExplorer = new SarcExplorerWindow(this, sarcFilePath, settings);
     sarcExplorer->show();
+}
+
+void MainWindow::on_addLevelBtn_clicked()
+{
+    QFile blankLvl(QCoreApplication::applicationDirPath() + "/coinkiller_data/blank_level.sarc");
+    if (!blankLvl.exists())
+    {
+        QMessageBox::information(this, "CoinKiller", settings->getTranslation("MainWindow", "blankLevelMissing") + " (/coinkiller_data/blank_level.sarc).", QMessageBox::StandardButton::Ok);
+        return;
+    }
+
+    NewLevelDialog nld(this, settings);
+    int result = nld.exec();
+
+    if (result != QDialog::Accepted)
+        return;
+
+    if (game->fs->fileExists("/Course/" + nld.getName() + ".sarc"))
+    {
+        QMessageBox::information(this, "CoinKiller", settings->getTranslation("MainWindow", "tilesetExists"), QMessageBox::StandardButton::Ok);
+        return;
+    }
+
+    if (nld.getName().contains("/"))
+    {
+        QStringList path = nld.getName().split("/");
+        path.removeLast();
+        QDir().mkpath(settings->getLastRomFSPath() + "/Course/" + path.join("/"));
+    }
+
+    blankLvl.copy(settings->getLastRomFSPath() + "/Course/" + nld.getName() + ".sarc");
+
+    ui->levelList->setModel(game->getCourseModel());
+}
+
+void MainWindow::on_removeLevelBtn_clicked()
+{
+    if (ui->levelList->selectionModel()->selectedIndexes().length() == 0 || ui->levelList->selectionModel()->selectedIndexes().at(0).data(Qt::UserRole+1).toString() == "")
+        return;
+
+    QString selLvlName = ui->levelList->selectionModel()->selectedIndexes().at(0).data(Qt::UserRole+1).toString();
+
+    game->fs->deleteFile("/Course/" + selLvlName);
+    ui->levelList->setModel(game->getCourseModel());
+
+    ui->removeLevelBtn->setDisabled(true);
 }
 
 void MainWindow::on_addTilesetBtn_clicked()
@@ -316,10 +366,12 @@ void MainWindow::on_removeTilesetBtn_clicked()
     if (ui->tilesetView->selectionModel()->selectedIndexes().length() == 0 || ui->tilesetView->selectionModel()->selectedIndexes().at(0).data(Qt::UserRole+1).toString() == "")
         return;
 
-    QString selTsName =ui->tilesetView->selectionModel()->selectedIndexes().at(0).data(Qt::UserRole+1).toString();
+    QString selTsName = ui->tilesetView->selectionModel()->selectedIndexes().at(0).data(Qt::UserRole+1).toString();
 
     game->fs->deleteFile("/Unit/" + selTsName + ".sarc");
     ui->tilesetView->setModel(game->getTilesetModel());
+
+    ui->removeTilesetBtn->setDisabled(true);
 }
 
 void MainWindow::on_tilesetView_clicked(const QModelIndex &index)
@@ -370,7 +422,7 @@ void MainWindow::on_loadLastCheckbox_clicked(bool checked)
 
 void MainWindow::on_statusLabel_clicked()
 {
-    if (!gameLoaded || game == NULL)
+    if (!gameLoaded || game == nullptr)
         return;
 
     QString path = QString("file://%1").arg(QDir::toNativeSeparators(game->getPath()));

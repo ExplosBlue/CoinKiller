@@ -17,6 +17,14 @@ Game::~Game()
 
 Tileset* Game::getTileset(QString name)
 {
+    QString path = name;
+    path.prepend("/Unit/");
+    if (!path.endsWith(".sarc"))
+        path.append(".sarc");
+
+    if (!fs->fileExists(path))
+        throw std::runtime_error("Tileset File does not exist.");
+
     return new Tileset(this, name);
 }
 
@@ -34,44 +42,123 @@ LevelManager* Game::getLevelManager(WindowBase* parent, QString path)
 
 QStandardItemModel* Game::getCourseModel()
 {
+    SettingsManager* settingsMgr = SettingsManager::getInstance();
+
     QStandardItemModel* model = new QStandardItemModel();
 
-    QDomDocument levelNames;
-    QFile f(SettingsManager::getInstance()->getFilePath("levelnames.xml"));
-    if (!f.open(QIODevice::ReadOnly))
-        return model;
-    levelNames.setContent(&f);
-    f.close();
+    QList<QString> dirList;
+    fs->directoryContents("/Course/", QDir::Dirs, dirList);
+    dirList.push_front("");
 
-    loadLevelNamesCat(model->invisibleRootItem(), levelNames.documentElement());
-
-    return model;
-}
-
-void Game::loadLevelNamesCat(QStandardItem* item, QDomElement node)
-{
-    QDomElement element = node.firstChild().toElement();
-    while (!element.isNull())
+    QMap<int, QString> levelNames;
+    QFile ln(SettingsManager::getInstance()->getFilePath("levelnames.txt"));
+    if (ln.open(QIODevice::ReadOnly))
     {
-        if (element.tagName() == "level")
+        QTextStream in(&ln);
+        in.setCodec("UTF-8");
+
+        levelNames.clear();
+        while(!in.atEnd())
         {
-            if (fs->fileExists("/Course/" + element.attribute("file") + ".sarc"))
+            QStringList parts = in.readLine().split(":");
+            if (parts.count() == 2)
+                levelNames.insert(parts[0].toInt(), parts[1]);
+        }
+
+        ln.close();
+    }
+
+    QMap<int, QString> worldNames;
+    QFile wn(SettingsManager::getInstance()->getFilePath("worldnames.txt"));
+    if (wn.open(QIODevice::ReadOnly))
+    {
+        QTextStream in(&wn);
+        in.setCodec("UTF-8");
+
+        worldNames.clear();
+        while(!in.atEnd())
+        {
+            QStringList parts = in.readLine().split(":");
+            if (parts.count() == 2)
+                worldNames.insert(parts[0].toInt(), parts[1]);
+        }
+
+        wn.close();
+    }
+    foreach (QString dir, dirList)
+    {
+        // Sub Directories
+        QList<QString> courseList;
+        QStandardItem* dirItem = new QStandardItem(dir);
+
+        if (dir == "")
+        {
+            fs->directoryContents("/Course/", QDir::Files, courseList);
+
+            if (courseList.isEmpty())
+                continue;
+
+            dirItem = model->invisibleRootItem();
+        }
+        else
+        {
+            fs->directoryContents("/Course/" + dir, QDir::Files, courseList);
+
+            if (courseList.isEmpty())
+                continue;
+
+            model->invisibleRootItem()->appendRow(dirItem);
+        }
+
+        QStandardItem* worldItemPtr = nullptr;
+
+        foreach(QString filename, courseList)
+        {
+            QRegularExpression re("^\\d+-\\d+\\.sarc$");
+            if (!re.match(filename, 0, QRegularExpression::NormalMatch).hasMatch())
+                continue;
+
+            QString worldName = worldNames.value(filename.split(".")[0].split("-")[0].toInt());
+
+            QString worldNum = filename.split(".")[0].split("-")[0];
+
+            if (worldName.isEmpty())
+                worldName = settingsMgr->getTranslation("General", "world") + " " + worldNum;
+
+            // World Categories
+            if (worldItemPtr == nullptr || worldItemPtr->text() != QString(worldName))
             {
-                QStandardItem* subItem = new QStandardItem(element.attribute("name"));
-                subItem->setData(element.attribute("file"));
-                item->appendRow(subItem);
+                QStandardItem* subItem = new QStandardItem(worldName);
+                worldItemPtr = subItem;
+                dirItem->appendRow(subItem);
+            }
+
+            // Levels
+            if (worldItemPtr != nullptr)
+            {
+                QString levelName;
+
+                if (worldName.contains(settingsMgr->getTranslation("General", "world")))
+                    levelName = levelNames.value(filename.split(".")[0].split("-")[1].toInt()).arg(worldName.split(settingsMgr->getTranslation("General", "world") + " ")[1]);
+                else
+                    levelName = levelNames.value(filename.split(".")[0].split("-")[1].toInt()).arg(worldName);
+
+                if (levelName.isEmpty())
+                    levelName = filename;
+
+                QStandardItem* subItem = new QStandardItem(levelName);
+                if (dir != "")
+                    subItem->setData(dir + "/" + filename);
+                else
+                    subItem->setData(filename);
+                worldItemPtr->appendRow(subItem);
             }
         }
-        else if (element.tagName() == "category")
-        {
-            QStandardItem* subItem = new QStandardItem(element.attribute("name"));
-            loadLevelNamesCat(subItem, element);
-            if (subItem->rowCount() != 0)
-                item->appendRow(subItem);
-        }
-
-        element = element.nextSibling().toElement();
     }
+
+    model->sort(0, Qt::AscendingOrder);
+
+    return model;
 }
 
 QStandardItemModel* Game::getTilesetModel()

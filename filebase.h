@@ -60,6 +60,13 @@ public:
         return ret;
     }
 
+    quint64 read64()
+    {
+        quint64 ret;
+        readData((quint8*)&ret, 8);
+        return ret;
+    }
+
     float readFloat()
     {
         quint32 bin = read32();
@@ -115,6 +122,11 @@ public:
     void write32(quint32 val)
     {
         writeData((quint8*)&val, 4);
+    }
+
+    void write64(quint64 val)
+    {
+        writeData((quint8*)&val, 8);
     }
 
     void writeFloat(float val)

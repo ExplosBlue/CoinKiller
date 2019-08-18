@@ -1,0 +1,13 @@
+7:Welt Pilz
+8:Welt Blume
+9:Welt Stern
+10:Goldgier
+11:Münzparcours A
+12:Nervenkitzel
+13:Goldpilzsaison
+14:Münzparcours B
+15:Goldene Nostalgie
+16:Münzparcours C
+17:Plattformpanik
+18:Knifflige Krise
+19:Hals- & Beinbruch

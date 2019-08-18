@@ -1,0 +1,27 @@
+0:Nessuna
+1:Aria aperta
+2:Sottoterra
+3:Sott'acqua
+4:Cielo
+5:Deserto
+6:Neve
+7:Lava
+8:Lava sotterranea
+9:Spiaggia
+10:Foresta
+11:Casa Stregata
+12:Torre
+13:Castello
+14:Area Bonus
+15:Boss Torre
+16:Boss Castello
+17:Stanza di Bowser
+18:Bowser
+19:Arcobaleno
+20:Cannone
+21:Casa Toad Power-Up
+22:Casa Toad 1-Up
+23:Casa Toad Stella
+24:Crediti
+25:Arcobaleno speciale
+26:Area bonus (Sott'acqua)

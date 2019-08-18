@@ -27,8 +27,6 @@ public:
 
 private:
     QString path;
-
-    void loadLevelNamesCat(QStandardItem* item, QDomElement node);
 };
 
 #endif // GAME_H

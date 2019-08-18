@@ -36,11 +36,12 @@ public:
     Tileset* tilesets[4];
 
     // Area Settings
+    quint64 eventState;
+    quint16 unk1;
     quint16 timeLimit;
     quint8 levelEntranceID;
     quint16 specialLevelFlag;
     quint16 specialLevelFlag2;
-    quint16 unk1;
     quint8 unk2;
     quint16 coinRushTimeLimit;
 

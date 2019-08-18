@@ -1,0 +1,13 @@
+7:World Mushroom
+8:World Flower
+9:World Star
+10:Gold Rush Pack
+11:Coin Challenge Pack A
+12:Nerve-Wrack Pack
+13:Gold Mushroom Pack
+14:Coin Challenge Pack B
+15:Gold Classics Pack
+16:Coin Challenge Pack C
+17:Platform Panic Pack
+18:Mystery Adventures Pack
+19:Impossible Pack

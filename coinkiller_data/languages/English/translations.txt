@@ -38,6 +38,8 @@ wantToSave=Do you want to save your changes?
 [MainWindow]
 levels=Levels
 tilesets=Tilesets
+addLevel=Add Level
+removeLevel=Remove Level
 addTileset=Add Tileset
 removeTileset=Remove Tileset
 blankTilesetMissing=You cannot create new tilesets without the tileset tamplate.
