@@ -123,7 +123,6 @@ public:
     SpriteIdWidget* spriteIdsPtr() { return spriteIds; }
 
 signals:
-    void selectedSpriteChanged(int);
     void currentSpriteChanged(int);
     void selectedSpriteChanged(Object*);
     void editMade();

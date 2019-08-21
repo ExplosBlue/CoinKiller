@@ -144,7 +144,7 @@ void TilesetEditorWindow::updateSelectedTile(int tileTL, int tileBR)
         tilesetPicker->setOvTile(ovTile);
     }
 
-    QString selTileText = settings->getTranslation("TilesetEditor", "selectedTile") + ": (%1, %2)";
+    QString selTileText = settings->getTranslation("TilesetEditor", "selectedTile") + ": (%1, %2) ID : (%3)";
 
     QString xpos = QString::number(selectedTileTL % 21);
     if (selectedTileTL % 21 != selectedTileBR % 21)
@@ -154,7 +154,11 @@ void TilesetEditorWindow::updateSelectedTile(int tileTL, int tileBR)
     if (selectedTileTL / 21 != selectedTileBR / 21)
         ypos.append("-" + QString::number(selectedTileBR / 21));
 
-    ui->selectedTileLabel->setText(selTileText.arg(xpos).arg(ypos));
+    QString tileID = QString::number(selectedTileTL);
+    if (selectedTileTL != selectedTileBR)
+        tileID.append("-" + QString::number(selectedTileBR));
+
+    ui->selectedTileLabel->setText(selTileText.arg(xpos).arg(ypos).arg(tileID));
 
     updateHex();
     updateBehavior();
@@ -963,6 +967,8 @@ void TilesetEditorWindow::on_vEndSpinBox_valueChanged(int value)
 void TilesetEditorWindow::on_actionExportImage_triggered()
 {
     QString filename = QFileDialog::getSaveFileName(this, "Export Tileset Image", QDir::currentPath(), "PNG Files (*.png)");
+    if (!filename.endsWith(".png"))
+        filename.append(".png");
 
     QImage img = QImage(420, 420, tileset->getImage()->format());
     img.fill(QColor(0,0,0,0));
@@ -978,6 +984,7 @@ void TilesetEditorWindow::on_actionExportImage_triggered()
     }
 
     painter.end();
+
     img.save(filename);
 }
 
@@ -1017,7 +1024,9 @@ void TilesetEditorWindow::on_actionImportImage_triggered()
     }
 
     // Get input Image
-    QString pngFileName = QFileDialog::getOpenFileName(this, "Export Tileset Image", QDir::currentPath(), "PNG Files (*.png)");
+    QString pngFileName = QFileDialog::getOpenFileName(this, "Import Tileset Image", QDir::currentPath(), "PNG Files (*.png)");
+    if (!pngFileName.endsWith(".png"))
+        pngFileName.append(".png");
     if (pngFileName.isEmpty()) return;
 
     // Add aligns to image

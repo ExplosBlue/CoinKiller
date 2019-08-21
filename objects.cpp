@@ -98,7 +98,6 @@ BgdatObject::BgdatObject(BgdatObject *obj)
     height = obj->getheight();
     id = obj->getid();
     layer = obj->getLayer();
-
 }
 
 qint32 BgdatObject::getType() const { return 0; }
@@ -551,11 +550,14 @@ void Sprite::setRect()
     case 63: // Skewer Left
         width = 557;
         height = 82;
+        renderOffsetW = 320;
+        renderOffsetX = -320;
         break;
     case 64: // Skewer Right
         width = 557;
         height = 82;
         offsetx = -537;
+        renderOffsetW = 320;
         break;
     case 65: // Morton Pipe
         width = 80;
@@ -566,6 +568,22 @@ void Sprite::setRect()
     case 66: case 67: // Pipe Cannons
         width = 40;
         height = 80;
+        break;
+    case 68: // Pipe Generator
+        {
+            switch(getNybble(5))
+            {
+            case 0: case 1:
+                width = 40;
+                height = 20;
+                break;
+            default:
+                width = 20;
+                height = 40;
+                offsety = -20;
+                break;
+            }
+        }
         break;
     case 69: // Door
         width = 43;
@@ -661,7 +679,7 @@ void Sprite::setRect()
         width = 52;
         height = 49;
         offsetx = -18;
-        offsety = -21;
+        offsety = -31;
         break;
     case 94: // Flipper (One way gate)
         {
@@ -912,16 +930,16 @@ void Sprite::setRect()
             switch (getNybble(9))
             {
                 case 1: case 5: case 9: case 13:
+                    height = 100 + 20*getNybble(10)+10;
+                    offsety = -10;
+                    break;
+                case 2: case 6: case 10: case 14:
                     height = 100 + 20*getNybble(10)+20;
                     offsety = -20;
                     break;
-                case 2: case 6: case 10: case 14:
-                    height = 100 + 20*getNybble(10)+40;
-                    offsety = -40;
-                    break;
                 case 3: case 7: case 11: case 15:
-                    height = 100 + 20*getNybble(10)+60;
-                    offsety = -60;
+                    height = 100 + 20*getNybble(10)+30;
+                    offsety = -30;
                     break;
                 default:
                     height = 100 + 20*getNybble(10);
@@ -948,7 +966,11 @@ void Sprite::setRect()
         offsetx = -55;
         offsety = -85;
         break;
-    case 131: case 132: // Bowser Battle Switch and Platform Controller
+    case 131: // Bowser Block
+            width = getNybble(5)*20 >= 20 ? getNybble(5)*20 : 120;
+            height = getNybble(4)*20 >= 20 ? getNybble(4)*20 : 20;
+        break;
+    case 132: // Bowser Battle Switch Controller
         width = 53;
         height = 46;
         offsetx = -27;
@@ -1093,15 +1115,15 @@ void Sprite::setRect()
         offsetx = -3;
         break;
     case 150: // Seesaw Lift
-            height = 20;
+        height = 20;
 
-            if (getNybble(15) == 0)
-            {
-                offsetx = 20;
-                width = 280;
-            }
-            else width = getNybble(15) * 40;
-            break;
+        if (getNybble(15) == 0)
+        {
+            offsetx = 20;
+            width = 280;
+        }
+        else width = getNybble(15) * 40;
+        break;
     case 151: // Scale Lift
         if(getNybble(5) == 0)
         {
@@ -2241,7 +2263,7 @@ quint8 Sprite::getNybble(qint32 id) const
 
 void Sprite::setNybble(qint32 id, quint8 nbr)
 {
-    if (id%2 == 0) spriteData[id/2] = ((spriteData[id/2] & 0xF) | nbr << 4);
+    if (id%2 == 0) spriteData[id/2] = quint8(((spriteData[id/2] & 0xF) | nbr << 4));
     else spriteData[id/2] = ((spriteData[id/2] & 0xF0) | nbr);
 }
 
@@ -2259,7 +2281,7 @@ void Sprite::setNybbleData(qint32 data, qint32 startNybble, qint32 endNybble)
 {
     for (qint32 i = endNybble; i >= startNybble; i--)
     {
-        setNybble(i, (quint8)(data & 0xF));
+        setNybble(i, quint8(data & 0xF));
         data = data >> 4;
     }
 }
@@ -2293,8 +2315,8 @@ Entrance::Entrance(Entrance *entr)
 {
     x = entr->getx();
     y = entr->gety();
-    cameraX = entr->getCameraX();
-    cameraY = entr->getCameraY();
+    cameraX = qint16(entr->getCameraX());
+    cameraY = qint16(entr->getCameraY());
     id = entr->getid();
     destArea = entr->getDestArea();
     destEntr = entr->getDestEntr();
@@ -2373,7 +2395,7 @@ Zone::Zone(Zone *zone)
     lowerBound = zone->getLowerBound();
     unkUpperBound = zone->getUnkUpperBound();
     unkLowerBound = zone->getUnkLowerBound();
-    upScrolling = zone->getUpScrolling();
+    upScrolling = quint16(zone->getUpScrolling());
     bgXPos = zone->getBgXPos();
     bgYPos = zone->getBgYPos();
     bgName = zone->getBgName();
@@ -2405,7 +2427,7 @@ void Zone::setBackground(tempZoneBackground background)
     this->bgXPos = background.xPos;
     this->bgYPos = background.yPos;
     this->bgName = background.name;
-    this->bgParallaxMode = background.parallaxMode;
+    this->bgParallaxMode = quint8(background.parallaxMode);
 }
 
 QString Zone::toString(qint32 xOffset, qint32 yOffset) const
@@ -2483,9 +2505,9 @@ QString Path::toString(qint32 xOffset, qint32 yOffset)
         nodeString.append(QString::number(getIndexOfNode(node)) + ",");
         nodeString.append(QString::number(node->getx() + xOffset) + ",");
         nodeString.append(QString::number(node->gety() + yOffset) + ",");
-        nodeString.append(QString::number(node->getSpeed()) + ",");
-        nodeString.append(QString::number(node->getAccel()) + ",");
-        nodeString.append(QString::number(node->getDelay()));
+        nodeString.append(QString::number(double(node->getSpeed())) + ",");
+        nodeString.append(QString::number(double(node->getAccel())) + ",");
+        nodeString.append(QString::number(double(node->getDelay())));
 
         i++;
 
@@ -2520,7 +2542,7 @@ PathNode::PathNode(PathNode *node, Path* parentPath)
     y = node->gety();
     speed = node->getSpeed();
     accel = node->getAccel();
-    delay = node->getDelay();
+    delay = quint32(node->getDelay());
     this->parentPath = parentPath;
 }
 

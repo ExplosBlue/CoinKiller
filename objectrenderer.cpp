@@ -321,7 +321,10 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
     case 128: // Dry Bowser
         ret = new NormalImageRenderer(spr, "dry_bowser.png");
         break;
-    case 131: case 132: // Bowser Battle Lift and Switch Controller
+    case 131: // Bowser Block
+        ret = new BowserBlockRenderer(spr, tilesets[0]);
+        break;
+    case 132: // Bowser Battle Switch Controller
         ret = new NormalImageRenderer(spr, "bowser_switch.png");
         break;
     case 133: // Bowser Shutter
@@ -1009,7 +1012,7 @@ void TileGodRenderer::render(QPainter *painter, QRect *)
 
     else
     {
-        if (tileset == NULL)
+        if (tileset == nullptr)
             painter->fillRect(sprrect, QColor(200, 0, 0, 120));
         else
         {
@@ -1029,7 +1032,47 @@ void TileGodRenderer::render(QPainter *painter, QRect *)
 
             for (int x = 0; x < spr->getwidth()/20; x++)
                 for (int y = 0; y < spr->getheight()/20; y++)
-                    tileset->drawTile(tempPainter, tileGrid, tileId, x, y, 1, 0);
+                {
+                    if (spr->getNybble(9) == 1)
+                    {
+                        if (x % 2 != 0) // row odd
+                        {
+                            if (y % 2 != 0 ) // column odd
+                            {
+                                tileset->drawTile(tempPainter, tileGrid, tileId, x, y, 1, 0);
+                            }
+                        }
+                        else // row even
+                        {
+                            if (y % 2 == 0) // column even
+                            {
+                                tileset->drawTile(tempPainter, tileGrid, tileId, x, y, 1, 0);
+                            }
+                        }
+                    }
+                    else if (spr->getNybble(9) == 2)
+                    {
+                        if (x % 2 != 0) // row odd
+                        {
+                            if (y % 2 == 0 ) // column even
+                            {
+                                tileset->drawTile(tempPainter, tileGrid, tileId, x, y, 1, 0);
+                            }
+                        }
+                        else // row even
+                        {
+                            if (y % 2 != 0) // column odd
+                            {
+                                tileset->drawTile(tempPainter, tileGrid, tileId, x, y, 1, 0);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        tileset->drawTile(tempPainter, tileGrid, tileId, x, y, 1, 0);
+                    }
+                }
+
 
             painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), pix);
         }
@@ -1371,7 +1414,7 @@ void SkewerRenderer::render(QPainter *painter, QRect *drawrect)
     int imgXOffset = 0;
     int imgYOffset = 0;
     QString img;
-    if (spr->getid() & 63 || spr->getid() & 64)
+    if (spr->getid() == 63 || spr->getid() == 64)
     {
         img = "skewer_left.png";
         initialYOffset = spr->getheight()/2;
@@ -1392,7 +1435,7 @@ void SkewerRenderer::render(QPainter *painter, QRect *drawrect)
                 break;
         }
     }
-    if (spr->getid() & 64)
+    if (spr->getid() == 64)
     {
         img = "skewer_right.png";
         endXOffset = abs(endXOffset) + 20;
@@ -1868,13 +1911,13 @@ void MushroomPlatformRenderer::render(QPainter *painter, QRect *)
         switch (spr->getNybble(9))
         {
             case 1: case 5: case 9: case 13:
-                stretchHeight = 20;
+                stretchHeight = 10;
                 break;
             case 2: case 6: case 10: case 14:
-                stretchHeight = 40;
+                stretchHeight = 20;
                 break;
             case 3: case 7: case 11: case 15:
-                stretchHeight = 60;
+                stretchHeight = 30;
                 break;
             default:
                 stretchHeight = 0;
@@ -2470,7 +2513,7 @@ void PathRecLiftRenderer::render(QPainter *painter, QRect *)
 
     if (blockHeight == 0 || blockWidth == 0)
     {
-        if (tileset == NULL)
+        if (tileset == nullptr)
         {
             painter->drawPixmap(spr->getx(), spr->gety(), spr->getwidth(), spr->getheight(), ImageCache::getInstance()->get(TileOverride, "error.png"));
         }
@@ -2756,7 +2799,7 @@ void CoinCircleRenderer::render(QPainter *painter, QRect *drawrect)
         coinImg = "";
 
     int missingImgWeight = 0;
-    float angle = 0;
+    qreal angle = 0;
     int x = 0;
     int y = 0;
 
@@ -2765,12 +2808,12 @@ void CoinCircleRenderer::render(QPainter *painter, QRect *drawrect)
 
     for (int i = 0; i < imgCount; i++)
     {
-        missingImgWeight = 0.75 - (1 / imgCount);
+        missingImgWeight = int(0.75 - (1 / imgCount));
         angle = -360 * i / (imgCount + missingImgWeight);
         angle = qDegreesToRadians(angle)+1.5708;
 
-        x = qSin(angle) * ((radius * 20)) - 10;
-        y = -(qCos(angle) * ((radius * 20))) - 10;
+        x = int(qSin(angle) * ((radius * 20)) - 10);
+        y = int(-(qCos(angle) * ((radius * 20))) - 10);
 
         //Make stuff not draw if nybbles 12-16 have values set
         if (i == 4 && (spr->getNybble(12)& 0x1) == 0x1)
@@ -3001,7 +3044,7 @@ ItemBlockRenderer::ItemBlockRenderer(const Sprite *spr, Tileset *tileset)
 void ItemBlockRenderer::render(QPainter *painter, QRect *)
 {
     bool invalid = false;
-    if (tileset == NULL)
+    if (tileset == nullptr)
     {
         painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), ImageCache::getInstance()->get(TileOverride, "error.png"));
         invalid = true;
@@ -3169,7 +3212,7 @@ HardBlockRenderer::HardBlockRenderer(const Sprite *spr, Tileset *tileset)
 
 void HardBlockRenderer::render(QPainter *painter, QRect *)
 {
-    if (tileset == NULL)
+    if (tileset == nullptr)
     {
         painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), ImageCache::getInstance()->get(TileOverride, "error.png"));
     }
@@ -3412,6 +3455,34 @@ BounceMushCastleRenderer::BounceMushCastleRenderer(const Sprite *spr)
 void BounceMushCastleRenderer::render(QPainter *painter, QRect *drawrect)
 {
     img->render(painter, drawrect);
+}
+
+// Sprite 131: Bowser Block
+BowserBlockRenderer::BowserBlockRenderer(const Sprite *spr, Tileset *tileset)
+{
+    this->spr = spr;
+    this->tileset = tileset;
+}
+
+void BowserBlockRenderer::render(QPainter *painter, QRect *)
+{
+    if (tileset == nullptr)
+        painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), ImageCache::getInstance()->get(TileOverride, "error.png"));
+    else
+    {
+        QPixmap pix(spr->getwidth(), spr->getheight());
+        pix.fill(QColor(0,0,0,0));
+        QPainter tempPainter(&pix);
+
+        TileGrid tileGrid;
+        tileGrid[0xFFFFFFFF] = 1;
+
+        for (int x = 0; x < spr->getwidth()/20; x++)
+            for (int y = 0; y < spr->getheight()/20; y++)
+                tileset->drawTile(tempPainter, tileGrid, 24, x, y, 1, 0);
+
+        painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), pix);
+    }
 }
 
 // Sprite 134: 3 Plat Rickshaw ruins

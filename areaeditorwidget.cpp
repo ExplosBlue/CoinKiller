@@ -57,7 +57,7 @@ AreaEditorWidget::AreaEditorWidget(Level* level, Game *game)
     layout->addWidget(new QLabel("Level Entrance ID:"), 5, 0, 1, 1, Qt::AlignRight);
     levelEntranceID = new QSpinBox();
     levelEntranceID->setRange(0, 255);
-    connect(levelEntranceID, SIGNAL(toggled(int)), this, SLOT(handleLevelEntranceIDChanged(int)));
+    connect(levelEntranceID, SIGNAL(valueChanged(int)), this, SLOT(handlelevelEntranceIDChanged(int)));
     layout->addWidget(levelEntranceID, 5, 1);
 
     layout->addWidget(new QLabel("Unk1:"), 6, 0, 1, 1, Qt::AlignRight);
@@ -124,7 +124,7 @@ void AreaEditorWidget::handleSpecialLevelFlag2Change(QString text)
     emit editMade();
 }
 
-void AreaEditorWidget::handleLevelEntranceIDChanged(int id)
+void AreaEditorWidget::handlelevelEntranceIDChanged(int id)
 {
     if (!handleChanges) return;
     level->levelEntranceID = id;

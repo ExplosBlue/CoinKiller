@@ -1,3 +1,9 @@
+1:Welt 1
+2:Welt 2
+3:Welt 3
+4:Welt 4
+5:Welt 5
+6:Welt 6
 7:Welt Pilz
 8:Welt Blume
 9:Welt Stern

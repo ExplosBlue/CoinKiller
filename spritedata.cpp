@@ -75,7 +75,7 @@ SpriteData::SpriteData()
         }
 
         spriteViews.append(view);
-    } 
+    }
 }
 
 SpriteDefinition::SpriteDefinition(QDomElement spriteElement)

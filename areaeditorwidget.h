@@ -66,7 +66,7 @@ private slots:
     void handleSpecialLevelFlag2Change(QString text);
     void handleUnk1Change(int unk);
     void handleUnk2Change(int unk);
-    void handleLevelEntranceIDChanged(int id);
+    void handlelevelEntranceIDChanged(int id);
 
     void passUpdateLevelView() { emit updateLevelView(); }
     void passRelaodTilesetPicker() { emit relaodTilesetPicker(); }
