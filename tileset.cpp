@@ -278,8 +278,8 @@ void Tileset::drawTile(QPainter& painter, TileGrid& grid, int num, int x, int y,
             case 1: painter.drawPixmap(rdst, ImageCache::getInstance()->get(TileOverlay, "coin.png")); break;
             case 2: painter.drawPixmap(rdst, ImageCache::getInstance()->get(TileOverlay, "10_coins.png")); break;
             case 3: painter.drawPixmap(rdst, ImageCache::getInstance()->get(TileOverlay, "fire_flower.png")); break;
-            case 4: case 9: painter.drawPixmap(rdst, ImageCache::getInstance()->get(TileOverlay, "super_star.png")); break;
-            case 5: painter.drawPixmap(rdst, ImageCache::getInstance()->get(TileOverlay, "1up_mushroom.png")); break;
+            case 4: case 9: painter.drawPixmap(rdst, ImageCache::getInstance()->get(TileOverlay,+ "super_star.png")); break;
+            case 5: painter.drawPixmap(rdst, ImageCache::getInstance()->get(TileOverlay,+ "1up_mushroom.png")); break;
             case 6: painter.drawPixmap(rdst, ImageCache::getInstance()->get(TileOverlay, "beanstalk.png")); break;
             case 7: painter.drawPixmap(rdst, ImageCache::getInstance()->get(TileOverlay, "mini_mushroom.png")); break;
             case 8: painter.drawPixmap(rdst, ImageCache::getInstance()->get(TileOverlay, "coin_super_mushroom.png")); break;
@@ -304,7 +304,7 @@ void Tileset::drawTile(QPainter& painter, TileGrid& grid, int num, int x, int y,
             case 7: painter.drawPixmap(rdst, ImageCache::getInstance()->get(TileOverlay, "coin_super_mushroom.png")); break;
             case 8: painter.drawPixmap(rdst, ImageCache::getInstance()->get(TileOverlay, "mega_mushroom.png")); break;
             case 9: painter.drawPixmap(rdst, ImageCache::getInstance()->get(TileOverlay, "super_leaf.png")); break;
-            case 10: painter.drawPixmap(rdst, ImageCache::getInstance()->get(TileOverlay, "gold_flower.png")); break;
+            case 10: painter.drawPixmap(rdst,ImageCache::getInstance()->get(TileOverlay, "gold_flower.png")); break;
             default: break;
         }
     }

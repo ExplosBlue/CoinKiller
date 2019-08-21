@@ -120,6 +120,7 @@ Level::Level(Game *game, SarcFilesystem* archive, int area, QString lvlName)
         header->skip(2);
         header->readStringASCII(background.name, 16);
         background.parallaxMode = header->read16();
+
         header->skip(2);
         backgrounds.append(background);
     }

@@ -1,60 +1,32 @@
-Nohara:Grassland
-Nohara_Suichu:Grassland (smaller Mountains)
-Nohara_Castle:Peach's Castle
-Nohara_Night:Grassland (Night)
-Chika:Cave
-Cave:Stalagmites
-Sora_Shita:Clouds
-Sora_Simple:Low Clouds
-Sora:Mushroom Hills (Sky)
-Sora_Ue:Mushroom Hills (Sky, Higher)
-Sora_Night:Mushroom Hills (Night)
-Sora_Kinoko:Mushrooms (Sky)
-Sora_Kinoko_Ue:Mushrooms (Sky, higher)
-Sora_Block:Colored Blocks (Sky)
-Sora_Block_Ue:Colored Blocks (Sky, Higher)
-SkyTower:Sky Towers
-SkyTower_Ue:Sky Towers (higher)
-Sabaku:Desert
-Sabaku_Chika:Desert Cave
-Iseki_Chika:Pyramid Underground
-Sora_Totempole:Totems (Sky)
-Sora_TotempoleB:Totems (Sky, Yellow)
 Kaigan:Beach
-Kaigan_Naname:Beach (higher)
-Jungle:Jungle
-Jungle_Kaigan:Jungle Beach
-Suichu:Underwater
-Setsugen:Snow
-Sora_KinokoSnow:Snow Mushrooms (Sky)
-KnokoSnow_Ue:Snow Mushrooms (Sky, Higher)
-Iseki_Kori:Ice Cave
-Gake:Mountains
-Gake_Evening:Mountains (Sunset)
-Gake_Evening_Ue:Mountains (Sunset, higher)
-NaNameYama_Kori:Super Mario World Mountains
-Kazan_soto:Volcanoes
-Kazan_Ue:Volcanoes (higher)
-Kazan_Shita:Lava Falls
-Toride:Tower
-Toride_Yogan:Lava Tower
-Toride_Blue:Blue Tower
-Toride_Suichu:Underwater Tower
-Shiro:Castle
-Shiro_Yogan:Lava Castle
-Shiro_Suichu:Underwater Castle
-Boss_Normal:Normal Bossfight
-Boss_Iggy:Iggy Bossfight
-Boss_Lemmy:Lemmy Bossfight
-Boss_Ludwig:Ludwig Bossfight
-Boss_Morton:Morton Bossfight
-Boss_Wendy:Wendy Bossfight
-Koopa:Bowser's Castle
+Kaigan_Naname:Beach (Higher)
+Boss_Normal:Bossfight
+Boss_Iggy:Bossfight (Iggy)
+Boss_Lemmy:Bossfight (Lemmy)
+Boss_Ludwig:Bossfight (Ludwig)
+Boss_Morton:Bossfight (Morton)
+Boss_Wendy:Bossfight (Wendy)
 Koopa_Last:Bowser Bossfight
+Koopa:Bowser's Castle
+Shiro:Castle
+Shiro_Yogan:Castle (Lava)
+Shiro_Suichu:Castle (Underwater)
+Chika:Cave
+Sabaku_Chika:Cave (Desert)
+Cave:Cave (Ice)
+Iseki_Chika:Cave (Pyramid)
+Sabaku:Desert
 Obake:Ghost House
 Obake_Low:Ghost House 2
-Obake_Soto:Spooky Trees
-Rainbow:Rainbows
+Obake_Soto:Ghostly Forest
+Nohara:Grassland
+Nohara_Suichu:Grassland (Lake)
+Nohara_Night:Grassland (Night)
+Nohara_Castle:Grassland (Peach's Castle)
+Nohara_Endroll:Grassland (Peach's Castle, Credits)
+Iseki_Kori:Ice Cave
+Jungle:Jungle
+Jungle_Kaigan:Jungle (Beach)
 Kinopio_Normal:Mushroom House (Grassland)
 Kinopio_W2:Mushroom House (Desert)
 Kinopio_W3:Mushroom House (Beach)
@@ -65,9 +37,37 @@ Kinopio_W6:Mushroom House (Volcanoes)
 Kinopio_W7:Mushroom House (Pink Stars)
 Kinopio_W8:Mushroom House (Green Stars)
 Kinopio_W9:Mushroom House (Stars)
+Rainbow:Rainbows
+Sora_Shita:Sky
+Sora_Block:Sky (Blocks)
+Sora_Block_Ue:Sky (Blocks, Higher)
+Sora:Sky (Hills)
+Sora_Ue:Sky (Hills, Higher)
+Sora_Night:Sky (Hills, Night)
+Sora_Simple:Sky (Lower clouds)
+Gake:Sky (Mountains)
+Gake_Evening:Sky (Mountains, Sunset)
+Gake_Evening_Ue:Sky (Mountains, Sunset, Higher)
+Sora_Kinoko:Sky (Mushrooms)
+Sora_Kinoko_Ue:Sky (Mushrooms, Higher)
+Sora_KinokoSnow:Sky (Snowy Mushrooms)
+KinokoSnow_Ue:Sky (Snow Mushrooms, Higher)
+Sora_Totempole:Sky (Totems)
+Sora_TotempoleB:Sky (Totems, Yellow)
+SkyTower:Sky (Towers)
+SkyTower_Ue:Sky (Towers, Higher)
+NaNameYama_Kori:SMW Mountains
+Setsugen:Snow
+Toride:Tower
+Toride_Yogan:Tower (Lava)
+Toride_Blue:Tower (Blue)
+Toride_Suichu:Tower (Underwater)
+Suichu:Underwater
+Kazan_soto:Volcano
+Kazan_Ue:Volcano (Higher)
+Kazan_Shita:Volcano (Inside)
 WarpZone_A:Warpzone (Grassland)
 WarpZone_B:Warpzone (Jungle)
 WarpZone_C:Warpzone (Pink Stars)
 WarpZone_D:Warpzone (Green Stars)
 WarpZone_E:Warpzone (Northern lights)
-Nohara_Endroll:Peach's Castle (Credits)

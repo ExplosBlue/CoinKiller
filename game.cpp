@@ -123,7 +123,7 @@ QStandardItemModel* Game::getCourseModel()
             QString worldNum = filename.split(".")[0].split("-")[0];
 
             if (worldName.isEmpty())
-                worldName = settingsMgr->getTranslation("General", "world") + " " + worldNum;
+                worldName = worldNum;
 
             // World Categories
             if (worldItemPtr == nullptr || worldItemPtr->text() != QString(worldName))
@@ -136,12 +136,7 @@ QStandardItemModel* Game::getCourseModel()
             // Levels
             if (worldItemPtr != nullptr)
             {
-                QString levelName;
-
-                if (worldName.contains(settingsMgr->getTranslation("General", "world")))
-                    levelName = levelNames.value(filename.split(".")[0].split("-")[1].toInt()).arg(worldName.split(settingsMgr->getTranslation("General", "world") + " ")[1]);
-                else
-                    levelName = levelNames.value(filename.split(".")[0].split("-")[1].toInt()).arg(worldName);
+                QString levelName = levelNames.value(filename.split(".")[0].split("-")[1].toInt()).arg(worldName);
 
                 if (levelName.isEmpty())
                     levelName = filename;
