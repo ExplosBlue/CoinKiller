@@ -295,8 +295,12 @@ void MainWindow::on_addLevelBtn_clicked()
 
     if (game->fs->fileExists("/Course/" + nld.getName() + ".sarc"))
     {
-        QMessageBox::information(this, "CoinKiller", settings->getTranslation("MainWindow", "tilesetExists"), QMessageBox::StandardButton::Ok);
-        return;
+        QMessageBox::StandardButton reply = QMessageBox::warning(this, "CoinKiller", settings->getTranslation("MainWindow", "addLevelAlreadyExists").arg(nld.getName() + ".sarc"), QMessageBox::Yes | QMessageBox::No);
+        if (reply == QMessageBox::Yes)
+        {
+            game->fs->deleteFile("/Course/" + nld.getName() + ".sarc");
+        }
+        else return;
     }
 
     if (nld.getName().contains("/"))
@@ -313,15 +317,19 @@ void MainWindow::on_addLevelBtn_clicked()
 
 void MainWindow::on_removeLevelBtn_clicked()
 {
-    if (ui->levelList->selectionModel()->selectedIndexes().length() == 0 || ui->levelList->selectionModel()->selectedIndexes().at(0).data(Qt::UserRole+1).toString() == "")
-        return;
-
     QString selLvlName = ui->levelList->selectionModel()->selectedIndexes().at(0).data(Qt::UserRole+1).toString();
+    QMessageBox::StandardButton reply = QMessageBox::warning(this, "CoinKiller", settings->getTranslation("MainWindow", "removeLevelWarning").arg(selLvlName), QMessageBox::Yes | QMessageBox::No);
 
-    game->fs->deleteFile("/Course/" + selLvlName);
-    ui->levelList->setModel(game->getCourseModel());
+    if (reply == QMessageBox::Yes)
+    {
+        if (ui->levelList->selectionModel()->selectedIndexes().length() == 0 || ui->levelList->selectionModel()->selectedIndexes().at(0).data(Qt::UserRole+1).toString() == "")
+            return;
 
-    ui->removeLevelBtn->setDisabled(true);
+        game->fs->deleteFile("/Course/" + selLvlName);
+        ui->levelList->setModel(game->getCourseModel());
+
+        ui->removeLevelBtn->setDisabled(true);
+    }
 }
 
 void MainWindow::on_addTilesetBtn_clicked()

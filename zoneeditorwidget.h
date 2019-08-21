@@ -55,7 +55,7 @@ private:
     QMap<int, QString> multiplayerTrackings;
     QSpinBox* progPathId;
     QComboBox* musicId;
-    QMap<int, QString> musicIds;
+    QMap<int, QPair<int, QString>> musicIds;
     QSpinBox* unk1;
 
     QComboBox* background;

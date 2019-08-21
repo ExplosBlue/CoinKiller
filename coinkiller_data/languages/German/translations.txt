@@ -38,7 +38,9 @@ wantToSave=Willst du deine Änderungen speichern?
 [MainWindow]
 levels=Level
 addLevel=Level hinzufügen
+addLevelAlreadyExists=%1 existiert bereits, möchten sie es überschreiben? Diese Aktion kann nicht rückgängig gemacht werden.
 removeLevel=Level entfernen
+removeLevelWarning=Sind Sie sich sicher, dass sie %1 entfernen wollen? Diese Aktion kann nicht rückgängig gemacht werden.
 tilesets=Tilesets
 addTileset=Tileset hinzufügen
 removeTileset=Tileset entfernen

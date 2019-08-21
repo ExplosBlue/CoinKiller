@@ -1,14 +1,14 @@
 <?xml version="1.0"?>
 <behaviors timestamp = "01.30.2016 11:43">
-	
+
 	<special_behaviors>
-	
+
 		<behavior value = "0" description = "Nothing">
 			<value id = "0" description = "Nothing" />
 			<value id = "1" description = "Beanstalk Stopper" />
 		</behavior>
-		
-		
+
+
 		<behavior value = "1" description = "Rail">
 			<value id = "4" description = "Horizontal Rail" />
 			<value id = "5" description = "Vertical Rail" />
@@ -17,8 +17,8 @@
 			<value id = "0" description = "1x1 Rail Upslope" />
 			<value id = "1" description = "1x1 Rail Downslope" />
 			<value id = "8" description = "2x1 Rail Upslope: Part 1" />
-			<value id = "7" description = "2x1 Rail Upslope: Part 2" />	
-			<value id = "10" description = "2x1 Rail Downslope: Part 1" />			
+			<value id = "7" description = "2x1 Rail Upslope: Part 2" />
+			<value id = "10" description = "2x1 Rail Downslope: Part 1" />
 			<value id = "9" description = "2x1 Rail Downslope: Part 2" />
 			<value id = "12" description = "1x2 Rail Upslope: Part 1" />
 			<value id = "11" description = "1x2 Rail Upslope: Part 2" />
@@ -43,11 +43,11 @@
 			<value id = "31" description = "Rail 4x4 Circle (bottom-right)" />
 			<value id = "32" description = "Rail Stopper (Reverse Direction)" />
 		</behavior>
-		
+
 		<behavior value = "2" description = "Coin Outline" />
 		<behavior value = "3" description = "Coin" />
 		<behavior value = "4" description = "Blue Coin" />
-		
+
 		<behavior value = "5" description = "Explodable Block">
 			<value id = "0" description = "Used Questionmark Block" />
 			<value id = "1" description = "Stone Block" />
@@ -55,10 +55,10 @@
 			<value id = "3" description = "Red Block" />
 			<value id = "4" description = "Blue Block" />
 		</behavior>
-		
+
 		<behavior value = "6" description = "Brick Block" />
 		<behavior value = "7" description = "Questionmark Block" />
-		
+
 		<behavior value = "9" description = "Partly Solid">
 			<value id = "0" description = "Partly Solid (top-left)" />
 			<value id = "1" description = "Partly Solid (top-right)" />
@@ -69,9 +69,9 @@
 			<value id = "6" description = "Partly Solid (bottom)" />
 			<value id = "7" description = "Partly Solid (left)" />
 		</behavior>
-		
+
 		<behavior value = "8" description = "Red Block Outline" />
-		
+
 		<behavior value = "10" description = "Invisible Block">
 			<value id = "0" description = "Fire Flower" />
 			<value id = "1" description = "Super Star" />
@@ -82,7 +82,7 @@
 			<value id = "6" description = "Super Leaf" />
 			<value id = "7" description = "Gold Flower" />
 		</behavior>
-		
+
 		<behavior value = "11" description = "Slope">
 			<value id = "0" description = "1x1 Up" />
 			<value id = "1" description = "1x1 Down" />
@@ -119,7 +119,7 @@
 			<value id = "33" description = "8x1 Down: Part 7" />
 			<value id = "34" description = "8x1 Down: Part 8" />
 		</behavior>
-		
+
 		<behavior value = "12" description = "Upside-Down Slope">
 			<value id = "0" description = "1x1 Down" />
 			<value id = "1" description = "1x1 Up" />
@@ -156,15 +156,15 @@
 			<value id = "33" description = "8x1 Up: Part 7" />
 			<value id = "34" description = "8x1 Up: Part 8" />
 		</behavior>
-		
+
 		<behavior value = "13" description = "Animation related?">
 			<value id = "0" description = "unk0" />
 			<value id = "1" description = "unk1" />
 			<value id = "2" description = "unk2" />
 			<value id = "3" description = "unk3" />
-			<value id = "4" description = "unk4" /> 
+			<value id = "4" description = "unk4" />
 		</behavior>
-		
+
 		<behavior value = "14" description = "Vine/Climbable Fence">
 			<value id = "0" description = "Vine" />
 			<value id = "3" description = "Fence: Top-Left" />
@@ -177,7 +177,7 @@
 			<value id = "10" description = "Fence: Bottom" />
 			<value id = "11" description = "Fence: Bottom-Right" />
 		</behavior>
-		
+
 		<behavior value = "15" description = "Spikes">
 			<value id = "3" description = "Left" />
 			<value id = "4" description = "Right" />
@@ -188,7 +188,7 @@
 			<value id = "12" description = "Bottom-Left" />
 			<value id = "13" description = "Bottom-Right" />
 		</behavior>
-		
+
 		<behavior value = "16" description = "Pipe">
 			<value id = "12" description = "Vert. Center Left" />
 			<value id = "13" description = "Vert. Center Right" />
@@ -216,14 +216,14 @@
 			<value id = "37" description = "Horiz. Mini Pipe Intersection" />
 			<value id = "35" description = "Pipe Corner Block" />
 		</behavior>
-		
+
 		<behavior value = "17" description = "Conveyor Belt">
 			<value id = "0" description = "Left" />
 			<value id = "1" description = "Right" />
 			<value id = "2" description = "Left (faster)" />
 			<value id = "3" description = "Right (faster)" />
 		</behavior>
-		
+
 		<behavior value = "18" description = "Donut-Platform">
 			<value id = "0" description = "1x1" />
 			<value id = "1" description = "2x1: Left" />
@@ -232,13 +232,13 @@
 			<value id = "4" description = "3x1: Middle" />
 			<value id = "5" description = "3x1: Right" />
 		</behavior>
-		
+
 		<behavior value = "21" description = "Horizontal Climbing Rope" />
 		<behavior value = "22" description = "Vertical Climbing Pole" />
 		<behavior value = "33" description = "Clown Car Flash Safe Area" />
 		<behavior value = "34" description = "unknown (standard suite [11, 0])" />
 		<behavior value = "35" description = "Note-Block" />
-		
+
 		<behavior value = "36" description = "Ghosthouse spring">
 			<value id = "1" description = "unknown (0x01)" />
 			<value id = "2" description = "unknown (0x02)" />
@@ -246,21 +246,24 @@
 			<value id = "4" description = "unknown (0x04)" />
 			<value id = "5" description = "unknown (0x05)" />
 		</behavior>
-		
-		<behavior value = "37" description = "POW-Block" />	
-	
+
+		<behavior value = "37" description = "POW-Block" />
+
 	</special_behaviors>
-	
-	
+
+
 	<hitboxes>
 		<value id = "0" description = "Air" />
 		<value id = "1" description = "Full Solid" />
 		<value id = "2" description = "Solid-on-Top" />
-		<value id = "3" description = "Solid-on-Bottom?" />
+		<value id = "3" description = "Solid-on-Bottom" />
+		<value id = "4" description = "Solid-on-Top and Bottom" />
+		<value id = "17" description = "Slide (2x1)" />
+		<value id = "18" description = "Steep Slide (1x1)" />
 		<value id = "33" description = "Ghosthouse gentle Stair" />
 		<value id = "34" description = "Solid-on-Top Slope" />
 	</hitboxes>
-	
+
 	<terrainTypes>
 		<value id = "0" description = "Normal" />
 		<value id = "1" description = "Icy" />
@@ -269,20 +272,23 @@
 		<value id = "4" description = "Sand (desert)" />
 		<value id = "5" description = "Grass" />
 		<value id = "7" description = "Sand (beach)" />
-		<value id = "10" description = "Platform in Ice tileset" />
+		<value id = "8" description = "Carpet (Unused)" />
+		<value id = "9" description = "Leaves (Unused)" />
+		<value id = "10" description = "Wood" />
+		<value id = "11" description = "Water (Unused)" />
 	</terrainTypes>
-	
+
 	<depthBehaviors>
 		<value id = "0" description = "Normal" />
 		<value id = "1" description = "Further in the Foreground?" />
 		<value id = "2" description = "Further in the Background / Blurred" />
 	</depthBehaviors>
-	
+
 	<pipeColors>
 		<value id = "0" description = "Green" />
 		<value id = "1" description = "Red" />
 		<value id = "2" description = "Yellow" />
 		<value id = "3" description = "Blue" />
 	</pipeColors>
-	
+
 </behaviors>

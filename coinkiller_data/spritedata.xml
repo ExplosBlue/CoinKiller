@@ -980,7 +980,7 @@
       <entry value="0">Activate On Triggering Event Enabled</entry>
       <entry value="1">Activate On Triggering Event Disabled</entry>
     </list>
-    <value nybble="11-12" title="Delay" comment="Adds a delay before triggering the event. Higher values result in a longer delay."/>
+    <value nybble="11-12" title="Delay" comment="The delay between the trigger. One delay unit = 10 frames."/>
   </sprite>
   <sprite id="85" name="Event Controller - Location">
     <value nybble="1-2" title="Target Event ID" comment="The flag that will activate when the player/enemy is in the location."/>
@@ -1026,7 +1026,7 @@
       <entry value="0">Enables Event</entry>
       <entry value="1">Disables Event</entry>
     </list>
-    <value nybble="11-12" title="Delay" comment="Adds a delay before triggering the event. Higher values result in a longer delay."/>
+    <value nybble="11-12" title="Delay" comment="The delay between the trigger. One delay unit = 10 frames."/>
   </sprite>
   <sprite id="87" name="Event Controller - Multi-Chainer (If X, do Y THROUGH Z)">
     <value nybble="1-2" title="End Event ID (Target)" comment="The activator will trigger all Flags from the start Flag ID to this Flag ID (including this one). The Value entered here must be larger than the Value entered for Start Flag ID"/>
@@ -1039,7 +1039,7 @@
       <entry value="0">Enables Event</entry>
       <entry value="1">Disables Event</entry>
     </list>
-    <value nybble="11-12" title="Delay" comment="The delay between flags."/>
+    <value nybble="11-12" title="Delay" comment="The delay between triggers. One delay unit = 10 frames."/>
   </sprite>
   <sprite id="88" name="Event Controller - On Screen" notes="It activates when it enters the screen.">
     <value nybble="1-2" title="Target Event ID"/>
@@ -1422,12 +1422,12 @@
       <entry value="0">Above layer 1 Tiles</entry>
       <entry value="1">Below Layer 1 Tiles</entry>
     </list>
+    <value nybble="13" title="Unknown 13"/>
     <list nybble="15" title="Color">
       <entry value="0">Normal</entry>
       <entry value="1">Blue</entry>
     </list>
-    <value nybble="17" title="Unknown 17"/>
-    <checkbox nybble="18" title="Unknown 18"/>
+    <checkbox nybble="18" title="Slower Movement" comment="If checked the goomba's movement will be slightly slower."/>
   </sprite>
   <sprite id="136" name="Bone Goomba" notes="Gold Ring behaviour; uses gold Goomba model">
     <value nybble="6" title="Spawn Behavior" comment="There is a nybble which defines which pipe direction is used. 1 is presumebly a leftover from NSMBDS, where goombas would sometimes spawn from the sky like this when Mega Mario ground pounds"/>
@@ -1908,11 +1908,15 @@
     <checkbox nybble="6" title="Event Triggered" mask="8" comment="When checked the movement controller will only take effect upon being triggered."/>
     <value nybble="8" title="Unknown Nybble 8" comment="Checkbox?"/>
     <value nybble="9" title="Path ID" comment="The path paired objects will use. Only works if placed at the same X/Y pos as the first path node."/>
-    <list nybble="10" title="End Behaviour" comment="Determines how the object will act upon reaching the final node. Values &gt;=3 repeat.">
+    <list nybble="10" title="End Behaviour" comment="Determines how the object will act upon reaching the final node.">
       <entry value="0">Stops</entry>
       <entry value="1">Goes Backwards</entry>
       <entry value="2">Falls down</entry>
+      <entry value="8">Stops</entry>
+      <entry value="9">Goes Backwards</entry>
+      <entry value="10">Falls down</entry>
     </list>
+    <checkbox nybble="10" title="Linear Vertical Movement" mask="8" comment="When checked, vertical movement will be linear, otherwise movement will be non-linear."/>
     <value nybble="12" title="Unnkown Value 12"/>
     <value nybble="21-22" title="Movement ID"/>
   </sprite>
@@ -3042,11 +3046,11 @@
     </list>
     <checkbox nybble="10" title="No Head" comment="Unused, When checked no head will spawn."/>
   </sprite>
-  <sprite id="256" name="Invisible Wall" notes="An invisible wall that the player can not pass through; other sprites can pass through this barrier freely.&#13;&#10;&#13;&#10;If at any point the player is above the barrier, they will be teleported back below it.">
-    <value nybble="5-6" title="Width" comment="Sets the width of the invisible wall."/>
+  <sprite id="256" name="Invisible Ceiling" notes="An invisible ceiling that the player can not pass through; other sprites can pass through this barrier freely.&#13;&#10;&#13;&#10;If at any point the player is above the barrier, they will be teleported back below it.">
+    <value nybble="5-6" title="Width" comment="Sets the width of the invisible ceiling."/>
     <value nybble="11" title="Unknown Value 11" comment="Checkbox?"/>
   </sprite>
-  <sprite id="257" name="Spine Coaster">
+  <sprite id="257" name="Movement Controlled Bone Platform">
     <value nybble="1-2" title="Target Event ID (Step On)" comment="Activated upon being stepped on."/>
     <value nybble="3-4" title="Target Event ID (Ground Pound)" comment="Activated on ground-pound."/>
     <value nybble="7" title="Unknown Value 7"/>

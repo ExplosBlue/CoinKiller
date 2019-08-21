@@ -46,12 +46,12 @@ ZoneEditorWidget::ZoneEditorWidget(QList<Zone*> *zones)
     connect(progPathId, SIGNAL(valueChanged(int)), this, SLOT(handleProgPathIDChange(int)));
 
     musicId = new QComboBox();
-    musicId->addItems(musicIds.values());
+    for (QPair<int, QString> i : musicIds.values()) musicId->addItem(i.second);
     musicId->setSizeAdjustPolicy(QComboBox::SizeAdjustPolicy::AdjustToMinimumContentsLengthWithIcon);
     connect(musicId, SIGNAL(currentIndexChanged(QString)), this, SLOT(handleMusicIDChange(QString)));
 
     unk1 = new QSpinBox();
-    unk1->setRange(0, 65535);
+    unk1->setRange(0, 255);
     connect(unk1, SIGNAL(valueChanged(int)), this, SLOT(handleUnk1Change(int)));
 
     upScrolling = new QCheckBox();
@@ -226,12 +226,16 @@ void ZoneEditorWidget::loadMusicIDs()
 
     QTextStream in(&file);
     in.setCodec("UTF-8");
+    int i = 0;
 
     musicIds.clear();
     while(!in.atEnd())
     {
-        QStringList idStrings = in.readLine().split(":");
-        musicIds.insert(idStrings[0].toInt(), idStrings[1]);
+        QStringList parts = in.readLine().split(":");
+        if (parts.count() == 2)
+            musicIds.insert(i, qMakePair(parts[0].toInt(), parts[1]));
+
+        i++;
     }
 
     file.close();
@@ -302,7 +306,11 @@ void ZoneEditorWidget::updateInfo()
     handleChanges = false;
     id->setValue(editZone->getid());
     multiplayerTracking->setCurrentText(multiplayerTrackings.value(editZone->getMultiplayerTracking()));
-    musicId->setCurrentText(musicIds.value(editZone->getMusicId()));
+
+    for (QPair<int, QString> i : musicIds.values())
+        if (i.first == editZone->getMusicId())
+            musicId->setCurrentText((i.second));
+
     unk1->setValue(editZone->getUnk1());
     progPathId->setValue(editZone->getProgPathId());
     upScrolling->setChecked(editZone->getUpScrolling() != 0);
@@ -346,7 +354,12 @@ void ZoneEditorWidget::handleProgPathIDChange(int ppIDVal)
 void ZoneEditorWidget::handleMusicIDChange(QString text)
 {
     if (!handleChanges) return;
-    editZone->setMusicID(musicIds.key(text, 0));
+    int m_id = 0;
+
+    for (QPair<int, QString> i : musicIds.values())
+        if (i.second == text) m_id = i.first;
+
+    editZone->setMusicID(quint8(m_id));
     emit editMade();
 }
 
@@ -357,10 +370,10 @@ void ZoneEditorWidget::handleMultiPlayerTrackingChange(QString text)
     emit editMade();
 }
 
-void ZoneEditorWidget::handleUnk1Change(int val)
+void ZoneEditorWidget::handleUnk1Change(int unk1)
 {
     if (!handleChanges) return;
-    editZone->setUnk1(val);
+    editZone->setUnk1(unk1);
     emit editMade();
 }
 

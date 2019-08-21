@@ -43,6 +43,7 @@ class LevelEditorWindow;
 
 class LevelEditorWindow : public WindowBase
 {
+
     Q_OBJECT
 
 public:
