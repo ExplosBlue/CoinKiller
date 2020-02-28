@@ -2,6 +2,8 @@
 #include "settingsmanager.h"
 
 #include <QDebug>
+#include <QtEndian>
+#include "rg_etc1.h"
 
 Ctpk::Ctpk(FileBase* file)
 {
@@ -116,7 +118,7 @@ void Ctpk::updataEntryHasAlpha(CtpkEntry* entry)
     }
 }
 
-QImage* Ctpk::getTexture(quint32 entryIndex)
+QImage Ctpk::getTexture(quint32 entryIndex)
 {
     if (entryIndex > numEntries-1)
     {
@@ -126,7 +128,7 @@ QImage* Ctpk::getTexture(quint32 entryIndex)
     return getTexture(entries[entryIndex]);
 }
 
-QImage* Ctpk::getTexture(QString filename)
+QImage Ctpk::getTexture(QString filename)
 {
     CtpkEntry* entry = getEntryByFilename(filename);
 
@@ -138,7 +140,7 @@ QImage* Ctpk::getTexture(QString filename)
     return getTexture(entry);
 }
 
-QImage* Ctpk::getTexture(CtpkEntry* entry)
+QImage Ctpk::getTexture(CtpkEntry* entry)
 {
     QImage::Format imgFormat;
 
@@ -153,16 +155,16 @@ QImage* Ctpk::getTexture(CtpkEntry* entry)
         imgFormat = QImage::Format_RGB888;
 
 
-    QImage* tex = new QImage(entry->width, entry->height, imgFormat);
+    QImage tex(entry->width, entry->height, imgFormat);
 
     switch (entry->format)
     {
         case ETC1:
         case ETC1_A4:
-            getTextureETC1(entry, tex);
+            getTextureETC1(entry, &tex);
             break;
         default:
-            getTextureRaster(entry, tex);
+            getTextureRaster(entry, &tex);
             break;
     }
 
@@ -419,6 +421,79 @@ void Ctpk::getTextureETC1(CtpkEntry* entry, QImage* tex)
         }
     }
 
+    file->close();
+}
+
+void Ctpk::setTextureEtc1(quint32 entryIndex, QImage& img, bool alpha, uint quality, bool dither)
+{
+    assert(entryIndex < numEntries);
+
+    TextrueFormat format = alpha ? ETC1_A4 : ETC1;
+
+    CtpkEntry* entry = entries[entryIndex];
+    assert(entry->format == format);
+    assert(entry->width == img.width());
+    assert(entry->height == img.height());
+
+    rg_etc1::etc1_pack_params pack_params;
+    if (quality == 0)
+        pack_params.m_quality = rg_etc1::cLowQuality;
+    if (quality == 0)
+        pack_params.m_quality = rg_etc1::cMediumQuality;
+    else
+        pack_params.m_quality = rg_etc1::cHighQuality;
+    pack_params.m_dithering = dither;
+
+    printf("ETC1 compression progress: 0%%");
+    fflush(stdout);
+
+    file->open();
+    file->seek(texSectionOffset + entry->dataOffset);
+
+    for (int y = 0; y < img.height(); y += 8)
+    {
+        for (int x = 0; x < img.width(); x += 8)
+        {
+            for (int ty = 0; ty < 8; ty += 4)
+            {
+                for (int tx = 0; tx < 8; tx += 4)
+                {
+                    quint64 alphaData = 0;
+                    unsigned int packData[4*4];
+
+                    for (int sx = 0; sx < 4; sx++)
+                    {
+                        for (int sy = 0; sy < 4; sy++)
+                        {
+                            int x_ = x+tx+sx;
+                            int y_ = y+ty+sy;
+
+                            QColor c = img.pixelColor(x_, y_);
+                            packData[sy*4 + sx] = (c.red()<<0) | (c.green()<<8) | (c.blue()<<16) | (0xFF<<24);
+
+                            alphaData = (alphaData >> 4ULL) | (static_cast<quint64>(c.alpha() >> 4) << 60ULL);
+                        }
+                    }
+
+                    if (alpha)
+                        file->write64(alphaData);
+
+                    quint64 etc1block;
+                    rg_etc1::pack_etc1_block(&etc1block, packData, pack_params);
+
+                    file->write64(qbswap(etc1block));
+                }
+            }
+        }
+
+        printf("\rETC1 compression progress: %d%%", (y+8)*100 / img.height());
+        fflush(stdout);
+    }
+
+    printf("\rETC1 compression progress: Done.\n");
+    fflush(stdout);
+
+    file->save();
     file->close();
 }
 

@@ -108,6 +108,7 @@ terrainType=Tipo di Terreno
 behavior3d=Aspetto in 3D
 pipeColor=Colore tubo
 importImage=Importa...
+importImageLegacy=Importa (Legacy)...
 exportImage=Esporta…
 deleteAllBehaviors=Elimina tutti gli Aspetti
 deleteAllObjs=Elimina tutti gli Oggetti

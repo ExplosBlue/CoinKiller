@@ -11,8 +11,10 @@ public:
     Ctpk(FileBase* file);
     ~Ctpk();
 
-    QImage* getTexture(quint32 entryIndex);
-    QImage* getTexture(QString filename);
+    QImage getTexture(quint32 entryIndex);
+    QImage getTexture(QString filename);
+
+    void setTextureEtc1(quint32 entryIndex, QImage& img, bool alpha, uint quality = 1, bool dither = false);   // only supports replacing with exact same data size for now!
 
 private:
     FileBase* file;
@@ -72,7 +74,7 @@ private:
 
     CtpkEntry* getEntryByFilename(QString filename);
 
-    QImage* getTexture(CtpkEntry* entry);
+    QImage getTexture(CtpkEntry* entry);
     void getTextureRaster(CtpkEntry* entry, QImage* tex);
     void getTextureETC1(CtpkEntry* entry, QImage* tex);
 

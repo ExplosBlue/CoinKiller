@@ -27,9 +27,9 @@ Tileset::Tileset(Game *game, QString name)
     //qDebug("LOAD TILESET %s", name.toStdString().c_str());
 
     archive = new SarcFilesystem(game->fs->openFile("/Unit/"+name+".sarc"));
-    texture = new Ctpk(archive->openFile("/BG_tex/"+name+".ctpk"));
+    ctpk = new Ctpk(archive->openFile("/BG_tex/"+name+".ctpk"));
 
-    texImage = texture->getTexture((quint32)0);
+    texImage = ctpk->getTexture((quint32)0);
 
     if (name.startsWith("J_"))
         drawOverrides = true;
@@ -222,9 +222,7 @@ Tileset::Tileset(Game *game, QString name)
 
 Tileset::~Tileset()
 {
-    delete texImage;
-
-    delete texture;
+    delete ctpk;
     delete archive;
 }
 
@@ -256,13 +254,13 @@ void Tileset::drawTile(QPainter& painter, TileGrid& grid, int num, int x, int y,
     if (draw2D)
     {
         QRect rsrc(2 + ((num%21)*24), 2 + ((num/21)*24), 20, 20);
-        painter.drawImage(rdst, *texImage, rsrc);
+        painter.drawImage(rdst, texImage, rsrc);
     }
 
     if (draw3D && (getOverlayTile(num) !=0))
     {
         QRect overlaysrc(2 + ((getOverlayTile(num)%21)*24), 2 + ((getOverlayTile(num)/21)*24), 20, 20);
-        painter.drawImage(rdst, *texImage, overlaysrc);
+        painter.drawImage(rdst, texImage, overlaysrc);
     }
 
     grid[gridid] = grid[0xFFFFFFFF];
@@ -540,6 +538,17 @@ quint8 Tileset::getData(int objNbr, int x, int y, int byte)
 void Tileset::setData(int objNbr, int x, int y, int byte, int value)
 {
     objectDefs[objNbr]->rows[y].data[x*3 + byte] = value;
+}
+
+QImage& Tileset::getImage()
+{
+    return texImage;
+}
+
+void Tileset::setImage(QImage &img, uint quality, bool dither)
+{
+    ctpk->setTextureEtc1(0, img, true, quality, dither);
+    texImage = ctpk->getTexture((quint32)0);
 }
 
 void Tileset::save()
@@ -874,7 +883,7 @@ void Tileset::replaceCTPK(QString filename)
     newCtpk.read(data, newCtpk.size());
     newCtpk.close();
 
-    delete texture;
+    delete ctpk;
 
     FileBase* texFile = archive->openFile("/BG_tex/"+name+".ctpk");
     texFile->open();
@@ -884,7 +893,34 @@ void Tileset::replaceCTPK(QString filename)
     texFile->save();
     texFile->close();
 
-    texture = new Ctpk(archive->openFile("/BG_tex/"+name+".ctpk"));
+    ctpk = new Ctpk(archive->openFile("/BG_tex/"+name+".ctpk"));
 
-    texImage = texture->getTexture(name + ".tga");
+    texImage = ctpk->getTexture(name + ".tga");
+}
+
+
+QImage Tileset::padTilesetImage(QImage& img)
+{
+    QImage ret(512, 512, QImage::Format_RGBA8888);
+    ret.fill(Qt::transparent);
+
+    QPainter painter(&ret);
+
+    for (int i = 0; i < 441; i++)
+    {
+        // Margins
+        painter.drawImage(QRect(i%21*20 + i%21*4, 2 + i/21*20 + i/21*4, 2, 20), img.copy(i%21*20, i/21*20, 1, 20));               // Left
+        painter.drawImage(QRect(22 + i%21*20 + i%21*4, 2 + i/21*20 + i/21*4, 2, 20), img.copy(19 + i%21*20, i/21*20, 1, 20));     // Right
+        painter.drawImage(QRect(2 + i%21*20 + i%21*4, i/21*20 + i/21*4, 20, 2), img.copy(i%21*20, i/21*20, 20, 1));               // Top
+        painter.drawImage(QRect(2 + i%21*20 + i%21*4, 22 + i/21*20 + i/21*4, 20, 2), img.copy(i%21*20, 19 + i/21*20, 20, 1));     // Bottom
+        painter.drawImage(QRect(i%21*20 + i%21*4, i/21*20 + i/21*4, 2, 2), img.copy(i%21*20, i/21*20, 1, 1));                     // Top-Left
+        painter.drawImage(QRect(22 + i%21*20 + i%21*4, i/21*20 + i/21*4, 2, 2), img.copy(19 + i%21*20, i/21*20, 1, 1));           // Top-Right
+        painter.drawImage(QRect(i%21*20 + i%21*4, 22 + i/21*20 + i/21*4, 2, 2), img.copy(i%21*20, 19 + i/21*20, 1, 1));           // Bottom-Left
+        painter.drawImage(QRect(22 + i%21*20 + i%21*4, 22 + i/21*20 + i/21*4, 2, 2), img.copy(19 + i%21*20, 19 + i/21*20, 1, 1)); // Bottom-Right
+
+        // Core Tiles
+        painter.drawImage(QRect(2 + i%21*20 + i%21*4, 2 + i/21*20 + i/21*4, 20, 20), img.copy(i%21*20, i/21*20, 20, 20));
+    }
+
+    return ret;
 }

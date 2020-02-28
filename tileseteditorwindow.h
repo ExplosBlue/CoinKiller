@@ -5,6 +5,10 @@
 #include <QStringListModel>
 #include <QStandardItemModel>
 #include <QComboBox>
+#include <QDialog>
+#include <QLabel>
+#include <QCheckBox>
+#include <QGridLayout>
 
 #include "tileset.h"
 #include "tileseteditorwidgets.h"
@@ -95,6 +99,8 @@ private slots:
 
     void on_actionImportImage_triggered();
 
+    void on_actionImportImageLegacy_triggered();
+
 private:
     Ui::TilesetEditorWindow *ui;
     TilesetPicker* tilesetPicker;
@@ -159,6 +165,27 @@ private:
 
 private slots:
     void convertCancelled();
+};
+
+class ImportTilesetImageDlg : public QDialog
+{
+    Q_OBJECT
+
+public:
+    explicit ImportTilesetImageDlg(QWidget* parent = nullptr);
+
+    int getQuality();
+    bool getDither();
+
+public slots:
+    void accept() override;
+
+private:
+    QComboBox* qualityBox;
+    QCheckBox* ditherCheckBox;
+
+    int quality;
+    bool dither;
 };
 
 #endif // TILESETEDITORWINDOW_H

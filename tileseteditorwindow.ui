@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1058</width>
-    <height>508</height>
+    <width>1165</width>
+    <height>519</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -780,8 +780,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1058</width>
-     <height>21</height>
+     <width>1165</width>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -802,6 +802,7 @@
      <string>&lt;Edit&gt;</string>
     </property>
     <addaction name="actionImportImage"/>
+    <addaction name="actionImportImageLegacy"/>
     <addaction name="actionExportImage"/>
     <addaction name="separator"/>
     <addaction name="actionDeleteAllBehaviors"/>
@@ -895,6 +896,17 @@
    </property>
    <property name="toolTip">
     <string>&lt;Delete all Behaviors&gt;</string>
+   </property>
+  </action>
+  <action name="actionImportImageLegacy">
+   <property name="text">
+    <string>&lt;Import Image (Legacy)...&gt;</string>
+   </property>
+   <property name="toolTip">
+    <string>&lt;Import Image (Legacy)...&gt;</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+I</string>
    </property>
   </action>
  </widget>

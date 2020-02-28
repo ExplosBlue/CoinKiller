@@ -15,7 +15,7 @@ class TilesetPicker : public QWidget
     Q_OBJECT
 public:
     explicit TilesetPicker(QWidget *parent);
-    void setTilesetImage(QImage *image);
+    void setTilesetImage(QImage& image);
     void setBGColor(QColor bgColor) { this->bgColor = bgColor; update(); }
     void setOvTile(int ovTile) { this->selectedOvTile = ovTile; update();}
 
@@ -32,7 +32,7 @@ protected:
     void mouseMoveEvent(QMouseEvent *) Q_DECL_OVERRIDE;
 
 private:
-    QImage *tilesetImage;
+    QImage tilesetImage;
     QColor bgColor;
     int selectedTileTL;
     int selectedTileBR;

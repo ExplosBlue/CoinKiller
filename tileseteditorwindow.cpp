@@ -10,6 +10,7 @@
 #include <QtXml>
 #include <QColorDialog>
 #include <QInputDialog>
+#include <QDialogButtonBox>
 
 TilesetEditorWindow::TilesetEditorWindow(WindowBase *parent, Tileset *tileset) :
     WindowBase(parent),
@@ -34,6 +35,7 @@ TilesetEditorWindow::TilesetEditorWindow(WindowBase *parent, Tileset *tileset) :
     ui->actionSetBackgroundColor->setIcon(QIcon(basePath + "colors.png"));
     ui->actionExportImage->setIcon(QIcon(basePath + "export.png"));
     ui->actionImportImage->setIcon(QIcon(basePath + "import.png"));
+    ui->actionImportImageLegacy->setIcon(QIcon(basePath + "import.png"));
     ui->actionDeleteAllObjects->setIcon(QIcon(basePath + "delete_objects.png"));
     ui->actionDeleteAll3DOverlays->setIcon(QIcon(basePath + "delete_overlays.png"));
     ui->actionSetTilesetSlot->setIcon(QIcon(basePath + "edit_slot.png"));
@@ -44,8 +46,6 @@ TilesetEditorWindow::TilesetEditorWindow(WindowBase *parent, Tileset *tileset) :
     tilesetPicker = new TilesetPicker(this);
 
     ui->tilesetPicker->setWidget(tilesetPicker);
-    tilesetPicker->setMinimumSize(440, 440);
-    tilesetPicker->setMaximumSize(440, 440);
     tilesetPicker->setBGColor(settings->getColor("tspColor"));
 
     connect(tilesetPicker, SIGNAL(selectedTileChanged(int, int)), this, SLOT(updateSelectedTile(int, int)));
@@ -94,6 +94,7 @@ void TilesetEditorWindow::loadTranslations()
 
     ui->actionSave->setText(settings->getTranslation("General", "save"));
     ui->actionImportImage->setText(settings->getTranslation("TilesetEditor", "importImage"));
+    ui->actionImportImageLegacy->setText(settings->getTranslation("TilesetEditor", "importImageLegacy"));
     ui->actionExportImage->setText(settings->getTranslation("TilesetEditor", "exportImage"));
     ui->actionDeleteAllBehaviors->setText(settings->getTranslation("TilesetEditor", "deleteAllBehaviors"));
     ui->actionDeleteAllObjects->setText(settings->getTranslation("TilesetEditor", "deleteAllObjs"));
@@ -119,6 +120,8 @@ void TilesetEditorWindow::loadTranslations()
     ui->objectGroupBox->setTitle(settings->getTranslation("TilesetEditor", "objSettings"));
 
     setSelTileData(settings->getTranslation("TilesetEditor", "noneData"));
+
+    ui->actionImportImageLegacy->setVisible(QDir(QCoreApplication::applicationDirPath() + "/coinkiller_data/ts_convert/").exists());
 }
 
 void TilesetEditorWindow::updateSelectedTile(int tileTL, int tileBR)
@@ -970,7 +973,7 @@ void TilesetEditorWindow::on_actionExportImage_triggered()
     if (!filename.endsWith(".png"))
         filename.append(".png");
 
-    QImage img = QImage(420, 420, tileset->getImage()->format());
+    QImage img = QImage(420, 420, tileset->getImage().format());
     img.fill(QColor(0,0,0,0));
     QPainter painter;
     painter.begin(&img);
@@ -979,7 +982,7 @@ void TilesetEditorWindow::on_actionExportImage_triggered()
     {
         for (int y = 0; y < 21; y++)
         {
-            painter.drawImage(x*20, y*20, *tileset->getImage(), x*20 + x*4 + 2, y*20 + y*4 + 2, 20, 20, Qt::AutoColor);
+            painter.drawImage(x*20, y*20, tileset->getImage(), x*20 + x*4 + 2, y*20 + y*4 + 2, 20, 20, Qt::AutoColor);
         }
     }
 
@@ -988,8 +991,42 @@ void TilesetEditorWindow::on_actionExportImage_triggered()
     img.save(filename);
 }
 
-// temp function, using the SDK TGA to CTPK converter
 void TilesetEditorWindow::on_actionImportImage_triggered()
+{
+    QString pngFileName = QFileDialog::getOpenFileName(this, "Import Tileset Image", QDir::currentPath(), "PNG Files (*.png)");
+    if (!pngFileName.endsWith(".png"))
+        pngFileName.append(".png");
+    if (pngFileName.isEmpty())
+        return;
+
+    QImage inputImg;
+    if (!inputImg.load(pngFileName))
+        return;
+
+    if (inputImg.width() != 420 || inputImg.height() != 420)
+    {
+        QMessageBox::information(this, " ", "The input image is not 420x420 pixels.", QMessageBox::Ok);
+        return;
+    }
+
+    ImportTilesetImageDlg* dlg = new ImportTilesetImageDlg(this);
+    bool ok = dlg->exec() == QDialog::Accepted;
+    int quality = dlg->getQuality();
+    bool dither = dlg->getDither();
+    delete dlg;
+
+    if (!ok)
+        return;
+
+    qApp->processEvents();
+
+    QImage img = Tileset::padTilesetImage(inputImg);
+    tileset->setImage(img, quality, dither);
+
+    tilesetPicker->setTilesetImage(tileset->getImage());
+}
+
+void TilesetEditorWindow::on_actionImportImageLegacy_triggered()
 {
     QString convertDir(QCoreApplication::applicationDirPath() + "/coinkiller_data/ts_convert/");
 
@@ -1030,15 +1067,17 @@ void TilesetEditorWindow::on_actionImportImage_triggered()
     if (pngFileName.isEmpty()) return;
 
     // Add aligns to image
-    QPixmap inputImg;
+    QImage inputImg;
     if (!inputImg.load(pngFileName))
         return;
 
     if (inputImg.width() != 420 || inputImg.height() != 420)
     {
-        QMessageBox::information(this, " ", "The input image is not 420x420 pixels.", QMessageBox::Abort);
+        QMessageBox::information(this, " ", "The input image is not 420x420 pixels.", QMessageBox::Ok);
         return;
     }
+
+    Tileset::padTilesetImage(inputImg).save(convertDir + tileset->getName() + ".png");
 
     // Get wished Quality
     QStringList qualities;
@@ -1047,27 +1086,6 @@ void TilesetEditorWindow::on_actionImportImage_triggered()
     QString quality = QInputDialog::getItem(this, "CoinKiller", "Select ETC1 compression quality:", qualities, 7, false, &ok, Qt::WindowTitleHint);
     quality.replace(" ", "");
     if (!ok) return;
-
-    QImage tsImg = QImage(512, 512, QImage::Format_RGBA8888);
-    QPainter painter(&tsImg);
-
-    for (int i = 0; i < 441; i++)
-    {
-        // Margins
-        painter.drawPixmap(QRect(i%21*20 + i%21*4, 2 + i/21*20 + i/21*4, 2, 20), inputImg.copy(i%21*20, i/21*20, 1, 20));               // Left
-        painter.drawPixmap(QRect(22 + i%21*20 + i%21*4, 2 + i/21*20 + i/21*4, 2, 20), inputImg.copy(19 + i%21*20, i/21*20, 1, 20));     // Right
-        painter.drawPixmap(QRect(2 + i%21*20 + i%21*4, i/21*20 + i/21*4, 20, 2), inputImg.copy(i%21*20, i/21*20, 20, 1));               // Top
-        painter.drawPixmap(QRect(2 + i%21*20 + i%21*4, 22 + i/21*20 + i/21*4, 20, 2), inputImg.copy(i%21*20, 19 + i/21*20, 20, 1));     // Bottom
-        painter.drawPixmap(QRect(i%21*20 + i%21*4, i/21*20 + i/21*4, 2, 2), inputImg.copy(i%21*20, i/21*20, 1, 1));                     // Top-Left
-        painter.drawPixmap(QRect(22 + i%21*20 + i%21*4, i/21*20 + i/21*4, 2, 2), inputImg.copy(19 + i%21*20, i/21*20, 1, 1));           // Top-Right
-        painter.drawPixmap(QRect(i%21*20 + i%21*4, 22 + i/21*20 + i/21*4, 2, 2), inputImg.copy(i%21*20, 19 + i/21*20, 1, 1));           // Bottom-Left
-        painter.drawPixmap(QRect(22 + i%21*20 + i%21*4, 22 + i/21*20 + i/21*4, 2, 2), inputImg.copy(19 + i%21*20, 19 + i/21*20, 1, 1)); // Bottom-Right
-
-        // Core Tiles
-        painter.drawPixmap(QRect(2 + i%21*20 + i%21*4, 2 + i/21*20 + i/21*4, 20, 20), inputImg.copy(i%21*20, i/21*20, 20, 20));
-    }
-
-    tsImg.save(convertDir + tileset->getName() + ".png");
 
     // Convert to TGA
     QProcess pngToTga;
@@ -1170,4 +1188,64 @@ void TilesetEditorWindow::on_actionSetBackgroundColor_triggered()
 void TilesetEditorWindow::on_actionSave_triggered()
 {
     tileset->save();
+}
+
+QWidget* hline()
+{
+    QFrame* ret = new QFrame();
+    ret->setFrameShape(QFrame::HLine);
+    ret->setFrameShadow(QFrame::Sunken);
+    return ret;
+}
+
+ImportTilesetImageDlg::ImportTilesetImageDlg(QWidget* parent) :
+    QDialog(parent)
+{
+    quality = 1;
+    dither = false;
+
+    setWindowTitle("CoinKiller - Import Tileset Options");
+
+    QGridLayout* lyt = new QGridLayout(this);
+    qualityBox = new QComboBox();
+    qualityBox->addItem("Low");
+    qualityBox->addItem("Medium");
+    qualityBox->addItem("High");
+    qualityBox->setCurrentIndex(quality);
+    QLabel* qualityLabel = new QLabel("Quality");
+    qualityLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    lyt->addWidget(qualityLabel, 0, 0);
+    lyt->addWidget(qualityBox, 0, 1);
+    ditherCheckBox = new QCheckBox("Dither");
+    ditherCheckBox->setChecked(dither);
+    lyt->addWidget(ditherCheckBox, 1, 1);
+    QDialogButtonBox* buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+    connect(buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
+    connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
+    QLabel* noteLabel = new QLabel("Note: ETC1 image compression might take up to a minute depending on your system and selected quality.");
+    noteLabel->setWordWrap(true);
+    lyt->addWidget(hline(), 2, 0, 1, 2);
+    lyt->addWidget(noteLabel, 3, 0, 1, 2);
+    lyt->addWidget(hline(), 4, 0, 1, 2);
+    lyt->addWidget(buttonBox, 5, 0, 1, 2);
+
+    setMinimumWidth(240);
+}
+
+void ImportTilesetImageDlg::accept()
+{
+    quality = qualityBox->currentIndex();
+    dither = ditherCheckBox->isChecked();
+
+    QDialog::accept();
+}
+
+int ImportTilesetImageDlg::getQuality()
+{
+    return quality;
+}
+
+bool ImportTilesetImageDlg::getDither()
+{
+    return dither;
 }

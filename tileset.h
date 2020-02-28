@@ -91,21 +91,24 @@ public:
 
     Game* game;
 
-    QImage* getImage() { return texImage; }
+    QImage& getImage();
+    void setImage(QImage& img, uint quality = 1, bool dither = false);
 
     void save();
 
     // temp function
     void replaceCTPK(QString filename);
 
+    static QImage padTilesetImage(QImage& img);
+
 private:
     QString name;
     bool drawOverrides = false;
     int slot;
     SarcFilesystem* archive;
-    Ctpk* texture;
+    Ctpk* ctpk;
 
-    QImage* texImage;
+    QImage texImage;
 
 
     QList<ObjectDef*> objectDefs;

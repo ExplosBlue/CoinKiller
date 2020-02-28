@@ -18,8 +18,12 @@
 #include "mainwindow.h"
 #include <QApplication>
 
+#include "rg_etc1.h"
+
 int main(int argc, char *argv[])
 {
+    rg_etc1::pack_etc1_block_init();
+
     QApplication a(argc, argv);
     MainWindow w;
     w.show();

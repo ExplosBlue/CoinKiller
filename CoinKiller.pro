@@ -59,7 +59,8 @@ SOURCES += main.cpp\
     newtilesetdialog.cpp \
     imagecache.cpp \
     spriteidswidget.cpp \
-    clickablelabel.cpp
+    clickablelabel.cpp \
+    rg_etc1.cpp
 
 HEADERS  += mainwindow.h \
     eventeditorwidget.h \
@@ -104,7 +105,8 @@ HEADERS  += mainwindow.h \
     imagecache.h \
     spriteidswidget.h \
     clickablelabel.h \
-    windowbase.h
+    windowbase.h \
+    rg_etc1.h
 
 FORMS    += mainwindow.ui \
     leveleditorwindow.ui \

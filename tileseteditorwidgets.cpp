@@ -11,11 +11,11 @@ TilesetPicker::TilesetPicker(QWidget *parent) : QWidget(parent)
     this->selectedTileBR = -1;
     this->selectedOvTile = -1;
     this->selectDrag = false;
-    tilesetImage = new QImage(420, 420, QImage::Format_RGBA8888);
+    tilesetImage = QImage(420, 420, QImage::Format_RGBA8888);
     bgColor = Qt::white;
 }
 
-void TilesetPicker::setTilesetImage(QImage *tilesetImage)
+void TilesetPicker::setTilesetImage(QImage& tilesetImage)
 {
     this->tilesetImage = tilesetImage;
 }
@@ -29,7 +29,7 @@ void TilesetPicker::paintEvent(QPaintEvent* evt)
     {
         for (int y = 0; y < 21; y++)
         {
-            painter.drawImage(x*21, y*21, *tilesetImage, x*20 + x*4 + 2, y*20 + y*4 + 2, 20, 20, Qt::AutoColor);
+            painter.drawImage(x*21, y*21, tilesetImage, x*20 + x*4 + 2, y*20 + y*4 + 2, 20, 20, Qt::AutoColor);
         }
     }
 
