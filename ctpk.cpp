@@ -438,10 +438,11 @@ void Ctpk::setTextureEtc1(quint32 entryIndex, QImage& img, bool alpha, uint qual
     rg_etc1::etc1_pack_params pack_params;
     if (quality == 0)
         pack_params.m_quality = rg_etc1::cLowQuality;
-    if (quality == 0)
+    else if (quality == 1)
         pack_params.m_quality = rg_etc1::cMediumQuality;
     else
         pack_params.m_quality = rg_etc1::cHighQuality;
+
     pack_params.m_dithering = dither;
 
     printf("ETC1 compression progress: 0%%");
