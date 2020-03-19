@@ -44,6 +44,8 @@ MainWindow::MainWindow(WindowBase *parent) :
     WindowBase(parent),
     ui(new Ui::MainWindow)
 {
+    settings = SettingsManager::init(this);
+
     startupClose = checkForMissingFiles();
 
     ui->setupUi(this);
@@ -55,15 +57,13 @@ MainWindow::MainWindow(WindowBase *parent) :
         return;
     }
 
+    settings->loadTranslations();
+
     setWindowTitle("CoinKiller");
 
     statusLabel = new ClickableLabel(this);
     ui->statusBar->addWidget(statusLabel);
     connect(statusLabel, SIGNAL(doubleClicked()), this, SLOT(on_statusLabel_clicked()));
-
-    QCoreApplication::setOrganizationName("Blarg City");
-    QCoreApplication::setApplicationName("CoinKiller");
-    settings = SettingsManager::init(this);
 
     ImageCache::init();
 
@@ -177,20 +177,33 @@ bool MainWindow::checkForMissingFiles()
     << "tilesetnames.txt"
     << "languages/English/translations.txt";
 
-    QString basePath = QCoreApplication::applicationDirPath();
-    QString missingFiles;
-    for (int i=0; i<requiredFiles.size(); i++)
+    QList<int> missingFilesIds;
+
+    for (int i = 0; i<requiredFiles.size(); i++)
     {
-        if (!QFile(basePath + "/coinkiller_data/" + requiredFiles[i]).exists())
-        {
-            missingFiles.append(QString("/coinkiller_data/%1\n").arg(requiredFiles[i]));
-        }
+        if (!QFile(settings->dataPath(requiredFiles[i])).exists())
+            missingFilesIds.append(i);
     }
-    if (!missingFiles.isEmpty())
+
+    if (!missingFilesIds.isEmpty())
     {
-        QString infoText("There are files missing which are required for CoinKiller to work properly:\n%1\nPlease redownload your copy of the editor.");
-        QMessageBox message(QMessageBox::Information, "CoinKiller", infoText.arg(missingFiles), QMessageBox::Ok, QDesktopWidget().screen());
+        QString missingFiles;
+        for (int i : missingFilesIds)
+            missingFiles.append(QString("<li>/coinkiller_data/%1</li>").arg(requiredFiles[i]));
+
+        QString infoText = QString("CoinKiller was unable to find a coinkiller_data folder beside the executable or in the application data folder.<br>"
+                                   "<br>"
+                                   "Please place the coinkiller_data folder from the CoinKiller download at one of these locations:"
+                                   "<ul><li>%1</li><li>%2</li></ul>"
+                                   "Missing files:"
+                                   "<ul>%3</ul>")
+                                   .arg(QCoreApplication::applicationDirPath() + "/coinkiller_data/")
+                                   .arg(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/coinkiller_data/")
+                                   .arg(missingFiles);
+
+        QMessageBox message(QMessageBox::Information, "CoinKiller", infoText, QMessageBox::Ok);
         message.exec();
+
         return true;
     }
 
@@ -238,7 +251,7 @@ void MainWindow::sdDownload_finished(QNetworkReply::NetworkError error)
 {
     if (error == QNetworkReply::NoError)
     {
-        QFile file(QCoreApplication::applicationDirPath() + "/coinkiller_data/spritedata.xml");
+        QFile file(settings->dataPath("spritedata.xml"));
         if (file.open(QIODevice::WriteOnly))
         {
             file.write(sdDownloader->downloadedData());
@@ -280,7 +293,7 @@ void MainWindow::on_actionSarcExplorer_triggered()
 
 void MainWindow::on_addLevelBtn_clicked()
 {
-    QFile blankLvl(QCoreApplication::applicationDirPath() + "/coinkiller_data/blank_level.sarc");
+    QFile blankLvl(settings->dataPath("blank_level.sarc"));
     if (!blankLvl.exists())
     {
         QMessageBox::information(this, "CoinKiller", settings->getTranslation("MainWindow", "blankLevelMissing") + " (/coinkiller_data/blank_level.sarc).", QMessageBox::StandardButton::Ok);
@@ -334,7 +347,7 @@ void MainWindow::on_removeLevelBtn_clicked()
 
 void MainWindow::on_addTilesetBtn_clicked()
 {
-    QFile blankTs(QCoreApplication::applicationDirPath() + "/coinkiller_data/blank_tileset.sarc");
+    QFile blankTs(settings->dataPath("blank_tileset.sarc"));
     if (!blankTs.exists())
     {
         QMessageBox::information(this, "CoinKiller", settings->getTranslation("MainWindow", "blankTilesetMissing") + " (/coinkiller_data/blank_tileset.sarc).", QMessageBox::StandardButton::Ok);
@@ -404,7 +417,7 @@ void MainWindow::setNightmode(bool nightmode)
   
 void MainWindow::setStyleSheetFromPath(QString path)
 {
-    QFile styleSheetFile(QCoreApplication::applicationDirPath() + "/coinkiller_data/" + path);
+    QFile styleSheetFile(settings->dataPath(path));
 
     if (!styleSheetFile.exists())
     {

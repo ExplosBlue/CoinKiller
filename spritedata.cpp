@@ -1,10 +1,12 @@
 #include "spritedata.h"
+#include "settingsmanager.h"
+
 
 SpriteData::SpriteData()
 {
     // Load Sprite Definitions
     QDomDocument xmlSpriteData;
-    QFile f1(QCoreApplication::applicationDirPath() + "/coinkiller_data/spritedata.xml");
+    QFile f1(SettingsManager::getInstance()->dataPath("spritedata.xml"));
     if (!f1.open(QIODevice::ReadOnly))
         return;
     xmlSpriteData.setContent(&f1);
@@ -20,7 +22,7 @@ SpriteData::SpriteData()
 
     // Load Sprite Views
     QDomDocument xmlSpriteViews;
-    QFile f2(QCoreApplication::applicationDirPath() + "/coinkiller_data/spritecategories.xml");
+    QFile f2(SettingsManager::getInstance()->dataPath("spritecategories.xml"));
     if (!f2.open(QIODevice::ReadOnly))
         return;
     xmlSpriteViews.setContent(&f2);

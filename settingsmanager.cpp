@@ -24,12 +24,16 @@
 #include <QTextStream>
 #include <QMessageBox>
 #include <QStringList>
+#include <QStandardPaths>
 
 
 SettingsManager* SettingsManager::instance = NULL;
 
 SettingsManager* SettingsManager::init(QWidget* parentWidget)
 {
+    QCoreApplication::setOrganizationName("Blarg City");
+    QCoreApplication::setApplicationName("CoinKiller");
+
     if (instance != NULL)
         throw new std::runtime_error("SettingsManager already inited.");
 
@@ -50,8 +54,14 @@ SettingsManager::SettingsManager(QWidget* parentWidget)
 {
     this->parentWidget = parentWidget;
 
-    QString language = settings.value("Language", "English").toString();
-    loadTranslations(language);
+    QFileInfo localDataDir(QCoreApplication::applicationDirPath() + "/coinkiller_data");
+    if (localDataDir.isDir() && localDataDir.isReadable())
+        dataBasePath = localDataDir.absoluteFilePath();
+    else
+    {
+        dataBasePath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/coinkiller_data";
+        QDir().mkpath(dataBasePath);
+    }
 }
 
 SettingsManager::~SettingsManager()
@@ -62,9 +72,20 @@ SettingsManager::~SettingsManager()
         delete cats[i];
 }
 
+QString SettingsManager::dataPath(const QString& path)
+{
+    return QString("%1/%2").arg(dataBasePath).arg(path);
+}
+
+void SettingsManager::loadTranslations()
+{
+    QString language = settings.value("Language", "English").toString();
+    loadTranslations(language);
+}
+
 void SettingsManager::loadTranslations(QString languageName)
 {
-    QFile file(QCoreApplication::applicationDirPath() + "/coinkiller_data/languages/"+languageName+"/translations.txt");
+    QFile file(dataPath("languages/"+languageName+"/translations.txt"));
 
     if(!file.open(QIODevice::ReadOnly))
     {
@@ -114,9 +135,9 @@ void SettingsManager::loadTranslations(QString languageName)
 
     foreach (QString transFile, translateFiles)
     {
-        QString path = QCoreApplication::applicationDirPath() + "/coinkiller_data/languages/"+languageName+"/"+transFile;
+        QString path = dataPath("languages/"+languageName+"/"+transFile);
         if(!QFile(path).exists())
-            path = QCoreApplication::applicationDirPath() + "/coinkiller_data/" + transFile;
+            path = dataPath(transFile);
 
         translatedFiles.insert(transFile, path);
     }
@@ -134,7 +155,7 @@ void SettingsManager::setupLanguageSelector(QListWidget* selector)
     selector->blockSignals(true);
     selector->clear();
 
-    QDir translationsFolder(QCoreApplication::applicationDirPath() + "/coinkiller_data/languages/");
+    QDir translationsFolder(dataPath("languages/"));
     translationsFolder.setFilter(QDir::NoDotAndDotDot | QDir::Dirs);
     QDirIterator directories(translationsFolder, QDirIterator::NoIteratorFlags);
 

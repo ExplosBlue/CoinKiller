@@ -242,7 +242,7 @@ QStandardItemModel* Game::getTilesetModel(int id, bool includeNoneItem)
     headers << "Tileset" << "Filename";
     model->setHorizontalHeaderLabels(headers);
 
-    QFile inputFile(QCoreApplication::applicationDirPath() + "/coinkiller_data/tilesetnames.txt");
+    QFile inputFile(SettingsManager::getInstance()->dataPath("tilesetnames.txt"));
     if (!inputFile.open(QIODevice::ReadOnly))
         return model;
 

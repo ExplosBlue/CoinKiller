@@ -17,6 +17,8 @@
 
 #include "is.h"
 
+#include "settingsmanager.h"
+
 #include <QHBoxLayout>
 #include <QSizePolicy>
 #include <QStandardItemModel>
@@ -61,7 +63,7 @@ LevelEditorWindow::LevelEditorWindow(LevelManager* lvlMgr, int initialArea) :
     }
 
     // Load UI Icons
-    QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/icons/");
+    QString basePath(settings->dataPath("icons/"));
     ui->actionZoom_In->setIcon(QIcon(basePath + "zoomin.png"));
     ui->actionZoom_Out->setIcon(QIcon(basePath + "zoomout.png"));
     ui->actionZoom_100->setIcon(QIcon(basePath + "zoom100.png"));
@@ -430,12 +432,12 @@ void LevelEditorWindow::on_actionFullscreen_toggled(bool toggle)
     if (toggle)
     {
         showFullScreen();
-        ui->actionFullscreen->setIcon(QIcon(QCoreApplication::applicationDirPath() + "/coinkiller_data/icons/collapse.png"));
+        ui->actionFullscreen->setIcon(QIcon(SettingsManager::getInstance()->dataPath("icons/collapse.png")));
     }
     else
     {
         showNormal();
-        ui->actionFullscreen->setIcon(QIcon(QCoreApplication::applicationDirPath() + "/coinkiller_data/icons/expand.png"));
+        ui->actionFullscreen->setIcon(QIcon(SettingsManager::getInstance()->dataPath("icons/expand.png")));
     }
 }
 
@@ -684,7 +686,7 @@ void LevelEditorWindow::loadArea(int id, bool closeLevel, bool init)
 
     zoom = 1.0;
 
-    QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/icons/");
+    QString basePath(settings->dataPath("icons/"));
 
     // Setup Area Editor
     areaEditor = new AreaEditorWidget(level, lvlMgr->getGame());
@@ -744,6 +746,7 @@ void LevelEditorWindow::loadArea(int id, bool closeLevel, bool init)
     connect(levelView->editionModePtr(), SIGNAL(updateEditors()), this, SLOT(updateEditors()));
     connect(levelView->editionModePtr(), SIGNAL(editMade()), this, SLOT(handleEditMade()));
 
+    toolboxTabs->setUsesScrollButtons(true);
     toolboxTabs->addTab(areaEditor, QIcon(basePath + "settings.png"), "");
     toolboxTabs->setTabToolTip(0, "Area Settings");
     toolboxTabs->addTab(tilesetPalette, QIcon(basePath + "filled_box"), "");

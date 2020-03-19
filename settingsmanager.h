@@ -32,6 +32,9 @@ public:
     static SettingsManager* getInstance();
     ~SettingsManager();
 
+    QString dataPath(const QString& path = "");
+
+    void loadTranslations();
     void loadTranslations(QString languageName);
     QString getTranslation(QString category, QString key);
     void setupLanguageSelector(QListWidget* selector);
@@ -62,6 +65,8 @@ private:
     static SettingsManager* instance;
 
     QSettings settings;
+
+    QString dataBasePath;
 
     QWidget* parentWidget;
     QHash<QString, QHash<QString, QString>*> translations;

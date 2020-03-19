@@ -11,7 +11,7 @@ SarcExplorerWindow::SarcExplorerWindow(WindowBase *parent, QString path, Setting
 {
     this->settings = settings;
     this->setAttribute(Qt::WA_DeleteOnClose);
-    iconsPath = QCoreApplication::applicationDirPath() + "/coinkiller_data/icons/";
+    iconsPath = SettingsManager::getInstance()->dataPath("icons/");
     ui->setupUi(this);
 
     setWindowTitle("CoinKiller Next - " + settings->getTranslation("SarcExplorer", "sarcExplorer") + " - " + path);

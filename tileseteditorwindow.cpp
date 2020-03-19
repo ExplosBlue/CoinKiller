@@ -30,7 +30,7 @@ TilesetEditorWindow::TilesetEditorWindow(WindowBase *parent, Tileset *tileset) :
     loadTranslations();
 
     // Load UI Icons
-    QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/icons/");
+    QString basePath(settings->dataPath("icons/"));
     ui->actionSave->setIcon(QIcon(basePath + "save.png"));
     ui->actionSetBackgroundColor->setIcon(QIcon(basePath + "colors.png"));
     ui->actionExportImage->setIcon(QIcon(basePath + "export.png"));
@@ -121,7 +121,7 @@ void TilesetEditorWindow::loadTranslations()
 
     setSelTileData(settings->getTranslation("TilesetEditor", "noneData"));
 
-    ui->actionImportImageLegacy->setVisible(QDir(QCoreApplication::applicationDirPath() + "/coinkiller_data/ts_convert/").exists());
+    ui->actionImportImageLegacy->setVisible(QDir(settings->dataPath("ts_convert/")).exists());
 }
 
 void TilesetEditorWindow::updateSelectedTile(int tileTL, int tileBR)
@@ -285,7 +285,7 @@ void TilesetEditorWindow::updateComboBox(int byteNbr, QList<parameter> &list, QC
 void TilesetEditorWindow::loadBehaviors()
 {
     QDomDocument xmlBehaviors;
-    QFile f(QCoreApplication::applicationDirPath() + "/coinkiller_data/tilebehaviors.xml");
+    QFile f(settings->dataPath("tilebehaviors.xml"));
     if (!f.open(QIODevice::ReadOnly))
     {
         QMessageBox::warning(this, "CoinKiller", "Failed to load behaviors.xml");
@@ -399,7 +399,7 @@ void TilesetEditorWindow::setupObjectsModel(bool keepIndex)
 
     QStandardItemModel* objectsModel = new QStandardItemModel();
 
-    QString basePath(QCoreApplication::applicationDirPath() + "/coinkiller_data/icons/");
+    QString basePath = settings->dataPath("icons/");
 
     for (int i = 0; i < tileset->getNumObjects(); i++)
     {
@@ -1028,7 +1028,7 @@ void TilesetEditorWindow::on_actionImportImage_triggered()
 
 void TilesetEditorWindow::on_actionImportImageLegacy_triggered()
 {
-    QString convertDir(QCoreApplication::applicationDirPath() + "/coinkiller_data/ts_convert/");
+    QString convertDir = settings->dataPath("ts_convert/");
 
 #ifdef _WIN32
     if (!QFile(convertDir + "convert.exe").exists())
@@ -1048,7 +1048,7 @@ void TilesetEditorWindow::on_actionImportImageLegacy_triggered()
         return;
     }
 #else
-    QMessageBox::warning(this, "CoinKiller", "Tileset importing is not supported on your operating system!" QMessageBox::Ok);
+    QMessageBox::warning(this, "CoinKiller", "Legacy tileset importing is not supported on your operating system!", QMessageBox::Ok);
     return;
 #endif
 

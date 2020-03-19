@@ -1,5 +1,6 @@
 #include "entranceeditorwidget.h"
 #include "unitsconvert.h"
+#include "settingsmanager.h"
 
 #include <QVBoxLayout>
 #include <QGridLayout>
@@ -118,7 +119,7 @@ void EntranceEditorWidget::select(Entrance* entr)
 
 void EntranceEditorWidget::loadEntranceTypes()
 {
-    QFile file(QCoreApplication::applicationDirPath() + "/coinkiller_data/entrancetypes.txt");
+    QFile file(SettingsManager::getInstance()->dataPath("entrancetypes.txt"));
     if(!file.open(QIODevice::ReadOnly))
         return;
 

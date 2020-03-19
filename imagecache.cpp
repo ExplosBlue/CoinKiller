@@ -1,8 +1,8 @@
 #include "imagecache.h"
 
-#include <QCoreApplication>
 #include <QDirIterator>
 #include <QDebug>
+#include "settingsmanager.h"
 
 ImageCache* ImageCache::instance = NULL;
 
@@ -48,7 +48,7 @@ void ImageCache::loadTypeFromFolder(CacheImgType type, QString folder)
 {
     QHash<QString, QPixmap>* imgCache = new QHash<QString, QPixmap>();
 
-    QDirIterator imgIterator(QCoreApplication::applicationDirPath() + "/coinkiller_data/" + folder + "/", QStringList() << "*.png", QDir::Files, QDirIterator::Subdirectories);
+    QDirIterator imgIterator(SettingsManager::getInstance()->dataPath(folder + "/"), QStringList() << "*.png", QDir::Files, QDirIterator::Subdirectories);
     quint32 folderLength = imgIterator.path().length();
 
     while (imgIterator.hasNext())

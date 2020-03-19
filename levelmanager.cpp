@@ -1,6 +1,7 @@
 #include "levelmanager.h"
 #include "leveleditorwindow.h"
 #include "game.h"
+#include "settingsmanager.h"
 
 LevelManager::LevelManager(WindowBase *parentWidget, Game* game, QString lvlPath)
 {
@@ -63,7 +64,7 @@ int LevelManager::addArea(int id)
     if (getAreaCount() >= 4)
             throw std::runtime_error("Adding area to level failed: Exceeded maximum area count (4).");
 
-    QFile new_course(QCoreApplication::applicationDirPath() + "/coinkiller_data/blank_course.bin");
+    QFile new_course(SettingsManager::getInstance()->dataPath("blank_course.bin"));
     if(!new_course.open(QIODevice::ReadOnly))
         throw std::runtime_error("Blank course file is missing or failed to open (/coinkiller_data/blank_course.bin)");
 

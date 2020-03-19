@@ -1,5 +1,6 @@
 #include "zoneeditorwidget.h"
 #include "unitsconvert.h"
+#include "settingsmanager.h"
 
 #include <QVBoxLayout>
 #include <QGridLayout>
@@ -213,9 +214,9 @@ void ZoneEditorWidget::updateEditor()
 
 void ZoneEditorWidget::updateBgPreview()
 {
-    QFileInfo checkFile(QCoreApplication::applicationDirPath() + "/coinkiller_data/backgrounds/" + editZone->getBgName() + ".png");
-    if (checkFile.exists() && checkFile.isFile()) backgroundPreview->setBg(QCoreApplication::applicationDirPath() + "/coinkiller_data/backgrounds/" + editZone->getBgName() + ".png");
-    else backgroundPreview->setBg(QCoreApplication::applicationDirPath() + "/coinkiller_data/backgrounds/Invalid.png");
+    QFileInfo checkFile(SettingsManager::getInstance()->dataPath("backgrounds/" + editZone->getBgName() + ".png"));
+    if (checkFile.exists() && checkFile.isFile()) backgroundPreview->setBg(SettingsManager::getInstance()->dataPath("backgrounds/" + editZone->getBgName() + ".png"));
+    else backgroundPreview->setBg(SettingsManager::getInstance()->dataPath("backgrounds/Invalid.png"));
 }
 
 void ZoneEditorWidget::loadMusicIDs()
@@ -266,7 +267,7 @@ void BgPreview::resizeEvent(QResizeEvent *)
 
 void ZoneEditorWidget::loadBackgrounds()
 {
-    QFile file(QCoreApplication::applicationDirPath() + "/coinkiller_data/backgrounds/backgroundnames.txt");
+    QFile file(SettingsManager::getInstance()->dataPath("backgrounds/backgroundnames.txt"));
     if(!file.open(QIODevice::ReadOnly))
         return;
 
