@@ -84,11 +84,11 @@ ZoneEditorWidget::ZoneEditorWidget(QList<Zone*> *zones)
     connect(bgYPos, SIGNAL(valueChanged(int)), this, SLOT(handleBgYPosChanged(int)));
 
     bgParallaxMode = new QComboBox();
-    bgParallaxMode->addItem("Y Offset Off, All Parallx On");
-    bgParallaxMode->addItem("Y Offset On, All Parallx On");
-    bgParallaxMode->addItem("Y Offset On, All Parallx Off");
-    bgParallaxMode->addItem("Y Offset On, Y Parallx Off");
-    bgParallaxMode->addItem("Y Offset On, X Parallx Off");
+    bgParallaxMode->addItem("Y Offset Off, All Parallax On");
+    bgParallaxMode->addItem("Y Offset On, All Parallax On");
+    bgParallaxMode->addItem("Y Offset On, All Parallax Off");
+    bgParallaxMode->addItem("Y Offset On, Y Parallax Off");
+    bgParallaxMode->addItem("Y Offset On, X Parallax Off");
     connect(bgParallaxMode, SIGNAL(currentIndexChanged(int)), this, SLOT(handleBgParallaxModeChange(int)));
 
     background = new QComboBox();
