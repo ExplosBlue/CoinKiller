@@ -11,6 +11,7 @@
 #include <QColorDialog>
 #include <QInputDialog>
 #include <QDialogButtonBox>
+#include <QListWidget>
 
 TilesetEditorWindow::TilesetEditorWindow(WindowBase *parent, Tileset *tileset) :
     WindowBase(parent),
@@ -38,12 +39,17 @@ TilesetEditorWindow::TilesetEditorWindow(WindowBase *parent, Tileset *tileset) :
     ui->actionImportImageLegacy->setIcon(QIcon(basePath + "import.png"));
     ui->actionDeleteAllObjects->setIcon(QIcon(basePath + "delete_objects.png"));
     ui->actionDeleteAll3DOverlays->setIcon(QIcon(basePath + "delete_overlays.png"));
+    ui->actionDeleteAllBehaviors->setIcon(QIcon(basePath + "delete_behaviors.png"));
     ui->actionSetTilesetSlot->setIcon(QIcon(basePath + "edit_slot.png"));
     ui->actionShowObjectMarkers->setIcon(QIcon(basePath + "marker_red.png"));
+    ui->actionToggleCollision->setIcon(QIcon(basePath + "toggle_collision.png"));
 
+    // Setup Status Bar
+    editStatus = new QLabel(this);
+    ui->statusBar->addWidget(editStatus);
 
     // Setup Behaviors Editor
-    tilesetPicker = new TilesetPicker(this);
+    tilesetPicker = new TilesetPicker(tileset, this);
 
     ui->tilesetPicker->setWidget(tilesetPicker);
     tilesetPicker->setBGColor(settings->getColor("tspColor"));
@@ -79,6 +85,8 @@ TilesetEditorWindow::TilesetEditorWindow(WindowBase *parent, Tileset *tileset) :
 
     hideHorizEdits(true);
     hideVertEdits(true);
+
+    editStatus->setText(settings->getTranslation("General", "ready"));
 }
 
 TilesetEditorWindow::~TilesetEditorWindow()
@@ -93,15 +101,37 @@ void TilesetEditorWindow::loadTranslations()
     ui->menuSettings->setTitle(settings->getTranslation("General", "settings"));
 
     ui->actionSave->setText(settings->getTranslation("General", "save"));
+    ui->actionSave->setToolTip(settings->getTranslation("General", "save"));
+
     ui->actionImportImage->setText(settings->getTranslation("TilesetEditor", "importImage"));
+    ui->actionImportImage->setToolTip(settings->getTranslation("TilesetEditor", "importImage"));
+
     ui->actionImportImageLegacy->setText(settings->getTranslation("TilesetEditor", "importImageLegacy"));
+    ui->actionImportImageLegacy->setToolTip(settings->getTranslation("TilesetEditor", "importImageLegacy"));
+
     ui->actionExportImage->setText(settings->getTranslation("TilesetEditor", "exportImage"));
+    ui->actionExportImage->setToolTip(settings->getTranslation("TilesetEditor", "exportImage"));
+
     ui->actionDeleteAllBehaviors->setText(settings->getTranslation("TilesetEditor", "deleteAllBehaviors"));
+    ui->actionDeleteAllBehaviors->setToolTip(settings->getTranslation("TilesetEditor", "deleteAllBehaviors"));
+
     ui->actionDeleteAllObjects->setText(settings->getTranslation("TilesetEditor", "deleteAllObjs"));
+    ui->actionDeleteAllObjects->setToolTip(settings->getTranslation("TilesetEditor", "deleteAllObjs"));
+
     ui->actionDeleteAll3DOverlays->setText(settings->getTranslation("TilesetEditor", "deleteAllOverlays"));
+    ui->actionDeleteAll3DOverlays->setToolTip(settings->getTranslation("TilesetEditor", "deleteAllOverlays"));
+
     ui->actionSetTilesetSlot->setText(settings->getTranslation("TilesetEditor", "setTilesetSlot"));
+    ui->actionSetTilesetSlot->setToolTip(settings->getTranslation("TilesetEditor", "setTilesetSlot"));
+
     ui->actionShowObjectMarkers->setText(settings->getTranslation("TilesetEditor", "showObjMarkers"));
+    ui->actionShowObjectMarkers->setToolTip(settings->getTranslation("TilesetEditor", "showObjMarkers"));
+
     ui->actionSetBackgroundColor->setText(settings->getTranslation("TilesetEditor", "setBgColor"));
+    ui->actionSetBackgroundColor->setToolTip(settings->getTranslation("TilesetEditor", "setBgColor"));
+
+    ui->actionToggleCollision->setText(settings->getTranslation("TilesetEditor", "toggleCollision"));
+    ui->actionToggleCollision->setToolTip(settings->getTranslation("TilesetEditor", "toggleCollision"));
 
     ui->tabWidget->setTabText(0, settings->getTranslation("TilesetEditor", "behaviors"));
     ui->tabWidget->setTabText(1, settings->getTranslation("TilesetEditor", "objects"));
@@ -562,10 +592,14 @@ void TilesetEditorWindow::setRepeatSpinBox(int nbr, int value, bool block)
     {
         bool oldState = spinBox->blockSignals(true);
         spinBox->setValue(value);
+        spinBox->update();
         spinBox->blockSignals(oldState);
     }
-
-    spinBox->setValue(value);
+    else
+    {
+        spinBox->setValue(value);
+        spinBox->update();
+    }
 }
 
 void TilesetEditorWindow::setupObjectBehaviorModel()
@@ -618,6 +652,12 @@ void TilesetEditorWindow::clampOBehaviorSpinBoxes()
     ui->vEndSpinBox->setMinimum(ui->vStartSpinBox->value()+1);
 }
 
+// Tile Picker Actions
+void TilesetEditorWindow::on_actionToggleCollision_toggled(bool value)
+{
+  tilesetPicker->toggleCollisionView(value);
+  tilesetPicker->update();
+}
 
 // Behaviors Editor Actions
 
@@ -660,6 +700,7 @@ void TilesetEditorWindow::on_sBehaviorListView_clicked(const QModelIndex &index)
     setParametersModel();
     updateParameters();
     updateHex();
+    tilesetPicker->update();
 }
 
 void TilesetEditorWindow::on_parameterListView_clicked(const QModelIndex &index)
@@ -672,6 +713,7 @@ void TilesetEditorWindow::on_parameterListView_clicked(const QModelIndex &index)
     setBehaviorByte(2, specialBehaviors[selectedSpecialBehavior].parameters[selectedParameter].byte);
 
     updateHex();
+    tilesetPicker->update();
 }
 
 void TilesetEditorWindow::on_hitBoxComboBox_currentIndexChanged(int index)
@@ -681,6 +723,7 @@ void TilesetEditorWindow::on_hitBoxComboBox_currentIndexChanged(int index)
 
     setBehaviorByte(4, hitboxes[index].byte);
     updateHex();
+    tilesetPicker->update();
 }
 
 void TilesetEditorWindow::on_terrainTypeComboBox_currentIndexChanged(int index)
@@ -690,6 +733,7 @@ void TilesetEditorWindow::on_terrainTypeComboBox_currentIndexChanged(int index)
 
     setBehaviorByte(5, terrainTypes[index].byte);
     updateHex();
+    tilesetPicker->update();
 }
 
 void TilesetEditorWindow::on_depthComboBox_currentIndexChanged(int index)
@@ -699,6 +743,7 @@ void TilesetEditorWindow::on_depthComboBox_currentIndexChanged(int index)
 
     setBehaviorByte(7, depthBehaviors[index].byte);
     updateHex();
+    tilesetPicker->update();
 }
 
 void TilesetEditorWindow::on_pipeColorComboBox_currentIndexChanged(int index)
@@ -708,6 +753,7 @@ void TilesetEditorWindow::on_pipeColorComboBox_currentIndexChanged(int index)
 
     setBehaviorByte(3, pipeColors[index].byte);
     updateHex();
+    tilesetPicker->update();
 }
 
 void TilesetEditorWindow::on_actionDeleteAll3DOverlays_triggered()
@@ -744,12 +790,17 @@ void TilesetEditorWindow::on_objectsListView_clicked(const QModelIndex &index)
 {
     emit selectedObjectChanged(index.row());
     bool oldState1 = ui->oBehaviorComboBox->blockSignals(true);
-    bool oldState2 = ui->hEndSpinBox->blockSignals(true);
-    bool oldState3 = ui->vEndSpinBox->blockSignals(true);
+    bool oldState2 = ui->hStartSpinBox->blockSignals(true);
+    bool oldState3 = ui->hEndSpinBox->blockSignals(true);
+    bool oldState4 = ui->vStartSpinBox->blockSignals(true);
+    bool oldState5 = ui->vEndSpinBox->blockSignals(true);
     updateObjectInfo();
+    setObectBehavior();
     ui->oBehaviorComboBox->blockSignals(oldState1);
-    ui->hEndSpinBox->blockSignals(oldState2);
-    ui->vEndSpinBox->blockSignals(oldState3);
+    ui->hStartSpinBox->blockSignals(oldState2);
+    ui->hEndSpinBox->blockSignals(oldState3);
+    ui->vStartSpinBox->blockSignals(oldState4);
+    ui->vEndSpinBox->blockSignals(oldState5);
 }
 
 void TilesetEditorWindow::on_addObjectPushButton_clicked()
@@ -845,7 +896,10 @@ void TilesetEditorWindow::on_actionSetTilesetSlot_triggered()
     QStringList slotNames;
     slotNames << "Standard Suite" << "Stage Suite" << "Background Suite" << "Interactive Suite";
     int slot = -1;
-    slot = slotNames.indexOf(QInputDialog::getItem(this, "CoinKiller", "Set Tileset Slot:", slotNames, 0, false, 0, Qt::WindowTitleHint));
+
+    int cur = tileset->getSlot();
+
+    slot = slotNames.indexOf(QInputDialog::getItem(this, "CoinKiller", "Set Tileset Slot:", slotNames, cur, false, 0, Qt::WindowTitleHint));
 
     if (slot == -1)
         return;
@@ -970,6 +1024,13 @@ void TilesetEditorWindow::on_vEndSpinBox_valueChanged(int value)
 void TilesetEditorWindow::on_actionExportImage_triggered()
 {
     QString filename = QFileDialog::getSaveFileName(this, "Export Tileset Image", QDir::currentPath(), "PNG Files (*.png)");
+
+    if (filename.isNull())
+    {
+        editStatus->setText(settings->getTranslation("TilesetEditor", "imageExported"));
+        return;
+    }
+
     if (!filename.endsWith(".png"))
         filename.append(".png");
 
@@ -989,6 +1050,8 @@ void TilesetEditorWindow::on_actionExportImage_triggered()
     painter.end();
 
     img.save(filename);
+
+    editStatus->setText(settings->getTranslation("TilesetEditor", "imageExported"));
 }
 
 void TilesetEditorWindow::on_actionImportImage_triggered()
@@ -1024,149 +1087,150 @@ void TilesetEditorWindow::on_actionImportImage_triggered()
     tileset->setImage(img, quality, dither);
 
     tilesetPicker->setTilesetImage(tileset->getImage());
+    setupObjectsModel(true);
 }
 
 void TilesetEditorWindow::on_actionImportImageLegacy_triggered()
 {
     QString convertDir = settings->dataPath("ts_convert/");
 
-#ifdef _WIN32
-    if (!QFile(convertDir + "convert.exe").exists())
-    {
-        QMessageBox::warning(this, "CoinKiller", "CoinKiller requires convert.exe from ImageMagick to be placed at " + convertDir + " to convert tileset images!");
-        return;
-    }
-#elif __linux__
-    if (system("command -v convert > /dev/null 2>&1") != 0 && !QFile(convertDir + "convert").exists())
-    {
-        QMessageBox::warning(this, "CoinKiller", "CoinKiller requires convert from ImageMagick to be installed to convert tileset images!");
-        return;
-    }
-    if (system("command -v wine > /dev/null 2>&1") != 0)
-    {
-        QMessageBox::warning(this, "CoinKiller", "CoinKiller requires wine to be installed to convert tileset images!");
-        return;
-    }
-#else
-    QMessageBox::warning(this, "CoinKiller", "Legacy tileset importing is not supported on your operating system!", QMessageBox::Ok);
-    return;
-#endif
-
-    if (!QFile(convertDir + "ctr_TexturePackager32.exe").exists())
-    {
-        QMessageBox::warning(this, "CoinKiller",
-                             "CoinKiller requires ctr_TexturePackager32.exe to be placed at " + convertDir + " to convert tileset images!\n\n"
-                             "We can not help you finding that file, but the filename should be enough to do some research on your own.");
-        return;
-    }
-
-    // Get input Image
-    QString pngFileName = QFileDialog::getOpenFileName(this, "Import Tileset Image", QDir::currentPath(), "PNG Files (*.png)");
-    if (!pngFileName.endsWith(".png"))
-        pngFileName.append(".png");
-    if (pngFileName.isEmpty()) return;
-
-    // Add aligns to image
-    QImage inputImg;
-    if (!inputImg.load(pngFileName))
-        return;
-
-    if (inputImg.width() != 420 || inputImg.height() != 420)
-    {
-        QMessageBox::information(this, " ", "The input image is not 420x420 pixels.", QMessageBox::Ok);
-        return;
-    }
-
-    Tileset::padTilesetImage(inputImg).save(convertDir + tileset->getName() + ".png");
-
-    // Get wished Quality
-    QStringList qualities;
-    bool ok;
-    qualities << "Fast" << "Medium" << "Slow" << "Fast Perceptual" << "Medium Perceptual" << "Slow Perceptual" << "Fast Improved" << "Medium Improved";
-    QString quality = QInputDialog::getItem(this, "CoinKiller", "Select ETC1 compression quality:", qualities, 7, false, &ok, Qt::WindowTitleHint);
-    quality.replace(" ", "");
-    if (!ok) return;
-
-    // Convert to TGA
-    QProcess pngToTga;
-#ifdef _WIN32
-    pngToTga.start(convertDir+"convert.exe", QStringList() << (convertDir+tileset->getName()+".png") << (convertDir+tileset->getName()+".tga"));
-#elif __linux__
-    pngToTga.start("convert", QStringList() << (convertDir+tileset->getName()+".png") << (convertDir+tileset->getName()+".tga"));
-#endif
-    while (!pngToTga.waitForFinished()) { QThread::sleep(250); }
-
-    QFile png(convertDir + tileset->getName() + ".png");
-    png.remove();
-
-    // Convert to CTPK
-    QFile pkg(convertDir + "package.xml");
-    if (pkg.open(QIODevice::ReadWrite))
-    {
-       QTextStream stream(&pkg);
-       stream << "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" << endl
-              << "<ctr_texturepackager>" << endl
-              << "<texture type=\"2D\" miplimit=\"1\" format=\"ETC1_A4\" etcmethod=\"" + quality + "\">" << endl
-              << "<imagefile src=\"" << tileset->getName() << ".tga\" />" << endl
-              << "</texture>" << endl
-              << "</ctr_texturepackager>" << endl;
-    }
-
-    QMessageBox* msgBox = new QMessageBox(QMessageBox::Information, "CoinKiller",
-                                          "Converting TGA to CTPK. Please wait...\n\n"
-                                          "The converting to CTPK may take up to several minutes depending on the quality you selected!",
-                                          QMessageBox::Cancel, this);
-
-
-    QProcess tgaToCtpk;
-#ifdef _WIN32
-    tgaToCtpk.start(convertDir+"ctr_TexturePackager32.exe", QStringList() << "-i" << (convertDir+"package.xml") << "-o" << (convertDir+tileset->getName()+".ctpk"));
-#elif __linux__
-    tgaToCtpk.setWorkingDirectory(convertDir);
-    tgaToCtpk.start("wine", QStringList() << "ctr_TexturePackager32.exe" << "-i" << (convertDir+"package.xml") << "-o" << (convertDir+tileset->getName()+".ctpk"));
-#endif
-
-    msgBox->show();
-    isConvertCancelled = false;
-    connect(msgBox, SIGNAL(finished(int)), this, SLOT(convertCancelled()));
-
-    qApp->processEvents();
-
-    bool killed = false;
-    while (!tgaToCtpk.waitForFinished(500))
-    {
-        qApp->processEvents();
-        if (isConvertCancelled)
+    #ifdef _WIN32
+        if (!QFile(convertDir + "convert.exe").exists())
         {
-            tgaToCtpk.terminate();
-            killed = true;
-            break;
+            QMessageBox::warning(this, "CoinKiller", "CoinKiller requires convert.exe from ImageMagick to be placed at " + convertDir + " to convert tileset images!");
+            return;
         }
-    }
-
-    msgBox->close();
-    delete msgBox;
-
-    QFile tga(convertDir + tileset->getName() + ".tga");
-    tga.remove();
-    pkg.remove();
-
-    if (killed)
+    #elif __linux__
+        if (system("command -v convert > /dev/null 2>&1") != 0 && !QFile(convertDir + "convert").exists())
+        {
+            QMessageBox::warning(this, "CoinKiller", "CoinKiller requires convert from ImageMagick to be installed to convert tileset images!");
+            return;
+        }
+        if (system("command -v wine > /dev/null 2>&1") != 0)
+        {
+            QMessageBox::warning(this, "CoinKiller", "CoinKiller requires wine to be installed to convert tileset images!");
+            return;
+        }
+    #else
+        QMessageBox::warning(this, "CoinKiller", "Legacy tileset importing is not supported on your operating system!" QMessageBox::Ok);
         return;
+    #endif
 
-    if (!QFile(convertDir + tileset->getName() + ".ctpk").exists())
-    {
-        QMessageBox::warning(this, "CoinKiller", "Conversion from TGA to CTPK failed!");
-        return;
-    }
+        if (!QFile(convertDir + "ctr_TexturePackager32.exe").exists())
+        {
+            QMessageBox::warning(this, "CoinKiller",
+                                 "CoinKiller requires ctr_TexturePackager32.exe to be placed at " + convertDir + " to convert tileset images!\n\n"
+                                 "We can not help you finding that file, but the filename should be enough to do some research on your own.");
+            return;
+        }
 
-    tileset->replaceCTPK(convertDir + tileset->getName() + ".ctpk");
+        // Get input Image
+        QString pngFileName = QFileDialog::getOpenFileName(this, "Import Tileset Image", QDir::currentPath(), "PNG Files (*.png)");
+        if (!pngFileName.endsWith(".png"))
+            pngFileName.append(".png");
+        if (pngFileName.isEmpty()) return;
 
-    QFile ctpk(convertDir + tileset->getName() + ".ctpk");
-    ctpk.remove();
+        // Add aligns to image
+        QImage inputImg;
+        if (!inputImg.load(pngFileName))
+            return;
 
-    tilesetPicker->setTilesetImage(tileset->getImage());
-    setupObjectsModel(true);
+        if (inputImg.width() != 420 || inputImg.height() != 420)
+        {
+            QMessageBox::information(this, " ", "The input image is not 420x420 pixels.", QMessageBox::Ok);
+            return;
+        }
+
+        Tileset::padTilesetImage(inputImg).save(convertDir + tileset->getName() + ".png");
+
+        // Get wished Quality
+        QStringList qualities;
+        bool ok;
+        qualities << "Fast" << "Medium" << "Slow" << "Fast Perceptual" << "Medium Perceptual" << "Slow Perceptual" << "Fast Improved" << "Medium Improved";
+        QString quality = QInputDialog::getItem(this, "CoinKiller", "Select ETC1 compression quality:", qualities, 7, false, &ok, Qt::WindowTitleHint);
+        quality.replace(" ", "");
+        if (!ok) return;
+
+        // Convert to TGA
+        QProcess pngToTga;
+    #ifdef _WIN32
+        pngToTga.start(convertDir+"convert.exe", QStringList() << (convertDir+tileset->getName()+".png") << (convertDir+tileset->getName()+".tga"));
+    #elif __linux__
+        pngToTga.start("convert", QStringList() << (convertDir+tileset->getName()+".png") << (convertDir+tileset->getName()+".tga"));
+    #endif
+        while (!pngToTga.waitForFinished()) { QThread::sleep(250); }
+
+        QFile png(convertDir + tileset->getName() + ".png");
+        png.remove();
+
+        // Convert to CTPK
+        QFile pkg(convertDir + "package.xml");
+        if (pkg.open(QIODevice::ReadWrite))
+        {
+           QTextStream stream(&pkg);
+           stream << "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" << endl
+                  << "<ctr_texturepackager>" << endl
+                  << "<texture type=\"2D\" miplimit=\"1\" format=\"ETC1_A4\" etcmethod=\"" + quality + "\">" << endl
+                  << "<imagefile src=\"" << tileset->getName() << ".tga\" />" << endl
+                  << "</texture>" << endl
+                  << "</ctr_texturepackager>" << endl;
+        }
+
+        QMessageBox* msgBox = new QMessageBox(QMessageBox::Information, "CoinKiller",
+                                              "Converting TGA to CTPK. Please wait...\n\n"
+                                              "The converting to CTPK may take up to several minutes depending on the quality you selected!",
+                                              QMessageBox::Cancel, this);
+
+
+        QProcess tgaToCtpk;
+    #ifdef _WIN32
+        tgaToCtpk.start(convertDir+"ctr_TexturePackager32.exe", QStringList() << "-i" << (convertDir+"package.xml") << "-o" << (convertDir+tileset->getName()+".ctpk"));
+    #elif __linux__
+        tgaToCtpk.setWorkingDirectory(convertDir);
+        tgaToCtpk.start("wine", QStringList() << "ctr_TexturePackager32.exe" << "-i" << (convertDir+"package.xml") << "-o" << (convertDir+tileset->getName()+".ctpk"));
+    #endif
+
+        msgBox->show();
+        isConvertCancelled = false;
+        connect(msgBox, SIGNAL(finished(int)), this, SLOT(convertCancelled()));
+
+        qApp->processEvents();
+
+        bool killed = false;
+        while (!tgaToCtpk.waitForFinished(500))
+        {
+            qApp->processEvents();
+            if (isConvertCancelled)
+            {
+                tgaToCtpk.terminate();
+                killed = true;
+                break;
+            }
+        }
+
+        msgBox->close();
+        delete msgBox;
+
+        QFile tga(convertDir + tileset->getName() + ".tga");
+        tga.remove();
+        pkg.remove();
+
+        if (killed)
+            return;
+
+        if (!QFile(convertDir + tileset->getName() + ".ctpk").exists())
+        {
+            QMessageBox::warning(this, "CoinKiller", "Conversion from TGA to CTPK failed!");
+            return;
+        }
+
+        tileset->replaceCTPK(convertDir + tileset->getName() + ".ctpk");
+
+        QFile ctpk(convertDir + tileset->getName() + ".ctpk");
+        ctpk.remove();
+
+        tilesetPicker->setTilesetImage(tileset->getImage());
+        setupObjectsModel(true);
 }
 
 void TilesetEditorWindow::convertCancelled()
@@ -1188,6 +1252,7 @@ void TilesetEditorWindow::on_actionSetBackgroundColor_triggered()
 void TilesetEditorWindow::on_actionSave_triggered()
 {
     tileset->save();
+    editStatus->setText(settings->getTranslation("General", "changesSaved"));
 }
 
 QWidget* hline()
@@ -1204,7 +1269,7 @@ ImportTilesetImageDlg::ImportTilesetImageDlg(QWidget* parent) :
     quality = 1;
     dither = false;
 
-    setWindowTitle("CoinKiller - Import Tileset Options");
+    setWindowTitle("CoinKiller - Tileset Import Options");
 
     QGridLayout* lyt = new QGridLayout(this);
     qualityBox = new QComboBox();

@@ -310,9 +310,9 @@ void LevelView::paint(QPainter& painter, QRect rect, float zoomLvl, bool selecti
 
                 int pathID = 0;
                 if (s->getid() == 152)
-                    pathID = (s->getNybble(4)+(s->getNybble(7)*16));
+                    pathID = (s->getNybble(10)+(s->getNybble(9)*16));
                 else
-                    pathID = (s->getNybble(4));
+                    pathID = (s->getNybble(10));
 
                 if (path->getid() == pathID)
                 {
@@ -331,7 +331,7 @@ void LevelView::paint(QPainter& painter, QRect rect, float zoomLvl, bool selecti
                 if (s->getid() != 217 && s->getid() != 218)
                     continue;
 
-                int pathID = s->getNybble(4)+(s->getNybble(7)*16);
+                int pathID = s->getNybble(10)+(s->getNybble(9)*16);
 
                 if (path->getid() == pathID)
                 {
@@ -357,93 +357,104 @@ void LevelView::paint(QPainter& painter, QRect rect, float zoomLvl, bool selecti
         // Render Camera Limit Boundries
         if (renderCameraLimits)
         {
-            for (int i = 0; i < level->sprites.size(); i++)
+            QList<Sprite*> leftCamLimits = level->getLeftCamLimits();
+            QList<Sprite*> rightCamLimits = level->getRightCamLimits();
+            QList<Sprite*> topCamLimits = level->getTopCamLimits();
+            QList<Sprite*> bottomCamLimits = level->getBottomCamLimits();
+
+            foreach (Sprite* left, leftCamLimits)
             {
-                QList<Sprite*> leftCamLimits = level->getLeftCamLimits();
-                QList<Sprite*> rightCamLimits = level->getRightCamLimits();
-                QList<Sprite*> topCamLimits = level->getTopCamLimits();
-                QList<Sprite*> bottomCamLimits = level->getBottomCamLimits();
-
-                foreach (Sprite* left, leftCamLimits)
+                int leftX = left->getx();
+                int rightX = 0;
+                int yPos = left->gety();
+                bool noPair = true;
+                bool permiable = false;
+                bool isBelow = false;
+                int yRenderOffset = 0;
+                foreach (Sprite* right, rightCamLimits)
                 {
-                    int leftX = left->getx();
-                    int rightX = 0;
-                    int yPos = left->gety();
-                    bool noPair = true;
-                    bool permiable = false;
-                    int yRenderOffset = 0;
-                    foreach (Sprite* right, rightCamLimits)
+                    if (right->gety() != left->gety())
+                        continue;
+
+                    if (right->getNybble(9) != left->getNybble(9))
+                        continue;
+
+                    if (right->getNybble(4) != left->getNybble(4))
+                        continue;
+
+                    if (right->getx() > left->getx())
                     {
-                        if (left->gety() != right->gety())
-                            continue;
+                        noPair = false;
+                        rightX = right->getx();
 
-                        if (right->getx() > left->getx())
-                        {
-                            noPair = false;
-                            rightX = right->getx();
+                        if (right->getNybble(8) == 1 && left->getNybble(8) == 1)
+                            permiable = true;
 
-                            if (right->getNybble(6) == 1 && left->getNybble(6) == 1)
-                                permiable = true;
+                        if (right->getNybble(4) == 1 && left->getNybble(4) == 1)
+                            isBelow = true;
 
-                            if (right->getNybble(10) == 1 && left->getNybble(10) == 1)
-                                yPos = yPos-18;
+                        if (right->getNybbleData(10, 11) == left->getNybbleData(10, 11))
+                            yRenderOffset = to20(right->getNybbleData(10, 11));
 
-                            if (right->getNybble(4) == left->getNybble(4))
-                                yRenderOffset = right->getNybble(4)*20;
-
-                            break;
-                        }
-                    }
-
-                    if (!noPair)
-                    {
-                        if (!drawrect.intersects(QRect(leftX, yPos, rightX, yPos+yRenderOffset)))
-                            continue;
-
-                        VCameraLimitRenderer VCameraLimitRenderer(leftX, rightX, yPos, yRenderOffset, permiable);
-                        VCameraLimitRenderer.render(&painter, &drawrect);
+                        break;
                     }
                 }
 
-                foreach (Sprite* top, topCamLimits)
+                if (!noPair)
                 {
-                    int topY = top->gety();
-                    int bottomY = 0;
-                    int xPos = top->getx();
-                    bool noPair = true;
-                    bool permiable = false;
-                    int xRenderOffset = 0;
-                    foreach (Sprite* bottom, bottomCamLimits)
+                    if (!drawrect.intersects(QRect(leftX, yPos, rightX, yPos+yRenderOffset)))
+                        continue;
+
+                    VCameraLimitRenderer VCameraLimitRenderer(leftX, rightX, yPos, yRenderOffset, permiable, isBelow);
+                    VCameraLimitRenderer.render(&painter, &drawrect);
+                }
+            }
+
+            foreach (Sprite* top, topCamLimits)
+            {
+                int topY = top->gety();
+                int bottomY = 0;
+                int xPos = top->getx();
+                bool noPair = true;
+                bool permiable = false;
+                bool isRight = false;
+                int xRenderOffset = 0;
+                foreach (Sprite* bottom, bottomCamLimits)
+                {                    
+                    if (bottom->getx() != top->getx())
+                        continue;
+
+                    if (bottom->getNybble(9) != top->getNybble(9))
+                        continue;
+
+                    if (bottom->getNybble(4) != top->getNybble(4))
+                        continue;
+
+                    if (bottom->gety() > top->gety())
                     {
-                        if (top->getx() != bottom->getx())
-                            continue;
+                        noPair = false;
+                        bottomY = bottom->gety();
 
-                        if (bottom->gety() > top->gety())
-                        {
-                            noPair = false;
-                            bottomY = bottom->gety();
+                        if (bottom->getNybble(8) == 1 && top->getNybble(8) == 1)
+                            permiable = true;
 
-                            if (bottom->getNybble(6) == 1 && top->getNybble(6) == 1)
-                                permiable = true;
+                        if (bottom->getNybble(4) == 1 && top->getNybble(4) == 1)
+                            isRight = true;
 
-                            if (bottom->getNybble(10) == 1 && top->getNybble(10) == 1)
-                                xPos = xPos-18;
+                        if (bottom->getNybbleData(10, 11) == top->getNybbleData(10, 11))
+                            xRenderOffset = to20(bottom->getNybbleData(10, 11));
 
-                            if (bottom->getNybble(4) == top->getNybble(4))
-                                xRenderOffset = bottom->getNybble(4)*20;
-
-                            break;
-                        }
+                        break;
                     }
+                }
 
-                    if (!noPair)
-                    {
-                        if (!drawrect.intersects(QRect(xPos, topY, xPos+xRenderOffset, bottomY)))
-                            continue;
+                if (!noPair)
+                {
+                    if (!drawrect.intersects(QRect(xPos, topY, xPos+xRenderOffset, bottomY)))
+                        continue;
 
-                        HCameraLimitRenderer HCameraLimitRenderer(topY, bottomY, xPos, xRenderOffset, permiable);
-                        HCameraLimitRenderer.render(&painter, &drawrect);
-                    }
+                    HCameraLimitRenderer HCameraLimitRenderer(topY, bottomY, xPos, xRenderOffset, permiable, isRight);
+                    HCameraLimitRenderer.render(&painter, &drawrect);
                 }
             }
         }

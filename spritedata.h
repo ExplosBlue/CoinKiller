@@ -5,6 +5,7 @@
 #include <QtXml>
 #include <QTreeWidgetItem>
 #include <QMap>
+#include <QHash>
 
 class Field
 {
@@ -14,7 +15,8 @@ public:
     {
         List,
         Value,
-        Checkbox
+        Checkbox,
+        Bitfield
     };
 
     Field() {}
@@ -31,12 +33,14 @@ public:
 class SpriteDefinition
 {
 public:
+    SpriteDefinition();
+    SpriteDefinition(int spriteId);
     SpriteDefinition(QDomElement spriteElement);
     QString getName() const { return name; }
     int getID() const { return id; }
     QString getNotes() const { return notes; }
     Field* getFieldPtr(int id) { return &fields[id]; }
-    int getFieldCount() { return fields.size(); }
+    int getFieldCount() const { return fields.size(); }
 
 private:
     QString name;
@@ -64,15 +68,14 @@ class SpriteData
 public:
     SpriteData();
     int spriteViewCount() { return spriteViews.count(); }
-    spriteView *spriteViewPtr(int view) { return &spriteViews[view]; }
-    SpriteDefinition getSpriteDef(int nbr) { return spriteDefs[nbr]; }
-    SpriteDefinition* getSpriteDefPtr(int nbr) { return &spriteDefs[nbr]; }
+    spriteView* spriteViewPtr(int view) { return &spriteViews[view]; }
+    SpriteDefinition& getSpriteDef(int nbr);
 
     int spriteCount() { return spriteDefs.size(); }
 
 private:
     QList<spriteView> spriteViews;
-    QList<SpriteDefinition> spriteDefs;
+    QHash<int, SpriteDefinition> spriteDefs;
 };
 
 #endif // SPRITEDATA_H

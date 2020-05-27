@@ -249,6 +249,7 @@ void Tileset::drawTile(QPainter& painter, TileGrid& grid, int num, int x, int y,
         if (xx == 16 && yy == 0) { painter.drawPixmap(rdst, ImageCache::getInstance()->get(TileOverride, "blue_coin.png")); return; }
         if (xx == 10 && yy == 3) { painter.drawPixmap(rdst, ImageCache::getInstance()->get(TileOverride, "vine.png")); return; }
         if (xx == 11 && yy == 0) { painter.drawPixmap(rdst, ImageCache::getInstance()->get(TileOverride, "solid.png")); return; }
+        if (xx == 14 && yy == 0) { painter.drawPixmap(rdst, ImageCache::getInstance()->get(TileOverride, "solid_on_top.png")); return; }
     }
 
     if (draw2D)
@@ -898,28 +899,31 @@ void Tileset::replaceCTPK(QString filename)
     texImage = ctpk->getTexture(name + ".tga");
 }
 
-
-QImage Tileset::padTilesetImage(QImage& img)
+QImage Tileset::padTilesetImage(const QImage& img, quint32 outWidth, quint32 outHeight)
 {
-    QImage ret(512, 512, QImage::Format_RGBA8888);
+    QImage ret(outWidth, outHeight, QImage::Format_RGBA8888);
     ret.fill(Qt::transparent);
 
     QPainter painter(&ret);
 
-    for (int i = 0; i < 441; i++)
+    quint32 tilew = img.width() / 20;
+    quint32 tileh = img.height() / 20;
+    quint32 tilenum = tilew * tileh;
+
+    for (quint32 i = 0; i < tilenum; i++)
     {
         // Margins
-        painter.drawImage(QRect(i%21*20 + i%21*4, 2 + i/21*20 + i/21*4, 2, 20), img.copy(i%21*20, i/21*20, 1, 20));               // Left
-        painter.drawImage(QRect(22 + i%21*20 + i%21*4, 2 + i/21*20 + i/21*4, 2, 20), img.copy(19 + i%21*20, i/21*20, 1, 20));     // Right
-        painter.drawImage(QRect(2 + i%21*20 + i%21*4, i/21*20 + i/21*4, 20, 2), img.copy(i%21*20, i/21*20, 20, 1));               // Top
-        painter.drawImage(QRect(2 + i%21*20 + i%21*4, 22 + i/21*20 + i/21*4, 20, 2), img.copy(i%21*20, 19 + i/21*20, 20, 1));     // Bottom
-        painter.drawImage(QRect(i%21*20 + i%21*4, i/21*20 + i/21*4, 2, 2), img.copy(i%21*20, i/21*20, 1, 1));                     // Top-Left
-        painter.drawImage(QRect(22 + i%21*20 + i%21*4, i/21*20 + i/21*4, 2, 2), img.copy(19 + i%21*20, i/21*20, 1, 1));           // Top-Right
-        painter.drawImage(QRect(i%21*20 + i%21*4, 22 + i/21*20 + i/21*4, 2, 2), img.copy(i%21*20, 19 + i/21*20, 1, 1));           // Bottom-Left
-        painter.drawImage(QRect(22 + i%21*20 + i%21*4, 22 + i/21*20 + i/21*4, 2, 2), img.copy(19 + i%21*20, 19 + i/21*20, 1, 1)); // Bottom-Right
+        painter.drawImage(QRect(i%tilew*20 + i%tilew*4, 2 + i/tilew*20 + i/tilew*4, 2, 20), img.copy(i%tilew*20, i/tilew*20, 1, 20));               // Left
+        painter.drawImage(QRect(22 + i%tilew*20 + i%tilew*4, 2 + i/tilew*20 + i/tilew*4, 2, 20), img.copy(19 + i%tilew*20, i/tilew*20, 1, 20));     // Right
+        painter.drawImage(QRect(2 + i%tilew*20 + i%tilew*4, i/tilew*20 + i/tilew*4, 20, 2), img.copy(i%tilew*20, i/tilew*20, 20, 1));               // Top
+        painter.drawImage(QRect(2 + i%tilew*20 + i%tilew*4, 22 + i/tilew*20 + i/tilew*4, 20, 2), img.copy(i%tilew*20, 19 + i/tilew*20, 20, 1));     // Bottom
+        painter.drawImage(QRect(i%tilew*20 + i%tilew*4, i/tilew*20 + i/tilew*4, 2, 2), img.copy(i%tilew*20, i/tilew*20, 1, 1));                     // Top-Left
+        painter.drawImage(QRect(22 + i%tilew*20 + i%tilew*4, i/tilew*20 + i/tilew*4, 2, 2), img.copy(19 + i%tilew*20, i/tilew*20, 1, 1));           // Top-Right
+        painter.drawImage(QRect(i%tilew*20 + i%tilew*4, 22 + i/tilew*20 + i/tilew*4, 2, 2), img.copy(i%tilew*20, 19 + i/tilew*20, 1, 1));           // Bottom-Left
+        painter.drawImage(QRect(22 + i%tilew*20 + i%tilew*4, 22 + i/tilew*20 + i/tilew*4, 2, 2), img.copy(19 + i%tilew*20, 19 + i/tilew*20, 1, 1)); // Bottom-Right
 
         // Core Tiles
-        painter.drawImage(QRect(2 + i%21*20 + i%21*4, 2 + i/21*20 + i/21*4, 20, 20), img.copy(i%21*20, i/21*20, 20, 20));
+        painter.drawImage(QRect(2 + i%tilew*20 + i%tilew*4, 2 + i/tilew*20 + i/tilew*4, 20, 20), img.copy(i%tilew*20, i/tilew*20, 20, 20));
     }
 
     return ret;

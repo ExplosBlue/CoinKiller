@@ -39,7 +39,7 @@
        <attribute name="title">
         <string>&lt;Levels&gt;</string>
        </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_2">
+       <layout class="QVBoxLayout" name="verticalLayout_2" stretch="0,0">
         <property name="leftMargin">
          <number>9</number>
         </property>
@@ -71,6 +71,9 @@
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout">
           <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
            <number>0</number>
           </property>
           <item>
@@ -195,7 +198,7 @@
      <x>0</x>
      <y>0</y>
      <width>436</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -203,6 +206,8 @@
      <string>&lt;F&amp;ile&gt;</string>
     </property>
     <addaction name="actionLoadUnpackedROMFS"/>
+    <addaction name="separator"/>
+    <addaction name="actionOpenlastROMFSDir"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -217,8 +222,8 @@
     <addaction name="actionSarcExplorer"/>
    </widget>
    <addaction name="menuFile"/>
-   <addaction name="menuHelp"/>
    <addaction name="menuTools"/>
+   <addaction name="menuHelp"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionLoadUnpackedROMFS">
@@ -234,14 +239,17 @@
     <string>&lt;About &amp;CoinKiller&gt;</string>
    </property>
   </action>
-  <action name="actionDebug_test">
-   <property name="text">
-    <string>debug/test</string>
-   </property>
-  </action>
   <action name="actionSarcExplorer">
    <property name="text">
     <string>&lt;Sarc Explorer&gt;</string>
+   </property>
+  </action>
+  <action name="actionOpenlastROMFSDir">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>&lt;Open last ROMFS Directory&gt;</string>
    </property>
   </action>
  </widget>

@@ -99,7 +99,7 @@ public:
     // temp function
     void replaceCTPK(QString filename);
 
-    static QImage padTilesetImage(QImage& img);
+    static QImage padTilesetImage(const QImage& img, quint32 outWidth = 512, quint32 outHeight = 512);
 
 private:
     QString name;

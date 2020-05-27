@@ -6,25 +6,27 @@
 
 KDE_BLUR = 0    # 1 to enable blur (requires KDE)
 
-QT       += core gui\
-            xml\
-            network
-
 greaterThan(KDE_BLUR, 0) {
     QT      += KWindowSystem
     DEFINES += USE_KDE_BLUR
 }
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+greaterThan(QT_MAJOR_VERSION, 4) {
+    QT  += core gui\
+           xml\
+           network\
+           widgets
+}
 
 TARGET = CoinKiller
+RC_FILE = ck_icon.rc
 TEMPLATE = app
-
 
 SOURCES += main.cpp\
     eventeditorwidget.cpp \
-        mainwindow.cpp \
+    mainwindow.cpp \
     newleveldialog.cpp \
+    rg_etc1.cpp \
     sarcfilesystem.cpp \
     externalfilesystem.cpp \
     externalfile.cpp \
@@ -59,8 +61,7 @@ SOURCES += main.cpp\
     newtilesetdialog.cpp \
     imagecache.cpp \
     spriteidswidget.cpp \
-    clickablelabel.cpp \
-    rg_etc1.cpp
+    clickablelabel.cpp
 
 HEADERS  += mainwindow.h \
     eventeditorwidget.h \
@@ -106,7 +107,7 @@ HEADERS  += mainwindow.h \
     spriteidswidget.h \
     clickablelabel.h \
     windowbase.h \
-    rg_etc1.h
+    rg_etc1.h \
 
 FORMS    += mainwindow.ui \
     leveleditorwindow.ui \

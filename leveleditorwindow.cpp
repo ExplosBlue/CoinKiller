@@ -99,7 +99,7 @@ LevelEditorWindow::LevelEditorWindow(LevelManager* lvlMgr, int initialArea) :
     toolboxDock = new QDockWidget("Toolbox", this);
     toolboxDock->setObjectName("toolboxDock");
     toolboxTabs = new QTabWidget(this);
-    connect(toolboxTabs, SIGNAL(currentChanged(int)), this, SLOT(on_toolboxTabs_currentChanged(int)));
+    connect(toolboxTabs, SIGNAL(currentChanged(int)), this, SLOT(toolboxTabsCurrentChanged(int)));
     toolboxDock->setWidget(toolboxTabs);
 
     minimapDock = new QDockWidget("Minimap", this);
@@ -122,7 +122,7 @@ LevelEditorWindow::LevelEditorWindow(LevelManager* lvlMgr, int initialArea) :
     ui->actionRenderCameraLimits->setChecked(settings->get("renderCameraLimits", true).toBool());
     ui->actionHideStatusbar->setChecked(settings->get("lvleditorHideStatusBar", false).toBool());
 
-    editStatus->setText("Ready!"); // todo: do translation shit
+    editStatus->setText(settings->getTranslation("General", "ready"));
 
 #ifdef USE_KDE_BLUR
     if (KWindowEffects::isEffectAvailable(KWindowEffects::BlurBehind))
@@ -541,7 +541,7 @@ void LevelEditorWindow::updateEditors()
     spriteEditor->spriteIdsPtr()->updateEditor();
 }
 
-void LevelEditorWindow::on_toolboxTabs_currentChanged(int index)
+void LevelEditorWindow::toolboxTabsCurrentChanged(int index)
 {
     if (index == 0)
         levelView->objEditionModePtr()->setDrawType(-1);
@@ -636,20 +636,22 @@ void LevelEditorWindow::loadArea(int id, bool closeLevel, bool init)
         return;
     }
 
+    toolboxTabs->blockSignals(true);
+
     if (closeLevel)
         lvlMgr->closeArea(level);
 
     if (!init)
     {
-        delete levelView;
-        delete miniMap;
-
         for(int i = toolboxTabs->count() - 1; i >= 0; i--)
         {
             QWidget* deleteWidget = toolboxTabs->widget(i);
             toolboxTabs->removeTab(i);
             delete deleteWidget;
         }
+
+        delete levelView;
+        delete miniMap;
     }
 
     level = lvlMgr->openArea(id);
@@ -679,7 +681,6 @@ void LevelEditorWindow::loadArea(int id, bool closeLevel, bool init)
     setBlurStylesheet();
 #endif
 
-    levelView->objEditionModePtr()->toggleSelectAfterPlacement(settings->get("SelectAfterPlacement").toBool());
     levelView->toggleSprites(ui->actionToggleSprites->isChecked());
     levelView->togglePaths(ui->actionTogglePaths->isChecked());
     levelView->toggleLocations(ui->actionToggleLocations->isChecked());
@@ -749,7 +750,7 @@ void LevelEditorWindow::loadArea(int id, bool closeLevel, bool init)
     toolboxTabs->setUsesScrollButtons(true);
     toolboxTabs->addTab(areaEditor, QIcon(basePath + "settings.png"), "");
     toolboxTabs->setTabToolTip(0, "Area Settings");
-    toolboxTabs->addTab(tilesetPalette, QIcon(basePath + "filled_box"), "");
+    toolboxTabs->addTab(tilesetPalette, QIcon(basePath + "block.png"), "");
     toolboxTabs->setTabToolTip(1, "Tileset Palette");
     toolboxTabs->addTab(spriteEditor, QIcon(basePath + "sprite.png"), "");
     toolboxTabs->setTabToolTip(2, "Sprites");
@@ -774,6 +775,8 @@ void LevelEditorWindow::loadArea(int id, bool closeLevel, bool init)
     minimapDock->setWidget(miniMap);
 
     update();
+
+    toolboxTabs->blockSignals(false);
 }
 
 void LevelEditorWindow::updateAreaSelector(int index)

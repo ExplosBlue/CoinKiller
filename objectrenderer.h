@@ -1,4 +1,4 @@
-#ifndef OBJECTRENDERER_H
+﻿#ifndef OBJECTRENDERER_H
 #define OBJECTRENDERER_H
 
 #include "objects.h"
@@ -36,7 +36,6 @@ protected:
     const Sprite *liquid;
     const Zone *zone;
     QString filename;
-    ObjectRenderer *ret;
 };
 
 class NormalImageRenderer: public ObjectRenderer
@@ -267,7 +266,7 @@ class SkewerRenderer: public SpriteRenderer
 {
 public:
     SkewerRenderer(const Sprite* spr);
-    void render(QPainter* painter, QRect* drawrect);
+    void render(QPainter* painter, QRect*);
 protected:
     const Sprite* spr;
 };
@@ -338,7 +337,6 @@ public:
     SignboardRenderer(const Sprite *spr);
     void render(QPainter *painter, QRect *drawrect);
 protected:
-    const Object *obj;
     NormalImageRenderer *img;
 };
 
@@ -543,7 +541,7 @@ protected:
 class VCameraLimitRenderer: public SpriteRenderer
 {
 public:
-    VCameraLimitRenderer(int leftX, int rightX, int yPos, int yRenderOffset, bool permiable);
+    VCameraLimitRenderer(int leftX, int rightX, int yPos, int yRenderOffset, bool permiable, bool isBelow);
     void render(QPainter *painter, QRect *drawrect);
 protected:
     int leftX;
@@ -551,13 +549,14 @@ protected:
     int yPos;
     int yRenderOffset;
     bool permiable;
+    bool isBelow;
 };
 
 // Sprite 160/161: Horizontal Camera Limits
 class HCameraLimitRenderer: public SpriteRenderer
 {
 public:
-    HCameraLimitRenderer(int topY, int bottomY, int xPos, int xRenderOffset, bool permiable);
+    HCameraLimitRenderer(int topY, int bottomY, int xPos, int xRenderOffset, bool permiable, bool isRight);
     void render(QPainter *painter, QRect *drawrect);
 protected:
     int topY;
@@ -565,6 +564,7 @@ protected:
     int xPos;
     int xRenderOffset;
     bool permiable;
+    bool isRight;
 };
 
 // Sprite 159: Spike Top
@@ -769,8 +769,6 @@ class InvisibleBouncyBlockRenderer: public SpriteRenderer
 public:
     InvisibleBouncyBlockRenderer(const Sprite *spr);
     void render(QPainter *painter, QRect *drawrect);
-protected:
-    NormalImageRenderer* img;
 };
 
 // Sprite 248: Move Once On Ghost House Platform
@@ -799,7 +797,6 @@ public:
     void render(QPainter *painter, QRect *drawrect);
 protected:
     Tileset *tileset;
-    RoundedRectRenderer *nullTile;
 };
 
 // Sprite 252: Item
@@ -834,7 +831,6 @@ public:
     void render(QPainter *painter, QRect *drawrect);
 protected:
     Tileset *tileset;
-    NormalImageRenderer *img;
 };
 
 // Sprite 260/261/262/263/264/256: Boss Cutscene Controllers

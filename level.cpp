@@ -73,8 +73,8 @@ Level::Level(Game *game, SarcFilesystem* archive, int area, QString lvlName)
         {
             tilesets[t] = game->getTileset(tilesetname);
         }
-        catch ( const std::exception & e )
-        {
+        catch (const std::exception &e)
+        {   
             QMessageBox::warning(nullptr, "CoinKiller", QString("Tileset %1 could not be found!").arg(tilesetname));
             tilesets[t] = nullptr;
         }
@@ -97,10 +97,10 @@ Level::Level(Game *game, SarcFilesystem* archive, int area, QString lvlName)
     for (int i = 0; i < (int)(blockSizes[2]/28); i++)
     {
         tempZoneBounding bounding;
-        bounding.upperBound = header->read32();
-        bounding.lowerBound = header->read32();
-        bounding.unkUpperBound = header->read32();
-        bounding.unkLowerBound = header->read32();
+        bounding.primaryUpperBound = header->read32();
+        bounding.primaryLowerBound = header->read32();
+        bounding.secondaryUpperBound = header->read32();
+        bounding.secondaryLowerBound = header->read32();
         bounding.id = header->read16();
         bounding.upScrolling = header->read16();
         header->skip(8);
@@ -163,7 +163,9 @@ Level::Level(Game *game, SarcFilesystem* archive, int area, QString lvlName)
 
         Sprite* spr = new Sprite(x, y, id);
 
-        for (int i=0; i<10; i++) spr->setByte(i, header->read8());
+        for (int i=0; i<2; i++) spr->setByte(i, header->read8());
+        spr->setNybbleData(header->read32(), 4, 11);
+        spr->setNybbleData(header->read32(), 12, 19);
         header->skip(2);
         for (int i=10; i<12; i++) spr->setByte(i, header->read8());
 
@@ -258,7 +260,7 @@ Level::Level(Game *game, SarcFilesystem* archive, int area, QString lvlName)
             qint32 y = to20(header->read16());
             float speed = header->readFloat();
             float accel = header->readFloat();
-            float delay = header->readFloat();
+            qint32 delay = header->read32();
 
             PathNode* pathN = new PathNode(x, y, speed, accel, delay, path);
             path->insertNode(pathN);
@@ -394,7 +396,7 @@ qint8 Level::save()
     QString bgdatfiletemp = QString("/course/course%1_bgdatL%2.bin").arg(area);
     for (int l = 0; l < 2; l++)
     {
-        QString bgdatfile = bgdatfiletemp.arg(l+1);  
+        QString bgdatfile = bgdatfiletemp.arg(l+1);
 
         if (objects[l].length() == 0)
         {
@@ -584,10 +586,10 @@ qint8 Level::save()
     for (quint8 i = 0; i < zones.size(); i++)
     {
         Zone* z = zones[i];
-        header->write32(z->getUpperBound());
-        header->write32(z->getLowerBound());
-        header->write32(z->getUnkUpperBound());
-        header->write32(z->getUnkLowerBound());
+        header->write32(z->getPrimaryUpperBound());
+        header->write32(z->getPrimaryLowerBound());
+        header->write32(z->getSecondaryUpperBound());
+        header->write32(z->getSecondaryLowerBound());
         header->write16(i);
         header->write16(z->getUpScrolling());
         for (int j = 0; j < 8; j++) header->write8(0);
@@ -648,7 +650,10 @@ qint8 Level::save()
         header->write16(spr->getid());
         header->write16(to16(spr->getx()));
         header->write16(to16(spr->gety()));
-        for (int i = 0; i < 10; i++) header->write8(spr->getByte(i));
+        header->write8(spr->getByte(0));
+        header->write8(spr->getByte(1));
+        header->write32(spr->getNybbleData(4, 11));
+        header->write32(spr->getNybbleData(12, 19));
         header->write8(getNextZoneID(spr));
         header->write8(0);
         header->write8(spr->getByte(10));
@@ -1092,12 +1097,12 @@ void Level::sortCameraLimits(Sprite *spr)
     {
         if (rightCamLimits[i]->getx() > rightCamLimits[i+1]->getx())
         {
-            rightCamLimits.swap(i, i+1);
+            rightCamLimits.swapItemsAt(i, i+1);
             int j = i;
             while (j > 0)
             {
                 if (rightCamLimits[j-1]->getx() > rightCamLimits[j]->getx())
-                    rightCamLimits.swap(j-1, j);
+                    rightCamLimits.swapItemsAt(j-1, j);
                 j--;
             }
         }
@@ -1108,12 +1113,12 @@ void Level::sortCameraLimits(Sprite *spr)
     {
         if (bottomCamLimits[i]->gety() > bottomCamLimits[i+1]->gety())
         {
-            bottomCamLimits.swap(i, i+1);
+            bottomCamLimits.swapItemsAt(i, i+1);
             int j = i;
             while (j > 0)
             {
                 if (bottomCamLimits[j-1]->gety() > bottomCamLimits[j]->gety())
-                    bottomCamLimits.swap(j-1, j);
+                    bottomCamLimits.swapItemsAt(j-1, j);
                 j--;
             }
         }

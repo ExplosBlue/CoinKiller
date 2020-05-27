@@ -34,6 +34,7 @@ level=Level
 changesSaved=Änderungen gespeichert
 unsavedChanges=Nicht gespeicherte Änderungen
 wantToSave=Willst du deine Änderungen speichern?
+ready=Ready!
 
 [MainWindow]
 levels=Level
@@ -58,6 +59,10 @@ sDatWarning=Alle Änderungen an spritedata.xml werden überschrieben!\n\nMöchte
 sDatSuccess=Die Spritedata wurde erfolgreich aktuallisiert!
 sDatErrorNetwork=Aktuallisieren der Spritedata fehlgeschlagen:\n\nVerbindung zu %1 fehlgeschlagen!
 sDatErrorFile=Aktuallisieren der Spritedata fehlgeschlagen:\n\nspritedata.xml konnte nicht zum Schreiben geöffnet werden!
+openLastRomFSDir=Show ROMFS Directory
+openLevel=Open In Level Editor
+openInSarcExplorer=Open In Sarc Explorer
+openTileset=Open In Tileset Editor
 
 [LevelEditor]
 view=Ansicht
@@ -126,6 +131,10 @@ moveObjDown=Objekt nach unten verschieben
 objSettings=Objekt Einstellungen
 tileData=Teildaten
 noneData=Keine
+imageExported=Image Exported
+imageImported=Image Imported
+importFailed=Import Failed
+toggleCollision=Toggle Collision
 
 [SarcExplorer]
 sarcExplorer=Sarc Explorer

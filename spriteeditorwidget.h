@@ -73,6 +73,30 @@ private:
     bool handleValueChanges;
 };
 
+class SpriteBitFieldWidget : public QFrame
+{
+    Q_OBJECT
+public:
+    SpriteBitFieldWidget(Sprite* sprite, Field* field);
+    void updateValue();
+private slots:
+    void handleValueChange();
+signals:
+    void updateHex();
+    void updateFields();
+    void editMade();
+
+private:
+    QGridLayout* layout;
+
+    Sprite* sprite;
+    Field* field;
+    bool handleValueChanges;
+
+    QList<QCheckBox*> checkboxWidgets;
+
+};
+
 class SpriteDataEditorWidget : public QWidget
 {
     Q_OBJECT
@@ -107,6 +131,7 @@ private:
     QList<SpriteValueFieldWidget*> valueFieldWidgets;
     QList<SpriteListFieldWidget*> listFieldWidgets;
     QList<SpriteCheckboxFieldWidget*> checkboxFieldWidgets;
+    QList<SpriteBitFieldWidget*> bitFieldWidgets;
 
     QString spriteNotes;
 

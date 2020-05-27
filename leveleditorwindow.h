@@ -106,7 +106,7 @@ private slots:
 
     void setSelSprite(int spriteId);
 
-    void on_toolboxTabs_currentChanged(int index);
+    void toolboxTabsCurrentChanged(int index);
 
     void on_actionAddArea_triggered();
 

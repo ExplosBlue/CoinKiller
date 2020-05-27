@@ -26,6 +26,7 @@ M_Sabaku_Chika:Desert Underground
 M_Setsugen:Snow
 M_Shiro:Castle
 M_Shiro_Boss:Castle (Bossfight)
+M_Shiro_Yogan:Castle (Lava)
 M_SkyTower:Sky Bricks
 M_Sora:Bonus
 M_Suichu:Underwater

@@ -236,7 +236,7 @@
 		<behavior value = "21" description = "Horizontal Climbing Rope" />
 		<behavior value = "22" description = "Vertical Climbing Pole" />
 		<behavior value = "33" description = "Clown Car Flash Safe Area" />
-		<behavior value = "34" description = "unknown (standard suite [11, 0])" />
+		<behavior value = "34" description = "No Headbonk" />
 		<behavior value = "35" description = "Note-Block" />
 
 		<behavior value = "36" description = "Ghosthouse spring">

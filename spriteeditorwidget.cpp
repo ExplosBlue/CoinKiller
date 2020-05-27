@@ -132,8 +132,7 @@ void SpriteEditorWidget::search(QString text)
 void SpriteEditorWidget::handleIndexChange(QTreeWidgetItem *item)
 {
     int data = item->data(0, Qt::UserRole).toInt();
-    if (data >= 0 && data <= spriteData.spriteCount())
-        emit(currentSpriteChanged(data));
+    emit(currentSpriteChanged(data));
     emit editMade();
 }
 
@@ -198,20 +197,20 @@ void SpriteDataEditorWidget::select(Sprite *sprite)
 
     updateRawSpriteData();
 
-    SpriteDefinition* def = spriteData->getSpriteDefPtr(sprite->getid());
+    SpriteDefinition& def = spriteData->getSpriteDef(sprite->getid());
 
-    spriteName->setText(QString("<b>%1 (%2)</b>").arg(def->getName()).arg(sprite->getid()));
-    spriteName->setToolTip(def->getNotes());
-    spriteNotes = def->getNotes();
+    spriteName->setText(QString("<b>%1 (%2)</b>").arg(def.getName()).arg(sprite->getid()));
+    spriteName->setToolTip(def.getNotes());
+    spriteNotes = def.getNotes();
 
     if (spriteNotes == "")
         spriteNotesButton->setToolTip("No notes available for this sprite.");
     else
         spriteNotesButton->setToolTip(spriteNotes);
 
-    for (int i = 0; i < spriteData->getSpriteDefPtr(sprite->getid())->getFieldCount(); i++)
+    for (int i = 0; i < def.getFieldCount(); i++)
     {
-        Field* field = spriteData->getSpriteDefPtr(sprite->getid())->getFieldPtr(i);
+        Field* field = def.getFieldPtr(i);
 
         if (field->type != Field::Checkbox)
         {
@@ -247,6 +246,15 @@ void SpriteDataEditorWidget::select(Sprite *sprite)
             connect(fieldWidget, SIGNAL(updateFields()), this, SLOT(updateFields()));
             connect(fieldWidget, SIGNAL (editMade()), this, SLOT(handleEditDetected()));
         }
+        else if (field->type == Field::Bitfield)
+        {
+            SpriteBitFieldWidget* fieldWidget = new SpriteBitFieldWidget(sprite, field);
+            layout->addWidget(fieldWidget, i+2, 1);
+            bitFieldWidgets.append(fieldWidget);
+            connect(fieldWidget, SIGNAL(updateHex()), this, SLOT(updateRawSpriteData()));
+            connect(fieldWidget, SIGNAL(updateFields()), this, SLOT(updateFields()));
+            connect(fieldWidget, SIGNAL (editMade()), this, SLOT(handleEditDetected()));
+        }
     }
 }
 
@@ -259,6 +267,7 @@ void SpriteDataEditorWidget::deselect()
     foreach (SpriteValueFieldWidget* field, valueFieldWidgets) { layout->removeWidget(field); delete field; } valueFieldWidgets.clear();
     foreach (SpriteListFieldWidget* field, listFieldWidgets) { layout->removeWidget(field); delete field; } listFieldWidgets.clear();
     foreach (SpriteCheckboxFieldWidget* field, checkboxFieldWidgets) { layout->removeWidget(field); delete field; } checkboxFieldWidgets.clear();
+    foreach (SpriteBitFieldWidget* field, bitFieldWidgets) { layout->removeWidget(field); delete field; } bitFieldWidgets.clear();
 }
 
 void SpriteDataEditorWidget::updateFields()
@@ -266,6 +275,7 @@ void SpriteDataEditorWidget::updateFields()
     foreach (SpriteValueFieldWidget* field, valueFieldWidgets) field->updateValue();
     foreach (SpriteListFieldWidget* field, listFieldWidgets) field->updateValue();
     foreach (SpriteCheckboxFieldWidget* field, checkboxFieldWidgets) field->updateValue();
+    foreach (SpriteBitFieldWidget* field, bitFieldWidgets) field->updateValue();
 }
 
 void SpriteDataEditorWidget::updateRawSpriteData()
@@ -406,6 +416,88 @@ void SpriteListFieldWidget::handleIndexChange(QString text)
 {
     if (!handleValueChanges) return;
     sprite->setNybbleData(field->listEntries.key(text, 0), field->startNybble, field->endNybble);
+    sprite->setRect();
+    emit updateHex();
+    emit updateFields();
+    emit editMade();
+}
+
+
+SpriteBitFieldWidget::SpriteBitFieldWidget(Sprite *sprite, Field *field)
+{
+    this->sprite = sprite;
+    this->field = field;
+    this->setToolTip(field->comment);
+
+    this->setFrameShape(QFrame::StyledPanel);
+
+    QGridLayout* layout = new QGridLayout();
+    layout->setAlignment(this, Qt::AlignCenter);
+
+    int length = field->endNybble - field->startNybble + 1;
+
+    int numBits = length * 4;
+
+    for (int i = 0; i < numBits;)
+    {
+        for (int j = 0; j < 4; j++)
+        {
+            if ((field->mask >> i) & 1U)
+            {
+                QCheckBox* checkbox = new QCheckBox();
+                checkbox->setDisabled(true);
+                layout->addWidget(checkbox, length - i/4, 4 - j);
+                checkboxWidgets.append(checkbox);
+                i++;
+                continue;
+            }
+
+            QCheckBox* checkbox = new QCheckBox();
+
+            layout->addWidget(checkbox, length - i/4, 4 - j);
+            checkboxWidgets.append(checkbox);
+            connect(checkbox, SIGNAL(toggled(bool)), this, SLOT(handleValueChange()));
+            i++;
+        }
+    }
+
+   updateValue();
+    this->setLayout(layout);
+}
+
+void SpriteBitFieldWidget::updateValue()
+{
+    handleValueChanges = false;
+
+    int value = sprite->getNybbleData(field->startNybble, field->endNybble);
+    int length = field->endNybble - field->startNybble + 1;
+
+    for(int i = 0; i < 4 * length; i++, value = value >> 1)
+    {
+        if (value & 1)
+        {
+            checkboxWidgets[i]->setChecked(true);
+        }
+        else
+        {
+            checkboxWidgets[i]->setChecked(false);
+        }
+    }
+    handleValueChanges = true;
+}
+
+void SpriteBitFieldWidget::handleValueChange()
+{
+    if (!handleValueChanges) return;
+
+    int value = sprite->getNybbleData(field->startNybble, field->endNybble);
+
+    QCheckBox* checkbox = qobject_cast<QCheckBox*>(sender());
+    int bit = checkboxWidgets.indexOf(checkbox);
+
+    value ^= 1UL << bit;
+
+    sprite->setNybbleData(value, field->startNybble, field->endNybble);
     sprite->setRect();
     emit updateHex();
     emit updateFields();

@@ -14,7 +14,7 @@ SarcExplorerWindow::SarcExplorerWindow(WindowBase *parent, QString path, Setting
     iconsPath = SettingsManager::getInstance()->dataPath("icons/");
     ui->setupUi(this);
 
-    setWindowTitle("CoinKiller Next - " + settings->getTranslation("SarcExplorer", "sarcExplorer") + " - " + path);
+    setWindowTitle("CoinKiller - " + settings->getTranslation("SarcExplorer", "sarcExplorer") + " - " + path);
 
     sarcFile = new ExternalFile(NULL, path);
     sarc = new SarcFilesystem(sarcFile);
@@ -434,9 +434,10 @@ void SarcExplorerWindow::on_insertButton_clicked()
         }
         newItem->save();
         newItem->close();
-        delete newItem;
         inFile.close();
     }
+    delete newItem;
+
     QStandardItem* fileItem = new QStandardItem(inFilePath.split('/').last());
     fileItem->setData("F" + idPath);
     fileItem->setFlags(fileItem->flags() | Qt::ItemIsEditable);

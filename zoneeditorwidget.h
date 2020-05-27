@@ -65,11 +65,12 @@ private:
     QSpinBox* bgYPos;
     QComboBox* bgParallaxMode;
 
-    QSpinBox* upperBound;
-    QSpinBox* lowerBound;
-    QSpinBox* unkUpperBound;
-    QSpinBox* unkLowerBound;
-    QCheckBox* upScrolling;
+    QSpinBox* primaryUpperBound;
+    QSpinBox* primaryLowerBound;
+    QSpinBox* secondaryUpperBound;
+    QSpinBox* secondaryLowerBound;
+    QCheckBox* unlimitedScrolling;
+    QSpinBox* vertScrollingDistance;
 
     QWidget* generalTab;
     QWidget* boundsTab;
@@ -97,11 +98,12 @@ private slots:
     void handleMusicIDChange(QString text);
     void handleMultiPlayerTrackingChange(QString text);
     void handleUnk1Change(int val);
-    void handleUpScrollingChange(bool val);
-    void handleUpperBoundChange(int val);
-    void handleLowerBoundChange(int val);
-    void handleUnkUpperBoundChange(int val);
-    void handleUnkLowerBoundChange(int val);
+    void handleUnlimitedScrollingChange(bool val);
+    void handleVertScrollingDistanceChange(int val);
+    void handlePrimaryUpperBoundChange(int val);
+    void handlePrimaryLowerBoundChange(int val);
+    void handleSecondaryUpperBoundChange(int val);
+    void handleSecondaryLowerBoundChange(int val);
     void handleBackgroundChange(QString text);
     void handleBgParallaxModeChange(int val);
     void handleBgXPosChanged(int val);

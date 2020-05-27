@@ -139,7 +139,9 @@ FileBase* SarcFilesystem::openFile(QString path)
 
     if (!files.contains(path))
     {
-        throw std::runtime_error("SARC: file "+path.toStdString()+" doesn't exist");
+        MemoryFile* ret = new MemoryFile(this);
+        ret->setIdPath(path);
+        return ret;
     }
 
     InternalSarcFile* entry = files[path];

@@ -55,25 +55,45 @@ ZoneEditorWidget::ZoneEditorWidget(QList<Zone*> *zones)
     unk1->setRange(0, 255);
     connect(unk1, SIGNAL(valueChanged(int)), this, SLOT(handleUnk1Change(int)));
 
-    upScrolling = new QCheckBox();
-    upScrolling->setText("Scroll Vertically");
-    connect(upScrolling, SIGNAL(toggled(bool)), this, SLOT(handleUpScrollingChange(bool)));
+    unlimitedScrolling = new QCheckBox();
+    unlimitedScrolling->setText("Unlimited");
+    connect(unlimitedScrolling, SIGNAL(toggled(bool)), this, SLOT(handleUnlimitedScrollingChange(bool)));
 
-    upperBound = new QSpinBox();
-    upperBound->setRange(-2147483648, 2147483647);
-    connect(upperBound, SIGNAL(valueChanged(int)), this, SLOT(handleUpperBoundChange(int)));
+    vertScrollingDistance = new QSpinBox();
+    vertScrollingDistance->setRange(0, 65535);
+    connect(vertScrollingDistance, SIGNAL(valueChanged(int)), this, SLOT(handleVertScrollingDistanceChange(int)));
 
-    lowerBound = new QSpinBox();
-    lowerBound->setRange(-2147483648, 2147483647);
-    connect(lowerBound, SIGNAL(valueChanged(int)), this, SLOT(handleLowerBoundChange(int)));
+    primaryUpperBound = new QSpinBox();
+    primaryUpperBound->setRange(-2147483648, 2147483647);
+    primaryUpperBound->setToolTip("This is the main upper bounding used by the camera it is used when the player is walking/jumping.\n"
+                           "This is used to determine how close the player has to be to the top of the screen before the camera scrolls up.\n"
+                           "Negative values require the player to be closer to the top of the screen, Positive values require the player to be further away.\n"
+                           "A value of 0 requires the player to be >5 tiles away from the top before the camera will move.");
+    connect(primaryUpperBound, SIGNAL(valueChanged(int)), this, SLOT(handlePrimaryUpperBoundChange(int)));
 
-    unkUpperBound = new QSpinBox();
-    unkUpperBound->setRange(-2147483648, 2147483647);
-    connect(unkUpperBound, SIGNAL(valueChanged(int)), this, SLOT(handleUnkUpperBoundChange(int)));
+    primaryLowerBound = new QSpinBox();
+    primaryLowerBound->setRange(-2147483648, 2147483647);
+    primaryLowerBound->setToolTip("This is the main upper bounding used by the camera it is used when the player is walking/jumping.\n"
+                                    "This is used to determine how close the player has to be to the bottom of the screen before the camera scrolls down.\n"
+                                    "Negative values require the player to be closer to the bottom of the screen, Positive values require the player to be further away.\n"
+                                    "A value of 0 requires the player to be >5 tiles away from the bottom before the camera will move.");
+    connect(primaryLowerBound, SIGNAL(valueChanged(int)), this, SLOT(handlePrimaryLowerBoundChange(int)));
 
-    unkLowerBound = new QSpinBox();
-    unkLowerBound->setRange(-2147483648, 2147483647);
-    connect(unkLowerBound, SIGNAL(valueChanged(int)), this, SLOT(handleUnkLowerBoundChange(int)));
+    secondaryUpperBound = new QSpinBox();
+    secondaryUpperBound->setRange(-2147483648, 2147483647);
+    secondaryUpperBound->setToolTip("This is the secondary upper bounding used by the camera in certain situations, such as when climbing a vine or fence.\n"
+                                    "This is used to determine how close the player has to be to the top of the screen before the camera scrolls up.\n"
+                                    "Negative values require the player to be closer to the top of the screen, Positive values require the player to be further away.\n"
+                                    "A value of 0 requires the player to be >5 tiles away from the top before the camera will move.");
+    connect(secondaryUpperBound, SIGNAL(valueChanged(int)), this, SLOT(handleSecondaryUpperBoundChange(int)));
+
+    secondaryLowerBound = new QSpinBox();
+    secondaryLowerBound->setRange(-2147483648, 2147483647);
+    secondaryLowerBound->setToolTip("This is the secondary lower bounding used by the camera in certain situations, such as when climbing a vine or fence.\n"
+                                    "This is used to determine how close the player has to be to the bottom of the screen before the camera scrolls down.\n"
+                                    "Negative values require the player to be closer to the bottom of the screen, Positive values require the player to be further away.\n"
+                                    "A value of 0 requires the player to be >5 tiles away from the bottom before the camera will move.");
+    connect(secondaryLowerBound, SIGNAL(valueChanged(int)), this, SLOT(handleSecondaryLowerBoundChange(int)));
 
     bgXPos = new QSpinBox();
     bgXPos->setRange(-32768, 32767);
@@ -135,21 +155,24 @@ ZoneEditorWidget::ZoneEditorWidget(QList<Zone*> *zones)
     boundsTab  = new QWidget();
     QGridLayout* boundsTabLayout = new QGridLayout();
     boundsTabLayout->setMargin(5);
-    upperBound->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);  // All Controls at maximum possible width
+    primaryUpperBound->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);  // All Controls at maximum possible width
 
-    boundsTabLayout->addWidget(new QLabel("Upper Bound:"), 0, 0, 1, 1, Qt::AlignRight);
-    boundsTabLayout->addWidget(upperBound, 0, 1);
+    boundsTabLayout->addWidget(new QLabel("Primary Upper Bound:"), 0, 0, 1, 1, Qt::AlignRight);
+    boundsTabLayout->addWidget(primaryUpperBound, 0, 1, 1, 2);
 
-    boundsTabLayout->addWidget(new QLabel("Lower Bound:"), 1, 0, 1, 1, Qt::AlignRight);
-    boundsTabLayout->addWidget(lowerBound, 1, 1);
+    boundsTabLayout->addWidget(new QLabel("Primary Lower Bound:"), 1, 0, 1, 1, Qt::AlignRight);
+    boundsTabLayout->addWidget(primaryLowerBound, 1, 1, 1, 2);
 
-    boundsTabLayout->addWidget(new QLabel("Unknown Upper Bound:"), 2, 0, 1, 1, Qt::AlignRight);
-    boundsTabLayout->addWidget(unkUpperBound, 2, 1);
+    boundsTabLayout->addWidget(new QLabel("Secondary Upper Bound:"), 2, 0, 1, 1, Qt::AlignRight);
+    boundsTabLayout->addWidget(secondaryUpperBound, 2, 1, 1, 2);
 
-    boundsTabLayout->addWidget(new QLabel("Unknown Lower Bound:"), 3, 0, 1, 1, Qt::AlignRight);
-    boundsTabLayout->addWidget(unkLowerBound, 3, 1);
+    boundsTabLayout->addWidget(new QLabel("Secondary Lower Bound:"), 3, 0, 1, 1, Qt::AlignRight);
+    boundsTabLayout->addWidget(secondaryLowerBound, 3, 1, 1, 2);
 
-    boundsTabLayout->addWidget(upScrolling, 4, 1, 1, 2, Qt::AlignLeft);
+    boundsTabLayout->addWidget(new QLabel("Vertical Scrolling Distance:"), 4, 0, 1, 1, Qt::AlignRight);
+    boundsTabLayout->addWidget(vertScrollingDistance, 4, 1, 1, 1);
+
+    boundsTabLayout->addWidget(unlimitedScrolling, 4, 2, 1, 1, Qt::AlignLeft);
 
     boundsTabLayout->addItem(new QSpacerItem(0, 0, QSizePolicy::Minimum, QSizePolicy::MinimumExpanding), 5, 0);
 
@@ -166,11 +189,11 @@ ZoneEditorWidget::ZoneEditorWidget(QList<Zone*> *zones)
     backgroundTabLayout->addWidget(new QLabel("Y Offset:"), 1, 0, 1, 1, Qt::AlignRight);
     backgroundTabLayout->addWidget(bgYPos, 1, 1);
 
-    backgroundTabLayout->addWidget(new QLabel("Parallax Mode:"), 3, 0, 1, 1, Qt::AlignRight);
-    backgroundTabLayout->addWidget(bgParallaxMode, 3, 1);
+    backgroundTabLayout->addWidget(new QLabel("Parallax Mode:"), 2, 0, 1, 1, Qt::AlignRight);
+    backgroundTabLayout->addWidget(bgParallaxMode, 2, 1);
 
-    backgroundTabLayout->addWidget(new QLabel("Background:"), 4, 0, 1, 1, Qt::AlignRight);
-    backgroundTabLayout->addWidget(background, 4, 1);
+    backgroundTabLayout->addWidget(new QLabel("Background:"), 3, 0, 1, 1, Qt::AlignRight);
+    backgroundTabLayout->addWidget(background, 3, 1);
 
     QHBoxLayout* bgAlign = new QHBoxLayout();
     QWidget* spacer = new QWidget();
@@ -305,25 +328,32 @@ void ZoneEditorWidget::updateInfo()
         return;
 
     handleChanges = false;
-    id->setValue(editZone->getid());
-    multiplayerTracking->setCurrentText(multiplayerTrackings.value(editZone->getMultiplayerTracking()));
 
+    id->setValue(editZone->getid());
     for (QPair<int, QString> i : musicIds.values())
         if (i.first == editZone->getMusicId())
             musicId->setCurrentText((i.second));
 
-    unk1->setValue(editZone->getUnk1());
+    multiplayerTracking->setCurrentText(multiplayerTrackings.value(editZone->getMultiplayerTracking()));
     progPathId->setValue(editZone->getProgPathId());
-    upScrolling->setChecked(editZone->getUpScrolling() != 0);
-    upperBound->setValue(editZone->getUpperBound());
-    lowerBound->setValue(editZone->getLowerBound());
-    unkUpperBound->setValue(editZone->getUnkUpperBound());
-    unkLowerBound->setValue(editZone->getUnkLowerBound());
+    unk1->setValue(editZone->getUnk1());
+
+    primaryUpperBound->setValue(editZone->getPrimaryUpperBound());
+    primaryLowerBound->setValue(editZone->getPrimaryLowerBound());
+    secondaryUpperBound->setValue(editZone->getSecondaryUpperBound());
+    secondaryLowerBound->setValue(editZone->getSecondaryLowerBound());
+    unlimitedScrolling->setChecked(editZone->getUpScrolling() == 0xF);
+    vertScrollingDistance->setValue(editZone->getUpScrolling());
+
+    if (editZone->getUpScrolling() == 0xF)
+        vertScrollingDistance->setEnabled(false);
+
     bgXPos->setValue(editZone->getBgXPos());
     bgYPos->setValue(editZone->getBgYPos());
     background->setCurrentText(backgrounds.value(editZone->getBgName()));
     bgParallaxMode->setCurrentIndex(editZone->getBgParallaxMode());
     updateBgPreview();
+
     handleChanges = true;
 }
 
@@ -378,38 +408,51 @@ void ZoneEditorWidget::handleUnk1Change(int unk1)
     emit editMade();
 }
 
-void ZoneEditorWidget::handleUpScrollingChange(bool val)
+void ZoneEditorWidget::handleUnlimitedScrollingChange(bool val)
 {
     if (!handleChanges) return;
     editZone->setUpScrolling(val? 0x0F : 0x00);
+
+    if (val)
+        vertScrollingDistance->setEnabled(false);
+    else
+        vertScrollingDistance->setEnabled(true);
+
     emit editMade();
 }
 
-void ZoneEditorWidget::handleUpperBoundChange(int val)
+void ZoneEditorWidget::handleVertScrollingDistanceChange(int val)
 {
     if (!handleChanges) return;
-    editZone->setUpperBound(val);
+    editZone->setUpScrolling(val);
     emit editMade();
 }
 
-void ZoneEditorWidget::handleLowerBoundChange(int val)
+void ZoneEditorWidget::handlePrimaryUpperBoundChange(int val)
 {
     if (!handleChanges) return;
-    editZone->setLowerBound(val);
+    editZone->setPrimaryUpperBound(val);
     emit editMade();
 }
 
-void ZoneEditorWidget::handleUnkUpperBoundChange(int val)
+void ZoneEditorWidget::handlePrimaryLowerBoundChange(int val)
 {
     if (!handleChanges) return;
-    editZone->setUnkUpperBound(val);
+    editZone->setPrimaryLowerBound(val);
     emit editMade();
 }
 
-void ZoneEditorWidget::handleUnkLowerBoundChange(int val)
+void ZoneEditorWidget::handleSecondaryUpperBoundChange(int val)
 {
     if (!handleChanges) return;
-    editZone->setUnkLowerBound(val);
+    editZone->setSecondaryUpperBound(val);
+    emit editMade();
+}
+
+void ZoneEditorWidget::handleSecondaryLowerBoundChange(int val)
+{
+    if (!handleChanges) return;
+    editZone->setSecondaryLowerBound(val);
     emit editMade();
 }
 

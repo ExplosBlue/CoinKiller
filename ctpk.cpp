@@ -155,7 +155,7 @@ QImage Ctpk::getTexture(CtpkEntry* entry)
         imgFormat = QImage::Format_RGB888;
 
 
-    QImage tex(entry->width, entry->height, imgFormat);
+    QImage tex = QImage(entry->width, entry->height, imgFormat);
 
     switch (entry->format)
     {
@@ -442,7 +442,6 @@ void Ctpk::setTextureEtc1(quint32 entryIndex, QImage& img, bool alpha, uint qual
         pack_params.m_quality = rg_etc1::cMediumQuality;
     else
         pack_params.m_quality = rg_etc1::cHighQuality;
-
     pack_params.m_dithering = dither;
 
     printf("ETC1 compression progress: 0%%");

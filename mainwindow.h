@@ -38,11 +38,13 @@ public:
 
 private slots:
     
-    void sdDownload_finished(QNetworkReply::NetworkError error);
+    void sdDownload_finished(QNetworkReply::NetworkError error, const QByteArray& data, const QUrl& url);
 
     void on_actionAbout_triggered();
 
     void on_actionLoadUnpackedROMFS_triggered();
+
+    void on_actionOpenlastROMFSDir_triggered();
 
     void on_levelList_clicked(const QModelIndex &index);
 
@@ -68,9 +70,19 @@ private slots:
 
     void on_maximisedCheckbox_toggled(bool checked);
 
-    void on_statusLabel_clicked();
+    void statusLabelClicked();
 
     void on_loadLastCheckbox_clicked(bool checked);
+
+    void createLevelListContextMenu(const QPoint &pos);
+
+    void createTilesetListContextMenu(const QPoint &pos);
+
+    void openLevelFromConextMenu();
+
+    void openTilesetFromConextMenu();
+
+    void openInSarcExplorer();
 
 private:
     Ui::MainWindow *ui;
@@ -79,8 +91,6 @@ private:
     bool gameLoaded;
 
     SettingsManager* settings;
-
-    FileDownloader* sdDownloader;
 
     ClickableLabel* statusLabel;
 

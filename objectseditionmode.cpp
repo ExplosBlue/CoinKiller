@@ -1,5 +1,6 @@
 #include "objectseditionmode.h"
 #include "unitsconvert.h"
+#include "settingsmanager.h"
 #include "is.h"
 
 #include <QApplication>
@@ -9,6 +10,8 @@
 ObjectsEditonMode::ObjectsEditonMode(Level *level)
 {
     this->level = level;
+    this->selectAfterPlacement = SettingsManager::getInstance()->get("SelectAfterPlacement").toBool();
+
     selectionMode = false;
 }
 void ObjectsEditonMode::mouseDown(int x, int y, Qt::MouseButtons buttons, Qt::KeyboardModifiers modifiers, QRect drawrect)
@@ -475,7 +478,8 @@ QList<Object*> ObjectsEditonMode::getObjectsAtPos(int x1, int y1, int x2, int y2
 
     for (int l = 1; l >= 0; l--)
     {
-        if (!(layerMask & (1<<l))) continue;
+        if (!(layerMask & (1 << l)))
+            continue;
         foreach (BgdatObject* bgdat, level->objects[l]) if (bgdat->clickDetection(area)) objects.append(bgdat);
     }
     if (locationInteraction) foreach (Location* loc, level->locations) if (loc->clickDetection(area)) objects.append(loc);
@@ -873,10 +877,10 @@ void ObjectsEditonMode::paste(int currX, int currY, int currW, int currH)
         {
             Zone* newZone = new Zone(params[1].toInt()+pOffsetX, params[2].toInt()+pOffsetY, params[3].toInt(), params[4].toInt(), params[5].toInt(), params[6].toInt(), params[7].toInt(), params[8].toInt(), params[9].toInt());
 
-            newZone->setUpperBound(params[10].toInt());
-            newZone->setLowerBound(params[11].toInt());
-            newZone->setUnkUpperBound(params[12].toInt());
-            newZone->setUnkLowerBound(params[13].toInt());
+            newZone->setPrimaryUpperBound(params[10].toInt());
+            newZone->setPrimaryLowerBound(params[11].toInt());
+            newZone->setSecondaryUpperBound(params[12].toInt());
+            newZone->setSecondaryLowerBound(params[13].toInt());
             newZone->setUpScrolling(params[14].toInt());
             newZone->setBgYPos(params[15].toInt());
             newZone->setBgXPos(params[16].toInt());

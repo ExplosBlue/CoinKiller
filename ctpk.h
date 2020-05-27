@@ -14,7 +14,8 @@ public:
     QImage getTexture(quint32 entryIndex);
     QImage getTexture(QString filename);
 
-    void setTextureEtc1(quint32 entryIndex, QImage& img, bool alpha, uint quality = 1, bool dither = false);   // only supports replacing with exact same data size for now!
+    // only supports replacing with exact same data size for now!
+    void setTextureEtc1(quint32 entryIndex, QImage& img, bool alpha, uint quality = 1, bool dither = false);
 
 private:
     FileBase* file;

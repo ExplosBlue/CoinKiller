@@ -1,16 +1,18 @@
 #include "tileseteditorwidgets.h"
+#include "imagecache.h"
 
 #include <QPainter>
 #include <QDebug>
 #include <QApplication>
 #include <QToolTip>
 
-TilesetPicker::TilesetPicker(QWidget *parent) : QWidget(parent)
+TilesetPicker::TilesetPicker(Tileset *tileset, QWidget *parent) : QWidget(parent)
 {
     this->selectedTileTL = -1;
     this->selectedTileBR = -1;
     this->selectedOvTile = -1;
     this->selectDrag = false;
+    this->tileset = tileset;
     tilesetImage = QImage(420, 420, QImage::Format_RGBA8888);
     bgColor = Qt::white;
 }
@@ -40,6 +42,135 @@ void TilesetPicker::paintEvent(QPaintEvent* evt)
 
     if (selectedOvTile != -1 && selectedTileTL == selectedTileBR)
         painter.fillRect(QRect(selectedOvTile%21*21, selectedOvTile/21*21, 20, 20), QBrush(QColor(255,40,0,150), Qt::SolidPattern));
+
+    if (drawCollision)
+        paintCollisions(painter);
+
+}
+
+void TilesetPicker::paintCollisions(QPainter &painter)
+{
+    for(int row = 0; row < 21; row++)
+    {
+        for(int col = 0; col < 21; col++)
+        {
+
+            int tileIndex = row * 21 + col;
+
+            if (tileIndex >= 256)
+                break;
+
+            int hitboxType = tileset->getBehaviorByte(tileIndex, 4);
+
+            int mainBehavior = tileset->getBehaviorByte(tileIndex, 0);
+
+            switch (mainBehavior)
+            {
+            case 9: // Partly Solid
+            {
+                if (hitboxType == 0)
+                    break;
+
+                int type = tileset->getBehaviorByte(tileIndex, 2);
+
+                QPixmap psPixmap(ImageCache::getInstance()->get(TileCollision, QString("partly_solid.png")));
+                QPixmap psOverlay = psPixmap.copy(20*type, 0, 20, 20);
+
+                painter.drawPixmap(QRect(col*21, row*21, 20, 20), psOverlay);
+                break;
+            }
+            case 11: // Slope
+            {
+                if (hitboxType == 0)
+                    break;
+
+                int slopeType = tileset->getBehaviorByte(tileIndex, 2);
+
+                QPixmap slopesPixmap(ImageCache::getInstance()->get(TileCollision, QString("slope.png")));
+
+                if (hitboxType == 33 || hitboxType == 34)
+                    slopesPixmap = ImageCache::getInstance()->get(TileCollision, QString("solid_on_top_slope.png"));
+
+                QPixmap slopeOverlay = slopesPixmap.copy(20*slopeType, 0, 20, 20);
+
+                painter.drawPixmap(QRect(col*21, row*21, 20, 20), slopeOverlay);
+                break;
+            }
+            case 12: // Upside-down Slope
+            {
+                if (hitboxType == 0)
+                    break;
+
+                int slopeType = tileset->getBehaviorByte(tileIndex, 2);
+
+                QPixmap slopesPixmap(ImageCache::getInstance()->get(TileCollision, QString("slope.png")));
+
+                if (hitboxType == 33 || hitboxType == 34)
+                    slopesPixmap = ImageCache::getInstance()->get(TileCollision, QString("solid_on_top_slope.png"));
+
+                QPixmap slopeOverlay = slopesPixmap.copy(20*slopeType, 0, 20, 20);
+
+                // Mirror the overlay
+                slopeOverlay = slopeOverlay.transformed(QTransform().scale(1, -1));
+
+                painter.drawPixmap(QRect(col*21, row*21, 20, 20), slopeOverlay);
+                break;
+            }
+            case 15: // Spikes
+            {
+                if (hitboxType == 0)
+                    break;
+
+                int slopeType = tileset->getBehaviorByte(tileIndex, 2);
+
+                QPixmap spikesPixmap(ImageCache::getInstance()->get(TileCollision, QString("spike.png")));
+
+                QPixmap spikeOverlay = spikesPixmap.copy(20*slopeType, 0, 20, 20);
+
+                painter.drawPixmap(QRect(col*21, row*21, 20, 20), spikeOverlay);
+                break;
+            }
+            default:
+                switch (hitboxType)
+                {
+                case 0: // Beanstalk Stopper
+                {
+                    if (tileset->getBehaviorByte(tileIndex, 2) != 1)
+                        break;
+
+                    QPixmap bsPixmap(ImageCache::getInstance()->get(TileOverlay, QString("beanstalk_stopper.png")));
+                    painter.drawPixmap(QRect(col*21, row*21, 20, 20), bsPixmap);
+
+                    break;
+                }
+                case 1: // Solid
+                {
+                    painter.drawPixmap(QRect(col*21, row*21, 20, 20), ImageCache::getInstance()->get(TileCollision, QString("solid.png")));
+                    break;
+                }
+                case 2: // Solid-on-Top
+                {
+                    painter.drawPixmap(QRect(col*21, row*21, 20, 20), ImageCache::getInstance()->get(TileCollision, QString("solid_on_top.png")));
+                    break;
+                }
+                case 3: // Solid-on-Bottom
+                {
+                    painter.drawPixmap(QRect(col*21, row*21, 20, 20), ImageCache::getInstance()->get(TileCollision, QString("solid_on_bottom.png")));
+                    break;
+                }
+                case 4: // Solid-on-Top and Bottom
+                {
+                    painter.drawPixmap(QRect(col*21, row*21, 20, 20), ImageCache::getInstance()->get(TileCollision, QString("solid_on_top.png")));
+                    painter.drawPixmap(QRect(col*21, row*21, 20, 20), ImageCache::getInstance()->get(TileCollision, QString("solid_on_bottom.png")));
+                    break;
+                }
+                default:
+                    break;
+                }
+                break;
+            }
+        }
+    }
 }
 
 void TilesetPicker::mousePressEvent(QMouseEvent* evt)

@@ -79,9 +79,9 @@ void SpriteIdWidget::updateList()
     {
         foreach (Sprite* sprite, *sprites)
         {
-            for (int i = 0; i < spriteData.getSpriteDefPtr(sprite->getid())->getFieldCount(); i++)
+            for (int i = 0; i < spriteData.getSpriteDef(sprite->getid()).getFieldCount(); i++)
             {
-                Field* field = spriteData.getSpriteDefPtr(sprite->getid())->getFieldPtr(i);
+                Field* field = spriteData.getSpriteDef(sprite->getid()).getFieldPtr(i);
 
                 QString match = "triggering";
 
@@ -108,9 +108,9 @@ void SpriteIdWidget::updateList()
     {
         foreach (Sprite* sprite, *sprites)
         {
-            for (int i = 0; i < spriteData.getSpriteDefPtr(sprite->getid())->getFieldCount(); i++)
+            for (int i = 0; i < spriteData.getSpriteDef(sprite->getid()).getFieldCount(); i++)
             {
-                Field* field = spriteData.getSpriteDefPtr(sprite->getid())->getFieldPtr(i);
+                Field* field = spriteData.getSpriteDef(sprite->getid()).getFieldPtr(i);
 
                 QString match = "target";
 
@@ -137,9 +137,9 @@ void SpriteIdWidget::updateList()
     {
         foreach (Sprite* sprite, *sprites)
         {
-            for (int i = 0; i < spriteData.getSpriteDefPtr(sprite->getid())->getFieldCount(); i++)
+            for (int i = 0; i < spriteData.getSpriteDef(sprite->getid()).getFieldCount(); i++)
             {
-                Field* field = spriteData.getSpriteDefPtr(sprite->getid())->getFieldPtr(i);
+                Field* field = spriteData.getSpriteDef(sprite->getid()).getFieldPtr(i);
 
                 QString match = "rotation";
 
@@ -166,9 +166,9 @@ void SpriteIdWidget::updateList()
     {
         foreach (Sprite* sprite, *sprites)
         {
-            for (int i = 0; i < spriteData.getSpriteDefPtr(sprite->getid())->getFieldCount(); i++)
+            for (int i = 0; i < spriteData.getSpriteDef(sprite->getid()).getFieldCount(); i++)
             {
-                Field* field = spriteData.getSpriteDefPtr(sprite->getid())->getFieldPtr(i);
+                Field* field = spriteData.getSpriteDef(sprite->getid()).getFieldPtr(i);
 
                 QString match = "group";
 

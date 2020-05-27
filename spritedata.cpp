@@ -1,9 +1,10 @@
 #include "spritedata.h"
 #include "settingsmanager.h"
 
-
 SpriteData::SpriteData()
 {
+    bool customSprites = false;
+
     // Load Sprite Definitions
     QDomDocument xmlSpriteData;
     QFile f1(SettingsManager::getInstance()->dataPath("spritedata.xml"));
@@ -15,7 +16,8 @@ SpriteData::SpriteData()
     QDomElement spriteElement = xmlSpriteData.documentElement().firstChild().toElement();
     while (!spriteElement.isNull())
     {
-        spriteDefs.append(SpriteDefinition(spriteElement));
+        SpriteDefinition def(spriteElement);
+        spriteDefs.insert(def.getID(), def);
 
         spriteElement = spriteElement.nextSiblingElement();
     }
@@ -35,6 +37,7 @@ SpriteData::SpriteData()
     {
         allView.simpleSprites.append(sprDef.getID());
     }
+    std::sort(allView.simpleSprites.begin(), allView.simpleSprites.end());
     spriteViews.append(allView);
 
     QDomNodeList views = xmlSpriteViews.documentElement().elementsByTagName("view");
@@ -80,6 +83,30 @@ SpriteData::SpriteData()
     }
 }
 
+SpriteDefinition& SpriteData::getSpriteDef(int nbr)
+{
+    if (!spriteDefs.contains(nbr))
+    {
+        SpriteDefinition def(nbr);
+        spriteDefs.insert(nbr, def);
+    }
+
+    return spriteDefs[nbr];
+}
+
+
+SpriteDefinition::SpriteDefinition()
+{
+    throw std::runtime_error("SpriteDefinition::SpriteDefinition() called. SpriteData key error!");
+}
+
+SpriteDefinition::SpriteDefinition(int spriteId)
+{
+    id = spriteId;
+    name = QString("Unknown %1").arg(spriteId);
+    notes = "";
+}
+
 SpriteDefinition::SpriteDefinition(QDomElement spriteElement)
 {
     id = spriteElement.attribute("id", "999").toInt();
@@ -97,12 +124,12 @@ SpriteDefinition::SpriteDefinition(QDomElement spriteElement)
         if (nybbleStr.contains('-'))
         {
             QStringList nybbleParts = nybbleStr.split('-');
-            field.startNybble = nybbleParts[0].toInt()-1;
-            field.endNybble = nybbleParts[1].toInt()-1;
+            field.startNybble = nybbleParts[0].toInt();
+            field.endNybble = nybbleParts[1].toInt();
         }
         else
         {
-            field.startNybble = fieldElement.attribute("nybble").toInt()-1;
+            field.startNybble = fieldElement.attribute("nybble").toInt();
             field.endNybble = field.startNybble;
         }
 
@@ -125,6 +152,13 @@ SpriteDefinition::SpriteDefinition(QDomElement spriteElement)
                 QDomElement entryElement = entries.at(i).toElement();
                 field.listEntries.insert(entryElement.attribute("value").toInt(), entryElement.text());
             }
+        }
+
+        else if (fieldElement.tagName() == "bitfield")
+        {
+            field.type = Field::Bitfield;
+            quint32 mask = fieldElement.attribute("value", "0").toUInt();
+            field.mask = mask;
         }
 
         fields.append(field);

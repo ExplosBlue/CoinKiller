@@ -60,6 +60,8 @@ FileBase* ExternalFilesystem::openFile(QString path)
 
 bool ExternalFilesystem::save(FileBase *file)
 {
+    Q_UNUSED(file);
+
     // no real need to do shit here!
     return true;
 }

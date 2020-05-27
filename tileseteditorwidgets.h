@@ -14,10 +14,11 @@ class TilesetPicker : public QWidget
 {
     Q_OBJECT
 public:
-    explicit TilesetPicker(QWidget *parent);
+    explicit TilesetPicker(Tileset *tileset, QWidget *parent);
     void setTilesetImage(QImage& image);
     void setBGColor(QColor bgColor) { this->bgColor = bgColor; update(); }
-    void setOvTile(int ovTile) { this->selectedOvTile = ovTile; update();}
+    void setOvTile(int ovTile) { this->selectedOvTile = ovTile; update(); }
+    void toggleCollisionView(bool toggle) { drawCollision = toggle; }
 
 signals:
     void selectedTileChanged(int tileTL, int tileBR);
@@ -32,6 +33,10 @@ protected:
     void mouseMoveEvent(QMouseEvent *) Q_DECL_OVERRIDE;
 
 private:
+    void paintCollisions(QPainter& painter);
+
+    Tileset *tileset;
+
     QImage tilesetImage;
     QColor bgColor;
     int selectedTileTL;
@@ -40,6 +45,8 @@ private:
 
     bool selectDrag;
     int initSelectTile;
+
+    bool drawCollision = false;
 };
 
 

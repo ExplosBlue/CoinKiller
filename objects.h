@@ -163,10 +163,10 @@ protected:
 struct tempZoneBounding
 {
     quint16 id;
-    qint32 upperBound;
-    qint32 lowerBound;
-    qint32 unkUpperBound;
-    qint32 unkLowerBound;
+    qint32 primaryUpperBound;
+    qint32 primaryLowerBound;
+    qint32 secondaryUpperBound;
+    qint32 secondaryLowerBound;
     quint16 upScrolling;
 };
 
@@ -196,10 +196,10 @@ public:
     quint8 getMusicId() const { return musicId; }
     quint8 getMultiplayerTracking() const { return multiplayerTracking; }
     quint16 getUnk1() const { return unk1; }
-    qint32 getUpperBound() const { return upperBound; }
-    qint32 getLowerBound() const { return lowerBound; }
-    qint32 getUnkUpperBound() const { return unkUpperBound; }
-    qint32 getUnkLowerBound() const { return unkLowerBound; }
+    qint32 getPrimaryUpperBound() const { return primaryUpperBound; }
+    qint32 getPrimaryLowerBound() const { return primaryLowerBound; }
+    qint32 getSecondaryUpperBound() const { return secondaryUpperBound; }
+    qint32 getSecondaryLowerBound() const { return secondaryLowerBound; }
     quint32 getUpScrolling() const { return upScrolling; }
     qint16 getBgXPos() const { return bgXPos; }
     qint16 getBgYPos() const { return bgYPos; }
@@ -212,10 +212,10 @@ public:
     void setMultiplayerTracking(quint8 multiplayerTracking) { this->multiplayerTracking = multiplayerTracking; }
     void setBackgroundName(QString bgName) { this->bgName = bgName; }
     void setUpScrolling(quint16 upScrolling) { this->upScrolling = upScrolling; }
-    void setUpperBound(qint32 upperBound) { this->upperBound = upperBound; }
-    void setLowerBound(qint32 lowerBound) { this->lowerBound = lowerBound; }
-    void setUnkUpperBound(qint32 unkUpperBound) { this->unkUpperBound = unkUpperBound; }
-    void setUnkLowerBound(qint32 unkLowerBound) { this->unkLowerBound = unkLowerBound; }
+    void setPrimaryUpperBound(qint32 primaryUpperBound) { this->primaryUpperBound = primaryUpperBound; }
+    void setPrimaryLowerBound(qint32 primaryLowerBound) { this->primaryLowerBound = primaryLowerBound; }
+    void setSecondaryUpperBound(qint32 secondaryUpperBound) { this->secondaryUpperBound = secondaryUpperBound; }
+    void setSecondaryLowerBound(qint32 secondaryLowerBound) { this->secondaryLowerBound = secondaryLowerBound; }
     void setBgXPos(qint16 bgXPos) { this->bgXPos = bgXPos; }
     void setBgYPos(qint16 bgYPos) { this->bgYPos = bgYPos; }
     void setUnk1(quint32 unk1) { this->unk1 = unk1; }
@@ -227,11 +227,12 @@ protected:
     quint8 musicId;
     quint8 multiplayerTracking;
     quint16 unk1;
+    quint8 lighting;
     // Boundings
-    qint32 upperBound = 0;
-    qint32 lowerBound = 0;
-    qint32 unkUpperBound = 0;
-    qint32 unkLowerBound = 0;
+    qint32 primaryUpperBound = 0;
+    qint32 primaryLowerBound = 0;
+    qint32 secondaryUpperBound = 0;
+    qint32 secondaryLowerBound = 0;
     quint16 upScrolling = 0;
     // Background
     qint16 bgXPos = 0;
@@ -270,7 +271,7 @@ public:
     bool isResizable() const { return false; }
     float getSpeed() const { return speed; }
     float getAccel() const { return accel; }
-    float getDelay() const { return delay; }
+    quint32 getDelay() const { return delay; }
     Path* getParentPath() const { return parentPath; }
     void setSpeed(float speed) { this->speed = speed; }
     void setAccel(float accel) { this->accel = accel; }
@@ -280,7 +281,7 @@ protected:
     Path* parentPath;
     float speed;
     float accel;
-    float delay;
+    quint32 delay;
 };
 
 

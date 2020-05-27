@@ -40,6 +40,7 @@ void LevelManager::openAreaEditor(int id)
 
     LevelEditorWindow* lvlEditor = new LevelEditorWindow(this, id);
     connect(this, SIGNAL(updateLevelEditors()), lvlEditor, SLOT(handleMgrUpdate()));
+    lvlEditor->setAttribute(Qt::WA_DeleteOnClose);
     lvlEditor->show();
 }
 
@@ -97,6 +98,7 @@ int LevelManager::addArea(int id)
     delete[] data;
     newCourseFile->save();
     newCourseFile->close();
+    delete newCourseFile;
 
     emit updateLevelEditors();
 

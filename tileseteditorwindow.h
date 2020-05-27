@@ -101,6 +101,8 @@ private slots:
 
     void on_actionImportImageLegacy_triggered();
 
+    void on_actionToggleCollision_toggled(bool value);
+
 private:
     Ui::TilesetEditorWindow *ui;
     TilesetPicker* tilesetPicker;
@@ -146,7 +148,6 @@ private:
     void setParametersModel();
     void updateComboBox(int byteNbr, QList<parameter> &list, QComboBox *comboBox);
 
-
     void setupObjectsModel(bool keepIndex);
     void updateObjectInfo();
     void setupObjectBehaviorModel();
@@ -156,12 +157,12 @@ private:
     void setRepeatSpinBox(int nbr, int value, bool block);
     void clampOBehaviorSpinBoxes();
 
-
     SettingsManager* settings;
     void loadTranslations();
 
-
     bool isConvertCancelled;
+
+    QLabel* editStatus;
 
 private slots:
     void convertCancelled();

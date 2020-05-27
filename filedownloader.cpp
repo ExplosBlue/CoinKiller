@@ -1,25 +1,34 @@
 #include "filedownloader.h"
 
-FileDownloader::FileDownloader(QUrl url, QObject *parent) : QObject(parent)
+
+FileDownloader::FileDownloader() : QObject(0)
 {
-    this->url = url;
-
-    connect(&m_WebCtrl, SIGNAL (finished(QNetworkReply*)), this, SLOT (fileDownloaded(QNetworkReply*)));
-
-    QNetworkRequest request(url);
-    m_WebCtrl.get(request);
+    QObject::connect(&manager, SIGNAL(finished(QNetworkReply*)),this, SLOT(downloadFinished(QNetworkReply*)));
 }
 
 FileDownloader::~FileDownloader() { }
 
-void FileDownloader::fileDownloaded(QNetworkReply* pReply)
+
+void FileDownloader::download(const QUrl& url, QObject* signalReceiver, const char* doneSlot, const QString& userAgent)
 {
-     m_DownloadedData = pReply->readAll();
-     pReply->deleteLater();
-     emit downloaded(pReply->error());
+    FileDownloader* fd = new FileDownloader();
+
+    connect(fd, SIGNAL(done(QNetworkReply::NetworkError, const QByteArray&, const QUrl&)), signalReceiver, doneSlot);
+
+    fd->url = url;
+
+    QNetworkRequest request;
+    request.setUrl(url);
+    request.setRawHeader("User-Agent", userAgent.toUtf8());
+
+    fd->manager.get(request);
 }
 
-QByteArray FileDownloader::downloadedData() const
+
+void FileDownloader::downloadFinished(QNetworkReply* reply)
 {
-    return m_DownloadedData;
+    emit done(reply->error(), reply->readAll(), url);
+
+    disconnect();
+    deleteLater();
 }

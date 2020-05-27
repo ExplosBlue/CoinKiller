@@ -50,8 +50,8 @@ PathEditorWidget::PathEditorWidget(QList<Path*> *paths)
     editsLayout->addWidget(new QLabel("Delay:"), 6, 0, 1, 1, Qt::AlignRight);
 
     delay = new QDoubleSpinBox();
-    delay->setRange(-1000000, 1000000);
-    delay->setDecimals(8);
+    delay->setRange(0, 4209999872);
+    delay->setDecimals(0);
     editsLayout->addWidget(delay, 6, 1);
 
     edits->setLayout(editsLayout);
@@ -178,6 +178,6 @@ void PathEditorWidget::handleAccelChanged(double accelVal)
 void PathEditorWidget::handleDelayChanged(double delayVal)
 {
     if (!handleChanges) return;
-    editNode->setDelay((float)delayVal);
+    editNode->setDelay((quint32)delayVal);
     emit editMade();
 }
