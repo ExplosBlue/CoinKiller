@@ -14,7 +14,7 @@ SarcExplorerWindow::SarcExplorerWindow(WindowBase *parent, QString path, Setting
     iconsPath = SettingsManager::getInstance()->dataPath("icons/");
     ui->setupUi(this);
 
-    setWindowTitle("CoinKiller - " + settings->getTranslation("SarcExplorer", "sarcExplorer") + " - " + path);
+    setWindowTitle(tr("CoinKiller - Sarc Explorer - %1").arg(path));
 
     sarcFile = new ExternalFile(NULL, path);
     sarc = new SarcFilesystem(sarcFile);
@@ -159,7 +159,7 @@ void SarcExplorerWindow::renameFile(QStandardItem* node)
             QStringList l = node->data().toString().split("/");
             node->setText(l.at(l.length()-1));
             fileTree.blockSignals(false);
-            QMessageBox::information(this, "CoinKiller - " + settings->getTranslation("SarcExplorer", "sarcExplorer"), "A file with that name already exists!", QMessageBox::Ok);
+            QMessageBox::information(this, tr("CoinKiller - Sarc Explorer"), tr("A file with that name already exists!"), QMessageBox::Ok);
             return;
         }
 
@@ -179,7 +179,7 @@ void SarcExplorerWindow::renameFile(QStandardItem* node)
             QStringList l = node->data().toString().split("/");
             node->setText(l.at(l.length()-1));
             fileTree.blockSignals(false);
-            QMessageBox::information(this, "CoinKiller - " + settings->getTranslation("SarcExplorer", "sarcExplorer"), "A folder with that name already exists!", QMessageBox::Ok);
+            QMessageBox::information(this, tr("CoinKiller - Sarc Explorer"), tr("A folder with that name already exists!"), QMessageBox::Ok);
             return;
         }
 
@@ -264,7 +264,7 @@ void SarcExplorerWindow::on_exportButton_clicked()
         if (l.count() > 1)
             fileExtension = l.at(l.count()-1);
 
-        QString filePath = QFileDialog::getSaveFileName(this, "Export "+fileExtension+" File", basePath + name, " (*."+fileExtension+")");
+        QString filePath = QFileDialog::getSaveFileName(this, tr("Export File"), basePath + name, " (*.%1)").arg(fileExtension);
 
         if (filePath.isEmpty() || filePath.isEmpty())
         {
@@ -283,7 +283,7 @@ void SarcExplorerWindow::on_exportButton_clicked()
 
     if (type == 'D')
     {
-        QString dirPath = QFileDialog::getExistingDirectory(this, "Export Directory", basePath + name, QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+        QString dirPath = QFileDialog::getExistingDirectory(this, tr("Export Folder"), basePath + name, QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
 
         if (dirPath.isEmpty() || dirPath.isEmpty())
         {
@@ -349,7 +349,7 @@ void SarcExplorerWindow::on_importButton_clicked()
     if (l.count() > 1)
         fileExtension = l.at(l.count()-1);
 
-    QString importPath = QFileDialog::getOpenFileName(this, "Import File", basePath + name, " (*."+fileExtension+")");
+    QString importPath = QFileDialog::getOpenFileName(this, tr("Import"), basePath + name, " (*.%1)").arg(fileExtension);
 
     if (importPath.isEmpty() || importPath.isEmpty())
     {
@@ -385,7 +385,7 @@ void SarcExplorerWindow::on_importButton_clicked()
         importFile.close();
 
         QMessageBox msgBox;
-        msgBox.setText("File Imported Successfully.");
+        msgBox.setText(tr("File Imported Successfully."));
         msgBox.exec();
     }
     this->setEnabled(true);
@@ -399,7 +399,7 @@ void SarcExplorerWindow::on_insertButton_clicked()
     QChar type = currentItem->data().toString().at(0);
     QString dirName = currentItem->data().toString().remove(0, 1);
 
-    QString inFilePath = QFileDialog::getOpenFileName(this, "Insert File", basePath, "All Files(*)");
+    QString inFilePath = QFileDialog::getOpenFileName(this, tr("Insert File"), basePath, "All Files(*)");
 
     if (inFilePath.isEmpty() || inFilePath.isEmpty())
     {
@@ -461,7 +461,7 @@ void SarcExplorerWindow::on_insertFolderButton_clicked()
     QChar type = currentItem->data().toString().at(0);
 
     bool ok;
-    QString dirName = QInputDialog::getText(this, tr("Name Folder"),tr("Enter Folder Name:"), QLineEdit::Normal, "NewFolder", &ok);
+    QString dirName = QInputDialog::getText(this, tr("Name Folder"), tr("Enter Folder Name:"), QLineEdit::Normal, "NewFolder", &ok);
 
     if (!ok || dirName.isEmpty())
     {
@@ -493,7 +493,7 @@ void SarcExplorerWindow::on_deleteButton_clicked()
     QChar type = currentItem->data().toString().at(0);
 
     QMessageBox::StandardButton deleteFileDlg;
-    deleteFileDlg = QMessageBox::question(this, "CoinKiller", QString("Are you sure you wish to delete "+name.split('/').last()+"?"), QMessageBox::Cancel|QMessageBox::Ok);
+    deleteFileDlg = QMessageBox::question(this, "CoinKiller", tr("Are you sure you wish to delete %1?").arg(name.split('/').last()), QMessageBox::Cancel|QMessageBox::Ok);
 
     if (deleteFileDlg == QMessageBox::Ok)
     {

@@ -42,6 +42,8 @@ private:
 
     QStringList headerLables;
 
+    void changeEvent(QEvent* event);
+
     void updateList();
 
     int viewMode = 0;

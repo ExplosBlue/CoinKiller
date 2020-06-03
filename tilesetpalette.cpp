@@ -18,16 +18,16 @@ TilesetPalette::TilesetPalette(Level* level, ObjectsEditonMode* objEditionMode)
     QHBoxLayout* topLayout = new QHBoxLayout();
     layout->addLayout(topLayout);
 
-    QLabel* label = new QLabel("Paint on:");
+    QLabel* label = new QLabel(tr("Paint on:"));
     label->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     topLayout->addWidget(label);
 
-    QRadioButton* layer1RadioBtn = new QRadioButton("Layer 1");
+    QRadioButton* layer1RadioBtn = new QRadioButton(tr("Layer 1"));
     layer1RadioBtn->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     layer1RadioBtn->setChecked(true);
     topLayout->addWidget(layer1RadioBtn);
 
-    QRadioButton* layer2RadioBtn = new QRadioButton("Layer 2");
+    QRadioButton* layer2RadioBtn = new QRadioButton(tr("Layer 2"));
     layer2RadioBtn->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     topLayout->addWidget(layer2RadioBtn);
 
@@ -95,7 +95,7 @@ void TilesetPalette::loadTileset(int tilesetNbr)
         p.end();
         QStandardItem *objItem = new QStandardItem();
         objItem->setIcon(QIcon(objPixmap));
-        objItem->setToolTip(QString("Object: %1").arg(i));
+        objItem->setToolTip(tr("Object: %1").arg(i));
         objectsModel->appendRow(objItem);
     }
 

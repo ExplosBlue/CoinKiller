@@ -158,11 +158,12 @@ private:
     void clampOBehaviorSpinBoxes();
 
     SettingsManager* settings;
-    void loadTranslations();
 
     bool isConvertCancelled;
 
     QLabel* editStatus;
+
+    void changeEvent(QEvent* event);
 
 private slots:
     void convertCancelled();

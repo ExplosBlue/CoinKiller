@@ -73,6 +73,9 @@ public:
 
     int spriteCount() { return spriteDefs.size(); }
 
+    void loadSpriteDefs();
+    void loadSpriteViews();
+
 private:
     QList<spriteView> spriteViews;
     QHash<int, SpriteDefinition> spriteDefs;

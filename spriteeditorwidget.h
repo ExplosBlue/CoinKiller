@@ -171,6 +171,10 @@ private:
     SpriteIdWidget* spriteIds;
 
     SpriteDataEditorWidget* editor;
+
+    void changeEvent(QEvent* event);
+
+    QStringList getViewNames();
 };
 
 #endif // SPRITESEDITOR_H

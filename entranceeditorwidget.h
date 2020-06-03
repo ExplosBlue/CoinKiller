@@ -43,6 +43,8 @@ private:
 
     class HorLine : public QFrame { public: HorLine() { setFrameStyle(QFrame::HLine | QFrame::Sunken); } };
 
+    void changeEvent(QEvent* event);
+
     void updateList();
     void updateInfo();
     void loadEntranceTypes();

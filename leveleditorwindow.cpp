@@ -45,7 +45,6 @@ LevelEditorWindow::LevelEditorWindow(LevelManager* lvlMgr, int initialArea) :
 
     this->setAttribute(Qt::WA_DeleteOnClose);
     ui->setupUi(this);
-    loadTranslations();
 
     areaSelector = new QComboBox(this);
     ui->toolBar->insertWidget(ui->actionAddArea, areaSelector);
@@ -54,13 +53,6 @@ LevelEditorWindow::LevelEditorWindow(LevelManager* lvlMgr, int initialArea) :
     editStatus = new QLabel(this);
     ui->statusbar->addWidget(editStatus);
     //connect(editStatus, SIGNAL(updateLevelLabel(QString)), editStatus, SLOT(setText(QString)));
-
-    // Prevent level view background from being white on first load.
-    if (settings->get("initialLoad") != "no")
-    {
-        settings->set("initialLoad", "no");
-        settings->setColor("lewColor", QColor(119,136,153));
-    }
 
     // Load UI Icons
     QString basePath(settings->dataPath("icons/"));
@@ -96,14 +88,16 @@ LevelEditorWindow::LevelEditorWindow(LevelManager* lvlMgr, int initialArea) :
     ui->actionToggle3DOverlay->setIcon(QIcon(basePath + "3D.png"));
     ui->actionToggle2DTile->setIcon(QIcon(basePath + "2D.png"));
 
-    toolboxDock = new QDockWidget("Toolbox", this);
+    toolboxDock = new QDockWidget(this);
     toolboxDock->setObjectName("toolboxDock");
+    toolboxDock->setWindowTitle(tr("Toolbox"));
     toolboxTabs = new QTabWidget(this);
     connect(toolboxTabs, SIGNAL(currentChanged(int)), this, SLOT(toolboxTabsCurrentChanged(int)));
     toolboxDock->setWidget(toolboxTabs);
 
-    minimapDock = new QDockWidget("Minimap", this);
+    minimapDock = new QDockWidget(this);
     minimapDock->setObjectName("minimapDock");
+    minimapDock->setWindowTitle(tr("Minimap"));
 
     addDockWidget(Qt::LeftDockWidgetArea, toolboxDock);
     addDockWidget(Qt::LeftDockWidgetArea, minimapDock);
@@ -122,7 +116,7 @@ LevelEditorWindow::LevelEditorWindow(LevelManager* lvlMgr, int initialArea) :
     ui->actionRenderCameraLimits->setChecked(settings->get("renderCameraLimits", true).toBool());
     ui->actionHideStatusbar->setChecked(settings->get("lvleditorHideStatusBar", false).toBool());
 
-    editStatus->setText(settings->getTranslation("General", "ready"));
+    editStatus->setText(tr("Ready!"));
 
 #ifdef USE_KDE_BLUR
     if (KWindowEffects::isEffectAvailable(KWindowEffects::BlurBehind))
@@ -148,118 +142,14 @@ LevelEditorWindow::~LevelEditorWindow()
     delete ui;
 }
 
-void LevelEditorWindow::loadTranslations()
+void LevelEditorWindow::changeEvent(QEvent* event)
 {
-    ui->menuFile->setTitle(settings->getTranslation("General", "file"));
-    ui->menuEdit->setTitle(settings->getTranslation("General", "edit"));
-    ui->menuView->setTitle(settings->getTranslation("LevelEditor", "view"));
-    ui->menuWindow->setTitle(settings->getTranslation("LevelEditor", "window"));
-    ui->menuSettings->setTitle(settings->getTranslation("General", "settings"));
+    if (event->type() == QEvent::LanguageChange)
+    {
+        ui->retranslateUi(this);
+    }
 
-    ui->actionSave->setText(settings->getTranslation("General", "save"));
-    ui->actionSave->setToolTip(settings->getTranslation("General", "save"));
-
-    ui->actionPaste->setText(settings->getTranslation("General", "paste"));
-    ui->actionPaste->setToolTip(settings->getTranslation("General", "paste"));
-
-    ui->actionCut->setText(settings->getTranslation("General", "cut"));
-    ui->actionCut->setToolTip(settings->getTranslation("General", "cut"));
-
-    ui->actionSelectAll->setText(settings->getTranslation("General", "selectAll"));
-    ui->actionSelectAll->setToolTip(settings->getTranslation("General", "selectAll"));
-
-    ui->actionCopy->setText(settings->getTranslation("General", "copy"));
-    ui->actionCopy->setToolTip(settings->getTranslation("General", "copy"));
-
-    ui->actionDelete->setText(settings->getTranslation("General", "delete"));
-    ui->actionDelete->setToolTip(settings->getTranslation("General", "delete"));
-
-    ui->actionRaise->setText(settings->getTranslation("LevelEditor", "raiseToTop"));
-    ui->actionRaise->setToolTip(settings->getTranslation("LevelEditor", "raiseToTop"));
-
-    ui->actionLower->setText(settings->getTranslation("LevelEditor", "lowerToBottom"));
-    ui->actionLower->setToolTip(settings->getTranslation("LevelEditor", "lowerToBottom"));
-
-    ui->actionRaiseLayer->setText(settings->getTranslation("LevelEditor", "raiseLayer"));
-    ui->actionRaiseLayer->setToolTip(settings->getTranslation("LevelEditor", "raiseLayer"));
-
-    ui->actionLowerLayer->setText(settings->getTranslation("LevelEditor", "lowerLayer"));
-    ui->actionLowerLayer->setToolTip(settings->getTranslation("LevelEditor", "lowerLayer"));
-
-    ui->actionZoom_In->setText(settings->getTranslation("LevelEditor", "zoomIn"));
-    ui->actionZoom_In->setToolTip(settings->getTranslation("LevelEditor", "zoomIn"));
-
-    ui->actionZoom_Out->setText(settings->getTranslation("LevelEditor", "zoomOut"));
-    ui->actionZoom_Out->setToolTip(settings->getTranslation("LevelEditor", "zoomOut"));
-
-    ui->actionZoom_Maximum->setText(settings->getTranslation("LevelEditor", "zoomMax"));
-    ui->actionZoom_Maximum->setToolTip(settings->getTranslation("LevelEditor", "zoomMax"));
-
-    ui->actionZoom_Minimum->setText(settings->getTranslation("LevelEditor", "zoomMin"));
-    ui->actionZoom_Minimum->setToolTip(settings->getTranslation("LevelEditor", "zoomMin"));
-
-    ui->actionZoom_100->setText(settings->getTranslation("LevelEditor", "zoom100"));
-    ui->actionZoom_100->setToolTip(settings->getTranslation("LevelEditor", "zoom100"));
-
-    ui->actionFullscreen->setText(settings->getTranslation("LevelEditor", "fullscreen"));
-    ui->actionFullscreen->setToolTip(settings->getTranslation("LevelEditor", "fullscreen"));
-
-    ui->actionGrid->setText(settings->getTranslation("LevelEditor", "grid"));
-    ui->actionGrid->setToolTip(settings->getTranslation("LevelEditor", "grid"));
-
-    ui->actionCheckerboard->setText(settings->getTranslation("LevelEditor", "checkerboard"));
-    ui->actionCheckerboard->setToolTip(settings->getTranslation("LevelEditor", "checkerboard"));
-
-    ui->actionRenderLiquids->setText(settings->getTranslation("LevelEditor", "renderLiquids"));
-    ui->actionRenderLiquids->setToolTip(settings->getTranslation("LevelEditor", "renderLiquids"));
-
-    ui->actionRenderCameraLimits->setText(settings->getTranslation("LevelEditor", "renderCameraLimits"));
-    ui->actionRenderCameraLimits->setToolTip(settings->getTranslation("LevelEditor", "renderCameraLimits"));
-
-    ui->actionAddArea->setText(settings->getTranslation("LevelEditor", "addArea"));
-    ui->actionAddArea->setToolTip(settings->getTranslation("LevelEditor", "addArea"));
-
-    ui->actionDeleteCurrentArea->setText(settings->getTranslation("LevelEditor", "removeArea"));
-    ui->actionDeleteCurrentArea->setToolTip(settings->getTranslation("LevelEditor", "removeArea"));
-
-    ui->actionToggleLayer1->setText(settings->getTranslation("LevelEditor", "layer") + " 1");
-    ui->actionToggleLayer1->setToolTip(settings->getTranslation("LevelEditor", "layer") + " 1");
-
-    ui->actionToggleLayer2->setText(settings->getTranslation("LevelEditor", "layer") + " 2");
-    ui->actionToggleLayer2->setToolTip(settings->getTranslation("LevelEditor", "layer") + " 2");
-
-    ui->actionToggleSprites->setText(settings->getTranslation("LevelEditor", "sprites"));
-    ui->actionToggleSprites->setToolTip(settings->getTranslation("LevelEditor", "sprites"));
-
-    ui->actionTogglePaths->setText(settings->getTranslation("LevelEditor", "paths"));
-    ui->actionTogglePaths->setToolTip(settings->getTranslation("LevelEditor", "paths"));
-
-    ui->actionToggleLocations->setText(settings->getTranslation("LevelEditor", "locations"));
-    ui->actionToggleLocations->setToolTip(settings->getTranslation("LevelEditor", "locations"));
-
-    ui->actionToggle3DOverlay->setText(settings->getTranslation("LevelEditor", "3DOverlay"));
-    ui->actionToggle3DOverlay->setToolTip(settings->getTranslation("LevelEditor", "3DOverlay"));
-
-    ui->actionToggle2DTile->setText(settings->getTranslation("LevelEditor", "2DTile"));
-    ui->actionToggle2DTile->setToolTip(settings->getTranslation("LevelEditor", "2DTile"));
-
-    ui->actionSetBackgroundColor->setText(settings->getTranslation("LevelEditor", "setBgColor"));
-    ui->actionSetBackgroundColor->setToolTip(settings->getTranslation("LevelEditor", "setBgColor"));
-
-    ui->actionResetBackgroundColor->setText(settings->getTranslation("LevelEditor", "resetBgColor"));
-    ui->actionResetBackgroundColor->setToolTip(settings->getTranslation("LevelEditor", "resetBgColor"));
-
-    ui->actionSelectAfterPlacement->setText(settings->getTranslation("LevelEditor", "selectAfterPlacement"));
-    ui->actionSelectAfterPlacement->setToolTip(settings->getTranslation("LevelEditor", "selectAfterPlacement"));
-
-    ui->actionHideStatusbar->setText(settings->getTranslation("LevelEditor", "hideStatusbar"));
-    ui->actionHideStatusbar->setToolTip(settings->getTranslation("LevelEditor", "hideStatusbar"));
-
-    ui->actionShowToolbox->setText(settings->getTranslation("LevelEditor", "showToolbox"));
-    ui->actionShowToolbox->setToolTip(settings->getTranslation("LevelEditor", "showToolbox"));
-
-    ui->actionShowMinimap->setText(settings->getTranslation("LevelEditor", "showMinimap"));
-    ui->actionShowMinimap->setToolTip(settings->getTranslation("LevelEditor", "showMinimap"));
+    QMainWindow::changeEvent(event);
 }
 
 // Actions
@@ -357,7 +247,7 @@ void LevelEditorWindow::on_actionZoom_Minimum_triggered()
 
 void LevelEditorWindow::handleEditMade()
 {
-    editStatus->setText(settings->getTranslation("General", "unsavedChanges"));
+    editStatus->setText(tr("Unsaved Changes"));
     unsavedChanges = true;
 }
 
@@ -365,10 +255,10 @@ void LevelEditorWindow::on_actionSave_triggered()
 {
     qint8 res = levelView->saveLevel();
     if (res != 0)
-        editStatus->setText("Save Failed.");
+        editStatus->setText(tr("Save Failed"));
     else
     {
-        editStatus->setText(settings->getTranslation("General", "changesSaved"));
+        editStatus->setText(tr("Changes Saved"));
         unsavedChanges = false;
     }
 }
@@ -557,8 +447,8 @@ void LevelEditorWindow::on_actionAddArea_triggered()
     if (unsavedChanges)
     {
         QMessageBox message(this);
-        message.setWindowTitle(settings->getTranslation("General", "unsavedChanges"));
-        message.setText(settings->getTranslation("General", "wantToSave"));
+        message.setWindowTitle(tr("Unsaved Changes"));
+        message.setText(tr("Do you want to save your changes?"));
         message.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
 
         QSpacerItem* spacer = new QSpacerItem(400, 0, QSizePolicy::Minimum, QSizePolicy::Expanding);
@@ -570,7 +460,7 @@ void LevelEditorWindow::on_actionAddArea_triggered()
         case QMessageBox::Save:
             levelView->saveLevel();
             unsavedChanges = false;
-            editStatus->setText(settings->getTranslation("General", "changesSaved"));
+            editStatus->setText(tr("Changes Saved"));
             break;
         case QMessageBox::Discard:
             unsavedChanges = false;
@@ -586,7 +476,7 @@ void LevelEditorWindow::on_actionAddArea_triggered()
     {
         if (lvlMgr->getAreaCount() >= 4)
         {
-            QMessageBox::information(this, "CoinKiller", "Due to limitations there can only be a maximum of 4 areas in a level.", QMessageBox::Ok);
+            QMessageBox::information(this, "CoinKiller", tr("Due to limitations there can only be a maximum of 4 areas in a level."), QMessageBox::Ok);
             return;
         }
 
@@ -600,13 +490,13 @@ void LevelEditorWindow::on_actionDeleteCurrentArea_triggered()
 {
     if (lvlMgr->getAreaCount() <= 1)
     {
-        QMessageBox::information(this, "CoinKiller", "This area cannot be deleted because there has to be at least one area in a level.", QMessageBox::Ok);
+        QMessageBox::information(this, "CoinKiller", tr("This area cannot be deleted because there has to be at least one area in a level."), QMessageBox::Ok);
         return;
     }
 
     QMessageBox warning;
     warning.setWindowTitle("CoinKiller");
-    warning.setText("Are you sure you want to delete this area?\n\nThe level will automatically save afterwards and therefore the deletion of this area cannot be undone afterwards.");
+    warning.setText(tr("Are you sure you want to delete this area?\n\nThe level will automatically save afterwards and therefore the deletion of this area cannot be undone afterwards."));
     warning.setStandardButtons(QMessageBox::Yes);
     warning.addButton(QMessageBox::No);
     warning.setDefaultButton(QMessageBox::No);
@@ -632,7 +522,7 @@ void LevelEditorWindow::loadArea(int id, bool closeLevel, bool init)
 {
     if (!lvlMgr->hasArea(id))
     {
-        QMessageBox::information(this, "CoinKiller", QString("The Area %1 is not existing.").arg(id));
+        QMessageBox::information(this, "CoinKiller", tr("Area %1 does not exist.").arg(id));
         return;
     }
 
@@ -675,7 +565,7 @@ void LevelEditorWindow::loadArea(int id, bool closeLevel, bool init)
     levelView->toggleCheckerboard(ui->actionCheckerboard->isChecked());
     levelView->toggleRenderLiquids(ui->actionRenderLiquids->isChecked());
     levelView->toggleRenderCameraLimits(ui->actionRenderCameraLimits->isChecked());
-    levelView->setBackgroundColor(settings->getColor("lewColor"));
+    levelView->setBackgroundColor(settings->getColor("lewColor", QColor(119,136,153)));
 
 #ifdef USE_KDE_BLUR
     setBlurStylesheet();
@@ -791,7 +681,7 @@ void LevelEditorWindow::updateAreaSelector(int index)
     int areaCount = lvlMgr->getAreaCount();
     QStringList areaStrings;
     for (int i = 0; i < areaCount; i++)
-       areaStrings << QString("%1 %2").arg(settings->getTranslation("LevelEditor", "area")).arg(i+1);
+       areaStrings << tr("Area %2").arg(i+1);
 
     QStringListModel *model = new QStringListModel();
         model->setStringList(areaStrings);
@@ -804,7 +694,7 @@ void LevelEditorWindow::updateAreaSelector(int index)
 
     QString title;
     level->getName(title);
-    setWindowTitle("CoinKiller - Editing: " + title);
+    setWindowTitle(tr("CoinKiller - Editing: %1").arg(title));
 }
 
 void LevelEditorWindow::handleAreaIndexChange(int index)
@@ -814,8 +704,8 @@ void LevelEditorWindow::handleAreaIndexChange(int index)
     if (unsavedChanges)
     {
         QMessageBox message(this);
-        message.setWindowTitle(settings->getTranslation("General", "unsavedChanges"));
-        message.setText(settings->getTranslation("General", "wantToSave"));
+        message.setWindowTitle(tr("Unsaved Changes"));
+        message.setText(tr("Do you want to save your changes?"));
         message.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
 
         QSpacerItem* spacer = new QSpacerItem(400, 0, QSizePolicy::Minimum, QSizePolicy::Expanding);
@@ -827,11 +717,11 @@ void LevelEditorWindow::handleAreaIndexChange(int index)
         case QMessageBox::Save:
             levelView->saveLevel();
             unsavedChanges = false;
-            editStatus->setText(settings->getTranslation("General", "changesSaved"));
+            editStatus->setText(tr("Changes Saved"));
             break;
         case QMessageBox::Discard:
             unsavedChanges = false;
-            editStatus->setText("Ready!");
+            editStatus->setText(tr("Ready!"));
             break;
         case QMessageBox::Cancel:
             ignore = true;
@@ -846,7 +736,7 @@ void LevelEditorWindow::handleAreaIndexChange(int index)
         if (lvlMgr->areaIsOpen(index))
         {
             updateAreaSelector(level->getAreaID());
-            QMessageBox::information(this, "CoinKiller", QString("Area %1 cannot be opened because it is already opened in anoter editor window.").arg(index), QMessageBox::Ok);
+            QMessageBox::information(this, "CoinKiller", tr("Area %1 cannot be opened because it is already opened in another editor window.").arg(index), QMessageBox::Ok);
             return;
         }
 
@@ -889,7 +779,7 @@ void LevelEditorWindow::on_actionSetBackgroundColor_triggered()
     options |= QColorDialog::ShowAlphaChannel;
 #endif
 
-    QColor bgColor = QColorDialog::getColor(settings->getColor("lewColor", QColor(119,136,153)), this, "Select Background Color", options);
+    QColor bgColor = QColorDialog::getColor(settings->getColor("lewColor", QColor(119,136,153)), this, tr("Select Background Color"), options);
     if(bgColor.isValid())
     {
         levelView->setBackgroundColor(bgColor);
@@ -900,7 +790,7 @@ void LevelEditorWindow::on_actionSetBackgroundColor_triggered()
 void LevelEditorWindow::on_actionResetBackgroundColor_triggered()
 {
     QMessageBox::StandardButton reset;
-    reset = QMessageBox::question(this, "CoinKiller", QString("Are you sure you wish to reset the background color?"), QMessageBox::Cancel|QMessageBox::Ok);
+    reset = QMessageBox::question(this, "CoinKiller", tr("Are you sure you wish to reset the background color?"), QMessageBox::Cancel|QMessageBox::Ok);
     if(reset == QMessageBox::Ok)
     {
         levelView->setBackgroundColor(QColor(119,136,153));
@@ -919,8 +809,8 @@ void LevelEditorWindow::closeEvent(QCloseEvent *event)
     if (unsavedChanges)
     {
         QMessageBox message(this);
-        message.setWindowTitle(settings->getTranslation("General", "unsavedChanges"));
-        message.setText(settings->getTranslation("General", "wantToSave"));
+        message.setWindowTitle(tr("Unsaved Changes"));
+        message.setText(tr("Do you want to save your changes?"));
         message.setStandardButtons(QMessageBox::Save | QMessageBox::Cancel | QMessageBox::Discard);
 
         QSpacerItem* spacer = new QSpacerItem(400, 0, QSizePolicy::Minimum, QSizePolicy::Expanding);

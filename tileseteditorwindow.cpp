@@ -27,8 +27,7 @@ TilesetEditorWindow::TilesetEditorWindow(WindowBase *parent, Tileset *tileset) :
 
     ui->setupUi(this);
     ui->behaviorsTab->setEnabled(false);
-    this->setWindowTitle("CoinKiller - Editing Tileset: " + tileset->getName());
-    loadTranslations();
+    this->setWindowTitle(tr("CoinKiller - Editing Tileset: %1").arg(tileset->getName()));
 
     // Load UI Icons
     QString basePath(settings->dataPath("icons/"));
@@ -86,7 +85,7 @@ TilesetEditorWindow::TilesetEditorWindow(WindowBase *parent, Tileset *tileset) :
     hideHorizEdits(true);
     hideVertEdits(true);
 
-    editStatus->setText(settings->getTranslation("General", "ready"));
+    editStatus->setText(tr("Ready!"));
 }
 
 TilesetEditorWindow::~TilesetEditorWindow()
@@ -94,64 +93,40 @@ TilesetEditorWindow::~TilesetEditorWindow()
     delete ui;
 }
 
-void TilesetEditorWindow::loadTranslations()
+void TilesetEditorWindow::changeEvent(QEvent* event)
 {
-    ui->menuFile->setTitle(settings->getTranslation("General", "file"));
-    ui->menuEdit->setTitle(settings->getTranslation("General", "edit"));
-    ui->menuSettings->setTitle(settings->getTranslation("General", "settings"));
+    if (event->type() == QEvent::LanguageChange)
+    {
+        blockSignals(true);
 
-    ui->actionSave->setText(settings->getTranslation("General", "save"));
-    ui->actionSave->setToolTip(settings->getTranslation("General", "save"));
+        ui->retranslateUi(this);
+        loadBehaviors();
 
-    ui->actionImportImage->setText(settings->getTranslation("TilesetEditor", "importImage"));
-    ui->actionImportImage->setToolTip(settings->getTranslation("TilesetEditor", "importImage"));
+        QStringListModel* sBehaviorsModel = new QStringListModel;
+        QStringList sBehaviorsList;
+        for (int i = 0; i < specialBehaviors.size(); i++)
+            sBehaviorsList.append(specialBehaviors[i].description);
+        sBehaviorsModel->setStringList(sBehaviorsList);
+        ui->sBehaviorListView->setModel(sBehaviorsModel);
 
-    ui->actionImportImageLegacy->setText(settings->getTranslation("TilesetEditor", "importImageLegacy"));
-    ui->actionImportImageLegacy->setToolTip(settings->getTranslation("TilesetEditor", "importImageLegacy"));
+        for (int i = 0; i < hitboxes.size(); i++)
+           ui->hitBoxComboBox->setItemText(i, hitboxes[i].description);
 
-    ui->actionExportImage->setText(settings->getTranslation("TilesetEditor", "exportImage"));
-    ui->actionExportImage->setToolTip(settings->getTranslation("TilesetEditor", "exportImage"));
+        for (int i = 0; i < terrainTypes.size(); i++)
+           ui->terrainTypeComboBox->setItemText(i, terrainTypes[i].description);
 
-    ui->actionDeleteAllBehaviors->setText(settings->getTranslation("TilesetEditor", "deleteAllBehaviors"));
-    ui->actionDeleteAllBehaviors->setToolTip(settings->getTranslation("TilesetEditor", "deleteAllBehaviors"));
+        for (int i = 0; i < depthBehaviors.size(); i++)
+           ui->depthComboBox->setItemText(i, depthBehaviors[i].description);
 
-    ui->actionDeleteAllObjects->setText(settings->getTranslation("TilesetEditor", "deleteAllObjs"));
-    ui->actionDeleteAllObjects->setToolTip(settings->getTranslation("TilesetEditor", "deleteAllObjs"));
+        for (int i = 0; i < pipeColors.size(); i++)
+           ui->pipeColorComboBox->setItemText(i, pipeColors[i].description);
 
-    ui->actionDeleteAll3DOverlays->setText(settings->getTranslation("TilesetEditor", "deleteAllOverlays"));
-    ui->actionDeleteAll3DOverlays->setToolTip(settings->getTranslation("TilesetEditor", "deleteAllOverlays"));
+        updateSelectedTile(selectedTileTL, selectedTileBR);
 
-    ui->actionSetTilesetSlot->setText(settings->getTranslation("TilesetEditor", "setTilesetSlot"));
-    ui->actionSetTilesetSlot->setToolTip(settings->getTranslation("TilesetEditor", "setTilesetSlot"));
+        blockSignals(false);
+    }
 
-    ui->actionShowObjectMarkers->setText(settings->getTranslation("TilesetEditor", "showObjMarkers"));
-    ui->actionShowObjectMarkers->setToolTip(settings->getTranslation("TilesetEditor", "showObjMarkers"));
-
-    ui->actionSetBackgroundColor->setText(settings->getTranslation("TilesetEditor", "setBgColor"));
-    ui->actionSetBackgroundColor->setToolTip(settings->getTranslation("TilesetEditor", "setBgColor"));
-
-    ui->actionToggleCollision->setText(settings->getTranslation("TilesetEditor", "toggleCollision"));
-    ui->actionToggleCollision->setToolTip(settings->getTranslation("TilesetEditor", "toggleCollision"));
-
-    ui->tabWidget->setTabText(0, settings->getTranslation("TilesetEditor", "behaviors"));
-    ui->tabWidget->setTabText(1, settings->getTranslation("TilesetEditor", "objects"));
-
-    ui->hexLabel->setText(settings->getTranslation("TilesetEditor", "hexData") + ":");
-    ui->hitboxLabel->setText(settings->getTranslation("TilesetEditor", "hitbox") + ":");
-    ui->terrainTypeLabel->setText(settings->getTranslation("TilesetEditor", "terrainType") + ":");
-    ui->behavior3dLabel->setText(settings->getTranslation("TilesetEditor", "behavior3d") + ":");
-    ui->pipeColorLabel->setText(settings->getTranslation("TilesetEditor", "pipeColor") + ":");
-
-    ui->addObjectPushButton->setText(settings->getTranslation("TilesetEditor", "addObj"));
-    ui->removeObjectButton->setText(settings->getTranslation("TilesetEditor", "removeObj"));
-    ui->moveObjectUpButton->setText(settings->getTranslation("TilesetEditor", "moveObjUp"));
-    ui->moveObjectDownButton->setText(settings->getTranslation("TilesetEditor", "moveObjDown"));
-
-    ui->objectGroupBox->setTitle(settings->getTranslation("TilesetEditor", "objSettings"));
-
-    setSelTileData(settings->getTranslation("TilesetEditor", "noneData"));
-
-    ui->actionImportImageLegacy->setVisible(QDir(settings->dataPath("ts_convert/")).exists());
+    QWidget::changeEvent(event);
 }
 
 void TilesetEditorWindow::updateSelectedTile(int tileTL, int tileBR)
@@ -160,7 +135,7 @@ void TilesetEditorWindow::updateSelectedTile(int tileTL, int tileBR)
         ui->behaviorsTab->setEnabled(true);
     else
     {
-        ui->selectedTileLabel->setText(settings->getTranslation("TilesetEditor", "selectedTile") + ": " + settings->getTranslation("TilesetEditor", "noneObj"));
+        ui->selectedTileLabel->setText(tr("Selected Tile: None"));
         ui->behaviorsTab->setEnabled(false);
         return;
     }
@@ -177,8 +152,6 @@ void TilesetEditorWindow::updateSelectedTile(int tileTL, int tileBR)
         tilesetPicker->setOvTile(ovTile);
     }
 
-    QString selTileText = settings->getTranslation("TilesetEditor", "selectedTile") + ": (%1, %2) ID : (%3)";
-
     QString xpos = QString::number(selectedTileTL % 21);
     if (selectedTileTL % 21 != selectedTileBR % 21)
         xpos.append("-" + QString::number(selectedTileBR % 21));
@@ -191,7 +164,7 @@ void TilesetEditorWindow::updateSelectedTile(int tileTL, int tileBR)
     if (selectedTileTL != selectedTileBR)
         tileID.append("-" + QString::number(selectedTileBR));
 
-    ui->selectedTileLabel->setText(selTileText.arg(xpos).arg(ypos).arg(tileID));
+    ui->selectedTileLabel->setText(tr("Selected Tile: (%1, %2) ID : (%3)").arg(xpos).arg(ypos).arg(tileID));
 
     updateHex();
     updateBehavior();
@@ -314,8 +287,14 @@ void TilesetEditorWindow::updateComboBox(int byteNbr, QList<parameter> &list, QC
 
 void TilesetEditorWindow::loadBehaviors()
 {
+    specialBehaviors.clear();
+    hitboxes.clear();
+    terrainTypes.clear();
+    depthBehaviors.clear();
+    pipeColors.clear();
+
     QDomDocument xmlBehaviors;
-    QFile f(settings->dataPath("tilebehaviors.xml"));
+    QFile f(settings->getFilePath("tilebehaviors.xml"));
     if (!f.open(QIODevice::ReadOnly))
     {
         QMessageBox::warning(this, "CoinKiller", "Failed to load behaviors.xml");
@@ -446,7 +425,7 @@ void TilesetEditorWindow::setupObjectsModel(bool keepIndex)
         tileset->drawObject(p, tileGrid, i, 0, 0, obj->width, obj->height, 1);
         p.end();
 
-        QStandardItem *objItem = new QStandardItem(QIcon(objPixmap), QString("%1 %2").arg(settings->getTranslation("TilesetEditor", "object")).arg(i));
+        QStandardItem *objItem = new QStandardItem(QIcon(objPixmap), tr("Object %2").arg(i));
         objectsModel->appendRow(objItem);
     }
 
@@ -462,7 +441,7 @@ void TilesetEditorWindow::setupObjectsModel(bool keepIndex)
 
 void TilesetEditorWindow::setSelTileData(QString text)
 {
-    ui->selTileDataLabel->setText(settings->getTranslation("TilesetEditor", "tileData")+": "+text);
+    ui->selTileDataLabel->setText(tr("Tile Data: %1").arg(text));
 }
 
 void TilesetEditorWindow::updateObjectEditor()
@@ -606,14 +585,14 @@ void TilesetEditorWindow::setupObjectBehaviorModel()
 {
     QStringList oBehaviorsList;
     oBehaviorsList
-            << "Tile"
-            << "Repeat Horizontally"
-            << "Repeat Vertically"
-            << "Repeat Horizontally and Vertically"
-            << "Slope (Up)"
-            << "Slope (Down)"
-            << "Upside-Down Slope (Down)"
-            << "Upside-Down Slope (Up)";
+            << tr("Tile")
+            << tr("Repeat Horizontally")
+            << tr("Repeat Vertically")
+            << tr("Repeat Horizontally and Vertically")
+            << tr("Slope (Up)")
+            << tr("Slope (Down)")
+            << tr("Upside-Down Slope (Down)")
+            << tr("Upside-Down Slope (Up)");
     ui->oBehaviorComboBox->setModel(new QStringListModel(oBehaviorsList));
 
     ui->oBehaviorComboBox->setCurrentIndex(-1);
@@ -758,7 +737,7 @@ void TilesetEditorWindow::on_pipeColorComboBox_currentIndexChanged(int index)
 
 void TilesetEditorWindow::on_actionDeleteAll3DOverlays_triggered()
 {
-    QMessageBox::StandardButton warning = QMessageBox::warning(this, "CoinKiller", "Do you realy want to delete all 3D Overlays?", QMessageBox::Yes|QMessageBox::No);
+    QMessageBox::StandardButton warning = QMessageBox::warning(this, "CoinKiller", tr("Do you realy want to delete all 3D Overlays?"), QMessageBox::Yes|QMessageBox::No);
 
     if (warning != QMessageBox::Yes)
         return;
@@ -773,7 +752,7 @@ void TilesetEditorWindow::on_actionDeleteAll3DOverlays_triggered()
 
 void TilesetEditorWindow::on_actionDeleteAllBehaviors_triggered()
 {
-    QMessageBox::StandardButton warning = QMessageBox::warning(this, "CoinKiller", "Do you realy want to delete all Behaviors?", QMessageBox::Yes|QMessageBox::No);
+    QMessageBox::StandardButton warning = QMessageBox::warning(this, "CoinKiller", tr("Do you realy want to delete all Behaviors?"), QMessageBox::Yes|QMessageBox::No);
 
     if (warning != QMessageBox::Yes)
         return;
@@ -863,7 +842,7 @@ void TilesetEditorWindow::on_moveObjectDownButton_clicked()
 
 void TilesetEditorWindow::on_actionDeleteAllObjects_triggered()
 {
-    QMessageBox::StandardButton warning = QMessageBox::warning(this, "CoinKiller", "Do you realy want to delete all objects?", QMessageBox::Yes|QMessageBox::No);
+    QMessageBox::StandardButton warning = QMessageBox::warning(this, "CoinKiller", tr("Do you realy want to delete all objects?"), QMessageBox::Yes|QMessageBox::No);
 
     if (warning != QMessageBox::Yes)
         return;
@@ -894,12 +873,12 @@ void TilesetEditorWindow::on_oHeightSpinBox_valueChanged(int height)
 void TilesetEditorWindow::on_actionSetTilesetSlot_triggered()
 {
     QStringList slotNames;
-    slotNames << "Standard Suite" << "Stage Suite" << "Background Suite" << "Interactive Suite";
+    slotNames << tr("Standard Suite") << tr("Stage Suite") << tr("Background Suite") << tr("Interactive Suite");
     int slot = -1;
 
     int cur = tileset->getSlot();
 
-    slot = slotNames.indexOf(QInputDialog::getItem(this, "CoinKiller", "Set Tileset Slot:", slotNames, cur, false, 0, Qt::WindowTitleHint));
+    slot = slotNames.indexOf(QInputDialog::getItem(this, "CoinKiller", tr("Set Tileset Slot:"), slotNames, cur, false, 0, Qt::WindowTitleHint));
 
     if (slot == -1)
         return;
@@ -1023,11 +1002,11 @@ void TilesetEditorWindow::on_vEndSpinBox_valueChanged(int value)
 
 void TilesetEditorWindow::on_actionExportImage_triggered()
 {
-    QString filename = QFileDialog::getSaveFileName(this, "Export Tileset Image", QDir::currentPath(), "PNG Files (*.png)");
+    QString filename = QFileDialog::getSaveFileName(this, tr("Export Tileset Image"), QDir::currentPath(), "PNG Files (*.png)");
 
     if (filename.isNull())
     {
-        editStatus->setText(settings->getTranslation("TilesetEditor", "imageExported"));
+        editStatus->setText(tr("Ready!"));
         return;
     }
 
@@ -1051,12 +1030,12 @@ void TilesetEditorWindow::on_actionExportImage_triggered()
 
     img.save(filename);
 
-    editStatus->setText(settings->getTranslation("TilesetEditor", "imageExported"));
+    editStatus->setText(tr("Image Exported"));
 }
 
 void TilesetEditorWindow::on_actionImportImage_triggered()
 {
-    QString pngFileName = QFileDialog::getOpenFileName(this, "Import Tileset Image", QDir::currentPath(), "PNG Files (*.png)");
+    QString pngFileName = QFileDialog::getOpenFileName(this, tr("Import Tileset Image"), QDir::currentPath(), "PNG Files (*.png)");
     if (!pngFileName.endsWith(".png"))
         pngFileName.append(".png");
     if (pngFileName.isEmpty())
@@ -1068,7 +1047,7 @@ void TilesetEditorWindow::on_actionImportImage_triggered()
 
     if (inputImg.width() != 420 || inputImg.height() != 420)
     {
-        QMessageBox::information(this, " ", "The input image is not 420x420 pixels.", QMessageBox::Ok);
+        QMessageBox::information(this, " ", tr("The input image is not 420x420 pixels."), QMessageBox::Ok);
         return;
     }
 
@@ -1097,35 +1076,35 @@ void TilesetEditorWindow::on_actionImportImageLegacy_triggered()
     #ifdef _WIN32
         if (!QFile(convertDir + "convert.exe").exists())
         {
-            QMessageBox::warning(this, "CoinKiller", "CoinKiller requires convert.exe from ImageMagick to be placed at " + convertDir + " to convert tileset images!");
+            QMessageBox::warning(this, "CoinKiller", tr("CoinKiller requires convert.exe from ImageMagick to be placed at %1 to convert tileset images!").arg(convertDir));
             return;
         }
     #elif __linux__
         if (system("command -v convert > /dev/null 2>&1") != 0 && !QFile(convertDir + "convert").exists())
         {
-            QMessageBox::warning(this, "CoinKiller", "CoinKiller requires convert from ImageMagick to be installed to convert tileset images!");
+            QMessageBox::warning(this, "CoinKiller", tr("CoinKiller requires convert from ImageMagick to be installed to convert tileset images!"));
             return;
         }
         if (system("command -v wine > /dev/null 2>&1") != 0)
         {
-            QMessageBox::warning(this, "CoinKiller", "CoinKiller requires wine to be installed to convert tileset images!");
+            QMessageBox::warning(this, "CoinKiller", tr("CoinKiller requires wine to be installed to convert tileset images!"));
             return;
         }
     #else
-        QMessageBox::warning(this, "CoinKiller", "Legacy tileset importing is not supported on your operating system!" QMessageBox::Ok);
+        QMessageBox::warning(this, "CoinKiller", tr("Legacy tileset importing is not supported on your operating system!"), QMessageBox::Ok);
         return;
     #endif
 
         if (!QFile(convertDir + "ctr_TexturePackager32.exe").exists())
         {
             QMessageBox::warning(this, "CoinKiller",
-                                 "CoinKiller requires ctr_TexturePackager32.exe to be placed at " + convertDir + " to convert tileset images!\n\n"
-                                 "We can not help you finding that file, but the filename should be enough to do some research on your own.");
+                                 tr("CoinKiller requires ctr_TexturePackager32.exe to be placed at %1 to convert tileset images!\n\n"
+                                 "We can not help you finding that file, but the filename should be enough to do some research on your own.").arg(convertDir));
             return;
         }
 
         // Get input Image
-        QString pngFileName = QFileDialog::getOpenFileName(this, "Import Tileset Image", QDir::currentPath(), "PNG Files (*.png)");
+        QString pngFileName = QFileDialog::getOpenFileName(this, tr("Import Tileset Image"), QDir::currentPath(), "PNG Files (*.png)");
         if (!pngFileName.endsWith(".png"))
             pngFileName.append(".png");
         if (pngFileName.isEmpty()) return;
@@ -1137,7 +1116,7 @@ void TilesetEditorWindow::on_actionImportImageLegacy_triggered()
 
         if (inputImg.width() != 420 || inputImg.height() != 420)
         {
-            QMessageBox::information(this, " ", "The input image is not 420x420 pixels.", QMessageBox::Ok);
+            QMessageBox::information(this, " ", tr("The input image is not 420x420 pixels."), QMessageBox::Ok);
             return;
         }
 
@@ -1147,7 +1126,7 @@ void TilesetEditorWindow::on_actionImportImageLegacy_triggered()
         QStringList qualities;
         bool ok;
         qualities << "Fast" << "Medium" << "Slow" << "Fast Perceptual" << "Medium Perceptual" << "Slow Perceptual" << "Fast Improved" << "Medium Improved";
-        QString quality = QInputDialog::getItem(this, "CoinKiller", "Select ETC1 compression quality:", qualities, 7, false, &ok, Qt::WindowTitleHint);
+        QString quality = QInputDialog::getItem(this, "CoinKiller", tr("Select ETC1 compression quality:"), qualities, 7, false, &ok, Qt::WindowTitleHint);
         quality.replace(" ", "");
         if (!ok) return;
 
@@ -1220,7 +1199,7 @@ void TilesetEditorWindow::on_actionImportImageLegacy_triggered()
 
         if (!QFile(convertDir + tileset->getName() + ".ctpk").exists())
         {
-            QMessageBox::warning(this, "CoinKiller", "Conversion from TGA to CTPK failed!");
+            QMessageBox::warning(this, "CoinKiller", tr("Conversion from TGA to CTPK failed!"));
             return;
         }
 
@@ -1240,7 +1219,7 @@ void TilesetEditorWindow::convertCancelled()
 
 void TilesetEditorWindow::on_actionSetBackgroundColor_triggered()
 {
-    QColor bgColor = QColorDialog::getColor(settings->getColor("tspColor", Qt::white), this, "Select Background Color",  QColorDialog::DontUseNativeDialog);
+    QColor bgColor = QColorDialog::getColor(settings->getColor("tspColor", Qt::white), this, tr("Select Background Color"),  QColorDialog::DontUseNativeDialog);
     if(bgColor.isValid())
     {
         tilesetPicker->setBGColor(bgColor);
@@ -1252,7 +1231,7 @@ void TilesetEditorWindow::on_actionSetBackgroundColor_triggered()
 void TilesetEditorWindow::on_actionSave_triggered()
 {
     tileset->save();
-    editStatus->setText(settings->getTranslation("General", "changesSaved"));
+    editStatus->setText(tr("Changes Saved"));
 }
 
 QWidget* hline()
@@ -1269,25 +1248,25 @@ ImportTilesetImageDlg::ImportTilesetImageDlg(QWidget* parent) :
     quality = 1;
     dither = false;
 
-    setWindowTitle("CoinKiller - Tileset Import Options");
+    setWindowTitle(tr("CoinKiller - Tileset Import Options"));
 
     QGridLayout* lyt = new QGridLayout(this);
     qualityBox = new QComboBox();
-    qualityBox->addItem("Low");
-    qualityBox->addItem("Medium");
-    qualityBox->addItem("High");
+    qualityBox->addItem(tr("Low"));
+    qualityBox->addItem(tr("Medium"));
+    qualityBox->addItem(tr("High"));
     qualityBox->setCurrentIndex(quality);
-    QLabel* qualityLabel = new QLabel("Quality");
+    QLabel* qualityLabel = new QLabel(tr("Quality"));
     qualityLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     lyt->addWidget(qualityLabel, 0, 0);
     lyt->addWidget(qualityBox, 0, 1);
-    ditherCheckBox = new QCheckBox("Dither");
+    ditherCheckBox = new QCheckBox(tr("Dither"));
     ditherCheckBox->setChecked(dither);
     lyt->addWidget(ditherCheckBox, 1, 1);
     QDialogButtonBox* buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
     connect(buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
     connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
-    QLabel* noteLabel = new QLabel("Note: ETC1 image compression might take up to a minute depending on your system and selected quality.");
+    QLabel* noteLabel = new QLabel(tr("Note: ETC1 image compression might take up to a minute depending on your system and selected quality."));
     noteLabel->setWordWrap(true);
     lyt->addWidget(hline(), 2, 0, 1, 2);
     lyt->addWidget(noteLabel, 3, 0, 1, 2);

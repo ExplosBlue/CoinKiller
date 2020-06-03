@@ -3,15 +3,20 @@
 
 SpriteData::SpriteData()
 {
-    bool customSprites = false;
+    loadSpriteDefs();
+    loadSpriteViews();
+}
 
-    // Load Sprite Definitions
+void SpriteData::loadSpriteDefs()
+{
+    spriteDefs.clear();
+
     QDomDocument xmlSpriteData;
-    QFile f1(SettingsManager::getInstance()->dataPath("spritedata.xml"));
-    if (!f1.open(QIODevice::ReadOnly))
+    QFile f(SettingsManager::getInstance()->getFilePath("spritedata.xml"));
+    if (!f.open(QIODevice::ReadOnly))
         return;
-    xmlSpriteData.setContent(&f1);
-    f1.close();
+    xmlSpriteData.setContent(&f);
+    f.close();
 
     QDomElement spriteElement = xmlSpriteData.documentElement().firstChild().toElement();
     while (!spriteElement.isNull())
@@ -21,10 +26,14 @@ SpriteData::SpriteData()
 
         spriteElement = spriteElement.nextSiblingElement();
     }
+}
 
-    // Load Sprite Views
+void SpriteData::loadSpriteViews()
+{
+    spriteViews.clear();
+
     QDomDocument xmlSpriteViews;
-    QFile f2(SettingsManager::getInstance()->dataPath("spritecategories.xml"));
+    QFile f2(SettingsManager::getInstance()->getFilePath("spritecategories.xml"));
     if (!f2.open(QIODevice::ReadOnly))
         return;
     xmlSpriteViews.setContent(&f2);
@@ -32,7 +41,7 @@ SpriteData::SpriteData()
 
     // Add "All (Sorted by Number)" View
     spriteView allView;
-    allView.name = "All (Sorted by Number)";
+    allView.name = QObject::tr("All (Sorted by Number)");
     foreach (SpriteDefinition sprDef, spriteDefs)
     {
         allView.simpleSprites.append(sprDef.getID());
@@ -103,7 +112,7 @@ SpriteDefinition::SpriteDefinition()
 SpriteDefinition::SpriteDefinition(int spriteId)
 {
     id = spriteId;
-    name = QString("Unknown %1").arg(spriteId);
+    name = QObject::tr("Unknown Sprite %1").arg(spriteId);
     notes = "";
 }
 

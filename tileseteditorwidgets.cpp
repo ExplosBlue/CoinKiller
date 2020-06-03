@@ -183,7 +183,7 @@ void TilesetPicker::mousePressEvent(QMouseEvent* evt)
 
             if (tempSelTile > 0xFF)
             {
-                QToolTip::showText(evt->globalPos(), "You can only select the first 256 tiles due to limitations", this, rect(), 5000);
+                QToolTip::showText(evt->globalPos(), tr("You can only select the first 256 tiles due to limitations"), this, rect(), 5000);
                 // TODO: Somehow this disappears after releasing the mouse button
                 return;
             }
@@ -247,7 +247,7 @@ void TilesetPicker::mouseMoveEvent(QMouseEvent* evt)
 
     if (tmpSelectedTileBR > 0xFF)
     {
-        QToolTip::showText(evt->globalPos(), "You can only select the first 256 tiles due to limitations", this, rect(), 2000);
+        QToolTip::showText(evt->globalPos(), tr("You can only select the first 256 tiles due to limitations"), this, rect(), 2000);
         // TODO: Somehow this disappears after releasing the mouse button
         return;
     }
@@ -292,7 +292,7 @@ void ObjectEditor::paintEvent(QPaintEvent* evt)
     {
         selX = -1;
         selY = -1;
-        emit updateSelTileLabel(SettingsManager::getInstance()->getTranslation("TilesetEditor", "noneData"));
+        emit updateSelTileLabel(tr("None"));
     }
 
     QPixmap objPix(currW, currH);
@@ -323,8 +323,8 @@ void ObjectEditor::paintEvent(QPaintEvent* evt)
             painter.drawLine(currX, currY+obj->yRepeatStart*20, currX+currW, currY+obj->yRepeatStart*20);
             painter.drawLine(currX, currY+obj->yRepeatEnd*20, currX+currW, currY+obj->yRepeatEnd*20);
             painter.setFont(QFont("Arial", 7, QFont::Normal));
-            painter.drawText(QRect(currX-62, currY+obj->yRepeatStart*20-5,50,10), "Start", Qt::AlignRight | Qt::AlignCenter);
-            painter.drawText(QRect(currX-62, currY+obj->yRepeatEnd*20-5,50,10), "End", Qt::AlignRight | Qt::AlignCenter);
+            painter.drawText(QRect(currX-62, currY+obj->yRepeatStart*20-5,50,10), tr("Start"), Qt::AlignRight | Qt::AlignCenter);
+            painter.drawText(QRect(currX-62, currY+obj->yRepeatEnd*20-5,50,10), tr("End"), Qt::AlignRight | Qt::AlignCenter);
         }
         if (obj->rows[0].xRepeatStart != 255) // Render Horizontal Repeat Start/End Markers
         {
@@ -339,8 +339,8 @@ void ObjectEditor::paintEvent(QPaintEvent* evt)
             painter.drawLine(currX + obj->rows[0].xRepeatStart*20, currY, currX + obj->rows[0].xRepeatStart*20, currY+currH);
             painter.drawLine(currX + obj->rows[0].xRepeatEnd*20, currY, currX + obj->rows[0].xRepeatEnd*20, currY+currH);
             painter.setFont(QFont("Arial", 7, QFont::Normal));
-            painter.drawText(QRect(currX + obj->rows[0].xRepeatStart*20-43, currY-20,50,10), "Start", Qt::AlignRight | Qt::AlignTop);
-            painter.drawText(QRect(currX + obj->rows[0].xRepeatEnd*20-7, currY-20,50,10), "End", Qt::AlignLeft | Qt::AlignTop);
+            painter.drawText(QRect(currX + obj->rows[0].xRepeatStart*20-43, currY-20,50,10), tr("Start"), Qt::AlignRight | Qt::AlignTop);
+            painter.drawText(QRect(currX + obj->rows[0].xRepeatEnd*20-7, currY-20,50,10), tr("End"), Qt::AlignLeft | Qt::AlignTop);
         }
         if (obj->rows[0].slopeFlags != 0)
         {
@@ -360,13 +360,13 @@ void ObjectEditor::paintEvent(QPaintEvent* evt)
 
             if ((obj->rows[0].slopeFlags & 15) < 2)
             {
-                painter.drawText(QRect(currX-65, currY, 65, y), "Slope Top", Qt::AlignLeft | Qt::AlignVCenter);
-                painter.drawText(QRect(currX-65, currY+y, 65, currH-y), "Slope Base", Qt::AlignLeft | Qt::AlignVCenter);
+                painter.drawText(QRect(currX-65, currY, 65, y), tr("Slope Top"), Qt::AlignLeft | Qt::AlignVCenter);
+                painter.drawText(QRect(currX-65, currY+y, 65, currH-y), tr("Slope Base"), Qt::AlignLeft | Qt::AlignVCenter);
             }
             else
             {
-                painter.drawText(QRect(currX-65, currY, 65, y), "Slope Bottom", Qt::AlignLeft | Qt::AlignVCenter);
-                painter.drawText(QRect(currX-65, currY+y, 65, currH-y), "Slope Base", Qt::AlignLeft | Qt::AlignVCenter);
+                painter.drawText(QRect(currX-65, currY, 65, y), tr("Slope Bottom"), Qt::AlignLeft | Qt::AlignVCenter);
+                painter.drawText(QRect(currX-65, currY+y, 65, currH-y), tr("Slope Base"), Qt::AlignLeft | Qt::AlignVCenter);
             }
         }
     }
@@ -423,13 +423,13 @@ void ObjectEditor::mousePressEvent(QMouseEvent* evt)
 
             emit tilesetChanged();
         }
-        emit updateSelTileLabel(QString("(Repeat: 0x%1), (Tile: 0x%2), (Slot: 0x%3), (Item: 0x%4)").arg(tileset->getData(objNbr, selX, selY, 0), 1, 16).arg(tileset->getData(objNbr, selX, selY, 1), 1, 16).arg((tileset->getData(objNbr, selX, selY, 2) & 6) >> 1, 1, 16).arg((tileset->getData(objNbr, selX, selY, 2) & 120) >> 3, 1, 16));
+        emit updateSelTileLabel(tr("(Repeat: 0x%1), (Tile: 0x%2), (Slot: 0x%3), (Item: 0x%4)").arg(tileset->getData(objNbr, selX, selY, 0), 1, 16).arg(tileset->getData(objNbr, selX, selY, 1), 1, 16).arg((tileset->getData(objNbr, selX, selY, 2) & 6) >> 1, 1, 16).arg((tileset->getData(objNbr, selX, selY, 2) & 120) >> 3, 1, 16));
     }
     else
     {
         selX = -1;
         selY = -1;
-        emit updateSelTileLabel(SettingsManager::getInstance()->getTranslation("TilesetEditor", "noneData"));
+        emit updateSelTileLabel(tr("None"));
     }
 
     update();
@@ -440,7 +440,7 @@ void ObjectEditor::selectedObjectChanged(int objNbr)
     this->objNbr = objNbr;
     selX = -1;
     selY = -1;
-    emit updateSelTileLabel(SettingsManager::getInstance()->getTranslation("TilesetEditor", "noneData"));
+    emit updateSelTileLabel(tr("None"));
     update();
 }
 

@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>CoinKiller</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
@@ -66,13 +66,13 @@
    </property>
    <widget class="QMenu" name="menuFile">
     <property name="title">
-     <string>&lt;Fi&amp;le&gt;</string>
+     <string>File</string>
     </property>
     <addaction name="actionSave"/>
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
-     <string>&lt;&amp;View&gt;</string>
+     <string>View</string>
     </property>
     <addaction name="actionToggleLayer1"/>
     <addaction name="actionToggleLayer2"/>
@@ -96,7 +96,7 @@
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
-     <string>&lt;Ed&amp;it&gt;</string>
+     <string>Edit</string>
     </property>
     <addaction name="actionPaste"/>
     <addaction name="actionCut"/>
@@ -112,7 +112,7 @@
    </widget>
    <widget class="QMenu" name="menuSettings">
     <property name="title">
-     <string>&lt;Setti&amp;ngs&gt;</string>
+     <string>Settings</string>
     </property>
     <addaction name="actionSetBackgroundColor"/>
     <addaction name="actionResetBackgroundColor"/>
@@ -121,7 +121,7 @@
    </widget>
    <widget class="QMenu" name="menuWindow">
     <property name="title">
-     <string>&lt;Window&gt;</string>
+     <string>Window</string>
     </property>
     <addaction name="actionShowToolbox"/>
     <addaction name="actionShowMinimap"/>
@@ -183,10 +183,10 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>&lt;&amp;Layer 1&gt;</string>
+    <string>Toggle Layer 1</string>
    </property>
    <property name="toolTip">
-    <string>&lt;Layer 1&gt;</string>
+    <string>Toggle Layer 1</string>
    </property>
   </action>
   <action name="actionToggleLayer2">
@@ -194,18 +194,18 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>&lt;Layer &amp;2&gt;</string>
+    <string>Toggle Layer 2</string>
    </property>
    <property name="toolTip">
-    <string>&lt;Layer 2&gt;</string>
+    <string>Toggle Layer 2</string>
    </property>
   </action>
   <action name="actionZoom_In">
    <property name="text">
-    <string>&lt;&amp;Zoom In&gt;</string>
+    <string>Zoom In</string>
    </property>
    <property name="toolTip">
-    <string>&lt;Zoom In&gt;</string>
+    <string>Zoom In</string>
    </property>
    <property name="shortcut">
     <string>Ctrl++</string>
@@ -213,10 +213,10 @@
   </action>
   <action name="actionZoom_Out">
    <property name="text">
-    <string>&lt;Zoom &amp;Out&gt;</string>
+    <string>Zoom Out</string>
    </property>
    <property name="toolTip">
-    <string>&lt;Zoom Out&gt;</string>
+    <string>Zoom Out</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+-</string>
@@ -224,10 +224,10 @@
   </action>
   <action name="actionZoom_100">
    <property name="text">
-    <string>&lt;Zoom &amp;100%&gt;</string>
+    <string>Zoom 100%</string>
    </property>
    <property name="toolTip">
-    <string>&lt;Zoom 100%&gt;</string>
+    <string>Zoom 100%</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+0</string>
@@ -235,10 +235,10 @@
   </action>
   <action name="actionZoom_Maximum">
    <property name="text">
-    <string>&lt;&amp;Maximum Zoom&gt;</string>
+    <string>Maximum Zoom</string>
    </property>
    <property name="toolTip">
-    <string>&lt;Maximum Zoom&gt;</string>
+    <string>Maximum Zoom</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+PgDown</string>
@@ -246,10 +246,10 @@
   </action>
   <action name="actionZoom_Minimum">
    <property name="text">
-    <string>&lt;M&amp;inimum Zoom&gt;</string>
+    <string>Minimum Zoom</string>
    </property>
    <property name="toolTip">
-    <string>&lt;Minimum Zoom&gt;</string>
+    <string>Minimum Zoom</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+PgUp</string>
@@ -257,10 +257,10 @@
   </action>
   <action name="actionSave">
    <property name="text">
-    <string>&lt;&amp;Save&gt;</string>
+    <string>Save</string>
    </property>
    <property name="toolTip">
-    <string>&lt;Save&gt;</string>
+    <string>Save</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+S</string>
@@ -268,10 +268,10 @@
   </action>
   <action name="actionPaste">
    <property name="text">
-    <string>&lt;&amp;Paste&gt;</string>
+    <string>Paste</string>
    </property>
    <property name="toolTip">
-    <string>&lt;Paste&gt;</string>
+    <string>Paste</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+V</string>
@@ -279,10 +279,10 @@
   </action>
   <action name="actionCut">
    <property name="text">
-    <string>&lt;&amp;Cut&gt;</string>
+    <string>Cut</string>
    </property>
    <property name="toolTip">
-    <string>&lt;Cut&gt;</string>
+    <string>Cut</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+X</string>
@@ -290,10 +290,10 @@
   </action>
   <action name="actionCopy">
    <property name="text">
-    <string>&lt;C&amp;opy&gt;</string>
+    <string>Copy</string>
    </property>
    <property name="toolTip">
-    <string>&lt;Copy&gt;</string>
+    <string>Copy</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+C</string>
@@ -301,10 +301,10 @@
   </action>
   <action name="actionDelete">
    <property name="text">
-    <string>&lt;&amp;Delete&gt;</string>
+    <string>Delete</string>
    </property>
    <property name="toolTip">
-    <string>&lt;Delete&gt;</string>
+    <string>Delete</string>
    </property>
    <property name="shortcut">
     <string>Del</string>
@@ -315,10 +315,10 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>&lt;&amp;Fullscreen&gt;</string>
+    <string>Fullscreen</string>
    </property>
    <property name="toolTip">
-    <string>&lt;Fullscreen&gt;</string>
+    <string>Fullscreen</string>
    </property>
    <property name="shortcut">
     <string>F11</string>
@@ -329,10 +329,10 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>&lt;&amp;Grid&gt;</string>
+    <string>Grid</string>
    </property>
    <property name="toolTip">
-    <string>&lt;Grid&gt;</string>
+    <string>Grid</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+G</string>
@@ -340,7 +340,10 @@
   </action>
   <action name="actionAddArea">
    <property name="text">
-    <string>&lt;Add Area&gt;</string>
+    <string>Add Area</string>
+   </property>
+   <property name="toolTip">
+    <string>Add Area</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Alt+N</string>
@@ -348,10 +351,10 @@
   </action>
   <action name="actionDeleteCurrentArea">
    <property name="text">
-    <string>&lt;Delete Current Area&gt;</string>
+    <string>Delete Current Area</string>
    </property>
    <property name="toolTip">
-    <string>&lt;Delete Current Area&gt;</string>
+    <string>Delete Current Area</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Alt+D</string>
@@ -359,34 +362,46 @@
   </action>
   <action name="actionRaise">
    <property name="text">
-    <string>&lt;&amp;Raise to Top&gt;</string>
+    <string>Raise to Top</string>
    </property>
    <property name="toolTip">
-    <string>&lt;Raise to Top&gt;</string>
+    <string>Raise to Top</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+]</string>
    </property>
   </action>
   <action name="actionLower">
    <property name="text">
-    <string>&lt;&amp;Lower to Bottom&gt;</string>
+    <string>Lower to Bottom</string>
    </property>
    <property name="toolTip">
-    <string>&lt;Lower to Bottom&gt;</string>
+    <string>Lower to Bottom</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+[</string>
    </property>
   </action>
   <action name="actionRaiseLayer">
    <property name="text">
-    <string>&lt;Ra&amp;ise Layer&gt;</string>
+    <string>Raise Layer</string>
    </property>
    <property name="toolTip">
-    <string>&lt;Raise Layer&gt;</string>
+    <string>Raise Layer</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+]</string>
    </property>
   </action>
   <action name="actionLowerLayer">
    <property name="text">
-    <string>&lt;Lo&amp;wer Layer&gt;</string>
+    <string>Lower Layer</string>
    </property>
    <property name="toolTip">
-    <string>&lt;Lower Layer&gt;</string>
+    <string>Lower Layer</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+[</string>
    </property>
   </action>
   <action name="actionRenderLiquids">
@@ -394,10 +409,10 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>&lt;&amp;RenderLiquids&gt;</string>
+    <string>Render Liquids</string>
    </property>
    <property name="toolTip">
-    <string>&lt;RenderLiquids&gt;</string>
+    <string>Render Liquids</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+L</string>
@@ -405,10 +420,10 @@
   </action>
   <action name="actionSelectAll">
    <property name="text">
-    <string>&lt;&amp;SelectAll&gt;</string>
+    <string>Select All</string>
    </property>
    <property name="toolTip">
-    <string>&lt;SelectAll&gt;</string>
+    <string>Select All</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+A</string>
@@ -419,20 +434,26 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>&lt;&amp;Checkerboard&gt;</string>
+    <string>Checkerboard</string>
    </property>
    <property name="toolTip">
-    <string>&lt;Checkerboard&gt;</string>
+    <string>Checkerboard</string>
    </property>
   </action>
   <action name="actionSetBackgroundColor">
    <property name="text">
-    <string>&lt;&amp;Set Background Color&gt;</string>
+    <string>Set Background Color</string>
+   </property>
+   <property name="toolTip">
+    <string>Set Background Color</string>
    </property>
   </action>
   <action name="actionResetBackgroundColor">
    <property name="text">
-    <string>&lt;&amp;Reset Background Color&gt;</string>
+    <string>Reset Background Color</string>
+   </property>
+   <property name="toolTip">
+    <string>Reset Background Color</string>
    </property>
   </action>
   <action name="actionToggleSprites">
@@ -440,10 +461,10 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>&lt;&amp;Sprites&gt;</string>
+    <string>Toggle Sprites</string>
    </property>
    <property name="toolTip">
-    <string>&lt;ToggleSprites&gt;</string>
+    <string>Toggle Sprites</string>
    </property>
   </action>
   <action name="actionTogglePaths">
@@ -451,10 +472,10 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>&lt;&amp;Paths&gt;</string>
+    <string>Toggle Paths</string>
    </property>
    <property name="toolTip">
-    <string>&lt;TogglePaths&gt;</string>
+    <string>Toggle Paths</string>
    </property>
   </action>
   <action name="actionRenderCameraLimits">
@@ -462,10 +483,10 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>&lt;R&amp;enderCameraLimits&gt;</string>
+    <string>Render Camera Limits</string>
    </property>
    <property name="toolTip">
-    <string>&lt;RenderCameraLimits&gt;</string>
+    <string>Render Camera Limits</string>
    </property>
   </action>
   <action name="actionSelectAfterPlacement">
@@ -473,10 +494,10 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>&lt;S&amp;electAfterPlacement&gt;</string>
+    <string>Select Objects When Placed</string>
    </property>
    <property name="toolTip">
-    <string>&lt;SelectAfterPlacement&gt;</string>
+    <string>Select Objects When Placed</string>
    </property>
   </action>
   <action name="actionHideStatusbar">
@@ -484,7 +505,10 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>&lt;&amp;Hide Statusbar&gt;</string>
+    <string>Hide Statusbar</string>
+   </property>
+   <property name="toolTip">
+    <string>Hide Statusbar</string>
    </property>
   </action>
   <action name="actionShowMinimap">
@@ -492,10 +516,10 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>&lt;S&amp;howMinimap&gt;</string>
+    <string>Show Minimap</string>
    </property>
    <property name="toolTip">
-    <string>&lt;ShowMinimap&gt;</string>
+    <string>Show Minimap</string>
    </property>
   </action>
   <action name="actionShowToolbox">
@@ -503,10 +527,10 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>&lt;&amp;ShowToolbox&gt;</string>
+    <string>Show Toolbox</string>
    </property>
    <property name="toolTip">
-    <string>&lt;ShowToolbox&gt;</string>
+    <string>Show Toolbox</string>
    </property>
   </action>
   <action name="actionToggleLocations">
@@ -514,10 +538,10 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>&lt;Locations&gt;</string>
+    <string>Toggle Locations</string>
    </property>
    <property name="toolTip">
-    <string>&lt;ToggleLocations&gt;</string>
+    <string>Toggle Locations</string>
    </property>
   </action>
   <action name="actionToggle3DOverlay">
@@ -525,10 +549,10 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>&lt;Toggle3DOverlay&gt;</string>
+    <string>Toggle 3D Overlay</string>
    </property>
    <property name="toolTip">
-    <string>&lt;Toggle3DOverlay&gt;</string>
+    <string>Toggle 3D Overlay</string>
    </property>
   </action>
   <action name="actionToggle2DTile">
@@ -536,10 +560,10 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>&lt;Toggle2DTile&gt;</string>
+    <string>Toggle 2D Tiles</string>
    </property>
    <property name="toolTip">
-    <string>&lt;Toggle2DTile&gt;</string>
+    <string>Toggle 2D Tiles</string>
    </property>
   </action>
  </widget>

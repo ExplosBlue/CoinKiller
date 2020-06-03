@@ -81,6 +81,8 @@ private:
 
     class HorLine : public QFrame { public: HorLine() { setFrameStyle(QFrame::HLine | QFrame::Sunken); } };
 
+    void changeEvent(QEvent* event);
+
     void loadMusicIDs();
     void loadBackgrounds();
 

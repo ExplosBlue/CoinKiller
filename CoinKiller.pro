@@ -116,4 +116,8 @@ FORMS    += mainwindow.ui \
     sarcexplorerwindow.ui \
     newtilesetdialog.ui
 
+TRANSLATIONS += English.ts \
+    German.ts \
+    Italian.ts
+
 CONFIG += c++11

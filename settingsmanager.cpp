@@ -66,10 +66,7 @@ SettingsManager::SettingsManager(QWidget* parentWidget)
 
 SettingsManager::~SettingsManager()
 {
-    QList<QHash<QString, QString>*> cats = translations.values();
 
-    for (int i = 0; i < cats.length(); i++)
-        delete cats[i];
 }
 
 QString SettingsManager::dataPath(const QString& path)
@@ -85,43 +82,14 @@ void SettingsManager::loadTranslations()
 
 void SettingsManager::loadTranslations(QString languageName)
 {
-    QFile file(dataPath("languages/"+languageName+"/translations.txt"));
+    QString file = dataPath("languages/"+languageName+"/"+languageName);
+    bool loaded = translator.load(file);
 
-    if(!file.open(QIODevice::ReadOnly))
-    {
-        QMessageBox::information(parentWidget, "CoinKiller", "The language \""+languageName+"\" is not present in the /coinkiller_data/languages/ folder.\n\nEnglish will be selected as fallback language.");
-        loadTranslations("English");
-    }
+    if (loaded)
+       qApp->installTranslator(&translator);
+    else
+       qApp->removeTranslator(&translator);
 
-    QTextStream in(&file);
-    in.setCodec("UTF-8");
-
-    translations.clear();
-
-    QHash<QString, QString>* actualCat;
-
-    while (!in.atEnd())
-    {
-        QString line = in.readLine();
-
-        if (line.startsWith(';'))
-            continue;
-
-        else if (line.startsWith('['))
-        {
-            QString actualCatName = line.mid(1, line.length()-2);
-            QHash<QString, QString>* cat = new QHash<QString, QString>;
-            actualCat = cat;
-            translations.insert(actualCatName, cat);
-        }
-
-        else if (!line.isEmpty())
-        {
-            QStringList fields = line.split('=');
-            if (fields.size() == 2)
-                actualCat->insert(fields[0], fields[1].replace("\\n", "\n"));
-        }
-    }
 
     QStringList translateFiles;
     translateFiles << "entrancetypes.txt"
@@ -141,13 +109,6 @@ void SettingsManager::loadTranslations(QString languageName)
 
         translatedFiles.insert(transFile, path);
     }
-
-    file.close();
-}
-
-QString SettingsManager::getTranslation(QString category, QString key)
-{
-    return translations.value(category, new QHash<QString, QString>)->value(key, "<NOT LOADED>");
 }
 
 void SettingsManager::setupLanguageSelector(QListWidget* selector)
@@ -162,15 +123,14 @@ void SettingsManager::setupLanguageSelector(QListWidget* selector)
     while(directories.hasNext())
     {
         directories.next();
-        if (QFile(directories.filePath()+"/translations.txt").exists())
-        {
-            QListWidgetItem* item = new QListWidgetItem(directories.fileName());
 
-            selector->addItem(item);
+        QListWidgetItem* item = new QListWidgetItem(directories.fileName());
 
-            if (directories.fileName() == settings.value("Language", "English").toString())
-                selector->setCurrentItem(item);
-        }
+        selector->addItem(item);
+
+        if (directories.fileName() == settings.value("Language", "English").toString())
+            selector->setCurrentItem(item);
+
     }
 
     connect(selector, SIGNAL(currentTextChanged(QString)), this, SLOT(setLanguage(QString)));
@@ -183,9 +143,9 @@ QString SettingsManager::getFilePath(QString file)
 }
 
 void SettingsManager::setLanguage(QString language)
-{
+{      
     settings.setValue("Language", language);
-    QMessageBox::information(parentWidget, "CoinKiller", QString("The Language has been changed to %1.\n\nPlease restart CoinKiller for the changes to take effect.").arg(language));
+    loadTranslations(language);
 }
 
 QVariant SettingsManager::get(const QString &key, const QVariant &defaultValue)

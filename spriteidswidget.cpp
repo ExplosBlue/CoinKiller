@@ -9,16 +9,21 @@ SpriteIdWidget::SpriteIdWidget(QList<Sprite*> *sprites)
 {
     this->sprites = sprites;
 
-    QLabel* viewLabel = new QLabel("View:");
+    QLabel* viewLabel = new QLabel(tr("View:"));
     viewLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 
     QStringList viewTypes;
-    viewTypes << "All in level" << "Triggering IDs" << "Target IDs" << "Rotation IDs" << "Group IDs";
+    viewTypes << tr("All in Level")
+              << tr("Triggering IDs")
+              << tr("Target IDs")
+              << tr("Rotation IDs")
+              << tr("Group IDs");
+
     viewComboBox = new QComboBox();
     viewComboBox->addItems(viewTypes);
     connect(viewComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(setView(int)));
 
-    QLabel* searchLabel = new QLabel("Search:");
+    QLabel* searchLabel = new QLabel(tr("Search:"));
     searchLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     searchEdit = new QLineEdit();
     connect(searchEdit, SIGNAL(textEdited(QString)), this, SLOT(search(QString)));
@@ -35,7 +40,7 @@ SpriteIdWidget::SpriteIdWidget(QList<Sprite*> *sprites)
     spriteTree->setHeaderHidden(false);
     spriteTree->setSortingEnabled(true);
     spriteTree->setRootIsDecorated(false);
-    headerLables << "Sprite" << "ID";
+    headerLables << tr("Sprite") << tr("ID");
     spriteTree->setHeaderLabels(headerLables);
 
     QVBoxLayout* layout = new QVBoxLayout();
@@ -46,6 +51,23 @@ SpriteIdWidget::SpriteIdWidget(QList<Sprite*> *sprites)
     updateList();
 
     connect(spriteTree, SIGNAL(currentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)), this, SLOT(handleIndexChange(QTreeWidgetItem*)));
+}
+
+void SpriteIdWidget::changeEvent(QEvent* event)
+{
+    if (event->type() == QEvent::LanguageChange)
+    {
+        int currentView = viewComboBox->currentIndex();
+
+        spriteData.loadSpriteDefs();
+        spriteData.loadSpriteViews();
+
+        viewComboBox->setCurrentIndex(currentView);
+
+        updateList();
+    }
+
+    QWidget::changeEvent(event);
 }
 
 void SpriteIdWidget::search(QString text)
@@ -89,7 +111,7 @@ void SpriteIdWidget::updateList()
                 {
                     QTreeWidgetItem* spriteItem = new QTreeWidgetItem();
                     spriteItem->setText(0, QString("%1: %2").arg(sprite->getid()).arg(spriteData.getSpriteDef(sprite->getid()).getName()));
-                    spriteItem->setText(1, QString("Triggering ID: %1").arg(sprite->getNybbleData(field->startNybble, field->endNybble)));
+                    spriteItem->setText(1, QString(tr("Triggering ID: %1")).arg(sprite->getNybbleData(field->startNybble, field->endNybble)));
                     spriteItem->setData(0, Qt::UserRole, sprite->getid());
                     spriteItem->setData(1, Qt::UserRole, sprite->getx());
                     spriteItem->setData(2, Qt::UserRole, sprite->gety());
@@ -118,7 +140,7 @@ void SpriteIdWidget::updateList()
                 {
                     QTreeWidgetItem* spriteItem = new QTreeWidgetItem();
                     spriteItem->setText(0, QString("%1: %2").arg(sprite->getid()).arg(spriteData.getSpriteDef(sprite->getid()).getName()));
-                    spriteItem->setText(1, QString("Target ID: %1").arg(sprite->getNybbleData(field->startNybble, field->endNybble)));
+                    spriteItem->setText(1, QString(tr("Target ID: %1")).arg(sprite->getNybbleData(field->startNybble, field->endNybble)));
                     spriteItem->setData(0, Qt::UserRole, sprite->getid());
                     spriteItem->setData(1, Qt::UserRole, sprite->getx());
                     spriteItem->setData(2, Qt::UserRole, sprite->gety());
@@ -147,7 +169,7 @@ void SpriteIdWidget::updateList()
                 {
                     QTreeWidgetItem* spriteItem = new QTreeWidgetItem();
                     spriteItem->setText(0, QString("%1: %2").arg(sprite->getid()).arg(spriteData.getSpriteDef(sprite->getid()).getName()));
-                    spriteItem->setText(1, QString("Rotation ID: %1").arg(sprite->getNybbleData(field->startNybble, field->endNybble)));
+                    spriteItem->setText(1, QString(tr("Rotation ID: %1")).arg(sprite->getNybbleData(field->startNybble, field->endNybble)));
                     spriteItem->setData(0, Qt::UserRole, sprite->getid());
                     spriteItem->setData(1, Qt::UserRole, sprite->getx());
                     spriteItem->setData(2, Qt::UserRole, sprite->gety());
@@ -176,7 +198,7 @@ void SpriteIdWidget::updateList()
                 {
                     QTreeWidgetItem* spriteItem = new QTreeWidgetItem();
                     spriteItem->setText(0, QString("%1: %2").arg(sprite->getid()).arg(spriteData.getSpriteDef(sprite->getid()).getName()));
-                    spriteItem->setText(1, QString("Group ID: %1").arg(sprite->getNybbleData(field->startNybble, field->endNybble)));
+                    spriteItem->setText(1, QString(tr("Group ID: %1")).arg(sprite->getNybbleData(field->startNybble, field->endNybble)));
                     spriteItem->setData(0, Qt::UserRole, sprite->getid());
                     spriteItem->setData(1, Qt::UserRole, sprite->getx());
                     spriteItem->setData(2, Qt::UserRole, sprite->gety());
@@ -252,7 +274,6 @@ void SpriteIdWidget::handleIndexChange(QTreeWidgetItem *spriteItem)
              && (spriteItem->data(2, Qt::UserRole) == sprite->gety())
              && (spriteItem->data(3, Qt::UserRole) == sprite->getNybbleData(0, 23)))
             {
-                //qDebug() << " sprite : " << sprite->getNybbleData(0, 23) << " item : " << spriteItem->data(3, Qt::UserRole);
                 emit selectedSpriteChanged(sprite);
             }
         }

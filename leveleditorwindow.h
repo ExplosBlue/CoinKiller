@@ -149,7 +149,6 @@ private:
 
     LevelManager* lvlMgr;
     SettingsManager* settings;
-    void loadTranslations();
 
     Level* level;
     Tileset* tileset;
@@ -170,6 +169,8 @@ private:
     QComboBox* areaSelector;
 
     QLabel* editStatus;
+
+    void changeEvent(QEvent* event);
 
     void updateAreaSelector(int index = -1);
 

@@ -68,7 +68,6 @@ MainWindow::MainWindow(WindowBase *parent) :
 
     ImageCache::init();
 
-    loadTranslations();
     settings->setupLanguageSelector(ui->languageSelector);
     setGameLoaded(false);
 
@@ -102,21 +101,30 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+void MainWindow::changeEvent(QEvent* event)
+{
+    if (event->type() == QEvent::LanguageChange)
+    {
+        ui->retranslateUi(this);
+        ui->levelList->setModel(game->getCourseModel());
+        ui->tilesetView->setModel(game->getTilesetModel());
+    }
+
+    QMainWindow::changeEvent(event);
+}
+
 void MainWindow::setGameLoaded(bool loaded)
 {
     if (!loaded)
-        statusLabel->setText("No ROMFS loaded.");
+        statusLabel->setText(tr("No ROMFS loaded."));
     ui->tab_tilesets->setEnabled(loaded);
     gameLoaded = loaded;
 }
 
 void MainWindow::on_actionAbout_triggered()
 {
-    QMessageBox::information(this, "About that thing you're using",
-                                   "CoinKiller v1.0 -- by StapleButter, RicBent and Explos\n\n"
-                                   "http://kuribo64.net/\n\n"
-                                   "Default Icons by Icons8\n\n"
-                                   "This is free software, if you paid for it, you got scammed");
+    QMessageBox::information(this, tr("About CoinKiller"),
+                             tr("CoinKiller v1.0 -- by StapleButter, RicBent and Explos\n\nhttp://kuribo64.net/\n\nDefault Icons by Icons8\n\nThis is free software, if you paid for it, you got scammed"));
 }
 
 void MainWindow::loadGame(const QString& path)
@@ -126,7 +134,7 @@ void MainWindow::loadGame(const QString& path)
     game = new Game(path);
 
     setGameLoaded(true);
-    statusLabel->setText(QString("%1: %2").arg("Loaded").arg(path));
+    statusLabel->setText(tr("Loaded: %1").arg(path));
 
     ui->levelList->setModel(game->getCourseModel());
 
@@ -139,7 +147,7 @@ void MainWindow::on_actionLoadUnpackedROMFS_triggered()
 {
     QString basepath = settings->getLastRomFSPath();
 
-    QString dirpath = QFileDialog::getExistingDirectory(this, settings->getTranslation("MainWindow", "selectUnpackedRomFSFolder"), basepath);
+    QString dirpath = QFileDialog::getExistingDirectory(this, tr("Select unpacked ROMFS Folder..."), basepath);
     if (dirpath.isNull())
         return;
     loadGame(dirpath);
@@ -195,8 +203,7 @@ bool MainWindow::checkForMissingFiles()
     << "spritecategories.xml"
     << "spritedata.xml"
     << "tilebehaviors.xml"
-    << "tilesetnames.txt"
-    << "languages/English/translations.txt";
+    << "tilesetnames.txt";
 
     QList<int> missingFilesIds;
 
@@ -231,33 +238,10 @@ bool MainWindow::checkForMissingFiles()
     return false;
 }
 
-void MainWindow::loadTranslations()
-{
-    ui->menuFile->setTitle(settings->getTranslation("General", "file"));
-    ui->menuHelp->setTitle(settings->getTranslation("General", "help"));
-    ui->actionAbout->setText(settings->getTranslation("MainWindow", "aboutCoinKiller"));
-    ui->actionLoadUnpackedROMFS->setText(settings->getTranslation("MainWindow", "loadUnpackedRomFS"));
-    ui->actionOpenlastROMFSDir->setText(settings->getTranslation("MainWindow", "openLastRomFSDir"));
-    ui->tabWidget->setTabText(0, settings->getTranslation("MainWindow", "levels"));
-    ui->addLevelBtn->setText(settings->getTranslation("MainWindow", "addLevel"));
-    ui->removeLevelBtn->setText(settings->getTranslation("MainWindow", "removeLevel"));
-    ui->tabWidget->setTabText(1, settings->getTranslation("MainWindow", "tilesets"));
-    ui->addTilesetBtn->setText(settings->getTranslation("MainWindow", "addTileset"));
-    ui->removeTilesetBtn->setText(settings->getTranslation("MainWindow", "removeTileset"));
-    ui->tabWidget->setTabText(2, settings->getTranslation("General", "settings"));
-    ui->languagesLabel->setText(settings->getTranslation("MainWindow", "languages")+":");
-    ui->updateSpriteData->setText(settings->getTranslation("MainWindow", "updateSDat"));
-    ui->menuTools->setTitle(settings->getTranslation("General", "tools"));
-    ui->actionSarcExplorer->setText(settings->getTranslation("SarcExplorer", "sarcExplorer"));
-    ui->nightModeCheckbox->setText(settings->getTranslation("MainWindow", "NightMode"));
-    ui->maximisedCheckbox->setText(settings->getTranslation("MainWindow", "Maximised"));
-    ui->loadLastCheckbox->setText(settings->getTranslation("MainWindow", "LoadLast"));
-}
-
 void MainWindow::on_updateSpriteData_clicked()
 {
     QMessageBox::StandardButton reply;
-    reply = QMessageBox::warning(this, "CoinKiller", settings->getTranslation("MainWindow", "sDatWarning"), QMessageBox::Yes|QMessageBox::No);
+    reply = QMessageBox::warning(this, "CoinKiller", tr("Any changes made to your spritedata.xml will be overwritten!\n\nDo you want to proceed?"), QMessageBox::Yes|QMessageBox::No);
     if (reply == QMessageBox::No)
         return;
 
@@ -275,16 +259,16 @@ void MainWindow::sdDownload_finished(QNetworkReply::NetworkError error, const QB
         {
             file.write(data);
             file.close();
-            QMessageBox::information(this, "CoinKiller", settings->getTranslation("MainWindow", "sDatSuccess"), QMessageBox::Ok);
+            QMessageBox::information(this, "CoinKiller", tr("Your spritedata was updated successfully!"), QMessageBox::Ok);
         }
         else
         {
-            QMessageBox::information(this, "CoinKiller", settings->getTranslation("MainWindow", "sDatErrorFile"), QMessageBox::Ok);
+            QMessageBox::information(this, "CoinKiller", tr("Updating the spritedata failed:\n\nCould not open spritedata.xml for writing!"), QMessageBox::Ok);
             this->setEnabled(true);
         }
     }
     else
-        QMessageBox::information(this, "CoinKiller", settings->getTranslation("MainWindow", "sDatErrorNetwork").arg(url.toString()), QMessageBox::Ok);
+        QMessageBox::information(this, "CoinKiller", tr("Updating the spritedata failed:\n\nConnection to %1 failed!").arg(url.toString()), QMessageBox::Ok);
 
     this->setEnabled(true);
 }
@@ -297,7 +281,7 @@ void MainWindow::on_actionSarcExplorer_triggered()
     else
         basePath = QCoreApplication::applicationDirPath();
 
-    QString sarcFilePath = QFileDialog::getOpenFileName(this, settings->getTranslation("SarcExplorer", "selectArchive"), basePath, settings->getTranslation("SarcExplorer", "sarcArchives") + " (*.sarc)");
+    QString sarcFilePath = QFileDialog::getOpenFileName(this, tr("Select a Sarc Archive"), basePath, tr("Sarc Archives (*.sarc)"));
 
     if (sarcFilePath.isEmpty() || sarcFilePath.isEmpty())
         return;
@@ -316,7 +300,7 @@ void MainWindow::on_addLevelBtn_clicked()
     QFile blankLvl(settings->dataPath("blank_level.sarc"));
     if (!blankLvl.exists())
     {
-        QMessageBox::information(this, "CoinKiller", settings->getTranslation("MainWindow", "blankLevelMissing") + " (/coinkiller_data/blank_level.sarc).", QMessageBox::StandardButton::Ok);
+        QMessageBox::information(this, "CoinKiller", tr("You cannot create new levels without the level template.") + " (/coinkiller_data/blank_level.sarc).", QMessageBox::StandardButton::Ok);
         return;
     }
 
@@ -328,7 +312,7 @@ void MainWindow::on_addLevelBtn_clicked()
 
     if (game->fs->fileExists("/Course/" + nld.getName() + ".sarc"))
     {
-        QMessageBox::StandardButton reply = QMessageBox::warning(this, "CoinKiller", settings->getTranslation("MainWindow", "addLevelAlreadyExists").arg(nld.getName() + ".sarc"), QMessageBox::Yes | QMessageBox::No);
+        QMessageBox::StandardButton reply = QMessageBox::warning(this, "CoinKiller", tr("%1 already exists, would you like to overwrite it? This action cannot be undone.").arg(nld.getName() + ".sarc"), QMessageBox::Yes | QMessageBox::No);
         if (reply == QMessageBox::Yes)
         {
             game->fs->deleteFile("/Course/" + nld.getName() + ".sarc");
@@ -351,7 +335,7 @@ void MainWindow::on_addLevelBtn_clicked()
 void MainWindow::on_removeLevelBtn_clicked()
 {
     QString selLvlName = ui->levelList->selectionModel()->selectedIndexes().at(0).data(Qt::UserRole+1).toString();
-    QMessageBox::StandardButton reply = QMessageBox::warning(this, "CoinKiller", settings->getTranslation("MainWindow", "removeLevelWarning").arg(selLvlName), QMessageBox::Yes | QMessageBox::No);
+    QMessageBox::StandardButton reply = QMessageBox::warning(this, "CoinKiller", tr("Are you sure you want to remove %1? This action cannot be undone.").arg(selLvlName), QMessageBox::Yes | QMessageBox::No);
 
     if (reply == QMessageBox::Yes)
     {
@@ -370,7 +354,7 @@ void MainWindow::on_addTilesetBtn_clicked()
     QFile blankTs(settings->dataPath("blank_tileset.sarc"));
     if (!blankTs.exists())
     {
-        QMessageBox::information(this, "CoinKiller", settings->getTranslation("MainWindow", "blankTilesetMissing") + " (/coinkiller_data/blank_tileset.sarc).", QMessageBox::StandardButton::Ok);
+        QMessageBox::information(this, "CoinKiller", tr("You cannot create new tilesets without the tileset template.") + " (/coinkiller_data/blank_tileset.sarc).", QMessageBox::StandardButton::Ok);
         return;
     }
 
@@ -382,7 +366,7 @@ void MainWindow::on_addTilesetBtn_clicked()
 
     if (game->fs->fileExists("/Unit/" + ntd.getName() + ".sarc"))
     {
-        QMessageBox::information(this, "CoinKiller", settings->getTranslation("MainWindow", "tilesetExists"), QMessageBox::StandardButton::Ok);
+        QMessageBox::information(this, "CoinKiller", tr("A tileset with that name already exists."), QMessageBox::StandardButton::Ok);
         return;
     }
 
@@ -408,7 +392,7 @@ void MainWindow::on_removeTilesetBtn_clicked()
         return;
 
     QString selTsName = ui->tilesetView->selectionModel()->selectedIndexes().at(0).data(Qt::UserRole+1).toString();
-    QMessageBox::StandardButton reply = QMessageBox::warning(this, "CoinKiller", settings->getTranslation("MainWindow", "removeLevelWarning").arg(selTsName), QMessageBox::Yes | QMessageBox::No);
+    QMessageBox::StandardButton reply = QMessageBox::warning(this, "CoinKiller", tr("Are you sure you want to remove %1? This action cannot be undone.").arg(selTsName), QMessageBox::Yes | QMessageBox::No);
 
     if (reply == QMessageBox::Yes)
     {
@@ -485,9 +469,9 @@ void MainWindow::createLevelListContextMenu(const QPoint &pos)
 
     QMenu contextMenu(tr("Context menu"), this);
 
-    QAction openLevel(settings->getTranslation("MainWindow", "openLevel"), this);
-    QAction sarcExplorer(settings->getTranslation("MainWindow", "openInSarcExplorer"), this);
-    QAction removeLevel(settings->getTranslation("MainWindow", "removeLevel"), this);
+    QAction openLevel(tr("Open In Level Editor"), this);
+    QAction sarcExplorer(tr("Open In Sarc Explorer"), this);
+    QAction removeLevel(tr("Remove Level"), this);
 
     connect(&openLevel, SIGNAL(triggered()), this, SLOT(openLevelFromConextMenu()));
     connect(&sarcExplorer, SIGNAL(triggered()), this, SLOT(openInSarcExplorer()));
@@ -511,9 +495,9 @@ void MainWindow::createTilesetListContextMenu(const QPoint &pos)
 
     QMenu contextMenu(tr("Context menu"), this);
 
-    QAction openTileset(settings->getTranslation("MainWindow", "openTileset"), this);
-    QAction sarcExplorer(settings->getTranslation("MainWindow", "openInSarcExplorer"), this);
-    QAction removeTileset(settings->getTranslation("MainWindow", "removeTileset"), this);
+    QAction openTileset(tr("Open In Tileset Editor"), this);
+    QAction sarcExplorer(tr("Open In Sarc Explorer"), this);
+    QAction removeTileset(tr("Remove Tileset"), this);
 
     connect(&openTileset, SIGNAL(triggered()), this, SLOT(openTilesetFromConextMenu()));
     connect(&sarcExplorer, SIGNAL(triggered()), this, SLOT(openInSarcExplorer()));

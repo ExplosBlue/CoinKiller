@@ -12,29 +12,29 @@ AreaEditorWidget::AreaEditorWidget(Level* level, Game *game)
     this->level = level;
     this->game = game;
 
-    specialLevelFlags1.insert(0, "Normal");
-    specialLevelFlags1.insert(2, "Powerup / Star Toad House");
-    specialLevelFlags1.insert(3, "1UP Toad House");
-    specialLevelFlags1.insert(4, "Rainbow Course");
-    specialLevelFlags1.insert(5, "Credits");
-    specialLevelFlags1.insert(6, "Cannon Stage");
-    specialLevelFlags1.insert(7, "Frozen Timer");
+    specialLevelFlags1.insert(0, tr("Normal"));
+    specialLevelFlags1.insert(2, tr("Powerup Toad House"));
+    specialLevelFlags1.insert(3, tr("1-Up Toad House"));
+    specialLevelFlags1.insert(4, tr("Rainbow Level"));
+    specialLevelFlags1.insert(5, tr("Credits"));
+    specialLevelFlags1.insert(6, tr("Cannon Level"));
+    specialLevelFlags1.insert(7, tr("Frozen Timer"));
 
-    specialLevelFlags2.insert(0, "Normal");
-    specialLevelFlags2.insert(1, "Ghost House");
-    specialLevelFlags2.insert(7, "Reznor Battle");
+    specialLevelFlags2.insert(0, tr("Normal"));
+    specialLevelFlags2.insert(1, tr("Ghost House"));
+    specialLevelFlags2.insert(7, tr("Reznor Battle"));
 
     QGridLayout* layout = new QGridLayout();
     setLayout(layout);
 
-    layout->addWidget(new QLabel("Time Limit:"), 0, 0, 1, 1, Qt::AlignRight);
+    layout->addWidget(new QLabel(tr("Time Limit:")), 0, 0, 1, 1, Qt::AlignRight);
     timeLimit = new QSpinBox();
     timeLimit->setRange(0, 999);
     connect(timeLimit, SIGNAL(valueChanged(int)), this, SLOT(handleTimeLimitChange(int)));
     timeLimit->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);  // All Controls at maximum possible width
     layout->addWidget(timeLimit, 0, 1);
 
-    layout->addWidget(new QLabel("Coin Rush Time Limit:"), 1, 0, 1, 1, Qt::AlignRight);
+    layout->addWidget(new QLabel(tr("CoinRush Time Limit:")), 1, 0, 1, 1, Qt::AlignRight);
     coinRushtimeLimit = new QSpinBox();
     coinRushtimeLimit->setRange(0, 999);
     connect(coinRushtimeLimit, SIGNAL(valueChanged(int)), this, SLOT(handleCoinRushTimeLimitChange(int)));
@@ -42,31 +42,31 @@ AreaEditorWidget::AreaEditorWidget(Level* level, Game *game)
 
     layout->addWidget(new HorLine(), 2, 0, 1, 2);
 
-    layout->addWidget(new QLabel("Level Setting 1:"), 3, 0, 1, 1, Qt::AlignRight);
+    layout->addWidget(new QLabel(tr("Level Setting 1:")), 3, 0, 1, 1, Qt::AlignRight);
     specialLevelFlag1 = new QComboBox();
     specialLevelFlag1->addItems(specialLevelFlags1.values());
     connect(specialLevelFlag1, SIGNAL(currentIndexChanged(QString)), this, SLOT(handleSpecialLevelFlag1Change(QString)));
     layout->addWidget(specialLevelFlag1, 3, 1);
 
-    layout->addWidget(new QLabel("Level Setting 2:"), 4, 0, 1, 1, Qt::AlignRight);
+    layout->addWidget(new QLabel(tr("Level Setting 2:")), 4, 0, 1, 1, Qt::AlignRight);
     specialLevelFlag2 = new QComboBox();
     specialLevelFlag2->addItems(specialLevelFlags2.values());
     connect(specialLevelFlag2, SIGNAL(currentIndexChanged(QString)), this, SLOT(handleSpecialLevelFlag2Change(QString)));
     layout->addWidget(specialLevelFlag2, 4, 1);
 
-    layout->addWidget(new QLabel("Level Entrance ID:"), 5, 0, 1, 1, Qt::AlignRight);
+    layout->addWidget(new QLabel(tr("Level Entrance ID:")), 5, 0, 1, 1, Qt::AlignRight);
     levelEntranceID = new QSpinBox();
     levelEntranceID->setRange(0, 255);
     connect(levelEntranceID, SIGNAL(valueChanged(int)), this, SLOT(handlelevelEntranceIDChanged(int)));
     layout->addWidget(levelEntranceID, 5, 1);
 
-    layout->addWidget(new QLabel("Unk1:"), 6, 0, 1, 1, Qt::AlignRight);
+    layout->addWidget(new QLabel(tr("Unknown 1:")), 6, 0, 1, 1, Qt::AlignRight);
     unk1Editor = new QSpinBox();
     unk1Editor->setRange(0, 255);
     connect(unk1Editor, SIGNAL(valueChanged(int)), this, SLOT(handleUnk1Change(int)));
     layout->addWidget(unk1Editor, 6, 1);
 
-    layout->addWidget(new QLabel("Unk2:"), 7, 0, 1, 1, Qt::AlignRight);
+    layout->addWidget(new QLabel(tr("Unknown 2:")), 7, 0, 1, 1, Qt::AlignRight);
     unk2Editor = new QSpinBox();
     unk2Editor->setRange(0, 255);
     connect(unk2Editor, SIGNAL(valueChanged(int)), this, SLOT(handleUnk2Change(int)));
@@ -89,8 +89,8 @@ void AreaEditorWidget::updateInfo()
     timeLimit->setValue(level->timeLimit);
     coinRushtimeLimit->setValue(level->coinRushTimeLimit);
     levelEntranceID->setValue(level->levelEntranceID);
-    specialLevelFlag1->setCurrentText(specialLevelFlags1.value(level->specialLevelFlag, "Unknown"));
-    specialLevelFlag2->setCurrentText(specialLevelFlags2.value(level->specialLevelFlag2, "Unknown"));
+    specialLevelFlag1->setCurrentText(specialLevelFlags1.value(level->specialLevelFlag, tr("Unknown")));
+    specialLevelFlag2->setCurrentText(specialLevelFlags2.value(level->specialLevelFlag2, tr("Unknown")));
     unk1Editor->setValue(level->unk1);
     unk2Editor->setValue(level->unk2);
     handleChanges = true;
@@ -161,10 +161,10 @@ TilesetChooser::TilesetChooser(Level *level, Game *game)
         tab->setColumnWidth(0, 150);
 
         QString title;
-        if (i == 0) title = "Standard";
-        else if (i == 1) title = "Stage";
-        else if (i == 2) title = "Background";
-        else if (i == 3) title = "Interactive";
+        if (i == 0) title = tr("Standard");
+        else if (i == 1) title = tr("Stage");
+        else if (i == 2) title = tr("Background");
+        else if (i == 3) title = tr("Interactive");
 
         if (!level->tilesets[i])
             tab->selectionModel()->setCurrentIndex(tab->model()->index(0,0), QItemSelectionModel::Select | QItemSelectionModel::Rows);

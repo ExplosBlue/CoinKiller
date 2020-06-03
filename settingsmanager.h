@@ -23,6 +23,7 @@
 #include <QSettings>
 #include <QDebug>
 #include <QListWidget>
+#include <QTranslator>
 
 class SettingsManager : public QObject
 {
@@ -36,7 +37,6 @@ public:
 
     void loadTranslations();
     void loadTranslations(QString languageName);
-    QString getTranslation(QString category, QString key);
     void setupLanguageSelector(QListWidget* selector);
     QString getFilePath(QString file);
 
@@ -66,10 +66,11 @@ private:
 
     QSettings settings;
 
+    QTranslator translator;
+
     QString dataBasePath;
 
     QWidget* parentWidget;
-    QHash<QString, QHash<QString, QString>*> translations;
     QHash<QString, QString> translatedFiles;
 };
 

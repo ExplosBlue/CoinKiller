@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>CoinKiller</string>
   </property>
   <property name="styleSheet">
    <string notr="true"/>
@@ -37,7 +37,7 @@
       </property>
       <widget class="QWidget" name="tab_levels">
        <attribute name="title">
-        <string>&lt;Levels&gt;</string>
+        <string>Levels</string>
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_2" stretch="0,0">
         <property name="leftMargin">
@@ -79,7 +79,7 @@
           <item>
            <widget class="QPushButton" name="addLevelBtn">
             <property name="text">
-             <string>&lt;Add Level&gt;</string>
+             <string>Add Level</string>
             </property>
            </widget>
           </item>
@@ -89,7 +89,7 @@
              <bool>false</bool>
             </property>
             <property name="text">
-             <string>&lt;Remove Level&gt;</string>
+             <string>Remove Level</string>
             </property>
            </widget>
           </item>
@@ -99,7 +99,7 @@
       </widget>
       <widget class="QWidget" name="tab_tilesets">
        <attribute name="title">
-        <string>&lt;Tilesets&gt;</string>
+        <string>Tilesets</string>
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_3">
         <item>
@@ -117,7 +117,7 @@
           <item>
            <widget class="QPushButton" name="addTilesetBtn">
             <property name="text">
-             <string>&lt;Add Tileset&gt;</string>
+             <string>Add Tileset</string>
             </property>
            </widget>
           </item>
@@ -127,7 +127,7 @@
              <bool>false</bool>
             </property>
             <property name="text">
-             <string>&lt;Remove Tileset&gt;</string>
+             <string>Remove Tileset</string>
             </property>
            </widget>
           </item>
@@ -137,7 +137,7 @@
       </widget>
       <widget class="QWidget" name="tab_settings">
        <attribute name="title">
-        <string>&lt;Settings&gt;</string>
+        <string>Settings</string>
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_5">
         <item>
@@ -145,7 +145,7 @@
           <item>
            <widget class="QLabel" name="languagesLabel">
             <property name="text">
-             <string>&lt;Languages&gt;</string>
+             <string>Languages</string>
             </property>
            </widget>
           </item>
@@ -155,7 +155,7 @@
           <item>
            <widget class="QPushButton" name="updateSpriteData">
             <property name="text">
-             <string>&lt;UpdateSpritedata&gt;</string>
+             <string>Update Spritedata</string>
             </property>
            </widget>
           </item>
@@ -166,21 +166,21 @@
           <item row="0" column="0">
            <widget class="QCheckBox" name="nightModeCheckbox">
             <property name="text">
-             <string>&lt;NightMode&gt;</string>
+             <string>Night Mode</string>
             </property>
            </widget>
           </item>
           <item row="0" column="1">
            <widget class="QCheckBox" name="maximisedCheckbox">
             <property name="text">
-             <string>&lt;Maximised&gt;</string>
+             <string>Start Maximised</string>
             </property>
            </widget>
           </item>
           <item row="1" column="0">
            <widget class="QCheckBox" name="loadLastCheckbox">
             <property name="text">
-             <string>&lt;LoadLastOnStart&gt;</string>
+             <string>Load last ROMFS</string>
             </property>
            </widget>
           </item>
@@ -203,7 +203,7 @@
    </property>
    <widget class="QMenu" name="menuFile">
     <property name="title">
-     <string>&lt;F&amp;ile&gt;</string>
+     <string>File</string>
     </property>
     <addaction name="actionLoadUnpackedROMFS"/>
     <addaction name="separator"/>
@@ -211,13 +211,13 @@
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
-     <string>&lt;He&amp;lp&gt;</string>
+     <string>Help</string>
     </property>
     <addaction name="actionAbout"/>
    </widget>
    <widget class="QMenu" name="menuTools">
     <property name="title">
-     <string>&lt;Tools&gt;</string>
+     <string>Tools</string>
     </property>
     <addaction name="actionSarcExplorer"/>
    </widget>
@@ -228,7 +228,10 @@
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionLoadUnpackedROMFS">
    <property name="text">
-    <string>&lt;&amp;Load unpacked ROMFS&gt;</string>
+    <string>Load unpacked ROMFS...</string>
+   </property>
+   <property name="toolTip">
+    <string>Load unpacked ROMFS</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+O</string>
@@ -236,12 +239,18 @@
   </action>
   <action name="actionAbout">
    <property name="text">
-    <string>&lt;About &amp;CoinKiller&gt;</string>
+    <string>About CoinKiller</string>
+   </property>
+   <property name="toolTip">
+    <string>About CoinKiller</string>
    </property>
   </action>
   <action name="actionSarcExplorer">
    <property name="text">
-    <string>&lt;Sarc Explorer&gt;</string>
+    <string>Sarc Explorer</string>
+   </property>
+   <property name="toolTip">
+    <string>Sarc Explorer</string>
    </property>
   </action>
   <action name="actionOpenlastROMFSDir">
@@ -249,7 +258,10 @@
     <bool>false</bool>
    </property>
    <property name="text">
-    <string>&lt;Open last ROMFS Directory&gt;</string>
+    <string>Show ROMFS Directory</string>
+   </property>
+   <property name="toolTip">
+    <string>Show ROMFS Directory</string>
    </property>
   </action>
  </widget>

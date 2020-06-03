@@ -42,8 +42,6 @@ LevelManager* Game::getLevelManager(WindowBase* parent, QString path)
 
 QStandardItemModel* Game::getCourseModel()
 {
-    SettingsManager* settingsMgr = SettingsManager::getInstance();
-
     QStandardItemModel* model = new QStandardItemModel();
 
     QList<QString> dirList;
@@ -163,7 +161,7 @@ QStandardItemModel* Game::getTilesetModel()
     QStandardItemModel* model = new QStandardItemModel();
     model->setColumnCount(2);
     QStringList headers;
-    headers << settingsMgr->getTranslation("TilesetEditor", "tileset") << settingsMgr->getTranslation("General", "filename");
+    headers << QObject::tr("Tileset") << QObject::tr("Filename");
     model->setHorizontalHeaderLabels(headers);
 
     QFile inputFile(settingsMgr->getFilePath("tilesetnames.txt"));
@@ -182,10 +180,10 @@ QStandardItemModel* Game::getTilesetModel()
     inputFile.close();
 
 
-    QStandardItem* standardSuite = new QStandardItem(settingsMgr->getTranslation("TilesetEditor", "standard"));
-    QStandardItem* stageSuite = new QStandardItem(settingsMgr->getTranslation("TilesetEditor", "stage"));
-    QStandardItem* backgroundSuite = new QStandardItem(settingsMgr->getTranslation("TilesetEditor", "background"));
-    QStandardItem* interactiveSuite = new QStandardItem(settingsMgr->getTranslation("TilesetEditor", "interactive"));
+    QStandardItem* standardSuite = new QStandardItem(QObject::tr("Standard"));
+    QStandardItem* stageSuite = new QStandardItem(QObject::tr("Stage"));
+    QStandardItem* backgroundSuite = new QStandardItem(QObject::tr("Background"));
+    QStandardItem* interactiveSuite = new QStandardItem(QObject::tr("Interactive"));
     model->appendRow(standardSuite);
     model->appendRow(stageSuite);
     model->appendRow(backgroundSuite);
@@ -239,10 +237,12 @@ QStandardItemModel* Game::getTilesetModel(int id, bool includeNoneItem)
     QStandardItemModel* model = new QStandardItemModel();
     model->setColumnCount(2);
     QStringList headers;
-    headers << "Tileset" << "Filename";
+
+    headers << QObject::tr("Tileset")<< QObject::tr("Filename");
+
     model->setHorizontalHeaderLabels(headers);
 
-    QFile inputFile(SettingsManager::getInstance()->dataPath("tilesetnames.txt"));
+    QFile inputFile(SettingsManager::getInstance()->getFilePath("tilesetnames.txt"));
     if (!inputFile.open(QIODevice::ReadOnly))
         return model;
 

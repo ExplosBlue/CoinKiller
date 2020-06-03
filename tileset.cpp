@@ -249,7 +249,6 @@ void Tileset::drawTile(QPainter& painter, TileGrid& grid, int num, int x, int y,
         if (xx == 16 && yy == 0) { painter.drawPixmap(rdst, ImageCache::getInstance()->get(TileOverride, "blue_coin.png")); return; }
         if (xx == 10 && yy == 3) { painter.drawPixmap(rdst, ImageCache::getInstance()->get(TileOverride, "vine.png")); return; }
         if (xx == 11 && yy == 0) { painter.drawPixmap(rdst, ImageCache::getInstance()->get(TileOverride, "solid.png")); return; }
-        if (xx == 14 && yy == 0) { painter.drawPixmap(rdst, ImageCache::getInstance()->get(TileOverride, "solid_on_top.png")); return; }
     }
 
     if (draw2D)

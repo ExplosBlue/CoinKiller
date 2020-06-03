@@ -6,16 +6,16 @@ NewTilesetDialog::NewTilesetDialog(QWidget *parent, SettingsManager* settings) :
     ui(new Ui::NewTilesetDialog)
 {
     ui->setupUi(this);
-    setWindowTitle(settings->getTranslation("MainWindow", "addTileset") + "...");
-    ui->okButton->setText(settings->getTranslation("General", "ok"));
-    ui->cancelButton->setText(settings->getTranslation("General", "cancel"));
+    setWindowTitle(tr("Add Tileset..."));
+    ui->okButton->setText(tr("OK"));
+    ui->cancelButton->setText(tr("Cancel"));
 
     ui->okButton->setEnabled(false);
 
     QStringList slotNames;
-    slotNames << "Standard Suite" << "Stage Suite" << "Background Suite" << "Interactive Suite";
-    ui->tilesetTypeBox->addItems(slotNames);
+    slotNames << tr("Standard Suite") << tr("Stage Suite") << tr("Background Suite") << tr("Interactive Suite");
 
+    ui->tilesetTypeBox->addItems(slotNames);
     ui->tilesetTypeBox->setCurrentIndex(1);
 
     connect(ui->okButton, SIGNAL(clicked()), this, SLOT(accept()));

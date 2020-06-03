@@ -1,8 +1,8 @@
 #include "imagecache.h"
+#include "settingsmanager.h"
 
 #include <QDirIterator>
 #include <QDebug>
-#include "settingsmanager.h"
 
 ImageCache* ImageCache::instance = NULL;
 

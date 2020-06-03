@@ -6,9 +6,9 @@ NewLevelDialog::NewLevelDialog(QWidget *parent, SettingsManager* settings) :
     ui(new Ui::NewLevelDialog)
 {
     ui->setupUi(this);
-    setWindowTitle(settings->getTranslation("MainWindow", "addLevel") + "...");
-    ui->okButton->setText(settings->getTranslation("General", "ok"));
-    ui->cancelButton->setText(settings->getTranslation("General", "cancel"));
+    setWindowTitle(tr("Add Level..."));
+    ui->okButton->setText(tr("OK"));
+    ui->cancelButton->setText(tr("Cancel"));
 
     ui->okButton->setEnabled(false);
 

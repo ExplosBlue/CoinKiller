@@ -44,10 +44,10 @@ EntranceEditorWidget::EntranceEditorWidget(QList<Entrance*> *entrances)
     unk2->setRange(0, 255);
     connect(unk2, SIGNAL(valueChanged(int)), this, SLOT(handleUnk2Change(int)));
 
-    enterable = new QCheckBox("Enterable");
+    enterable = new QCheckBox(tr("Enterable"));
     connect(enterable, SIGNAL(toggled(bool)), this, SLOT(handleEnterableChange(bool)));
 
-    returnToWM = new QCheckBox("Return to Worldmap");
+    returnToWM = new QCheckBox(tr("Return to Worldmap"));
     connect(returnToWM, SIGNAL(toggled(bool)), this, SLOT(handleReturnToWMChange(bool)));
 
     entrancesList = new QListWidget();
@@ -64,30 +64,30 @@ EntranceEditorWidget::EntranceEditorWidget(QList<Entrance*> *entrances)
     edits->setLayout(subLayout);
     layout->addWidget(edits);
 
-    subLayout->addWidget(new QLabel("Type:"), 0, 0, 1, 1, Qt::AlignRight);
+    subLayout->addWidget(new QLabel(tr("Type:")), 0, 0, 1, 1, Qt::AlignRight);
     subLayout->addWidget(type, 0, 1, 1, 3);
 
     subLayout->addWidget(new HorLine(), 1, 0, 1, 4);
 
-    subLayout->addWidget(new QLabel("ID:"), 2, 0, 1, 1, Qt::AlignRight);
+    subLayout->addWidget(new QLabel(tr("ID:")), 2, 0, 1, 1, Qt::AlignRight);
     subLayout->addWidget(id, 2, 1, 1, 1);
 
-    subLayout->addWidget(new QLabel("Dest. ID"), 3, 0, 1, 1, Qt::AlignRight);
+    subLayout->addWidget(new QLabel(tr("Dest. ID:")), 3, 0, 1, 1, Qt::AlignRight);
     subLayout->addWidget(destId, 3, 1, 1, 1);
 
-    subLayout->addWidget(new QLabel("Camera X:"), 3, 2, 1, 1, Qt::AlignRight);
+    subLayout->addWidget(new QLabel(tr("Camera X")), 3, 2, 1, 1, Qt::AlignRight);
     subLayout->addWidget(camXOffset, 3, 3, 1, 1);
 
-    subLayout->addWidget(new QLabel("Dest. Area:"), 4, 0, 1, 1, Qt::AlignRight);
+    subLayout->addWidget(new QLabel(tr("Dest. Area")), 4, 0, 1, 1, Qt::AlignRight);
     subLayout->addWidget(destArea, 4, 1, 1, 1);
 
-    subLayout->addWidget(new QLabel("Camera Y:"), 4, 2, 1, 1, Qt::AlignRight);
+    subLayout->addWidget(new QLabel(tr("Camera Y")), 4, 2, 1, 1, Qt::AlignRight);
     subLayout->addWidget(camYOffset, 4, 3, 1, 1);
 
-    subLayout->addWidget(new QLabel("Unknown 1:"), 5, 0, 1, 1, Qt::AlignRight);
+    subLayout->addWidget(new QLabel(tr("Unknown 1")), 5, 0, 1, 1, Qt::AlignRight);
     subLayout->addWidget(unk1, 5, 1, 1, 1);
 
-    subLayout->addWidget(new QLabel("Unknown 2:"), 5, 2, 1, 1, Qt::AlignRight);
+    subLayout->addWidget(new QLabel(tr("Unknown 2")), 5, 2, 1, 1, Qt::AlignRight);
     subLayout->addWidget(unk2, 5, 3, 1, 1);
 
     subLayout->addWidget(new HorLine(), 6, 0, 1, 4);
@@ -98,6 +98,31 @@ EntranceEditorWidget::EntranceEditorWidget(QList<Entrance*> *entrances)
 
     updateList();
     updateInfo();
+}
+
+void EntranceEditorWidget::changeEvent(QEvent* event)
+{
+    if (event->type() == QEvent::LanguageChange)
+    {
+        QFile file(SettingsManager::getInstance()->getFilePath("entrancetypes.txt"));
+        if(!file.open(QIODevice::ReadOnly))
+            return;
+
+        QTextStream in(&file);
+
+        for (int i = 0; i < entranceTypes.length(); i++)
+        {
+            QString name = in.readLine();
+            entranceTypes[i] = name;
+            type->setItemText(i, name);
+        }
+
+        file.close();
+
+        updateEditor();
+    }
+
+    QWidget::changeEvent(event);
 }
 
 void EntranceEditorWidget::deselect()
@@ -119,7 +144,7 @@ void EntranceEditorWidget::select(Entrance* entr)
 
 void EntranceEditorWidget::loadEntranceTypes()
 {
-    QFile file(SettingsManager::getInstance()->dataPath("entrancetypes.txt"));
+    QFile file(SettingsManager::getInstance()->getFilePath("entrancetypes.txt"));
     if(!file.open(QIODevice::ReadOnly))
         return;
 
@@ -148,8 +173,9 @@ void EntranceEditorWidget::updateList()
         if (entr->getEntrType() < entranceTypes.size())
             type = entranceTypes.at(entr->getEntrType());
         else
-            type = "UNKNOWN";
-        entrancesList->addItem(QString("Entrance %1: %2 (at %3,%4)").arg(entr->getid()).arg(type).arg(to16(entr->getx())).arg(to16(entr->gety())));
+            type = tr("UNKNOWN");
+
+        entrancesList->addItem(tr("Entrance %1: %2 (X: %3, Y: %4)").arg(entr->getid()).arg(type).arg(to16(entr->getx())).arg(to16(entr->gety())));
     }
     entrancesList->setCurrentIndex(index);
 }

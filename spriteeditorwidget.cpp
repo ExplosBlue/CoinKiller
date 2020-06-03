@@ -11,12 +11,12 @@ SpriteEditorWidget::SpriteEditorWidget(QList<Sprite*> *sprites)
     QWidget* addSpriteView = new QWidget;
     QTabWidget* tabs = new QTabWidget;
 
-    QLabel* viewLabel = new QLabel("View:");
+    QLabel* viewLabel = new QLabel(tr("View:"));
     viewLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     viewComboBox = new QComboBox();
     connect(viewComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(setView(int)));
 
-    QLabel* searchLabel = new QLabel("Search:");
+    QLabel* searchLabel = new QLabel(tr("Search:"));
     searchLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     searchEdit = new QLineEdit();
     connect(searchEdit, SIGNAL(textEdited(QString)), this, SLOT(search(QString)));
@@ -37,13 +37,39 @@ SpriteEditorWidget::SpriteEditorWidget(QList<Sprite*> *sprites)
     addSpriteLayout->addWidget(spriteTree);
 
     addSpriteView->setLayout(addSpriteLayout);
-    tabs->addTab(addSpriteView, "Add");
+    tabs->addTab(addSpriteView, tr("Add"));
 
+    QStringList viewNames = getViewNames();
+
+    viewComboBox->setModel(new QStringListModel(viewNames));
+
+    spriteIds = new SpriteIdWidget(sprites);
+    tabs->addTab(spriteIds, tr("In Level"));
+
+    editor = new SpriteDataEditorWidget(&spriteData);
+
+    QVBoxLayout* layout = new QVBoxLayout();
+    layout->addWidget(tabs);
+    layout->addWidget(editor);
+
+    setLayout(layout);
+
+    connect(spriteTree, SIGNAL(currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)), this, SLOT(handleIndexChange(QTreeWidgetItem*)));
+    connect(editor, SIGNAL(editMade()), this, SLOT(handleEditDetected()));
+    connect(spriteIds, SIGNAL(selectedSpriteChanged(Object*)), this, SLOT(handleSelectedSpriteChanged(Object*)));
+    connect(spriteIds, SIGNAL(updateLevelView()), this, SLOT(handleUpdateLevelView()));
+
+}
+
+QStringList SpriteEditorWidget::getViewNames()
+{
     QStringList viewNames;
 
     for (int v = 0; v < spriteData.spriteViewCount(); v++)
     {
         spriteView* view = spriteData.spriteViewPtr(v);
+
+        view->categoryNodes.clear();
 
         viewNames.append(view->name);
         foreach (spriteCategory category, view->categories)
@@ -73,24 +99,25 @@ SpriteEditorWidget::SpriteEditorWidget(QList<Sprite*> *sprites)
         }
     }
 
-    viewComboBox->setModel(new QStringListModel(viewNames));
+    return viewNames;
+}
 
-    spriteIds = new SpriteIdWidget(sprites);
-    tabs->addTab(spriteIds, "In Level");
+void SpriteEditorWidget::changeEvent(QEvent* event)
+{
+    if (event->type() == QEvent::LanguageChange)
+    {
+        int currentView = viewComboBox->currentIndex();
 
-    editor = new SpriteDataEditorWidget(&spriteData);
+        spriteData.loadSpriteDefs();
+        spriteData.loadSpriteViews();
 
-    QVBoxLayout* layout = new QVBoxLayout();
-    layout->addWidget(tabs);
-    layout->addWidget(editor);
+        QStringList viewNames = getViewNames();
 
-    setLayout(layout);
+        viewComboBox->setModel(new QStringListModel(viewNames));
+        viewComboBox->setCurrentIndex(currentView);
+    }
 
-    connect(spriteTree, SIGNAL(currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)), this, SLOT(handleIndexChange(QTreeWidgetItem*)));
-    connect(editor, SIGNAL(editMade()), this, SLOT(handleEditDetected()));
-    connect(spriteIds, SIGNAL(selectedSpriteChanged(Object*)), this, SLOT(handleSelectedSpriteChanged(Object*)));
-    connect(spriteIds, SIGNAL(updateLevelView()), this, SLOT(handleUpdateLevelView()));
-
+    QWidget::changeEvent(event);
 }
 
 void SpriteEditorWidget::setView(int view)
@@ -171,7 +198,7 @@ SpriteDataEditorWidget::SpriteDataEditorWidget(SpriteData *spriteData)
     layout->addWidget(spriteName, 0, 0, 1, 2);
 
     spriteNotesButton = new QPushButton();
-    spriteNotesButton->setText("Notes");
+    spriteNotesButton->setText(tr("Notes"));
     spriteNotesButton->setToolTipDuration(10000);
     QSizePolicy buttonPolicy = sizePolicy();
     buttonPolicy.setHeightForWidth(true);
@@ -181,7 +208,7 @@ SpriteDataEditorWidget::SpriteDataEditorWidget(SpriteData *spriteData)
 
     rawSpriteData = new QLineEdit();
     rawSpriteData->setInputMask("HHHH HHHH HHHH HHHH HHHH HHHH");
-    layout->addWidget(new QLabel("Raw Sprite Data:"), 1, 0, 1, 1, Qt::AlignRight);
+    layout->addWidget(new QLabel(tr("Raw Sprite Data:")), 1, 0, 1, 1, Qt::AlignRight);
     layout->addWidget(rawSpriteData, 1, 1);
     connect(rawSpriteData, SIGNAL(textEdited(QString)), this, SLOT(handleRawSpriteDataChange(QString)));
 
@@ -204,7 +231,7 @@ void SpriteDataEditorWidget::select(Sprite *sprite)
     spriteNotes = def.getNotes();
 
     if (spriteNotes == "")
-        spriteNotesButton->setToolTip("No notes available for this sprite.");
+        spriteNotesButton->setToolTip(tr("No notes are available for this sprite."));
     else
         spriteNotesButton->setToolTip(spriteNotes);
 
@@ -315,7 +342,7 @@ void SpriteDataEditorWidget::handleShowNotes()
     notes.setWindowTitle(name);
 
     if (spriteNotes == "")
-        notes.setText("No notes available for this sprite.");
+        notes.setText(tr("No notes are available for this sprite."));
     else
         notes.setText(spriteNotes);
 

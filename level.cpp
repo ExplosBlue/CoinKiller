@@ -34,7 +34,6 @@ Level::Level(Game *game, SarcFilesystem* archive, int area, QString lvlName)
     this->lvlName = lvlName;
     this->area = area;
 
-
     QString headerfile = QString("/course/course%1.bin").arg(area);
     if (!archive->fileExists(headerfile))
         throw std::runtime_error("Level has no header!!");
@@ -75,7 +74,7 @@ Level::Level(Game *game, SarcFilesystem* archive, int area, QString lvlName)
         }
         catch (const std::exception &e)
         {   
-            QMessageBox::warning(nullptr, "CoinKiller", QString("Tileset %1 could not be found!").arg(tilesetname));
+            QMessageBox::warning(nullptr, "CoinKiller", QObject::tr("Tileset %1 could not be found!").arg(tilesetname));
             tilesets[t] = nullptr;
         }
     }

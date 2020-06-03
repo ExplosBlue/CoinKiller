@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>CoinKiller</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QHBoxLayout" name="horizontalLayout_8">
@@ -76,7 +76,7 @@
          </sizepolicy>
         </property>
         <property name="text">
-         <string>&lt;Selected Tile&gt;</string>
+         <string>Selected Tile</string>
         </property>
        </widget>
       </item>
@@ -110,7 +110,7 @@
           <item>
            <widget class="QLabel" name="hexLabel">
             <property name="text">
-             <string>&lt;Hex Data&gt;</string>
+             <string>Hex Data</string>
             </property>
            </widget>
           </item>
@@ -166,7 +166,7 @@
                  </size>
                 </property>
                 <property name="text">
-                 <string>&lt;Hitbox&gt;</string>
+                 <string>Hitbox</string>
                 </property>
                </widget>
               </item>
@@ -201,7 +201,7 @@
                  </size>
                 </property>
                 <property name="text">
-                 <string>&lt;3D Behavior&gt;</string>
+                 <string>3D Behavior</string>
                 </property>
                </widget>
               </item>
@@ -257,7 +257,7 @@
                  </size>
                 </property>
                 <property name="text">
-                 <string>&lt;Terrain Type&gt;</string>
+                 <string>Terrain Type</string>
                 </property>
                </widget>
               </item>
@@ -292,7 +292,7 @@
                  </size>
                 </property>
                 <property name="text">
-                 <string>&lt;Pipe Color&gt;</string>
+                 <string>Pipe Color</string>
                 </property>
                </widget>
               </item>
@@ -358,7 +358,7 @@
              </sizepolicy>
             </property>
             <property name="text">
-             <string>&lt;Add Object&gt;</string>
+             <string>Add Object</string>
             </property>
            </widget>
           </item>
@@ -371,7 +371,7 @@
              </sizepolicy>
             </property>
             <property name="text">
-             <string>&lt;Remove Object&gt;</string>
+             <string>Remove Object</string>
             </property>
            </widget>
           </item>
@@ -384,7 +384,7 @@
              </sizepolicy>
             </property>
             <property name="text">
-             <string>&lt;Move Object Down&gt;</string>
+             <string>Move Object Down</string>
             </property>
            </widget>
           </item>
@@ -397,7 +397,7 @@
              </sizepolicy>
             </property>
             <property name="text">
-             <string>&lt;Move Object Up&gt;</string>
+             <string>Move Object Up</string>
             </property>
            </widget>
           </item>
@@ -420,7 +420,7 @@
              </size>
             </property>
             <property name="title">
-             <string>&lt;Object Settings&gt;</string>
+             <string>Object Settings</string>
             </property>
             <layout class="QGridLayout" name="gridLayout">
              <item row="3" column="1">
@@ -746,7 +746,7 @@
              </sizepolicy>
             </property>
             <property name="text">
-             <string>&lt;Tile Data&gt;</string>
+             <string>Tile Data</string>
             </property>
            </widget>
           </item>
@@ -769,20 +769,20 @@
    </property>
    <widget class="QMenu" name="menuFile">
     <property name="title">
-     <string>&lt;File&gt;</string>
+     <string>File</string>
     </property>
     <addaction name="actionSave"/>
    </widget>
    <widget class="QMenu" name="menuSettings">
     <property name="title">
-     <string>&lt;Settings&gt;</string>
+     <string>Settings</string>
     </property>
     <addaction name="actionSetBackgroundColor"/>
     <addaction name="actionShowObjectMarkers"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
-     <string>&lt;Edit&gt;</string>
+     <string>Edit</string>
     </property>
     <addaction name="actionImportImage"/>
     <addaction name="actionImportImageLegacy"/>
@@ -800,7 +800,7 @@
   </widget>
   <widget class="QToolBar" name="toolBar">
    <property name="windowTitle">
-    <string>toolBar</string>
+    <string>Toolbar</string>
    </property>
    <property name="movable">
     <bool>true</bool>
@@ -827,10 +827,10 @@
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionExportImage">
    <property name="text">
-    <string>&lt;Export Image...&gt;</string>
+    <string>Export Image...</string>
    </property>
    <property name="toolTip">
-    <string>&lt;Export Image...&gt;</string>
+    <string>Export Image...</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+E</string>
@@ -838,18 +838,18 @@
   </action>
   <action name="actionSetBackgroundColor">
    <property name="text">
-    <string>&lt;Set Background Color&gt;</string>
+    <string>Set Background Color</string>
    </property>
    <property name="toolTip">
-    <string>&lt;Set Background Color&gt;</string>
+    <string>Set Background Color</string>
    </property>
   </action>
   <action name="actionSave">
    <property name="text">
-    <string>&lt;Save&gt;</string>
+    <string>Save</string>
    </property>
    <property name="toolTip">
-    <string>&lt;Save&gt;</string>
+    <string>Save</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+S</string>
@@ -857,34 +857,34 @@
   </action>
   <action name="actionDeleteAllObjects">
    <property name="text">
-    <string>&lt;Delete all Objects&gt;</string>
+    <string>Delete all Objects</string>
    </property>
    <property name="toolTip">
-    <string>&lt;Delete all Objects&gt;</string>
+    <string>Delete all Objects</string>
    </property>
   </action>
   <action name="actionSetTilesetSlot">
    <property name="text">
-    <string>&lt;Set Tileset Slot&gt;</string>
+    <string>Set Tileset Slot</string>
    </property>
    <property name="toolTip">
-    <string>&lt;Set Tileset Slot&gt;</string>
+    <string>Set Tileset Slot</string>
    </property>
   </action>
   <action name="actionDeleteAll3DOverlays">
    <property name="text">
-    <string>&lt;Delete all 3D Overlays&gt;</string>
+    <string>Delete all 3D Overlays</string>
    </property>
    <property name="toolTip">
-    <string>&lt;Delete all 3D Overlays&gt;</string>
+    <string>Delete all 3D Overlays</string>
    </property>
   </action>
   <action name="actionImportImage">
    <property name="text">
-    <string>&lt;Import Image...&gt;</string>
+    <string>Import Image...</string>
    </property>
    <property name="toolTip">
-    <string>&lt;Import Image...&gt;</string>
+    <string>Import Image...</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+I</string>
@@ -895,26 +895,26 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>&lt;Show Object Markers&gt;</string>
+    <string>Show Object Markers</string>
    </property>
    <property name="toolTip">
-    <string>&lt;Show Object Markers&gt;</string>
+    <string>Show Object Markers</string>
    </property>
   </action>
   <action name="actionDeleteAllBehaviors">
    <property name="text">
-    <string>&lt;Delete all Behaviors&gt;</string>
+    <string>Delete all Behaviors</string>
    </property>
    <property name="toolTip">
-    <string>&lt;Delete all Behaviors&gt;</string>
+    <string>Delete all Behaviors</string>
    </property>
   </action>
   <action name="actionImportImageLegacy">
    <property name="text">
-    <string>&lt;Import Image (Legacy)...&gt;</string>
+    <string>Import Image (Legacy)...</string>
    </property>
    <property name="toolTip">
-    <string>&lt;Import Image (Legacy)...&gt;</string>
+    <string>Import Image (Legacy)...</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Shift+I</string>
@@ -925,10 +925,10 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>&lt;Toggle Collision&gt;</string>
+    <string>Toggle Collision</string>
    </property>
    <property name="toolTip">
-    <string>&lt;Toggle Collision&gt;</string>
+    <string>Toggle Collision</string>
    </property>
   </action>
  </widget>

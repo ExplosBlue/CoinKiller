@@ -15,12 +15,13 @@ ProgressPathEditorWidget::ProgressPathEditorWidget(QList<ProgressPath*> *paths)
     QGridLayout* editsLayout = new QGridLayout();
     editsLayout->setMargin(0);
 
-    editsLayout->addWidget(new QLabel("ID:"), 0, 0, 1, 1, Qt::AlignRight);
+    editsLayout->addWidget(new QLabel(tr("ID:")), 0, 0, 1, 1, Qt::AlignRight);
     id = new QSpinBox();
     id->setRange(0, 255);
+    id->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     editsLayout->addWidget(id, 0, 1);
 
-    alternatePathFlag = new QCheckBox("Alternate Path Flag");
+    alternatePathFlag = new QCheckBox(tr("Alternate Path Flag"));
     editsLayout->addWidget(alternatePathFlag, 0, 2, 1, 2, Qt::AlignRight);
 
     edits->setLayout(editsLayout);
@@ -49,7 +50,7 @@ void ProgressPathEditorWidget::updateList()
     foreach (ProgressPath* path, *paths)
     {
         QListWidgetItem* pathItem = new QListWidgetItem();
-        pathItem->setText(QString("Progress path %1: %2 nodes").arg(path->getid()).arg(path->getNumberOfNodes()));
+        pathItem->setText(tr("Progress Path %1: %n Node(s)", 0, path->getNumberOfNodes()).arg(path->getid()));
         pathList->addItem(pathItem);
     }
     pathList->setCurrentIndex(index);

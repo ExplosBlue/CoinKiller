@@ -98,10 +98,11 @@ private:
     void setGameLoaded(bool loaded);
     bool startupClose = false;
     bool checkForMissingFiles();
-    void loadTranslations();
 
     void setNightmode(bool nightmode);
     void setStyleSheetFromPath(QString path);
+
+    void changeEvent(QEvent* event);
 };
 
 #endif // MAINWINDOW_H

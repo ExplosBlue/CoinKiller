@@ -15,12 +15,16 @@ EventEditorWidget::EventEditorWidget(Level* level)
     // Filters
     QHBoxLayout* filterLayout = new QHBoxLayout();
 
-    QLabel* filterLabel = new QLabel("Filter: ");
+    QLabel* filterLabel = new QLabel(tr("Filter:"));
     filterLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     filterLayout->addWidget(filterLabel);
     viewFilter = new QComboBox();
     QStringList filters;
-    filters << "All" << "Checked" << "Unchecked";
+
+    filters << tr("All")
+            << tr("Enabled")
+            << tr("Disabled");
+
     viewFilter->insertItems(0, filters);
     filterLayout->addWidget(viewFilter);
 
@@ -34,7 +38,7 @@ EventEditorWidget::EventEditorWidget(Level* level)
 
     for (int i = 0; i < 64; i++)
     {
-        QListWidgetItem* listItem = new QListWidgetItem(QString("Event %1").arg(i), eventsList);
+        QListWidgetItem* listItem = new QListWidgetItem(tr("Event %1").arg(i), eventsList);
         listItem->setCheckState(((states >> i) & 0x1) ? Qt::Checked : Qt::Unchecked);
         listItem->setData(Qt::UserRole, i);
         eventsList->addItem(listItem);
@@ -53,7 +57,7 @@ void EventEditorWidget::handleFilterChanged(int filter)
 {
     switch (filter)
     {
-        case 1: // Checked
+        case 1: // Enabled
         {
             for (int i = 0; i < eventsList->count(); i++)
             {
@@ -65,7 +69,7 @@ void EventEditorWidget::handleFilterChanged(int filter)
                     item->setHidden(true);
             }
         }   break;
-        case 2: // UnChecked
+        case 2: // Disabled
         {
             for (int i = 0; i < eventsList->count(); i++)
             {

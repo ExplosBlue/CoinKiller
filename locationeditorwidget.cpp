@@ -20,7 +20,7 @@ LocationEditorWidget::LocationEditorWidget(QList<Location *> *locations)
     subLayout->setMargin(0);
     edits->setLayout(subLayout);
 
-    subLayout->addWidget(new QLabel("ID:"), 0, 0, 1, 1, Qt::AlignRight);
+    subLayout->addWidget(new QLabel(tr("ID:")), 0, 0, 1, 1, Qt::AlignRight);
     id = new QSpinBox();
     id->setRange(0, 255);
     connect(id, SIGNAL(valueChanged(int)), this, SLOT(handleIDChange(int)));
@@ -54,7 +54,7 @@ void LocationEditorWidget::updateList()
 
     locationList->clear();
     foreach (Location* location, *locations)
-        locationList->addItem(QString("Location %1: (at %2,%3) (W: %4 H: %5)").arg(location->getid()).arg(to16(location->getx())).arg(to16(location->gety())).arg(to16(location->getwidth())).arg(to16(location->getheight())));
+        locationList->addItem(tr("Location %1: (X: %2, Y: %3) (W: %4, H: %5)").arg(location->getid()).arg(to16(location->getx())).arg(to16(location->gety())).arg(to16(location->getwidth())).arg(to16(location->getheight())));
 
     locationList->setCurrentIndex(index);
 }
