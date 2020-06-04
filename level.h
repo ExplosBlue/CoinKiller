@@ -52,6 +52,8 @@ public:
     QList<Zone*> zones;
     QList<Path*> paths;
     QList<ProgressPath*> progressPaths;
+    QList<ZoneBounding*> boundings;
+    QList<ZoneBackground*> backgrounds;
 
     void getName(QString& name)
     {

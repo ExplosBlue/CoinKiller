@@ -2367,7 +2367,7 @@ QString Entrance::toString(qint32 xOffset, qint32 yOffset) const
 
 
 // Zone
-Zone::Zone(qint32 x, qint32 y, qint32 width, qint32 height, quint8 id, quint8 progPathId, quint8 musicId, quint8 multiplayerTracking, quint16 unk1)
+Zone::Zone(qint32 x, qint32 y, qint32 width, qint32 height, quint8 id, quint8 progPathId, quint8 musicId, quint8 multiplayerTracking, quint16 unk1, quint8 boundingId, quint8 backgroundId)
 {
     this->x = x;
     this->y = y;
@@ -2378,6 +2378,8 @@ Zone::Zone(qint32 x, qint32 y, qint32 width, qint32 height, quint8 id, quint8 pr
     this->musicId = musicId;
     this->multiplayerTracking = multiplayerTracking;
     this->unk1 = unk1;
+    this->boundingId = boundingId;
+    this->backgroundId = backgroundId;
 }
 
 Zone::Zone(Zone *zone)
@@ -2391,15 +2393,8 @@ Zone::Zone(Zone *zone)
     musicId = zone->getMusicId();
     multiplayerTracking = zone->getMultiplayerTracking();
     unk1 = zone->getUnk1();
-    primaryUpperBound = zone->getPrimaryUpperBound();
-    primaryLowerBound = zone->getPrimaryLowerBound();
-    secondaryUpperBound = zone->getSecondaryUpperBound();
-    secondaryLowerBound = zone->getSecondaryLowerBound();
-    upScrolling = quint16(zone->getUpScrolling());
-    bgXPos = zone->getBgXPos();
-    bgYPos = zone->getBgYPos();
-    bgName = zone->getBgName();
-    bgParallaxMode = zone->getBgParallaxMode();
+    boundingId = zone->getBoundingId();
+    backgroundId = zone->getBackgroundId();
 }
 
 bool Zone::clickDetection(qint32 xcheck, qint32 ycheck)
@@ -2412,32 +2407,30 @@ bool Zone::clickDetection(QRect rect)
     return rect.intersects(QRect(x,y,38,18));
 }
 
-void Zone::setBounding(tempZoneBounding bounding)
-{
-    this->primaryUpperBound = bounding.primaryUpperBound;
-    this->primaryLowerBound = bounding.primaryLowerBound;
-    this->secondaryUpperBound = bounding.secondaryUpperBound;
-    this->secondaryLowerBound = bounding.secondaryLowerBound;
-    this->upScrolling = bounding.upScrolling;
-}
-
-void Zone::setBackground(tempZoneBackground background)
-{
-
-    this->bgXPos = background.xPos;
-    this->bgYPos = background.yPos;
-    this->bgName = background.name;
-    this->bgParallaxMode = quint8(background.parallaxMode);
-}
-
 QString Zone::toString(qint32 xOffset, qint32 yOffset) const
 {
-    return QString("3:%1:%2:%3:%4:%5:%6:%7:%8:%9:%10:%11:%12:%13:%14:%15:%16:%17:%18:%19").arg(x+xOffset).arg(y+yOffset)
-            .arg(width).arg(height).arg(id).arg(progPathId).arg(musicId).arg(multiplayerTracking).arg(unk1).arg(primaryUpperBound)
-            .arg(primaryLowerBound).arg(secondaryUpperBound).arg(secondaryLowerBound).arg(upScrolling).arg(bgYPos)
-            .arg(bgXPos).arg(bgName).arg(bgParallaxMode);
+    return QString("3:%1:%2:%3:%4:%5:%6:%7:%8:%9:%10:%11").arg(x+xOffset).arg(y+yOffset)
+            .arg(width).arg(height).arg(id).arg(progPathId).arg(musicId).arg(multiplayerTracking).arg(unk1).arg(boundingId).arg(backgroundId);
 }
 
+ZoneBounding::ZoneBounding(quint16 id, quint32 primaryUpperBound, qint32 primaryLowerBound, qint32 secondaryUpperBound, qint32 secondaryLowerBound, quint16 upScrolling)
+{
+    this->id = id;
+    this->primaryUpperBound = primaryUpperBound;
+    this->primaryLowerBound = primaryLowerBound;
+    this->secondaryUpperBound = secondaryUpperBound;
+    this->secondaryLowerBound = secondaryLowerBound;
+    this->upScrolling = upScrolling;
+}
+
+ZoneBackground::ZoneBackground(quint16 id, quint16 yPos, quint16 xPos, QString name, quint8 parallaxMode)
+{
+    this->id = id;
+    this->yPos = yPos;
+    this->xPos = xPos;
+    this->name = name;
+    this->parallaxMode = parallaxMode;
+}
 
 // Location
 Location::Location(qint32 x, qint32 y, qint32 width, qint32 height, qint32 id)

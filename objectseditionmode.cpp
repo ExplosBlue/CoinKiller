@@ -875,17 +875,7 @@ void ObjectsEditonMode::paste(int currX, int currY, int currW, int currH)
         }
         case 3: // Zone
         {
-            Zone* newZone = new Zone(params[1].toInt()+pOffsetX, params[2].toInt()+pOffsetY, params[3].toInt(), params[4].toInt(), params[5].toInt(), params[6].toInt(), params[7].toInt(), params[8].toInt(), params[9].toInt());
-
-            newZone->setPrimaryUpperBound(params[10].toInt());
-            newZone->setPrimaryLowerBound(params[11].toInt());
-            newZone->setSecondaryUpperBound(params[12].toInt());
-            newZone->setSecondaryLowerBound(params[13].toInt());
-            newZone->setUpScrolling(params[14].toInt());
-            newZone->setBgYPos(params[15].toInt());
-            newZone->setBgXPos(params[16].toInt());
-            newZone->setBackgroundName(params[17]);
-            newZone->setBgParallaxMode(params[18].toInt());
+            Zone* newZone = new Zone(params[1].toInt()+pOffsetX, params[2].toInt()+pOffsetY, params[3].toInt(), params[4].toInt(), params[5].toInt(), params[6].toInt(), params[7].toInt(), params[8].toInt(), params[9].toInt(), params[10].toInt(), params[11].toInt());
 
             level->zones.append(newZone);
             selectedObjects.append(newZone);

@@ -51,9 +51,6 @@ Level::Level(Game *game, SarcFilesystem* archive, int area, QString lvlName)
         blockSizes[b] = header->read32();
     }
 
-    QList<tempZoneBounding> boundings;
-    QList<tempZoneBackground> backgrounds;
-
     // Block 0: Tilesets
     for (int t = 0; t < 4; t++)
     {
@@ -95,14 +92,16 @@ Level::Level(Game *game, SarcFilesystem* archive, int area, QString lvlName)
     header->seek(blockOffsets[2]);
     for (int i = 0; i < (int)(blockSizes[2]/28); i++)
     {
-        tempZoneBounding bounding;
-        bounding.primaryUpperBound = header->read32();
-        bounding.primaryLowerBound = header->read32();
-        bounding.secondaryUpperBound = header->read32();
-        bounding.secondaryLowerBound = header->read32();
-        bounding.id = header->read16();
-        bounding.upScrolling = header->read16();
+        quint32 primaryUpperBound = header->read32();
+        quint32 primaryLowerBound = header->read32();
+        quint32 secondaryUpperBound = header->read32();
+        quint32 secondaryLowerBound = header->read32();
+        quint16 id = header->read16();
+        quint16 upScrolling = header->read16();
         header->skip(8);
+
+        ZoneBounding* bounding = new ZoneBounding(id, primaryUpperBound, primaryLowerBound, secondaryUpperBound, secondaryLowerBound, upScrolling);
+
         boundings.append(bounding);
     }
 
@@ -112,15 +111,18 @@ Level::Level(Game *game, SarcFilesystem* archive, int area, QString lvlName)
     header->seek(blockOffsets[4]);
     for (int i = 0; i < (int)(blockSizes[4]/28); i++)
     {
-        tempZoneBackground background;
-        background.id = header->read16();
-        background.yPos = header->read16();
-        background.xPos = header->read16();
+        quint16 id = header->read16();
+        quint16 yPos = header->read16();
+        quint16 xPos = header->read16();
         header->skip(2);
-        header->readStringASCII(background.name, 16);
-        background.parallaxMode = header->read16();
+        QString name;
+        header->readStringASCII(name, 16);
+        quint16 parallaxMode = header->read16();
 
         header->skip(2);
+
+        ZoneBackground* background = new ZoneBackground(id, yPos, xPos, name, parallaxMode);
+
         backgrounds.append(background);
     }
 
@@ -198,25 +200,7 @@ Level::Level(Game *game, SarcFilesystem* archive, int area, QString lvlName)
         quint8 backgroundId = header->read8();
         header->skip(3);
 
-        Zone* zone = new Zone(to20(x), to20(y), to20(width), to20(height), id, progPathId, musicId, multiplayerTracking, zoneUnk1);
-        foreach(tempZoneBounding bounding, boundings)
-        {
-            if (boundingId == bounding.id)
-            {
-                zone->setBounding(bounding);
-                break;
-            }
-        }
-
-        foreach(tempZoneBackground background, backgrounds)
-        {
-            if (backgroundId == background.id)
-            {
-                zone->setBackground(background);
-                break;
-            }
-        }
-
+        Zone* zone = new Zone(to20(x), to20(y), to20(width), to20(height), id, progPathId, musicId, multiplayerTracking, zoneUnk1, boundingId, backgroundId);
         zones.append(zone);
 
     }
@@ -479,7 +463,7 @@ qint8 Level::save()
     blockSizes[1] = headersize-blockOffsets[1];
 
     blockOffsets[2] = headersize;                   // Block 2: Zone Boundings
-    headersize += zones.size()*28;
+    headersize += boundings.size()*28;
     blockSizes[2] = headersize-blockOffsets[2];
 
     blockOffsets[3] = headersize;                   // Block 3: Unknown
@@ -487,7 +471,7 @@ qint8 Level::save()
     blockSizes[3] = headersize-blockOffsets[3];
 
     blockOffsets[4] = headersize;                   // Block 4: Zone Backgrounds
-    headersize += zones.size()*28;
+    headersize += backgrounds.size()*28;
     blockSizes[4] = headersize-blockOffsets[4];
 
     blockOffsets[5] = headersize;                   // Block 5: Unknown
@@ -582,15 +566,16 @@ qint8 Level::save()
 
     // Block 2: Zone Boundings
     header->seek(blockOffsets[2]);
-    for (quint8 i = 0; i < zones.size(); i++)
+    foreach (ZoneBounding* bounding, boundings)
     {
-        Zone* z = zones[i];
-        header->write32(z->getPrimaryUpperBound());
-        header->write32(z->getPrimaryLowerBound());
-        header->write32(z->getSecondaryUpperBound());
-        header->write32(z->getSecondaryLowerBound());
-        header->write16(i);
-        header->write16(z->getUpScrolling());
+        qDebug() << QString("Saving bounding: %1").arg(bounding->getId());
+
+        header->write32(bounding->getPrimaryUpperBound());
+        header->write32(bounding->getPrimaryLowerBound());
+        header->write32(bounding->getSecondaryUpperBound());
+        header->write32(bounding->getSecondaryLowerBound());
+        header->write16(bounding->getId());
+        header->write16(bounding->getUpScrolling());
         for (int j = 0; j < 8; j++) header->write8(0);
     }
 
@@ -600,15 +585,16 @@ qint8 Level::save()
 
     // Block 4: Zone Backgrounds
     header->seek(blockOffsets[4]);
-    for (quint16 i = 0; i < zones.size(); i++)
+    foreach (ZoneBackground* background, backgrounds)
     {
-        Zone* z = zones[i];
-        header->write16(i);
-        header->write16(z->getBgYPos());
-        header->write16(z->getBgXPos());
+        qDebug() << QString("Saving bg: %1").arg(background->getId());
+
+        header->write16(background->getId());
+        header->write16(background->getYPos());
+        header->write16(background->getXPos());
         header->write16(0);
-        header->writeStringASCII(z->getBgName(), 16);
-        header->write16(z->getBgParallaxMode());
+        header->writeStringASCII(background->getName(), 16);
+        header->write16(background->getParallaxMode());
         header->write16(0);
     }
 
@@ -1012,7 +998,7 @@ Zone* Level::newZone(int x, int y)
             break;
         }
     }
-    return new Zone(toNext16Compatible(x), toNext16Compatible(y), 400, 240, id, 0, 0, 0, 0);
+    return new Zone(toNext16Compatible(x), toNext16Compatible(y), 400, 240, id, 0, 0, 0, 0, 0, 0);
 }
 
 Location* Level::newLocation(int x, int y)

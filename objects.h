@@ -159,24 +159,55 @@ protected:
 
 // Zone Object
 
-// Structs used while parsing
-struct tempZoneBounding
+class ZoneBounding
 {
-    quint16 id;
-    qint32 primaryUpperBound;
-    qint32 primaryLowerBound;
-    qint32 secondaryUpperBound;
-    qint32 secondaryLowerBound;
-    quint16 upScrolling;
+public:
+    ZoneBounding() {}
+    ZoneBounding(quint16 id, quint32 primaryUpperBound, qint32 primaryLowerBound, qint32 secondaryUpperBound, qint32 secondaryLowerBound, quint16 upScrolling);
+    quint16 getId() const { return id; }
+    qint32 getPrimaryUpperBound() const { return primaryUpperBound; }
+    qint32 getPrimaryLowerBound() const { return primaryLowerBound; }
+    qint32 getSecondaryUpperBound() const { return secondaryUpperBound; }
+    qint32 getSecondaryLowerBound() const { return secondaryLowerBound; }
+    quint32 getUpScrolling() const { return upScrolling; }
+    void setId(quint16 id) { this->id = id; }
+    void setPrimaryUpperBound(qint32 primaryUpperBound) { this->primaryUpperBound = primaryUpperBound; }
+    void setPrimaryLowerBound(qint32 primaryLowerBound) { this->primaryLowerBound = primaryLowerBound; }
+    void setSecondaryUpperBound(qint32 secondaryUpperBound) { this->secondaryUpperBound = secondaryUpperBound; }
+    void setSecondaryLowerBound(qint32 secondaryLowerBound) { this->secondaryLowerBound = secondaryLowerBound; }
+    void setUpScrolling(quint16 upScrolling) { this->upScrolling = upScrolling; }
+
+protected:
+    quint16 id = 0;
+    qint32 primaryUpperBound = 0;
+    qint32 primaryLowerBound = 0;
+    qint32 secondaryUpperBound = 0;
+    qint32 secondaryLowerBound = 0;
+    quint16 upScrolling = 0;
 };
 
-struct tempZoneBackground
+class ZoneBackground
 {
-    quint16 id;
-    qint16 yPos;
-    qint16 xPos;
-    QString name;
-    qint8 parallaxMode;
+public:
+    ZoneBackground() {}
+    ZoneBackground(quint16 id, quint16 yPos, quint16 xPos, QString name, quint8 parallaxMode);
+    quint16 getId() const { return id; }
+    quint16 getYPos() const { return yPos; }
+    quint16 getXPos() const { return xPos; }
+    QString getName() const { return name; }
+    quint8 getParallaxMode() const { return parallaxMode; }
+    void setId(quint16 id) { this->id = id; }
+    void setYPos(quint16 yPos) { this->yPos = yPos; }
+    void setXPos(quint16 xPos) { this->xPos = xPos; }
+    void setName(QString name) { this->name = name; }
+    void setParallaxMode(qint8 parallaxMode) { this->parallaxMode = parallaxMode; }
+
+protected:
+    quint16 id = 0;
+    qint16 yPos = 0;
+    qint16 xPos = 0;
+    QString name = "Nohara";
+    qint8 parallaxMode = 0;
 };
 
 class Zone: public Object
@@ -184,61 +215,35 @@ class Zone: public Object
 public:
     Zone() {}
     Zone(Zone* zone);
-    Zone(qint32 x, qint32 y, qint32 width, qint32 height, quint8 id, quint8 progPathId, quint8 musicId, quint8 multiplayerTracking, quint16 unk1);
+    Zone(qint32 x, qint32 y, qint32 width, qint32 height, quint8 id, quint8 progPathId, quint8 musicId, quint8 multiplayerTracking, quint16 unk1, quint8 boundingId, quint8 backgroundId);
     bool clickDetection(qint32 xcheck, qint32 ycheck);
     bool clickDetection(QRect rect);
-    void setBounding(tempZoneBounding bounding);
-    void setBackground(tempZoneBackground background);
     qint32 getType() const { return 3; }
     bool isResizable() const { return true; }
+    QString toString(qint32 xOffset, qint32 yOffset) const;
+    quint16 getUnk1() const { return unk1; }
     quint8 getid() const { return id; }
+    quint8 getBoundingId() const { return boundingId; }
+    quint8 getMultiplayerTracking() const { return multiplayerTracking; }
     quint8 getProgPathId() const { return progPathId; }
     quint8 getMusicId() const { return musicId; }
-    quint8 getMultiplayerTracking() const { return multiplayerTracking; }
-    quint16 getUnk1() const { return unk1; }
-    qint32 getPrimaryUpperBound() const { return primaryUpperBound; }
-    qint32 getPrimaryLowerBound() const { return primaryLowerBound; }
-    qint32 getSecondaryUpperBound() const { return secondaryUpperBound; }
-    qint32 getSecondaryLowerBound() const { return secondaryLowerBound; }
-    quint32 getUpScrolling() const { return upScrolling; }
-    qint16 getBgXPos() const { return bgXPos; }
-    qint16 getBgYPos() const { return bgYPos; }
-    QString getBgName() const { return bgName; }
-    quint8 getBgParallaxMode() const { return bgParallaxMode; }
-    QString toString(qint32 xOffset, qint32 yOffset) const;
+    quint8 getBackgroundId() const { return backgroundId; }
+    void setUnk1(quint32 unk1) { this->unk1 = unk1; }
     void setID(quint8 id) { this->id = id; }
+    void setBoundingId(quint8 boundingId) { this->boundingId = boundingId; }
+    void setMultiplayerTracking(quint8 multiplayerTracking) { this->multiplayerTracking = multiplayerTracking; }
     void setProgPathId(quint8 progPathId) { this->progPathId = progPathId; }
     void setMusicID(quint8 musicId) { this->musicId = musicId; }
-    void setMultiplayerTracking(quint8 multiplayerTracking) { this->multiplayerTracking = multiplayerTracking; }
-    void setBackgroundName(QString bgName) { this->bgName = bgName; }
-    void setUpScrolling(quint16 upScrolling) { this->upScrolling = upScrolling; }
-    void setPrimaryUpperBound(qint32 primaryUpperBound) { this->primaryUpperBound = primaryUpperBound; }
-    void setPrimaryLowerBound(qint32 primaryLowerBound) { this->primaryLowerBound = primaryLowerBound; }
-    void setSecondaryUpperBound(qint32 secondaryUpperBound) { this->secondaryUpperBound = secondaryUpperBound; }
-    void setSecondaryLowerBound(qint32 secondaryLowerBound) { this->secondaryLowerBound = secondaryLowerBound; }
-    void setBgXPos(qint16 bgXPos) { this->bgXPos = bgXPos; }
-    void setBgYPos(qint16 bgYPos) { this->bgYPos = bgYPos; }
-    void setUnk1(quint32 unk1) { this->unk1 = unk1; }
-    void setBgParallaxMode(quint8 bgParallaxMode) { this->bgParallaxMode = bgParallaxMode; }
+    void setBackgroundId(quint8 backgroundId) { this->backgroundId = backgroundId; }
 
 protected:
+    quint16 unk1;
     quint8 id;
+    quint8 boundingId;
+    quint8 multiplayerTracking;
     quint8 progPathId;
     quint8 musicId;
-    quint8 multiplayerTracking;
-    quint16 unk1;
-    quint8 lighting;
-    // Boundings
-    qint32 primaryUpperBound = 0;
-    qint32 primaryLowerBound = 0;
-    qint32 secondaryUpperBound = 0;
-    qint32 secondaryLowerBound = 0;
-    quint16 upScrolling = 0;
-    // Background
-    qint16 bgXPos = 0;
-    qint16 bgYPos = 0;
-    QString bgName = "Nohara";
-    quint8 bgParallaxMode = 0;
+    quint8 backgroundId;
 };
 
 

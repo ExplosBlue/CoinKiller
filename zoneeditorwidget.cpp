@@ -8,10 +8,13 @@
 #include <QResizeEvent>
 #include <QTabWidget>
 #include <QSpacerItem>
+#include <QMessageBox>
 
-ZoneEditorWidget::ZoneEditorWidget(QList<Zone*> *zones)
+ZoneEditorWidget::ZoneEditorWidget(QList<Zone*> *zones, QList<ZoneBackground*> *bgs, QList<ZoneBounding*> *bounds)
 {
     this->zones = zones;
+    this->zoneBoundings = bounds;
+    this->zoneBgs = bgs;
 
     multiplayerTrackings.insert(0, tr("Horizontal"));
     multiplayerTrackings.insert(6, tr("Vertical"));
@@ -28,10 +31,10 @@ ZoneEditorWidget::ZoneEditorWidget(QList<Zone*> *zones)
     screenshotBtn = new QPushButton(tr("Screenshot Zone"), this);
     connect(screenshotBtn, SIGNAL(clicked(bool)), this, SLOT(handleScreenshotClicked()));
 
-    settingsTabs = new QTabWidget();
+    settingsGroup = new QGroupBox();
     QSizePolicy policy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
     policy.setVerticalStretch(0);
-    settingsTabs->setSizePolicy(policy);
+    settingsGroup->setSizePolicy(policy);
 
     id = new QSpinBox();
     id->setRange(0, 255);
@@ -54,67 +57,25 @@ ZoneEditorWidget::ZoneEditorWidget(QList<Zone*> *zones)
     unk1->setRange(0, 255);
     connect(unk1, SIGNAL(valueChanged(int)), this, SLOT(handleUnk1Change(int)));
 
-    unlimitedScrolling = new QCheckBox(tr("Unlimited"));
-    connect(unlimitedScrolling, SIGNAL(toggled(bool)), this, SLOT(handleUnlimitedScrollingChange(bool)));
+    boundingId = new QSpinBox();
+    boundingId->setRange(0, 255);
+    connect(boundingId, SIGNAL(valueChanged(int)), this, SLOT(handleBoundingIDChange(int)));
 
-    vertScrollingDistance = new QSpinBox();
-    vertScrollingDistance->setRange(0, 65535);
-    connect(vertScrollingDistance, SIGNAL(valueChanged(int)), this, SLOT(handleVertScrollingDistanceChange(int)));
+    backgroundId = new QSpinBox();
+    backgroundId->setRange(0, 255);
+    connect(backgroundId, SIGNAL(valueChanged(int)), this, SLOT(handleBackgroundIDChange(int)));
 
-    primaryUpperBound = new QSpinBox();
-    primaryUpperBound->setRange(-2147483648, 2147483647);
-    primaryUpperBound->setToolTip(tr("This is the main upper bounding used by the camera it is used when the player is walking/jumping.\n"
-                           "This is used to determine how close the player has to be to the top of the screen before the camera scrolls up.\n"
-                           "Negative values require the player to be closer to the top of the screen, Positive values require the player to be further away.\n"
-                           "A value of 0 requires the player to be >5 tiles away from the top before the camera will move."));
-    connect(primaryUpperBound, SIGNAL(valueChanged(int)), this, SLOT(handlePrimaryUpperBoundChange(int)));
+    editBounding = new QPushButton(tr("Open Bounding Editor"), this);
+    connect(editBounding, SIGNAL(clicked(bool)), this, SLOT(handleEditBoundingClicked()));
 
-    primaryLowerBound = new QSpinBox();
-    primaryLowerBound->setRange(-2147483648, 2147483647);
-    primaryLowerBound->setToolTip(tr("This is the main upper bounding used by the camera it is used when the player is walking/jumping.\n"
-                                    "This is used to determine how close the player has to be to the bottom of the screen before the camera scrolls down.\n"
-                                    "Negative values require the player to be closer to the bottom of the screen, Positive values require the player to be further away.\n"
-                                    "A value of 0 requires the player to be >5 tiles away from the bottom before the camera will move."));
-    connect(primaryLowerBound, SIGNAL(valueChanged(int)), this, SLOT(handlePrimaryLowerBoundChange(int)));
+    editBackground = new QPushButton(tr("Open Background Editor"), this);
+    connect(editBackground, SIGNAL(clicked(bool)), this, SLOT(handleEditBackgroundClicked()));
 
-    secondaryUpperBound = new QSpinBox();
-    secondaryUpperBound->setRange(-2147483648, 2147483647);
-    secondaryUpperBound->setToolTip(tr("This is the secondary upper bounding used by the camera in certain situations, such as when climbing a vine or fence.\n"
-                                    "This is used to determine how close the player has to be to the top of the screen before the camera scrolls up.\n"
-                                    "Negative values require the player to be closer to the top of the screen, Positive values require the player to be further away.\n"
-                                    "A value of 0 requires the player to be >5 tiles away from the top before the camera will move."));
-    connect(secondaryUpperBound, SIGNAL(valueChanged(int)), this, SLOT(handleSecondaryUpperBoundChange(int)));
+    boundingWidget = new ZoneBoundingWidget(bounds);
+    connect(boundingWidget, SIGNAL(editMade()), this, SLOT(handleEditMade()));
 
-    secondaryLowerBound = new QSpinBox();
-    secondaryLowerBound->setRange(-2147483648, 2147483647);
-    secondaryLowerBound->setToolTip(tr("This is the secondary lower bounding used by the camera in certain situations, such as when climbing a vine or fence.\n"
-                                    "This is used to determine how close the player has to be to the bottom of the screen before the camera scrolls down.\n"
-                                    "Negative values require the player to be closer to the bottom of the screen, Positive values require the player to be further away.\n"
-                                    "A value of 0 requires the player to be >5 tiles away from the bottom before the camera will move."));
-    connect(secondaryLowerBound, SIGNAL(valueChanged(int)), this, SLOT(handleSecondaryLowerBoundChange(int)));
-
-    bgXPos = new QSpinBox();
-    bgXPos->setRange(-32768, 32767);
-    connect(bgXPos, SIGNAL(valueChanged(int)), this, SLOT(handleBgXPosChanged(int)));
-
-    bgYPos = new QSpinBox();
-    bgYPos->setRange(-32768, 32767);
-    connect(bgYPos, SIGNAL(valueChanged(int)), this, SLOT(handleBgYPosChanged(int)));
-
-    bgParallaxMode = new QComboBox();
-    bgParallaxMode->addItem(tr("Y Offset Off, All Parallax On"));
-    bgParallaxMode->addItem(tr("Y Offset On, All Parallax On"));
-    bgParallaxMode->addItem(tr("Y Offset On, All Parallax Off"));
-    bgParallaxMode->addItem(tr("Y Offset On, Y Parallax Off"));
-    bgParallaxMode->addItem(tr("Y Offset On, X Parallax Off"));
-    connect(bgParallaxMode, SIGNAL(currentIndexChanged(int)), this, SLOT(handleBgParallaxModeChange(int)));
-
-    background = new QComboBox();
-    background->setSizeAdjustPolicy(QComboBox::SizeAdjustPolicy::AdjustToMinimumContentsLengthWithIcon);
-    loadBackgrounds();
-    connect(background, SIGNAL(currentIndexChanged(QString)), this, SLOT(handleBackgroundChange(QString)));
-
-    backgroundPreview = new BgPreview();
+    backgroundWidget = new ZoneBackgroundWidget(bgs);
+    connect(backgroundWidget, SIGNAL(editMade()), this, SLOT(handleEditMade()));
 
     QVBoxLayout* layout = new QVBoxLayout();
     setLayout(layout);
@@ -126,90 +87,49 @@ ZoneEditorWidget::ZoneEditorWidget(QList<Zone*> *zones)
     btnsLayout->addWidget(screenshotBtn);
     layout->addLayout(btnsLayout);
 
-    generalTab = new QWidget();
-    QGridLayout* generalTabLayout = new QGridLayout();
-    generalTabLayout->setMargin(5);
+    settingsGroup = new QGroupBox();
+    QGridLayout* settingsLayout = new QGridLayout();
+    settingsLayout->setMargin(5);
     id->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);  // All Controls at maximum possible width
 
-    generalTabLayout->addWidget(new QLabel(tr("ID:")), 0, 0, 1, 1, Qt::AlignRight);
-    generalTabLayout->addWidget(id, 0, 1);
+    settingsLayout->addWidget(new QLabel(tr("ID:")), 0, 0, 1, 1, Qt::AlignRight);
+    settingsLayout->addWidget(id, 0, 1, 1, 2);
 
-    generalTabLayout->addWidget(new QLabel(tr("Music:")), 1, 0, 1, 1, Qt::AlignRight);
-    generalTabLayout->addWidget(musicId, 1, 1);
+    settingsLayout->addWidget(new QLabel(tr("Music:")), 1, 0, 1, 1, Qt::AlignRight);
+    settingsLayout->addWidget(musicId, 1, 1, 1, 2);
 
-    generalTabLayout->addWidget(new QLabel(tr("Multiplayer Tracking:")), 2, 0, 1, 1, Qt::AlignRight);
-    generalTabLayout->addWidget(multiplayerTracking, 2, 1);
+    settingsLayout->addWidget(new QLabel(tr("Multiplayer Tracking:")), 2, 0, 1, 1, Qt::AlignRight);
+    settingsLayout->addWidget(multiplayerTracking, 2, 1, 1, 2);
 
-    generalTabLayout->addWidget(new QLabel(tr("Progress Path ID:")), 3, 0, 1, 1, Qt::AlignRight);
-    generalTabLayout->addWidget(progPathId, 3, 1);
+    settingsLayout->addWidget(new QLabel(tr("Progress Path ID:")), 3, 0, 1, 1, Qt::AlignRight);
+    settingsLayout->addWidget(progPathId, 3, 1, 1, 2);
 
-    generalTabLayout->addWidget(new QLabel(tr("Unknown 1:")), 4, 0, 1, 1, Qt::AlignRight);
-    generalTabLayout->addWidget(unk1, 4, 1);
+    settingsLayout->addWidget(new QLabel(tr("Unknown 1:")), 4, 0, 1, 1, Qt::AlignRight);
+    settingsLayout->addWidget(unk1, 4, 1, 1, 2);
 
-    generalTabLayout->addItem(new QSpacerItem(0, 0, QSizePolicy::Minimum, QSizePolicy::MinimumExpanding), 5, 0);
+    settingsLayout->addWidget(new QLabel(tr("Bounding ID:")), 5, 0, 1, 1, Qt::AlignRight);
+    settingsLayout->addWidget(boundingId, 5, 1);
+    settingsLayout->addWidget(editBounding, 5, 2);
 
-    generalTab->setLayout(generalTabLayout);
+    settingsLayout->addWidget(new QLabel(tr("Background ID:")), 6, 0, 1, 1, Qt::AlignRight);
+    settingsLayout->addWidget(backgroundId, 6, 1);
+    settingsLayout->addWidget(editBackground, 6, 2);
 
-    boundsTab  = new QWidget();
-    QGridLayout* boundsTabLayout = new QGridLayout();
-    boundsTabLayout->setMargin(5);
-    primaryUpperBound->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);  // All Controls at maximum possible width
+    settingsGroup->setLayout(settingsLayout);
 
-    boundsTabLayout->addWidget(new QLabel(tr("Primary Upper Bound:")), 0, 0, 1, 1, Qt::AlignRight);
-    boundsTabLayout->addWidget(primaryUpperBound, 0, 1, 1, 2);
-
-    boundsTabLayout->addWidget(new QLabel(tr("Primary Lower Bound:")), 1, 0, 1, 1, Qt::AlignRight);
-    boundsTabLayout->addWidget(primaryLowerBound, 1, 1, 1, 2);
-
-    boundsTabLayout->addWidget(new QLabel(tr("Secondary Upper Bound:")), 2, 0, 1, 1, Qt::AlignRight);
-    boundsTabLayout->addWidget(secondaryUpperBound, 2, 1, 1, 2);
-
-    boundsTabLayout->addWidget(new QLabel(tr("Secondary Lower Bound:")), 3, 0, 1, 1, Qt::AlignRight);
-    boundsTabLayout->addWidget(secondaryLowerBound, 3, 1, 1, 2);
-
-    boundsTabLayout->addWidget(new QLabel(tr("Vertical Scrolling Distance:")), 4, 0, 1, 1, Qt::AlignRight);
-    boundsTabLayout->addWidget(vertScrollingDistance, 4, 1, 1, 1);
-
-    boundsTabLayout->addWidget(unlimitedScrolling, 4, 2, 1, 1, Qt::AlignLeft);
-
-    boundsTabLayout->addItem(new QSpacerItem(0, 0, QSizePolicy::Minimum, QSizePolicy::MinimumExpanding), 5, 0);
-
-    boundsTab->setLayout(boundsTabLayout);
-
-    backgroundTab = new QWidget();
-    QGridLayout* backgroundTabLayout = new QGridLayout();
-    backgroundTabLayout->setMargin(5);
-    bgXPos->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);  // All Controls at maximum possible width
-
-    backgroundTabLayout->addWidget(new QLabel(tr("X Offset:")), 0, 0, 1, 1, Qt::AlignRight);
-    backgroundTabLayout->addWidget(bgXPos, 0, 1);
-
-    backgroundTabLayout->addWidget(new QLabel(tr("Y Offset:")), 1, 0, 1, 1, Qt::AlignRight);
-    backgroundTabLayout->addWidget(bgYPos, 1, 1);
-
-    backgroundTabLayout->addWidget(new QLabel(tr("Parallax Mode:")), 2, 0, 1, 1, Qt::AlignRight);
-    backgroundTabLayout->addWidget(bgParallaxMode, 2, 1);
-
-    backgroundTabLayout->addWidget(new QLabel(tr("Background:")), 3, 0, 1, 1, Qt::AlignRight);
-    backgroundTabLayout->addWidget(background, 3, 1);
-
-    QHBoxLayout* bgAlign = new QHBoxLayout();
-    QWidget* spacer = new QWidget();
-    spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
-    bgAlign->addWidget(spacer);
-    bgAlign->addWidget(backgroundPreview, 1);
-    backgroundTabLayout->addLayout(bgAlign, 5, 0, 1, 2);
-
-    backgroundTab->setLayout(backgroundTabLayout);
-
-    settingsTabs->addTab(generalTab, tr("General"));
-    settingsTabs->addTab(boundsTab, tr("Bounds"));
-    settingsTabs->addTab(backgroundTab, tr("Background"));
-
-    layout->addWidget(settingsTabs);
+    layout->addWidget(settingsGroup);
 
     updateList();
     updateInfo();
+}
+
+ZoneEditorWidget::~ZoneEditorWidget()
+{
+    if (backgroundWidget)
+        delete backgroundWidget;
+
+    if (boundingWidget)
+        delete boundingWidget;
 }
 
 void ZoneEditorWidget::changeEvent(QEvent* event)
@@ -245,13 +165,6 @@ void ZoneEditorWidget::updateEditor()
     updateInfo();
 }
 
-void ZoneEditorWidget::updateBgPreview()
-{
-    QFileInfo checkFile(SettingsManager::getInstance()->dataPath("backgrounds/" + editZone->getBgName() + ".png"));
-    if (checkFile.exists() && checkFile.isFile()) backgroundPreview->setBg(SettingsManager::getInstance()->dataPath("backgrounds/" + editZone->getBgName() + ".png"));
-    else backgroundPreview->setBg(SettingsManager::getInstance()->dataPath("backgrounds/Invalid.png"));
-}
-
 void ZoneEditorWidget::loadMusicIDs()
 {
     QFile file(SettingsManager::getInstance()->getFilePath("musicids.txt"));
@@ -278,6 +191,7 @@ void ZoneEditorWidget::loadMusicIDs()
 BgPreview::BgPreview()
 {
     bg = QPixmap(400,240);
+    bg.fill(Qt::black);
     setMinimumWidth(100);
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
     setMaximumWidth(300);
@@ -298,24 +212,6 @@ void BgPreview::resizeEvent(QResizeEvent *)
     setPixmap(bg.scaled(width(), height(), Qt::KeepAspectRatio));
 }
 
-void ZoneEditorWidget::loadBackgrounds()
-{
-    QFile file(SettingsManager::getInstance()->dataPath("backgrounds/backgroundnames.txt"));
-    if(!file.open(QIODevice::ReadOnly))
-        return;
-
-    QTextStream in(&file);
-
-    while(!in.atEnd())
-    {
-        QStringList nameStrings = in.readLine().split(":");
-        background->addItem(nameStrings[1]);
-        backgrounds.insert(nameStrings[0], nameStrings[1]);
-    }
-
-    file.close();
-}
-
 void ZoneEditorWidget::updateList()
 {
     QModelIndex index;
@@ -330,7 +226,7 @@ void ZoneEditorWidget::updateList()
 
 void ZoneEditorWidget::updateInfo()
 {
-    settingsTabs->setHidden(!editingAZone);
+    settingsGroup->setHidden(!editingAZone);
     selectContentsBtn->setHidden(!editingAZone);
     screenshotBtn->setHidden(!editingAZone);
 
@@ -347,22 +243,8 @@ void ZoneEditorWidget::updateInfo()
     multiplayerTracking->setCurrentText(multiplayerTrackings.value(editZone->getMultiplayerTracking()));
     progPathId->setValue(editZone->getProgPathId());
     unk1->setValue(editZone->getUnk1());
-
-    primaryUpperBound->setValue(editZone->getPrimaryUpperBound());
-    primaryLowerBound->setValue(editZone->getPrimaryLowerBound());
-    secondaryUpperBound->setValue(editZone->getSecondaryUpperBound());
-    secondaryLowerBound->setValue(editZone->getSecondaryLowerBound());
-    unlimitedScrolling->setChecked(editZone->getUpScrolling() == 0xF);
-    vertScrollingDistance->setValue(editZone->getUpScrolling());
-
-    if (editZone->getUpScrolling() == 0xF)
-        vertScrollingDistance->setEnabled(false);
-
-    bgXPos->setValue(editZone->getBgXPos());
-    bgYPos->setValue(editZone->getBgYPos());
-    background->setCurrentText(backgrounds.value(editZone->getBgName()));
-    bgParallaxMode->setCurrentIndex(editZone->getBgParallaxMode());
-    updateBgPreview();
+    boundingId->setValue(editZone->getBoundingId());
+    backgroundId->setValue(editZone->getBackgroundId());
 
     handleChanges = true;
 }
@@ -418,83 +300,6 @@ void ZoneEditorWidget::handleUnk1Change(int unk1)
     emit editMade();
 }
 
-void ZoneEditorWidget::handleUnlimitedScrollingChange(bool val)
-{
-    if (!handleChanges) return;
-    editZone->setUpScrolling(val? 0x0F : 0x00);
-
-    if (val)
-        vertScrollingDistance->setEnabled(false);
-    else
-        vertScrollingDistance->setEnabled(true);
-
-    emit editMade();
-}
-
-void ZoneEditorWidget::handleVertScrollingDistanceChange(int val)
-{
-    if (!handleChanges) return;
-    editZone->setUpScrolling(val);
-    emit editMade();
-}
-
-void ZoneEditorWidget::handlePrimaryUpperBoundChange(int val)
-{
-    if (!handleChanges) return;
-    editZone->setPrimaryUpperBound(val);
-    emit editMade();
-}
-
-void ZoneEditorWidget::handlePrimaryLowerBoundChange(int val)
-{
-    if (!handleChanges) return;
-    editZone->setPrimaryLowerBound(val);
-    emit editMade();
-}
-
-void ZoneEditorWidget::handleSecondaryUpperBoundChange(int val)
-{
-    if (!handleChanges) return;
-    editZone->setSecondaryUpperBound(val);
-    emit editMade();
-}
-
-void ZoneEditorWidget::handleSecondaryLowerBoundChange(int val)
-{
-    if (!handleChanges) return;
-    editZone->setSecondaryLowerBound(val);
-    emit editMade();
-}
-
-void ZoneEditorWidget::handleBgParallaxModeChange(int val)
-{
-    if (!handleChanges) return;
-    editZone->setBgParallaxMode(val);
-    emit editMade();
-}
-
-void ZoneEditorWidget::handleBgXPosChanged(int val)
-{
-    if (!handleChanges) return;
-    editZone->setBgXPos(val);
-    emit editMade();
-}
-
-void ZoneEditorWidget::handleBgYPosChanged(int val)
-{
-    if (!handleChanges) return;
-    editZone->setBgYPos(val);
-    emit editMade();
-}
-
-void ZoneEditorWidget::handleBackgroundChange(QString text)
-{
-    if (!handleChanges) return;
-    editZone->setBackgroundName(backgrounds.key(text, "Nohara_Castle"));
-    updateBgPreview();
-    emit editMade();
-}
-
 void ZoneEditorWidget::handleSelectContentsClicked()
 {
     if (!handleChanges) return;
@@ -505,4 +310,558 @@ void ZoneEditorWidget::handleScreenshotClicked()
 {
     if (!handleChanges) return;
     emit screenshot(QRect(editZone->getx(), editZone->gety(), editZone->getwidth(), editZone->getheight()));
+}
+
+void ZoneEditorWidget::handleBoundingIDChange(int val)
+{
+    if (!handleChanges) return;
+
+    bool isValid = false;
+    foreach(ZoneBounding* bounding, *zoneBoundings)
+    {
+        if (bounding->getId() == val)
+            isValid = true;
+    }
+
+    if (isValid)
+    {
+        editZone->setBoundingId(val);
+        emit updateLevelView();
+        emit editMade();
+    }
+    else
+    {
+        QMessageBox message(QMessageBox::Information, "CoinKiller", tr("No Bounding With That ID Exists."), QMessageBox::Ok);
+        message.exec();
+
+        boundingId->setValue(editZone->getBoundingId());
+    }
+}
+
+void ZoneEditorWidget::handleBackgroundIDChange(int val)
+{
+    if (!handleChanges) return;
+
+    bool isValid = false;
+    foreach(ZoneBackground* bg, *zoneBgs)
+    {
+        if (bg->getId() == val)
+            isValid = true;
+    }
+
+    if (isValid)
+    {
+        editZone->setBackgroundId(val);
+        updateList();
+        emit updateLevelView();
+        emit editMade();
+    }
+    else
+    {
+        QMessageBox message(QMessageBox::Information, "CoinKiller", tr("No Background With That ID Exists."), QMessageBox::Ok);
+        message.exec();
+
+        backgroundId->setValue(editZone->getBackgroundId());
+    }
+}
+
+void ZoneEditorWidget::handleEditBoundingClicked()
+{
+    if (!handleChanges) return;
+    boundingWidget->exec();
+}
+
+void ZoneEditorWidget::handleEditBackgroundClicked()
+{
+    if (!handleChanges) return;
+    backgroundWidget->exec();
+}
+
+void ZoneEditorWidget::handleEditMade()
+{
+    emit editMade();
+}
+
+// Zone Background Widget
+
+ZoneBackgroundWidget::ZoneBackgroundWidget(QList<ZoneBackground*> *backgrounds)
+{
+    this->zoneBgs = backgrounds;
+
+    backgroundList = new QListWidget();
+    backgroundList->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    connect(backgroundList, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(handleBackgroundListIndexChange(QListWidgetItem*)));
+
+    addBackgroundBtn = new QPushButton(tr("Add Background"), this);
+    connect(addBackgroundBtn, SIGNAL(clicked(bool)), this, SLOT(handleAddBackgroundClicked()));
+
+    removeBackgroundBtn = new QPushButton(tr("Remove Background"), this);
+    connect(removeBackgroundBtn, SIGNAL(clicked(bool)), this, SLOT(handleRemoveBackgroundClicked()));
+
+    backgroundId = new QSpinBox();
+    backgroundId->setRange(0, 255);
+    connect(backgroundId, SIGNAL(valueChanged(int)), this, SLOT(handleBackgroundIDChanged(int)));
+
+    xPos = new QSpinBox();
+    xPos->setRange(-32768, 32767);
+    connect(xPos, SIGNAL(valueChanged(int)), this, SLOT(handleXPosChanged(int)));
+
+    yPos = new QSpinBox();
+    yPos->setRange(-32768, 32767);
+    connect(yPos, SIGNAL(valueChanged(int)), this, SLOT(handleYPosChanged(int)));
+
+    parallaxMode = new QComboBox();
+    parallaxMode->addItem(tr("Y Offset Off, All Parallax On"));
+    parallaxMode->addItem(tr("Y Offset On, All Parallax On"));
+    parallaxMode->addItem(tr("Y Offset On, All Parallax Off"));
+    parallaxMode->addItem(tr("Y Offset On, Y Parallax Off"));
+    parallaxMode->addItem(tr("Y Offset On, X Parallax Off"));
+    connect(parallaxMode, SIGNAL(currentIndexChanged(int)), this, SLOT(handleParallaxModeChange(int)));
+
+    background = new QComboBox();
+    background->setSizeAdjustPolicy(QComboBox::SizeAdjustPolicy::AdjustToMinimumContentsLengthWithIcon);
+    loadBackgrounds();
+    connect(background, SIGNAL(currentIndexChanged(QString)), this, SLOT(handleBackgroundChange(QString)));
+
+    backgroundPreview = new BgPreview();
+
+    QVBoxLayout* layout = new QVBoxLayout();
+    setLayout(layout);
+
+    layout->addWidget(backgroundList);
+
+    QHBoxLayout* btnsLayout = new QHBoxLayout();
+    btnsLayout->addWidget(addBackgroundBtn);
+    btnsLayout->addWidget(removeBackgroundBtn);
+    layout->addLayout(btnsLayout);
+
+    settingsGroup = new QGroupBox();
+    settingsGroup->setTitle(tr("Background: None"));
+    settingsGroup->setDisabled(true);
+
+    QGridLayout* settingsLayout = new QGridLayout();
+    settingsLayout->setMargin(5);
+    backgroundId->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);  // All Controls at maximum possible width
+
+    settingsLayout->addWidget(new QLabel(tr("ID:")), 0, 0, 1, 1, Qt::AlignRight);
+    settingsLayout->addWidget(backgroundId, 0, 1);
+
+    settingsLayout->addWidget(new QLabel(tr("X Offset:")), 1, 0, 1, 1, Qt::AlignRight);
+    settingsLayout->addWidget(xPos, 1, 1);
+
+    settingsLayout->addWidget(new QLabel(tr("Y Offset:")), 2, 0, 1, 1, Qt::AlignRight);
+    settingsLayout->addWidget(yPos, 2, 1);
+
+    settingsLayout->addWidget(new QLabel(tr("Parallax Mode:")), 3, 0, 1, 1, Qt::AlignRight);
+    settingsLayout->addWidget(parallaxMode, 3, 1);
+
+    settingsLayout->addWidget(new QLabel(tr("Background:")), 4, 0, 1, 1, Qt::AlignRight);
+    settingsLayout->addWidget(background, 4, 1);
+
+    QHBoxLayout* bgAlign = new QHBoxLayout();
+    QWidget* spacer = new QWidget();
+    spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+    bgAlign->addWidget(spacer);
+    bgAlign->addWidget(backgroundPreview, 1);
+    settingsLayout->addLayout(bgAlign, 5, 0, 1, 2);
+
+    settingsGroup->setLayout(settingsLayout);
+
+    layout->addWidget(settingsGroup);
+
+    updateList();
+    updateInfo();
+}
+
+void ZoneBackgroundWidget::updateList()
+{
+    QModelIndex index;
+    if (backgroundList->selectionModel()->selectedIndexes().size() != 0) index = backgroundList->selectionModel()->selectedIndexes().at(0);
+
+    backgroundList->clear();
+    foreach (ZoneBackground* bg, *zoneBgs)
+        backgroundList->addItem(tr("Background %1").arg(bg->getId()));
+
+    backgroundList->setCurrentIndex(index);
+}
+
+void ZoneBackgroundWidget::updateInfo()
+{
+    if (editingABg == false)
+        return;
+
+    handleChanges = false;
+
+    backgroundId->setValue(editBg->getId());
+    settingsGroup->setTitle(tr("Background: %1").arg(editBg->getId()));
+    xPos->setValue(editBg->getXPos());
+    yPos->setValue(editBg->getYPos());
+    background->setCurrentText(backgrounds.value(editBg->getName()));
+    parallaxMode->setCurrentIndex(editBg->getParallaxMode());
+    updateBgPreview();
+
+    handleChanges = true;
+}
+
+void ZoneBackgroundWidget::handleBackgroundListIndexChange(QListWidgetItem *item)
+{
+    if (!handleChanges) return;
+    editBg = zoneBgs->at(backgroundList->row(item));
+    settingsGroup->setEnabled(true);
+    editingABg = true;
+    updateInfo();
+}
+
+void ZoneBackgroundWidget::loadBackgrounds()
+{
+    QFile file(SettingsManager::getInstance()->dataPath("backgrounds/backgroundnames.txt"));
+    if(!file.open(QIODevice::ReadOnly))
+        return;
+
+    QTextStream in(&file);
+
+    while(!in.atEnd())
+    {
+        QStringList nameStrings = in.readLine().split(":");
+        background->addItem(nameStrings[1]);
+        backgrounds.insert(nameStrings[0], nameStrings[1]);
+    }
+
+    file.close();
+}
+
+void ZoneBackgroundWidget::updateBgPreview()
+{
+    QFileInfo checkFile(SettingsManager::getInstance()->dataPath("backgrounds/" + editBg->getName() + ".png"));
+    if (checkFile.exists() && checkFile.isFile()) backgroundPreview->setBg(SettingsManager::getInstance()->dataPath("backgrounds/" + editBg->getName() + ".png"));
+    else backgroundPreview->setBg(SettingsManager::getInstance()->dataPath("backgrounds/Invalid.png"));
+}
+
+void ZoneBackgroundWidget::handleParallaxModeChange(int val)
+{
+    if (!handleChanges) return;
+    editBg->setParallaxMode(val);
+    emit editMade();
+}
+
+void ZoneBackgroundWidget::handleXPosChanged(int val)
+{
+    if (!handleChanges) return;
+    editBg->setXPos(val);
+    emit editMade();
+}
+
+void ZoneBackgroundWidget::handleYPosChanged(int val)
+{
+    if (!handleChanges) return;
+    editBg->setYPos(val);
+    emit editMade();
+}
+
+void ZoneBackgroundWidget::handleBackgroundIDChanged(int val)
+{
+    if (!handleChanges) return;
+    editBg->setId(val);
+    updateList();
+    updateInfo();
+    emit editMade();
+}
+
+void ZoneBackgroundWidget::handleBackgroundChange(QString text)
+{
+    if (!handleChanges) return;
+    editBg->setName(backgrounds.key(text, "Nohara_Castle"));
+    updateBgPreview();
+    emit editMade();
+}
+
+void ZoneBackgroundWidget::handleAddBackgroundClicked()
+{
+    if (!handleChanges) return;
+
+    quint8 id = 0;
+    for(;; id++)
+    {
+        bool check = false;
+        foreach (ZoneBackground* bg, *zoneBgs)
+            if (bg->getId() == id) check = true;
+        if (!check) break;
+        else if (id == 255)
+            return;
+    }
+
+    ZoneBackground* bg = new ZoneBackground(id, 0, 0, "Nohara_Castle", 0);
+
+    zoneBgs->append(bg);
+    updateList();
+
+    emit editMade();
+}
+
+void ZoneBackgroundWidget::handleRemoveBackgroundClicked()
+{
+    if (editingABg == false)
+        return;
+
+    if (!handleChanges) return;
+
+    zoneBgs->removeOne(editBg);
+
+    editingABg = false;
+    settingsGroup->setDisabled(true);
+
+    delete editBg;
+
+    updateList();
+    emit editMade();
+}
+
+
+// Zone Bounding Widget
+
+ZoneBoundingWidget::ZoneBoundingWidget(QList<ZoneBounding*> *boundings)
+{
+    this->zoneBoundings = boundings;
+
+    boundingList = new QListWidget();
+    boundingList->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    connect(boundingList, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(handleBoundingListIndexChange(QListWidgetItem*)));
+
+    addBoundingBtn = new QPushButton(tr("Add Bounding"), this);
+    connect(addBoundingBtn, SIGNAL(clicked(bool)), this, SLOT(handleAddBoundingClicked()));
+
+    removeBoundingBtn = new QPushButton(tr("Remove Bounding"), this);
+    connect(removeBoundingBtn, SIGNAL(clicked(bool)), this, SLOT(handleRemoveBoundingClicked()));
+
+    unlimitedScrolling = new QCheckBox(tr("Unlimited"));
+    connect(unlimitedScrolling, SIGNAL(toggled(bool)), this, SLOT(handleUnlimitedScrollingChange(bool)));
+
+    boundingId = new QSpinBox();
+    boundingId->setRange(0, 255);
+    //boundingId->setDisabled(true);
+    connect(boundingId, SIGNAL(valueChanged(int)), this, SLOT(handleBoundingIdChange(int)));
+
+    vertScrollingDistance = new QSpinBox();
+    vertScrollingDistance->setRange(0, 65535);
+    connect(vertScrollingDistance, SIGNAL(valueChanged(int)), this, SLOT(handleVertScrollingDistanceChange(int)));
+
+    primaryUpperBound = new QSpinBox();
+    primaryUpperBound->setRange(-2147483648, 2147483647);
+    primaryUpperBound->setToolTip(tr("This is the main upper bounding used by the camera it is used when the player is walking/jumping.\n"
+                           "This is used to determine how close the player has to be to the top of the screen before the camera scrolls up.\n"
+                           "Negative values require the player to be closer to the top of the screen, Positive values require the player to be further away.\n"
+                           "A value of 0 requires the player to be >5 tiles away from the top before the camera will move."));
+    connect(primaryUpperBound, SIGNAL(valueChanged(int)), this, SLOT(handlePrimaryUpperBoundChange(int)));
+
+    primaryLowerBound = new QSpinBox();
+    primaryLowerBound->setRange(-2147483648, 2147483647);
+    primaryLowerBound->setToolTip(tr("This is the main upper bounding used by the camera it is used when the player is walking/jumping.\n"
+                                    "This is used to determine how close the player has to be to the bottom of the screen before the camera scrolls down.\n"
+                                    "Negative values require the player to be closer to the bottom of the screen, Positive values require the player to be further away.\n"
+                                    "A value of 0 requires the player to be >5 tiles away from the bottom before the camera will move."));
+    connect(primaryLowerBound, SIGNAL(valueChanged(int)), this, SLOT(handlePrimaryLowerBoundChange(int)));
+
+    secondaryUpperBound = new QSpinBox();
+    secondaryUpperBound->setRange(-2147483648, 2147483647);
+    secondaryUpperBound->setToolTip(tr("This is the secondary upper bounding used by the camera in certain situations, such as when climbing a vine or fence.\n"
+                                    "This is used to determine how close the player has to be to the top of the screen before the camera scrolls up.\n"
+                                    "Negative values require the player to be closer to the top of the screen, Positive values require the player to be further away.\n"
+                                    "A value of 0 requires the player to be >5 tiles away from the top before the camera will move."));
+    connect(secondaryUpperBound, SIGNAL(valueChanged(int)), this, SLOT(handleSecondaryUpperBoundChange(int)));
+
+    secondaryLowerBound = new QSpinBox();
+    secondaryLowerBound->setRange(-2147483648, 2147483647);
+    secondaryLowerBound->setToolTip(tr("This is the secondary lower bounding used by the camera in certain situations, such as when climbing a vine or fence.\n"
+                                    "This is used to determine how close the player has to be to the bottom of the screen before the camera scrolls down.\n"
+                                    "Negative values require the player to be closer to the bottom of the screen, Positive values require the player to be further away.\n"
+                                    "A value of 0 requires the player to be >5 tiles away from the bottom before the camera will move."));
+    connect(secondaryLowerBound, SIGNAL(valueChanged(int)), this, SLOT(handleSecondaryLowerBoundChange(int)));
+
+    QVBoxLayout* layout = new QVBoxLayout();
+    setLayout(layout);
+
+    layout->addWidget(boundingList);
+
+    QHBoxLayout* btnsLayout = new QHBoxLayout();
+    btnsLayout->addWidget(addBoundingBtn);
+    btnsLayout->addWidget(removeBoundingBtn);
+    layout->addLayout(btnsLayout);
+
+    settingsGroup = new QGroupBox();
+    settingsGroup->setTitle(tr("Bounding: None"));
+    settingsGroup->setDisabled(true);
+
+    QGridLayout* settingsLayout = new QGridLayout();
+    settingsLayout->setMargin(5);
+    boundingId->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);  // All Controls at maximum possible width
+
+    settingsLayout->addWidget(new QLabel(tr("ID:")), 0, 0, 1, 1, Qt::AlignRight);
+    settingsLayout->addWidget(boundingId, 0, 1, 1, 2);
+
+    settingsLayout->addWidget(new QLabel(tr("Primary Upper Bound:")), 1, 0, 1, 1, Qt::AlignRight);
+    settingsLayout->addWidget(primaryUpperBound, 1, 1, 1, 2);
+
+    settingsLayout->addWidget(new QLabel(tr("Primary Lower Bound:")), 2, 0, 1, 1, Qt::AlignRight);
+    settingsLayout->addWidget(primaryLowerBound, 2, 1, 1, 2);
+
+    settingsLayout->addWidget(new QLabel(tr("Secondary Upper Bound:")), 3, 0, 1, 1, Qt::AlignRight);
+    settingsLayout->addWidget(secondaryUpperBound, 3, 1, 1, 2);
+
+    settingsLayout->addWidget(new QLabel(tr("Secondary Lower Bound:")), 4, 0, 1, 1, Qt::AlignRight);
+    settingsLayout->addWidget(secondaryLowerBound, 4, 1, 1, 2);
+
+    settingsLayout->addWidget(new QLabel(tr("Vertical Scrolling Distance:")), 5, 0, 1, 1, Qt::AlignRight);
+    settingsLayout->addWidget(vertScrollingDistance, 5, 1, 1, 1);
+    settingsLayout->addWidget(unlimitedScrolling, 5, 2, 1, 1, Qt::AlignLeft);
+
+    settingsGroup->setLayout(settingsLayout);
+
+    layout->addWidget(settingsGroup);
+
+    updateList();
+    updateInfo();
+}
+
+void ZoneBoundingWidget::updateList()
+{
+    QModelIndex index;
+    if (boundingList->selectionModel()->selectedIndexes().size() != 0) index = boundingList->selectionModel()->selectedIndexes().at(0);
+
+    boundingList->clear();
+
+    foreach (ZoneBounding* bounding, *zoneBoundings)
+        boundingList->addItem(tr("Bounding %1").arg(bounding->getId()));
+
+    boundingList->setCurrentIndex(index);
+}
+
+void ZoneBoundingWidget::updateInfo()
+{
+    if (editingABounding == false)
+        return;
+
+    handleChanges = false;
+
+    boundingId->setValue(editBounding->getId());
+    settingsGroup->setTitle(tr("Bounding: %1").arg(editBounding->getId()));
+    primaryUpperBound->setValue(editBounding->getPrimaryUpperBound());
+    primaryLowerBound->setValue(editBounding->getPrimaryLowerBound());
+    secondaryUpperBound->setValue(editBounding->getSecondaryUpperBound());
+    secondaryLowerBound->setValue(editBounding->getSecondaryLowerBound());
+    unlimitedScrolling->setChecked(editBounding->getUpScrolling() == 0xF);
+    vertScrollingDistance->setValue(editBounding->getUpScrolling());
+
+    if (editBounding->getUpScrolling() == 0xF)
+        vertScrollingDistance->setEnabled(false);
+    else
+        vertScrollingDistance->setEnabled(true);
+
+    handleChanges = true;
+}
+
+void ZoneBoundingWidget::handleBoundingListIndexChange(QListWidgetItem *item)
+{
+    if (!handleChanges) return;
+    editBounding = zoneBoundings->at(boundingList->row(item));
+    settingsGroup->setEnabled(true);
+    editingABounding = true;
+    updateInfo();
+}
+
+void ZoneBoundingWidget::handleUnlimitedScrollingChange(bool val)
+{
+    if (!handleChanges) return;
+    editBounding->setUpScrolling(val? 0x0F : 0x00);
+
+    if (val)
+        vertScrollingDistance->setEnabled(false);
+    else
+        vertScrollingDistance->setEnabled(true);
+
+    emit editMade();
+}
+
+void ZoneBoundingWidget::handleVertScrollingDistanceChange(int val)
+{
+    if (!handleChanges) return;
+    editBounding->setUpScrolling(val);
+    emit editMade();
+}
+
+void ZoneBoundingWidget::handlePrimaryUpperBoundChange(int val)
+{
+    if (!handleChanges) return;
+    editBounding->setPrimaryUpperBound(val);
+    emit editMade();
+}
+
+void ZoneBoundingWidget::handlePrimaryLowerBoundChange(int val)
+{
+    if (!handleChanges) return;
+    editBounding->setPrimaryLowerBound(val);
+    emit editMade();
+}
+
+void ZoneBoundingWidget::handleSecondaryUpperBoundChange(int val)
+{
+    if (!handleChanges) return;
+    editBounding->setSecondaryUpperBound(val);
+    emit editMade();
+}
+
+void ZoneBoundingWidget::handleSecondaryLowerBoundChange(int val)
+{
+    if (!handleChanges) return;
+    editBounding->setSecondaryLowerBound(val);
+    emit editMade();
+}
+
+void ZoneBoundingWidget::handleBoundingIdChange(int val)
+{
+    if (!handleChanges) return;
+    editBounding->setId(val);
+    updateList();
+    updateInfo();
+    emit editMade();
+}
+
+void ZoneBoundingWidget::handleAddBoundingClicked()
+{
+    if (!handleChanges) return;
+
+    quint8 id = 0;
+    for(;; id++)
+    {
+        bool check = false;
+        foreach (ZoneBounding* bounding, *zoneBoundings)
+            if (bounding->getId() == id) check = true;
+        if (!check) break;
+        else if (id == 255)
+            return;
+    }
+
+    ZoneBounding* bounding = new ZoneBounding(id, 0, 0, 0, 0, 0);
+
+    zoneBoundings->append(bounding);
+    updateList();
+
+    emit editMade();
+}
+
+void ZoneBoundingWidget::handleRemoveBoundingClicked()
+{
+    if (editingABounding == false)
+        return;
+
+    if (!handleChanges) return;
+
+    zoneBoundings->removeOne(editBounding);
+
+    editingABounding = false;
+    settingsGroup->setDisabled(true);
+
+    delete editBounding;
+
+    updateList();
+    emit editMade();
 }

@@ -1413,25 +1413,13 @@ We can not help you finding that file, but the filename should be enough to do s
     </message>
 </context>
 <context>
-    <name>ZoneEditorWidget</name>
+    <name>ZoneBackgroundWidget</name>
     <message>
-        <source>Horizontal</source>
-        <translation></translation>
+        <source>Add Background</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Vertical</source>
-        <translation>Vertikal</translation>
-    </message>
-    <message>
-        <source>Select Contents</source>
-        <translation>Inhalt Auswählen</translation>
-    </message>
-    <message>
-        <source>Screenshot Zone</source>
-        <translation>Screenshot Bereich</translation>
-    </message>
-    <message>
-        <source>Unlimited</source>
+        <source>Remove Background</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1455,44 +1443,12 @@ We can not help you finding that file, but the filename should be enough to do s
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Background: None</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>ID:</source>
-        <translation></translation>
-    </message>
-    <message>
-        <source>Music:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Multiplayer Tracking:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Progress Path ID:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Unknown 1:</source>
-        <translation type="unfinished">Unbekannt 1:</translation>
-    </message>
-    <message>
-        <source>Primary Upper Bound:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Primary Lower Bound:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Secondary Upper Bound:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Secondary Lower Bound:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Vertical Scrolling Distance:</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">ID:</translation>
     </message>
     <message>
         <source>X Offset:</source>
@@ -1508,23 +1464,30 @@ We can not help you finding that file, but the filename should be enough to do s
     </message>
     <message>
         <source>Background:</source>
-        <translation>Hintergrund:</translation>
+        <translation type="unfinished">Hintergrund:</translation>
     </message>
     <message>
-        <source>General</source>
+        <source>Background %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Bounds</source>
+        <source>Background: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ZoneBoundingWidget</name>
+    <message>
+        <source>Add Bounding</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Background</source>
-        <translation>Hintergrund</translation>
+        <source>Remove Bounding</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Zone %1: (X: %2, Y: %3) (W: %4 H: %5)</source>
-        <translation>Bereich %1 (X: %2, Y: %3) (W: %4 H: %5)</translation>
+        <source>Unlimited</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>This is the main upper bounding used by the camera it is used when the player is walking/jumping.
@@ -1552,6 +1515,117 @@ A value of 0 requires the player to be &gt;5 tiles away from the top before the 
 This is used to determine how close the player has to be to the bottom of the screen before the camera scrolls down.
 Negative values require the player to be closer to the bottom of the screen, Positive values require the player to be further away.
 A value of 0 requires the player to be &gt;5 tiles away from the bottom before the camera will move.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Bounding: None</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ID:</source>
+        <translation type="unfinished">ID:</translation>
+    </message>
+    <message>
+        <source>Primary Upper Bound:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Primary Lower Bound:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Secondary Upper Bound:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Secondary Lower Bound:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Vertical Scrolling Distance:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Bounding %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Bounding: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ZoneEditorWidget</name>
+    <message>
+        <source>Horizontal</source>
+        <translation></translation>
+    </message>
+    <message>
+        <source>Vertical</source>
+        <translation>Vertikal</translation>
+    </message>
+    <message>
+        <source>Select Contents</source>
+        <translation>Inhalt Auswählen</translation>
+    </message>
+    <message>
+        <source>Screenshot Zone</source>
+        <translation>Screenshot Bereich</translation>
+    </message>
+    <message>
+        <source>ID:</source>
+        <translation></translation>
+    </message>
+    <message>
+        <source>Music:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Multiplayer Tracking:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Progress Path ID:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unknown 1:</source>
+        <translation type="unfinished">Unbekannt 1:</translation>
+    </message>
+    <message>
+        <source>Background:</source>
+        <translation type="vanished">Hintergrund:</translation>
+    </message>
+    <message>
+        <source>Background</source>
+        <translation type="vanished">Hintergrund</translation>
+    </message>
+    <message>
+        <source>Zone %1: (X: %2, Y: %3) (W: %4 H: %5)</source>
+        <translation>Bereich %1 (X: %2, Y: %3) (W: %4 H: %5)</translation>
+    </message>
+    <message>
+        <source>Open Bounding Editor</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Open Background Editor</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Bounding ID:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Background ID:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No Bounding With That ID Exists.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No Background With That ID Exists.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
