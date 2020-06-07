@@ -568,8 +568,6 @@ qint8 Level::save()
     header->seek(blockOffsets[2]);
     foreach (ZoneBounding* bounding, boundings)
     {
-        qDebug() << QString("Saving bounding: %1").arg(bounding->getId());
-
         header->write32(bounding->getPrimaryUpperBound());
         header->write32(bounding->getPrimaryLowerBound());
         header->write32(bounding->getSecondaryUpperBound());
@@ -587,8 +585,6 @@ qint8 Level::save()
     header->seek(blockOffsets[4]);
     foreach (ZoneBackground* background, backgrounds)
     {
-        qDebug() << QString("Saving bg: %1").arg(background->getId());
-
         header->write16(background->getId());
         header->write16(background->getYPos());
         header->write16(background->getXPos());
@@ -667,13 +663,13 @@ qint8 Level::save()
         header->write16(z->getUnk1());
         header->write16(0);
         header->write8(z->getid());
-        header->write8(i);
+        header->write8(z->getBoundingId());
         for (int j = 0; j < 6; j++) header->write8(0);
         header->write8(z->getMultiplayerTracking());
         header->write8(z->getProgPathId());
         header->write8(z->getMusicId());
         header->write8(0);
-        header->write8(i);
+        header->write8(z->getBackgroundId());
         for (int j = 0; j < 3; j++) header->write8(0);
     }
 
