@@ -147,6 +147,8 @@ void Sprite::setRect()
     renderOffsetW = 0;
     renderOffsetH = 0;
 
+    selectionRects.clear();
+
     switch (id) {
     case 1: // Water Flow For Pipe
         if (getNybble(11) == 0)
@@ -266,10 +268,70 @@ void Sprite::setRect()
             offsetx = -10;
         break;
     case 17: // Amp Circle
+    {
         width = 30 + getNybble(6)*40;
         height = 30 + getNybble(6)*40;
         offsetx = 10 - width/2;
         offsety = +10 - height/2;
+
+        int missingImgWeight = 0;
+        qreal angle = 0;
+        int x = 0;
+        int y = 0;
+
+        int radius = getNybble(6)+1;
+        int imgCount = 1+getNybble(7);
+
+        for (int i = 0; i < imgCount; i++)
+        {
+            missingImgWeight = int(0.75 - (1 / imgCount));
+            angle = -360 * i / (imgCount + missingImgWeight);
+            angle = qDegreesToRadians(angle)+1.5708;
+
+            x = int(qSin(angle) * ((radius * 20)) - 10);
+            y = int(-(qCos(angle) * ((radius * 20))) - 10);
+
+            int imgSize = 40;
+            int rectOffset = 0;
+            if (getNybble(15) == 2)
+            {
+                imgSize = 20;
+                rectOffset = 10;
+            }
+
+            for (int j = 0; j < 4; j++)
+            {
+                if (i == j)
+                {
+                    if ((getNybble(19) & (1 << j)) == (1 << j) && getNybble(15) == 1)
+                        selectionRects.append(QRect(x+10, y+10, 20, 20));
+                    else if(i == j && (getNybble(19) & (1 << j)) != (1 << j))
+                        selectionRects.append(QRect(x+rectOffset, y+rectOffset, imgSize, imgSize));
+                }
+                else if (i == j+4)
+                {
+                    if ((getNybble(18) & (1 << j)) == (1 << j) && getNybble(15) == 1)
+                        selectionRects.append(QRect(x+10, y+10, 20, 20));
+                    else if(i == j+4 && (getNybble(18) & (1 << j)) != (1 << j))
+                        selectionRects.append(QRect(x+rectOffset, y+rectOffset, imgSize, imgSize));
+                }
+                else if (i == j+8)
+                {
+                    if ((getNybble(17) & (1 << j)) == (1 << j) && getNybble(15) == 1)
+                        selectionRects.append(QRect(x+10, y+10, 20, 20));
+                    else if(i == j+8 && (getNybble(17) & (1 << j)) != (1 << j))
+                        selectionRects.append(QRect(x+rectOffset, y+rectOffset, imgSize, imgSize));
+                }
+                else if (i == j+12)
+                {
+                    if ((getNybble(16) & (1 << j)) == (1 << j) && getNybble(15) == 1)
+                        selectionRects.append(QRect(x+10, y+10, 20, 20));
+                    else if(i == j+12 && (getNybble(16) & (1 << j)) != (1 << j))
+                        selectionRects.append(QRect(x+rectOffset, y+rectOffset, imgSize, imgSize));
+                }
+            }
+        }
+    }
         break;
     case 18: // Tile God
         width = 20;
@@ -724,11 +786,8 @@ void Sprite::setRect()
         width = 340;
         height = 200;
 
-        QList<QRect> selRects;
-        selRects.append(QRect(-22, 0, 62, 200)); // flag
-        selRects.append(QRect(200, 80, 120, 120)); // fort
-
-        selectionRects = selRects;
+        selectionRects.append(QRect(-22, 0, 62, 200)); // flag
+        selectionRects.append(QRect(200, 80, 120, 120)); // fort
         }
         break;
     case 99: // Wiggler
@@ -747,10 +806,34 @@ void Sprite::setRect()
         height = 52;
         break;
     case 107: // Path-Controlled Climbable fence
+        {
+        if (getNybbleData(16, 19) == 0)
+        {
+            width = 20;
+            height = 20;
+            break;
+        }
+
         width = 240;
         height = 240;
-        offsetx = -120;
         offsety = -120;
+        offsetx = -120;
+
+        for (int i = 0; i < 4; i++)
+        {
+            if ((getNybble(16) & (1 << i)) != 0) // row 1
+                selectionRects.append(QRect(-((i-1)*60), offsety, 60, 60));
+
+            if ((getNybble(17) & (1 << i)) != 0) // row 2
+                selectionRects.append(QRect(-((i-1)*60), offsety+60, 60, 60));
+
+            if ((getNybble(18) & (1 << i)) != 0) // row 3
+                selectionRects.append(QRect(-((i-1)*60), offsety+120, 60, 60));
+
+            if ((getNybble(19) & (1 << i)) != 0) // row 4
+                selectionRects.append(QRect(-((i-1)*60), offsety+180, 60, 60));
+        }
+        }
         break;
     case 108: // Spider Web
         width = 80;
@@ -773,10 +856,10 @@ void Sprite::setRect()
         offsety = 7;
         break;
     case 113: // Flame Chomp
-        width = 55;
-        height = 55;
-        offsetx = -4;
-        offsety = -32;
+        width = 26;
+        height = 26;
+        offsety = -3;
+        offsetx = -3;
         break;
     case 114: // Floating Box
         if (getNybble(11) == 1) // Big
@@ -874,41 +957,64 @@ void Sprite::setRect()
         offsetx = -46;
         break;
     case 120: // Up-Down Mushroom
-        width = getNybble(11)*20 + 40;
-        height = getNybble(10)*20 + 30;
-        offsetx = 10-(width / 2);
+    {
+        int mushroomLength = getNybble(11) * 20 + 40;
+        int stemLength = getNybble(10) * 20;
+
+        width = mushroomLength;
+        height = stemLength + 30;
+        offsetx = 10 - (width / 2);
+
+        if (getNybble(9) > getNybble(10))
+        {
+            renderOffsetY = -height;
+            renderOffsetH = height;
+        }
+
+        selectionRects.append(QRect(offsetx, 0, mushroomLength, 30)); // mushroom
+        selectionRects.append(QRect(0, 30, 20, stemLength)); // stem
+    }
         break;
     case 121: case 122: // Expanding Mushroom Platforms
-        height = getNybble(11)*20 + 60;
-        if(getNybble(10) %2 == 0)
-        {
-            width = 40;
-            offsetx = -10;
+    {
+        int mushroomLength = 40;
+        offsetx = -10;
 
-            if(getNybble(9) %2 == 0)
+        if (getNybble(10) %2)
+        {
+            if (getNybble(9) %2)
             {
-                renderOffsetW = 200;
-                renderOffsetX = -90;
+                mushroomLength = 120;
+                offsetx = -50;
             }
             else
             {
-                renderOffsetW = 120;
-                renderOffsetX = -50;
+                mushroomLength = 200;
+                offsetx = -90;
             }
         }
         else
         {
-            if(getNybble(9) %2 == 0)
+            if (getNybble(9) %2)
             {
-                width = 200;
-                offsetx = -90;
+                renderOffsetW = 120;
+                renderOffsetX = -50;
             }
             else
             {
-                width = 120;
-                offsetx = -50;
+                renderOffsetW = 200;
+                renderOffsetX = -90;
             }
         }
+
+        int stemLength = getNybble(11) * 20 + 40;
+
+        width = mushroomLength;
+        height = stemLength + 20;
+
+        selectionRects.append(QRect(offsetx, 0, mushroomLength, 20)); // mushroom
+        selectionRects.append(QRect(offsetx + mushroomLength/2 - 10, 20, 20, stemLength)); // stem
+    }
         break;
     case 123: // Bouncy Mushroom Platform
         if(getNybble(17) == 1)
@@ -1142,15 +1248,17 @@ void Sprite::setRect()
         height = qMax(leftLength, rightLength) + 42;
         width = platformLength + topLength;
 
-        QList<QRect> selRects;
-        selRects.append(QRect(-10, -20, topLength, 20)); // top rope
-        selRects.append(QRect(-10, 0, 20, leftLength)); // left rope
-        selRects.append(QRect(-30 + topLength, 0, 20, rightLength)); // right rope
+        selectionRects.append(QRect(-10, -20, topLength, 20)); // top rope
+        selectionRects.append(QRect(-10, 0, 20, leftLength)); // left rope
+        selectionRects.append(QRect(-30 + topLength, 0, 20, rightLength)); // right rope
 
-        selRects.append(QRect(-platformOffset, leftLength, platformLength, 22)); // left platform
-        selRects.append(QRect(-20 -platformOffset + topLength, rightLength, platformLength, 22)); // right platform
+        selectionRects.append(QRect(-platformOffset, leftLength, platformLength, 22)); // left platform
 
-        selectionRects = selRects;
+        // right platform
+        if (getNybble(11) == 0)
+            selectionRects.append(QRect(-platformOffset, rightLength, platformLength, 22));
+        else
+            selectionRects.append(QRect(-20 -platformOffset + topLength, rightLength, platformLength, 22));
     }
         break;
     case 152: // Path Controlled Lift With Peepa
@@ -1241,128 +1349,152 @@ void Sprite::setRect()
         }
         break;
     case 165: // Koopa Troopa
-        width = 27;
-        height = 35;
-        offsetx = -5;
-        offsety = -15;
+        if (getNybble(10)%2)
+        {
+            width = 22;
+            height = 19;
+            offsetx = -1;
+            offsety = 1;
+        }
+        else
+        {
+            width = 27;
+            height = 35;
+            offsetx = -5;
+            offsety = -15;
+        }
         break;
     case 167: // Pipe Piranha Plant - Down
-        width = 30;
+        width = 28;
         height = 37;
-        offsetx = 5;
+        offsetx = 6;
         offsety = 40;
         break;
     case 168: // Fire Pipe Piranha Plant - Down
-        width = 30;
-        height = 55;
-        offsetx = 5;
+        width = 36;
+        height = 32;
+        offsetx = -2;
         offsety = 40;
         break;
     case 169: // Fire Pipe Piranha Plant - Left
-        width = 55;
-        height = 30;
-        offsetx = -55;
-        offsety = 5;
+        width = 32;
+        height = 36;
+        offsetx = -32;
+        offsety = 6;
         break;
     case 170: // Fire Pipe Piranha Plant - Right
-        width = 55;
-        height = 30;
+        width = 30;
+        height = 36;
         offsetx = 40;
-        offsety = 5;
+        offsety = 6;
         break;
     case 171: // Fire Pipe Piranha Plant - Up
-        width = 30;
-        height = 55;
-        offsetx = 5;
-        offsety = -55;
+        width = 36;
+        height = 32;
+        offsetx = -2;
+        offsety = -32;
         break;
     case 172: // Pipe Bone Piranha Plant - Up
-        width = 30;
-        height = 34;
-        offsetx = 5;
-        offsety = -35;
+        width = 28;
+        height = 37;
+        offsetx = 6;
+        offsety = -37;
         break;
     case 173: // Pipe Bone Piranha Plant - Left
-        width = 34;
-        height = 30;
-        offsetx = -35;
-        offsety = 5;
+        width = 37;
+        height = 28;
+        offsetx = -37;
+        offsety = 6;
         break;
     case 174: // Pipe Bone Piranha Plant - Right
-        width = 34;
-        height = 30;
+        width = 37;
+        height = 28;
         offsetx = 40;
-        offsety = 5;
+        offsety = 6;
         break;
     case 175: // Grounded Piranha Plant
         width = 54;
         height = 33;
         offsetx = -8;
+        offsety = 9;
         if (getNybble(11) == 1)
+        {
             offsety = -3;
-        else
-            offsety = 10;
+            offsetx = -7;
+        }
         break;
     case 176: // Big Grounded Piranha plant
         width = 110;
         height = 65;
-        offsetx = -25;
-        if (getNybble(11) != 1)
-            offsety = 16;
-        else
-            offsety = 60;
+        offsetx = -26;
+        offsety = 18;
+        if (getNybble(11) == 1)
+        {
+            offsety = 57;
+            offsetx = 2;
+        }
         break;
     case 177: // Grounded Fire Piranha Plant
+        width = 29;
+        height = 52;
+        offsetx = 4;
+        offsety = -11;
+        if (getNybble(11) == 1)
+        {
+            height = 53;
+            offsety = -3;
+            offsetx = 7;
+        }
+        break;
+    case 178: // Big Grounded Fire Piranha plant
+        width = 58;
+        height = 105;
+        offsety = -22;
+        offsetx = -12;
+        if (getNybble(11) == 1)
+        {
+            offsety = 57;
+            offsetx = -6;
+        }
+        break;
+    case 179: // Grounded Bone Piranha Plant
         width = 54;
         height = 33;
         offsetx = -8;
+        offsety = 7;
         if (getNybble(11) == 1)
+        {
+            offsetx = -7;
             offsety = -3;
-        else
-            offsety = 10;
-        break;
-    case 178: // Big Grounded Fire Piranha plant
-        width = 110;
-        height = 65;
-        offsetx = -25;
-        if (getNybble(11) != 1)
-            offsety = 16;
-        else
-            offsety = 60;
-        break;
-    case 179: // Grounded Bone Piranha Plant
-        width = 53;
-        height = 33;
-        offsetx = -8;
-        offsety = 8;
-        if (getNybble(11) == 1)
-            offsety = -3;
+        }
         break;
     case 180: // Big Grounded Bone Piranha plant
         width = 110;
-        height = 68;
-        offsetx = -25;
-        if (getNybble(11) != 1)
-            offsety = 14;
-        else
-            offsety = 58;
+        height = 65;
+        offsetx = -26;
+        offsety = 18;
+        if (getNybble(11) == 1)
+        {
+            offsety = 57;
+            offsetx = -24;
+        }
         break;
     case 181: // Pipe Piranha Plant - Left
         width = 37;
-        height = 30;
+        height = 28;
         offsetx = -37;
-        offsety = 5;
+        offsety = 6;
         break;
     case 182: // Pipe Piranha Plant - Right
         width = 37;
-        height = 30;
+        height = 28;
         offsetx = 40;
-        offsety = 5;
+        offsety = 6;
         break;
     case 183: // Pipe Piranha Plant - Up
-        width = 30;
+        width = 28;
         height = 37;
-        offsetx = 5;
+        offsetx = 6;
         offsety = -37;
         break;
     case 184: // Parabomb
@@ -1376,12 +1508,102 @@ void Sprite::setRect()
         height = 36;
         offsetx = -7;
         offsety = -15;
+
+        if (getNybble(8)%2)
+            offsetx += 2;
+
+        if (getNybble(10) == 1) // fly horizontal
+        {
+            renderOffsetW = 153;
+
+            if (getNybble(9) == 1) // start at edge
+            {
+                if (getNybble(8) != 1) // left
+                    renderOffsetX = -153;
+            }
+            else // start at center
+                renderOffsetX = -77;
+        }
+        else if (getNybble(10) == 2) // fly vertical
+        {
+            offsety = -25;
+            renderOffsetH = 160;
+
+            if (getNybble(9) == 1) // start at edge
+            {
+                if (getNybble(8) == 1) // bottom
+                    renderOffsetY = -160;
+            }
+            else // start at center
+                renderOffsetY = -80;
+        }
+
         break;
     case 186: // Paratroopa Circle
+    {
         width = 30 + getNybble(6)*40;
         height = 30 + getNybble(6)*40;
         offsetx = 10 - width/2;
         offsety = -1 * height/2;
+
+        int missingImgWeight = 0;
+        qreal angle = 0;
+        int x = 0;
+        int y = 0;
+
+        int radius = getNybble(6)+1;
+        int imgCount = 1+getNybble(7);
+
+        for (int i = 0; i < imgCount; i++)
+        {
+            missingImgWeight = int(0.75 - (1 / imgCount));
+            angle = -360 * i / (imgCount + missingImgWeight);
+            angle = qDegreesToRadians(angle)+1.5708;
+
+            x = int(qSin(angle) * ((radius * 20)) - 10);
+            y = int(-(qCos(angle) * ((radius * 20))) - 20);
+
+            int imgSize = 40;
+            int rectOffset = 0;
+            if (getNybble(15) == 2)
+            {
+                imgSize = 20;
+                rectOffset = 10;
+            }
+
+            for (int j = 0; j < 4; j++)
+            {
+                if (i == j)
+                {
+                    if ((getNybble(19) & (1 << j)) == (1 << j) && getNybble(15) == 1)
+                        selectionRects.append(QRect(x+10, y+10, 20, 20));
+                    else if(i == j && (getNybble(19) & (1 << j)) != (1 << j))
+                        selectionRects.append(QRect(x+rectOffset, y+rectOffset, imgSize, imgSize));
+                }
+                else if (i == j+4)
+                {
+                    if ((getNybble(18) & (1 << j)) == (1 << j) && getNybble(15) == 1)
+                        selectionRects.append(QRect(x+10, y+10, 20, 20));
+                    else if(i == j+4 && (getNybble(18) & (1 << j)) != (1 << j))
+                        selectionRects.append(QRect(x+rectOffset, y+rectOffset, imgSize, imgSize));
+                }
+                else if (i == j+8)
+                {
+                    if ((getNybble(17) & (1 << j)) == (1 << j) && getNybble(15) == 1)
+                        selectionRects.append(QRect(x+10, y+10, 20, 20));
+                    else if(i == j+8 && (getNybble(17) & (1 << j)) != (1 << j))
+                        selectionRects.append(QRect(x+rectOffset, y+rectOffset, imgSize, imgSize));
+                }
+                else if (i == j+12)
+                {
+                    if ((getNybble(16) & (1 << j)) == (1 << j) && getNybble(15) == 1)
+                        selectionRects.append(QRect(x+10, y+10, 20, 20));
+                    else if(i == j+12 && (getNybble(16) & (1 << j)) != (1 << j))
+                        selectionRects.append(QRect(x+rectOffset, y+rectOffset, imgSize, imgSize));
+                }
+            }
+        }
+    }
         break;
     case 187: // Path controlled rect block
         width = 20 + getNybble(17)*20;
@@ -1419,40 +1641,186 @@ void Sprite::setRect()
         break;
         }
     case 194: // Cheep Cheep
-        if(getNybble(11) == 1 || getNybble(11) == 8)
+        width = 22;
+        height = 21;
+        offsety = -3;
+
+        if (getNybble(11) == 3)
         {
-            width = 24;
-            offsetx = -3;
+            if (getNybble(4)%3 == 2)
+            {
+                offsetx = -1;
+            }
+            else
+            {
+                width = 23;
+                height = 21;
+                offsetx = -3;
+                offsety = -3;
+            }
+
+            renderOffsetX = -(getNybble(7)*20 +30);
+            renderOffsetW = getNybble(7)*40 +60;
+        }
+        else if (getNybble(11) == 9)
+        {
+            width = 23;
+            height = 24;
+            offsetx = 0;
+            offsety = -4;
+        }
+        else if (getNybble(11) == 10)
+        {
+            width = 23;
+            height = 20;
+            offsetx = -2;
+            offsety = -1;
         }
         else
-            width = 22;
-        height = 20;
+        {
+            if (getNybble(4)%3 == 2)
+            {
+                    width = 23;
+                    offsetx = -3;
+            }
+        }
         break;
     case 195: // Big Cheep Cheep
-        if(getNybble(11) == 1)
+        if (getNybble(5) == 0) // big
         {
-            width = 62;
-            height = 58;
-            offsety = -7;
-            offsetx = 2;
+            if(getNybble(4)%3 == 2) // right
+             {
+                width = 61;
+                height = 56;
+                offsetx = -7;
+                offsety = -5;
+            }
+            else // left
+            {
+                width = 60;
+                height = 56;
+                offsety = -5;
+            }
         }
-        else
+        else // huge
         {
-            width = 60;
-            height = 56;
-            offsety = -5;
+            if (getNybble(4)%3 == 2) // right
+            {
+                width = 229;
+                height = 207;
+                offsetx = -102;
+                offsety = -98;
+            }
+            else // left
+            {
+                width = 224;
+                height = 207;
+                offsetx = -75;
+                offsety = -98;
+            }
         }
         break;
+    case 196: // Coin Cheep
+        width = 25;
+        height = 22;
+        offsety = -4;
+        offsetx = -4;
+        break;
+    case 197: // Jumping Cheep Cheep
+        width = 24;
+        height = 22;
+        offsety = -1;
+        if (!(getNybble(4) == 1) && !((getNybble(4) == 2)))
+            offsetx = -4;
+
+        offsetx -= getNybble(5)*20;
+
+        break;
     case 199: // Cheep Cheep Circle
+    {
         width = 30 + getNybble(6)*40;
         height = 30 + getNybble(6)*40;
         offsetx = 10 - width/2;
         offsety = +10 - height/2;
+
+        int missingImgWeight = 0;
+        qreal angle = 0;
+        int x = 0;
+        int y = 0;
+
+        int radius = getNybble(6)+1;
+        int imgCount = 1+getNybble(7);
+
+        for (int i = 0; i < imgCount; i++)
+        {
+            missingImgWeight = int(0.75 - (1 / imgCount));
+            angle = -360 * i / (imgCount + missingImgWeight);
+            angle = qDegreesToRadians(angle)+1.5708;
+
+            x = int(qSin(angle) * ((radius * 20)) - 10);
+            y = int(-(qCos(angle) * ((radius * 20))) - 10);
+
+            int imgSize = 40;
+            int rectOffset = 0;
+            if (getNybble(15) == 2)
+            {
+                imgSize = 20;
+                rectOffset = 10;
+            }
+
+            for (int j = 0; j < 4; j++)
+            {
+                if (i == j)
+                {
+                    if ((getNybble(19) & (1 << j)) == (1 << j) && getNybble(15) == 1)
+                        selectionRects.append(QRect(x+10, y+10, 20, 20));
+                    else if(i == j && (getNybble(19) & (1 << j)) != (1 << j))
+                        selectionRects.append(QRect(x+rectOffset, y+rectOffset, imgSize, imgSize));
+                }
+                else if (i == j+4)
+                {
+                    if ((getNybble(18) & (1 << j)) == (1 << j) && getNybble(15) == 1)
+                        selectionRects.append(QRect(x+10, y+10, 20, 20));
+                    else if(i == j+4 && (getNybble(18) & (1 << j)) != (1 << j))
+                        selectionRects.append(QRect(x+rectOffset, y+rectOffset, imgSize, imgSize));
+                }
+                else if (i == j+8)
+                {
+                    if ((getNybble(17) & (1 << j)) == (1 << j) && getNybble(15) == 1)
+                        selectionRects.append(QRect(x+10, y+10, 20, 20));
+                    else if(i == j+8 && (getNybble(17) & (1 << j)) != (1 << j))
+                        selectionRects.append(QRect(x+rectOffset, y+rectOffset, imgSize, imgSize));
+                }
+                else if (i == j+12)
+                {
+                    if ((getNybble(16) & (1 << j)) == (1 << j) && getNybble(15) == 1)
+                        selectionRects.append(QRect(x+10, y+10, 20, 20));
+                    else if(i == j+12 && (getNybble(16) & (1 << j)) != (1 << j))
+                        selectionRects.append(QRect(x+rectOffset, y+rectOffset, imgSize, imgSize));
+                }
+            }
+        }
+    }
         break;
     case 200: // Spiny Cheep Cheep
-        width = 20;
-        height = 26;
-        offsety = -6;
+        if (getNybble(4)%3 == 2)
+        {
+            width = 21;
+            height = 24;
+            offsetx = -1;
+            offsety = -6;
+        }
+        else
+        {
+            width = 23;
+            height = 23;
+            offsetx = -1;
+            offsety = -5;
+        }
+
+        renderOffsetX = -(getNybble(7)*20 +30);
+        renderOffsetW = getNybble(7)*40 +60;
+
         break;
     case 205: // Red Ring
         width = 39;
@@ -1469,6 +1837,12 @@ void Sprite::setRect()
         height = 82;
         offsetx = 10;
         offsety = 1;
+        break;
+    case 208: // Big Underwater Rock
+        width = 165;
+        height = 167;
+        offsetx = 18;
+        offsety = -3;
         break;
     case 209: // Swinging Rope
         width = 20;
@@ -1645,22 +2019,100 @@ void Sprite::setRect()
         offsety = 10;
         break;
     case 228: // Boo
-        width = 45;
+        width = 44;
         height = 44;
         offsetx = -12;
-        offsety = 15;
+        offsety = -15;
         break;
     case 229: //Big Boo
-        width = 132;
-        height = 132;
-        offsetx = -16;
-        offsety = 15;
+        if (getNybble(9)%2 == 0)
+        {
+            width = 81;
+            height = 80;
+            offsetx = 11;
+            offsety = 40;
+            renderOffsetW = 51;
+            renderOffsetX = -14;
+            renderOffsetH = 52;
+            renderOffsetY = -13;
+        }
+        else
+        {
+            width = 81;
+            height = 80;
+            offsetx = 11;
+            offsety = 40;
+            renderOffsetW = 25;
+            renderOffsetX = -27;
+            renderOffsetH = 26;
+            renderOffsetY = -26;
+        }
         break;
     case 230: // Peepa Circle
+    {
         width = 30 + getNybble(6)*40;
         height = 30 + getNybble(6)*40;
         offsetx = 10 - width/2;
         offsety = +10 - height/2;
+
+        int missingImgWeight = 0;
+        qreal angle = 0;
+        int x = 0;
+        int y = 0;
+
+        int radius = getNybble(6)+1;
+        int imgCount = 1+getNybble(7);
+
+        for (int i = 0; i < imgCount; i++)
+        {
+            missingImgWeight = int(0.75 - (1 / imgCount));
+            angle = -360 * i / (imgCount + missingImgWeight);
+            angle = qDegreesToRadians(angle)+1.5708;
+
+            x = int(qSin(angle) * ((radius * 20)) - 10);
+            y = int(-(qCos(angle) * ((radius * 20))) - 10);
+
+            int imgSize = 40;
+            int rectOffset = 0;
+            if (getNybble(15) == 2)
+            {
+                imgSize = 20;
+                rectOffset = 10;
+            }
+
+            for (int j = 0; j < 4; j++)
+            {
+                if (i == j)
+                {
+                    if ((getNybble(19) & (1 << j)) == (1 << j) && getNybble(15) == 1)
+                        selectionRects.append(QRect(x+10, y+10, 20, 20));
+                    else if(i == j && (getNybble(19) & (1 << j)) != (1 << j))
+                        selectionRects.append(QRect(x+rectOffset, y+rectOffset, imgSize, imgSize));
+                }
+                else if (i == j+4)
+                {
+                    if ((getNybble(18) & (1 << j)) == (1 << j) && getNybble(15) == 1)
+                        selectionRects.append(QRect(x+10, y+10, 20, 20));
+                    else if(i == j+4 && (getNybble(18) & (1 << j)) != (1 << j))
+                        selectionRects.append(QRect(x+rectOffset, y+rectOffset, imgSize, imgSize));
+                }
+                else if (i == j+8)
+                {
+                    if ((getNybble(17) & (1 << j)) == (1 << j) && getNybble(15) == 1)
+                        selectionRects.append(QRect(x+10, y+10, 20, 20));
+                    else if(i == j+8 && (getNybble(17) & (1 << j)) != (1 << j))
+                        selectionRects.append(QRect(x+rectOffset, y+rectOffset, imgSize, imgSize));
+                }
+                else if (i == j+12)
+                {
+                    if ((getNybble(16) & (1 << j)) == (1 << j) && getNybble(15) == 1)
+                        selectionRects.append(QRect(x+10, y+10, 20, 20));
+                    else if(i == j+12 && (getNybble(16) & (1 << j)) != (1 << j))
+                        selectionRects.append(QRect(x+rectOffset, y+rectOffset, imgSize, imgSize));
+                }
+            }
+        }
+    }
         break;
     case 231: // Boohemoth
         width = 354;
@@ -1724,6 +2176,10 @@ void Sprite::setRect()
         height = 154;
         offsetx = 23;
         offsety = 3;
+        break;
+    case 239: // Swinging vine
+        width = 18;
+        height = (getNybble(11) + 4) * 20;
         break;
     case 240: // Urchin
         if (getNybble(11) != 1)
@@ -1832,12 +2288,11 @@ void Sprite::setRect()
         }
         break;
     case 253: // Larry Battle Platform
-        height = 10;
+        height = 20;
         if(getNybble(4) == 0)
             width = 20;
         else
             width = (getNybble(4)*20);
-        offsety = +10;
         break;
     case 255: // Bowser Head Statue
         width = 40;
@@ -1990,18 +2445,63 @@ void Sprite::setRect()
         height = 50;
         offsetx = -75;
         offsety = -25;
+
+        // Row 1
+        selectionRects.append(QRect(-70, -20, 60, 20));
+        selectionRects.append(QRect(30, -20, 60, 20));
+        // Row 2
+        selectionRects.append(QRect(-30, 0, 80, 20));
         break;
     case 285: // Chandelier Lift - Medium
         width = 270;
         height = 110;
         offsetx = -125;
         offsety = -45;
+
+        // Row 1
+        selectionRects.append(QRect(0, -40, 20, 20));
+        // Row 2
+        selectionRects.append(QRect(-20, -20, 60, 20));
+        selectionRects.append(QRect(-120, -20, 60, 20));
+        selectionRects.append(QRect(80, -20, 60, 20));
+        // Row 3
+        selectionRects.append(QRect(-80, 0, 180, 20));
+        // Row 4
+        selectionRects.append(QRect(-60, 20, 140, 20));
+        // Row 5
+        selectionRects.append(QRect(0, 40, 20, 20));
         break;
     case 286: // Chandelier Lift - Big
         width = 410;
         height = 310;
         offsetx = -195;
         offsety = -165;
+
+        // Row 1
+        selectionRects.append(QRect(-150, -160, 60, 20));
+        selectionRects.append(QRect(-50, -160, 40, 20));
+        selectionRects.append(QRect(30, -160, 40, 20));
+        selectionRects.append(QRect(110, -160, 60, 20));
+        // Row 2
+        selectionRects.append(QRect(-190, -140, 180, 20));
+        selectionRects.append(QRect(30, -140, 180, 20));
+        // Row 3
+        selectionRects.append(QRect(-150, -120, 60, 20));
+        selectionRects.append(QRect(110, -120, 60, 20));
+        // Row 4
+        selectionRects.append(QRect(-30, -70, 80, 20));
+        // Row 5
+        selectionRects.append(QRect(-100, -20, 40, 20));
+        selectionRects.append(QRect(80, -20, 40, 20));
+        // Row 6
+        selectionRects.append(QRect(-80, 0, 60, 20));
+        selectionRects.append(QRect(40, 0, 60, 20));
+        // Row 7
+        selectionRects.append(QRect(-60, 80, 140, 20));
+        // Row 8
+        selectionRects.append(QRect(-20, 100, 60, 20));
+        // Row 9
+        selectionRects.append(QRect(0, 120, 20, 20));
         break;
     case 287: // Toad House Door
         width = 40;

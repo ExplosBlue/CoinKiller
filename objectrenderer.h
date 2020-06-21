@@ -146,6 +146,16 @@ private:
     int tileIds [12] = { 27, 20, 15, 24, 23, 23, 19, 41, 101, 94, 105, 131 };
 };
 
+// Sprite 20: Gold Block
+class GoldBlockRenderer: public SpriteRenderer
+{
+public:
+    GoldBlockRenderer(const Sprite *spr, Tileset *tileset);
+    void render(QPainter *painter, QRect *drawrect);
+protected:
+    Tileset *tileset;
+};
+
 // Sprite 21: Note Block
 class NoteBlockRenderer: public SpriteRenderer
 {
@@ -663,10 +673,9 @@ protected:
 class CheepCheepRenderer: public SpriteRenderer
 {
 public:
-    CheepCheepRenderer(const Sprite *spr, QString filename);
+    CheepCheepRenderer(const Sprite *spr);
     void render(QPainter *painter, QRect *drawrect);
 protected:
-    QString filename;
     NormalImageRenderer *img;
 };
 
@@ -675,6 +684,26 @@ class BigCheepRenderer: public SpriteRenderer
 {
 public:
     BigCheepRenderer(const Sprite *spr);
+    void render(QPainter *painter, QRect *drawrect);
+protected:
+    NormalImageRenderer *img;
+};
+
+// Sprite 197: Jumping Cheep Cheep
+class JumpingCheepRenderer: public SpriteRenderer
+{
+public:
+    JumpingCheepRenderer(const Sprite *spr);
+    void render(QPainter *painter, QRect *drawrect);
+protected:
+    NormalImageRenderer *img;
+};
+
+// Sprite 200: Spiny Cheep Cheep
+class SpinyCheepRenderer: public SpriteRenderer
+{
+public:
+    SpinyCheepRenderer(const Sprite *spr);
     void render(QPainter *painter, QRect *drawrect);
 protected:
     NormalImageRenderer *img;
@@ -733,6 +762,27 @@ protected:
     NormalImageRenderer *img;
 };
 
+// Sprite 222/224/226: Bricks With Switches
+class BrickBlockSwitchRenderer: public SpriteRenderer
+{
+public:
+    BrickBlockSwitchRenderer(const Sprite *spr, QString filename, Tileset *tileset);
+    void render(QPainter *painter, QRect *drawrect);
+protected:
+    QString filename;
+    Tileset *tileset;
+};
+
+// Sprite 230: Big Boo
+class BigBooRenderer: public SpriteRenderer
+{
+public:
+    BigBooRenderer(const Sprite *spr);
+    void render(QPainter *painter, QRect *drawrect);
+protected:
+    NormalImageRenderer *img;
+};
+
 // Sprite 186/199/230: Paratroopa/CheepCheep/Peepa Circle
 class CoinCircleRenderer: public SpriteRenderer
 {
@@ -768,6 +818,16 @@ class CeilingSpinyRenderer: public SpriteRenderer
 {
 public:
     CeilingSpinyRenderer(const Sprite *spr);
+    void render(QPainter *painter, QRect *drawrect);
+protected:
+    NormalImageRenderer* img;
+};
+
+// Sprite 239: Swinging Vine
+class SwingingVineRenderer: public SpriteRenderer
+{
+public:
+    SwingingVineRenderer(const Sprite *spr);
     void render(QPainter *painter, QRect *drawrect);
 protected:
     NormalImageRenderer* img;
@@ -851,8 +911,10 @@ public:
 class LarryPlatformRenderer: public SpriteRenderer
 {
 public:
-    LarryPlatformRenderer(const Sprite *spr);
+    LarryPlatformRenderer(const Sprite *spr, Tileset *tileset);
     void render(QPainter *painter, QRect *drawrect);
+protected:
+    Tileset *tileset;
 };
 
 // Sprite 257: Movement-Controlled Bone Platform
