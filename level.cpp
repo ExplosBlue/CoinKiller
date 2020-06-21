@@ -25,6 +25,7 @@
 #include <QMessageBox>
 #include <limits>
 #include <QMessageBox>
+#include <algorithm>
 
 Level::Level(Game *game, SarcFilesystem* archive, int area, QString lvlName)
 {    
@@ -112,8 +113,8 @@ Level::Level(Game *game, SarcFilesystem* archive, int area, QString lvlName)
     for (int i = 0; i < (int)(blockSizes[4]/28); i++)
     {
         quint16 id = header->read16();
-        quint16 yPos = header->read16();
-        quint16 xPos = header->read16();
+        qint16 yPos = header->read16();
+        qint16 xPos = header->read16();
         header->skip(2);
         QString name;
         header->readStringASCII(name, 16);
@@ -141,8 +142,8 @@ Level::Level(Game *game, SarcFilesystem* archive, int area, QString lvlName)
         quint8 destEntr = header->read8();
         quint8 entrType = header->read8();
         header->skip(4);
-        quint8 settings = header->read8();
-        header->skip(3);
+        quint16 settings = header->read16();
+        header->skip(2);
         quint8 entrUnk1 = header->read8();
         quint8 entrUnk2 = header->read8();
         header->skip(2);
@@ -167,7 +168,8 @@ Level::Level(Game *game, SarcFilesystem* archive, int area, QString lvlName)
         for (int i=0; i<2; i++) spr->setByte(i, header->read8());
         spr->setNybbleData(header->read32(), 4, 11);
         spr->setNybbleData(header->read32(), 12, 19);
-        header->skip(2);
+        header->skip(1);
+        spr->setLayer(header->read8());
         for (int i=10; i<12; i++) spr->setByte(i, header->read8());
 
         header->skip(4);
@@ -202,7 +204,6 @@ Level::Level(Game *game, SarcFilesystem* archive, int area, QString lvlName)
 
         Zone* zone = new Zone(to20(x), to20(y), to20(width), to20(height), id, progPathId, musicId, multiplayerTracking, zoneUnk1, boundingId, backgroundId);
         zones.append(zone);
-
     }
 
     // Block 10: Locations
@@ -232,6 +233,7 @@ Level::Level(Game *game, SarcFilesystem* archive, int area, QString lvlName)
         quint16 nodeOffset = header->read16();
         quint16 nodeCount = header->read16();
         quint16 loopFlag = header->read16();
+        header->skip(4);
 
         Path* path = new Path(id, loopFlag);
 
@@ -243,9 +245,14 @@ Level::Level(Game *game, SarcFilesystem* archive, int area, QString lvlName)
             qint32 y = to20(header->read16());
             float speed = header->readFloat();
             float accel = header->readFloat();
-            qint32 delay = header->read32();
+            quint16 delay = header->read16();
+            qint16 rotation = header->read16();
 
-            PathNode* pathN = new PathNode(x, y, speed, accel, delay, path);
+            quint8 variableField = header->read8();
+            quint8 nextPathID = header->read8();
+            header->skip(2);
+
+            PathNode* pathN = new PathNode(x, y, speed, accel, delay, rotation, variableField, nextPathID, path);
             path->insertNode(pathN);
         }
         paths.append(path);
@@ -424,14 +431,14 @@ qint8 Level::save()
     {
         if (!spritesUsed.contains(spr->getid())) spritesUsed.append(spr->getid());
     }
-    qSort(spritesUsed);
+    std::sort(spritesUsed.begin(), spritesUsed.end());
 
     // Sort Sprites
     if (zones.size() > 0)
     {
         QList<int> zoneIDs;
         foreach (Zone* z, zones) zoneIDs.append(z->getid());
-        qSort(zoneIDs);
+        std::sort(zoneIDs.begin(), zoneIDs.end());
 
         QList<Sprite*> sortedSprites;
         for (int i = 0; i < zoneIDs.count(); i++)
@@ -617,8 +624,8 @@ qint8 Level::save()
         header->write8(0);
         header->write8(getNextZoneID(entr));
         for (int i = 0; i < 2; i++) header->write8(0);
-        header->write8(entr->getSettings());
-        for (int i = 0; i < 3; i++) header->write8(0);
+        header->write16(entr->getSettings());
+        for (int i = 0; i < 2; i++) header->write8(0);
         header->write8(entr->getUnk1());
         header->write8(entr->getUnk2());
         for (int i = 0; i < 2; i++) header->write8(0);
@@ -636,7 +643,7 @@ qint8 Level::save()
         header->write32(spr->getNybbleData(4, 11));
         header->write32(spr->getNybbleData(12, 19));
         header->write8(getNextZoneID(spr));
-        header->write8(0);
+        header->write8(spr->getLayer());
         header->write8(spr->getByte(10));
         header->write8(spr->getByte(11));
         for (int i = 0; i < 4; i++) header->write8(0);
@@ -708,8 +715,12 @@ qint8 Level::save()
             header->write16(to16(pNode->gety()));
             header->writeFloat(pNode->getSpeed());
             header->writeFloat(pNode->getAccel());
-            header->write32(pNode->getDelay());
-            header->write32(0);
+            header->write16(pNode->getDelay());
+            header->write16(pNode->getRotation());
+            header->write8(pNode->getVariableField());
+            header->write8(pNode->getNextPathID());
+            header->write16(0);
+
             actualNodeCount1++;
         }
     }

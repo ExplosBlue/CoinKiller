@@ -90,12 +90,12 @@ class Sprite: public Object
 public:
     Sprite() {}
     Sprite(Sprite* spr);
-    Sprite(qint32 x, qint32 y, qint32 id);
+    Sprite(qint32 x, qint32 y, qint16 id);
     qint32 getType() const;
     bool isResizable() const { return false; }
     virtual bool doRender(QRect r) { return r.intersects(QRect(x + offsetx + renderOffsetX, y + offsety + renderOffsetY, width + renderOffsetW, height + renderOffsetH)); }
-    qint32 getid() const;
-    void setid(qint32 id) { this->id = id; this->setRect(); }
+    qint16 getid() const;
+    void setid(qint16 id) { this->id = id; this->setRect(); }
     void setByte(qint32 id, quint8 nbr);
     void setNybble(qint32 id, quint8 nbr);
     quint8 getByte(qint32 id) const;
@@ -104,13 +104,16 @@ public:
     QString toString(qint32 xOffset, qint32 yOffset) const;
     qint32 getNybbleData(qint32 startNybble, qint32 endNybble) const;
     void setNybbleData(qint32 data, qint32 startNybble, qint32 endNybble);
+    quint8 getLayer() { return this->layer; }
+    void setLayer(quint8 layer) { this->layer = layer; }
 protected:
-    qint32 id;
+    qint16 id;
     quint8 spriteData[12] = {0,0,0,0,0,0,0,0,0,0,0,0};
     qint32 renderOffsetX;
     qint32 renderOffsetY;
     qint32 renderOffsetW;
     qint32 renderOffsetH;
+    quint8 layer = 0;
 };
 
 
@@ -120,7 +123,7 @@ class Entrance: public Object
 public:
     Entrance() {}
     Entrance(Entrance* entr);
-    Entrance(qint32 x, qint32 y, qint16 cameraX, qint16 cameraY, quint8 id, quint8 destArea, quint8 destEntr, quint8 entrType, quint8 settings, quint8 unk1, quint8 unk2);
+    Entrance(qint32 x, qint32 y, qint16 cameraX, qint16 cameraY, quint8 id, quint8 destArea, quint8 destEntr, quint8 entrType, quint16 settings, quint8 unk1, quint8 unk2);
     qint32 getType() const { return 2; }
     bool isResizable() const { return false; }
     QString toString(qint32 xOffset, qint32 yOffset) const;
@@ -128,9 +131,9 @@ public:
     quint8 getDestArea() const { return destArea; }
     quint8 getDestEntr() const { return destEntr; }
     quint8 getEntrType() const { return entrType; }
-    quint8 getSettings() const { return settings; }
-    quint16 getCameraX() const { return cameraX; }
-    quint16 getCameraY() const { return cameraY; }
+    quint16 getSettings() const { return settings; }
+    qint16 getCameraX() const { return cameraX; }
+    qint16 getCameraY() const { return cameraY; }
     quint8 getUnk1() const { return unk1; }
     quint8 getUnk2() const { return unk2; }
     void setId(quint8 id) { this->id = id; }
@@ -139,7 +142,7 @@ public:
     void setDestArea(quint8 destArea) { this->destArea = destArea; }
     void setCameraX(qint16 cameraX) { this->cameraX = cameraX; }
     void setCameraY(qint16 cameraY) { this->cameraY = cameraY; }
-    void setSettings(quint8 settings) { this->settings = settings; }
+    void setSettings(quint16 settings) { this->settings = settings; }
     void setSettingsBit(bool value, qint32 bit) { settings ^= (-(qint32)value ^ settings) & (1 << bit); }
     void setUnk1(quint8 unk1) { this->unk1 = unk1; }
     void setUnk2(quint8 unk2) { this->unk2 = unk2; }
@@ -151,7 +154,7 @@ protected:
     quint8 destArea;
     quint8 destEntr;
     quint8 entrType;
-    quint8 settings;
+    quint16 settings;
     quint8 unk1;
     quint8 unk2;
 };
@@ -271,22 +274,32 @@ class PathNode: public Object
 public:
     PathNode() {}
     PathNode(PathNode* node, Path* parentPath);
-    PathNode(qint32 x, qint32 y, float speed, float accel, float delay, Path *parentPath);
+    PathNode(qint32 x, qint32 y, float speed, float accel, quint16 delay, qint16 rotation, quint8 variableField, quint8 nextPathID, Path *parentPath);
     qint32 getType() const { return 5; }
     bool isResizable() const { return false; }
     float getSpeed() const { return speed; }
     float getAccel() const { return accel; }
-    quint32 getDelay() const { return delay; }
+    quint16 getDelay() const { return delay; }
+    qint16 getRotation() const { return rotation; }
+    quint8 getVariableField() const { return variableField; }
+    quint8 getNextPathID() const { return nextPathID; }
     Path* getParentPath() const { return parentPath; }
     void setSpeed(float speed) { this->speed = speed; }
     void setAccel(float accel) { this->accel = accel; }
-    void setDelay(float delay) { this->delay = delay; }
+    void setDelay(quint16 delay) { this->delay = delay; }
+    void setRotation(qint16 rotation) { this->rotation = rotation; }
+    void setVariableField(quint8 variableField) { this->variableField = variableField; }
+    void setNextPathID(quint8 nextPathID) { this->nextPathID = nextPathID; }
+
     QString toString(qint32 xOffset, qint32 yOffset) const;
 protected:
     Path* parentPath;
     float speed;
     float accel;
-    quint32 delay;
+    quint16 delay;
+    qint16 rotation;
+    quint8 variableField;
+    quint8 nextPathID;
 };
 
 

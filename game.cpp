@@ -156,15 +156,13 @@ QStandardItemModel* Game::getCourseModel()
 
 QStandardItemModel* Game::getTilesetModel()
 {
-    SettingsManager* settingsMgr = SettingsManager::getInstance();
-
     QStandardItemModel* model = new QStandardItemModel();
     model->setColumnCount(2);
     QStringList headers;
     headers << QObject::tr("Tileset") << QObject::tr("Filename");
     model->setHorizontalHeaderLabels(headers);
 
-    QFile inputFile(settingsMgr->getFilePath("tilesetnames.txt"));
+    QFile inputFile(SettingsManager::getInstance()->dataPath("tilesetnames.txt"));
     if (!inputFile.open(QIODevice::ReadOnly))
         return model;
 

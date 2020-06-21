@@ -191,6 +191,7 @@ void SpriteEditorWidget::handleUpdateLevelView()
 SpriteDataEditorWidget::SpriteDataEditorWidget(SpriteData *spriteData)
 {
     this->spriteData = spriteData;
+
     layout = new QGridLayout();
     layout->setMargin(0);
 
@@ -200,9 +201,8 @@ SpriteDataEditorWidget::SpriteDataEditorWidget(SpriteData *spriteData)
     spriteNotesButton = new QPushButton();
     spriteNotesButton->setText(tr("Notes"));
     spriteNotesButton->setToolTipDuration(10000);
-    QSizePolicy buttonPolicy = sizePolicy();
-    buttonPolicy.setHeightForWidth(true);
-    spriteNotesButton->setSizePolicy(buttonPolicy);
+    spriteNotesButton->setMaximumHeight(20);
+    spriteNotesButton->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Maximum);
     layout->addWidget(spriteNotesButton, 0, 1, 1, 1, Qt::AlignRight);
     connect(spriteNotesButton, SIGNAL (pressed()),this, SLOT (handleShowNotes()));
 
@@ -211,6 +211,15 @@ SpriteDataEditorWidget::SpriteDataEditorWidget(SpriteData *spriteData)
     layout->addWidget(new QLabel(tr("Raw Sprite Data:")), 1, 0, 1, 1, Qt::AlignRight);
     layout->addWidget(rawSpriteData, 1, 1);
     connect(rawSpriteData, SIGNAL(textEdited(QString)), this, SLOT(handleRawSpriteDataChange(QString)));
+
+    splitterLine = new HorLine();
+
+    layerLabel = new QLabel(tr("Layer:"));
+    layerComboBox = new QComboBox();
+    QStringList layerNames;
+    layerNames << tr("Layer 1") << tr("Layer 2");
+    layerComboBox->addItems(layerNames);
+    connect(layerComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(handleLayerChanged(int)));
 
     this->setLayout(layout);
     setHidden(true);
@@ -283,6 +292,14 @@ void SpriteDataEditorWidget::select(Sprite *sprite)
             connect(fieldWidget, SIGNAL (editMade()), this, SLOT(handleEditDetected()));
         }
     }
+
+    // TODO: Only show layer combo box for sprites that use the layer setting
+    layerComboBox->setCurrentIndex(editSprite->getLayer());
+
+    int fieldCount = def.getFieldCount();
+    layout->addWidget(splitterLine, fieldCount+2, 0, 1, 4);
+    layout->addWidget(layerLabel, fieldCount+3, 0, 1, 1, Qt::AlignRight);
+    layout->addWidget(layerComboBox, fieldCount+3, 1);
 }
 
 void SpriteDataEditorWidget::deselect()
@@ -295,6 +312,10 @@ void SpriteDataEditorWidget::deselect()
     foreach (SpriteListFieldWidget* field, listFieldWidgets) { layout->removeWidget(field); delete field; } listFieldWidgets.clear();
     foreach (SpriteCheckboxFieldWidget* field, checkboxFieldWidgets) { layout->removeWidget(field); delete field; } checkboxFieldWidgets.clear();
     foreach (SpriteBitFieldWidget* field, bitFieldWidgets) { layout->removeWidget(field); delete field; } bitFieldWidgets.clear();
+
+    layout->removeWidget(splitterLine);
+    layout->removeWidget(layerComboBox);
+    layout->removeWidget(layerLabel);
 }
 
 void SpriteDataEditorWidget::updateFields()
@@ -354,6 +375,11 @@ void SpriteDataEditorWidget::handleShowNotes()
     layout->addItem(spacer, layout->rowCount(), 0, 1, layout->columnCount());
 
     notes.exec();
+}
+
+void SpriteDataEditorWidget::handleLayerChanged(int layer)
+{
+    editSprite->setLayer(layer);
 }
 
 // Field Widgets

@@ -794,15 +794,15 @@ Connecssione a %1 fallita!</translation>
     <name>PathEditorWidget</name>
     <message>
         <source>ID:</source>
-        <translation>ID:</translation>
+        <translation type="vanished">ID:</translation>
     </message>
     <message>
         <source>Loop:</source>
-        <translation>Ciclo Continuo:</translation>
+        <translation type="vanished">Ciclo Continuo:</translation>
     </message>
     <message>
         <source>&lt;b&gt;Node: &lt;/b&gt;</source>
-        <translation>&lt;b&gt;Nodo: &lt;/b&gt;</translation>
+        <translation type="vanished">&lt;b&gt;Nodo: &lt;/b&gt;</translation>
     </message>
     <message>
         <source>Speed:</source>
@@ -824,7 +824,36 @@ Connecssione a %1 fallita!</translation>
         </translation>
     </message>
     <message>
-        <source>&lt;b&gt;Node: %1&lt;/b&gt;</source>
+        <source>Path ID:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Loop</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Node: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Rotation:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Variable Use:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This is a multi-purpose field. 
+Check the notes of whatever sprite is paired to this path to see how to use this field.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Next Path ID:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Node: %1</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -965,6 +994,18 @@ Connecssione a %1 fallita!</translation>
     <message>
         <source>No notes are available for this sprite.</source>
         <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Layer:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Layer 1</source>
+        <translation type="unfinished">Layer 1</translation>
+    </message>
+    <message>
+        <source>Layer 2</source>
+        <translation type="unfinished">Layer 2</translation>
     </message>
 </context>
 <context>

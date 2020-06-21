@@ -119,7 +119,7 @@ QString BgdatObject::toString(qint32 xOffset, qint32 yOffset) const { return QSt
 
 
 // Sprite
-Sprite::Sprite(qint32 x, qint32 y, qint32 id)
+Sprite::Sprite(qint32 x, qint32 y, qint16 id)
 {
     this->x = x;
     this->y = y;
@@ -2250,7 +2250,7 @@ void Sprite::setRect()
 }
 
 qint32 Sprite::getType() const { return 1; }
-qint32 Sprite::getid() const { return id; }
+qint16 Sprite::getid() const { return id; }
 
 quint8 Sprite::getByte(qint32 id) const { return spriteData[id]; }
 void Sprite::setByte(qint32 id, quint8 nbr) { spriteData[id] = nbr; }
@@ -2289,14 +2289,14 @@ void Sprite::setNybbleData(qint32 data, qint32 startNybble, qint32 endNybble)
 // Format: 1:ID:X:Y:SD0:SD1:...:SD11
 QString Sprite::toString(qint32 xOffset, qint32 yOffset) const
 {
-    QString str("1:%1:%2:%3");
-    for (qint32 i=0; i<12; i++) str.append(QString(":%1").arg(spriteData[i]));
-    return str.arg(id).arg(x+xOffset).arg(y+yOffset);
+    QString str("1:%1:%2:%3:%4");
+    for (qint32 i=0; i<12; i++) str.append(QString(":%1").arg(getByte(i)));
+    return str.arg(id).arg(x+xOffset).arg(y+yOffset).arg(layer);
 }
 
 
 // Entrance
-Entrance::Entrance(qint32 x, qint32 y, qint16 cameraX, qint16 cameraY, quint8 id, quint8 destArea, quint8 destEntr, quint8 entrType, quint8 settings, quint8 unk1, quint8 unk2)
+Entrance::Entrance(qint32 x, qint32 y, qint16 cameraX, qint16 cameraY, quint8 id, quint8 destArea, quint8 destEntr, quint8 entrType, quint16 settings, quint8 unk1, quint8 unk2)
 {
     this->x = x;
     this->y = y;
@@ -2500,8 +2500,10 @@ QString Path::toString(qint32 xOffset, qint32 yOffset)
         nodeString.append(QString::number(node->gety() + yOffset) + ",");
         nodeString.append(QString::number(double(node->getSpeed())) + ",");
         nodeString.append(QString::number(double(node->getAccel())) + ",");
-        nodeString.append(QString::number(double(node->getDelay())));
-
+        nodeString.append(QString::number(node->getDelay()) + ",");
+        nodeString.append(QString::number(node->getRotation()) + ",");
+        nodeString.append(QString::number(node->getVariableField()) + ",");
+        nodeString.append(QString::number(node->getNextPathID()));
         i++;
 
         if (i < getNumberOfNodes())
@@ -2519,13 +2521,16 @@ QString Path::toString(qint32 xOffset, qint32 yOffset)
 QList<PathNode*> Path::getNodes() const { return nodes; }
 
 // Path Node
-PathNode::PathNode(qint32 x, qint32 y, float speed, float accel, float delay, Path* parentPath)
+PathNode::PathNode(qint32 x, qint32 y, float speed, float accel, quint16 delay, qint16 rotation, quint8 variableField, quint8 nextPathID, Path* parentPath)
 {
     this->x = x;
     this->y = y;
     this->speed = speed;
     this->accel = accel;
     this->delay = delay;
+    this->rotation = rotation;
+    this->variableField = variableField;
+    this->nextPathID = nextPathID;
     this->parentPath = parentPath;
 }
 
@@ -2535,7 +2540,10 @@ PathNode::PathNode(PathNode *node, Path* parentPath)
     y = node->gety();
     speed = node->getSpeed();
     accel = node->getAccel();
-    delay = quint32(node->getDelay());
+    delay = node->getDelay();
+    rotation = node->getRotation();
+    variableField = node->getVariableField();
+    nextPathID = node->getNextPathID();
     this->parentPath = parentPath;
 }
 

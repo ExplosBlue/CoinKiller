@@ -112,6 +112,7 @@ private slots:
     void updateFields();
     void handleEditDetected();
     void handleShowNotes();
+    void handleLayerChanged(int);
 
 signals:
     void updateLevelView();
@@ -132,6 +133,12 @@ private:
     QList<SpriteListFieldWidget*> listFieldWidgets;
     QList<SpriteCheckboxFieldWidget*> checkboxFieldWidgets;
     QList<SpriteBitFieldWidget*> bitFieldWidgets;
+
+    class HorLine : public QFrame { public: HorLine() { setFrameStyle(QFrame::HLine | QFrame::Sunken); } };
+
+    HorLine* splitterLine;
+    QComboBox* layerComboBox;
+    QLabel* layerLabel;
 
     QString spriteNotes;
 

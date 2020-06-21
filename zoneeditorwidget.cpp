@@ -638,7 +638,6 @@ ZoneBoundingWidget::ZoneBoundingWidget(QList<ZoneBounding*> *boundings)
 
     boundingId = new QSpinBox();
     boundingId->setRange(0, 255);
-    //boundingId->setDisabled(true);
     connect(boundingId, SIGNAL(valueChanged(int)), this, SLOT(handleBoundingIdChange(int)));
 
     vertScrollingDistance = new QSpinBox();

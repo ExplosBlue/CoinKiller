@@ -784,18 +784,6 @@ Connection to %1 failed!</source>
 <context>
     <name>PathEditorWidget</name>
     <message>
-        <source>ID:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Loop:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&lt;b&gt;Node: &lt;/b&gt;</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Speed:</source>
         <translation type="unfinished"></translation>
     </message>
@@ -815,7 +803,36 @@ Connection to %1 failed!</source>
         </translation>
     </message>
     <message>
-        <source>&lt;b&gt;Node: %1&lt;/b&gt;</source>
+        <source>Path ID:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Loop</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Node: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Rotation:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Variable Use:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This is a multi-purpose field. 
+Check the notes of whatever sprite is paired to this path to see how to use this field.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Next Path ID:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Node: %1</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -955,6 +972,18 @@ Connection to %1 failed!</source>
     </message>
     <message>
         <source>No notes are available for this sprite.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Layer:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Layer 1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Layer 2</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

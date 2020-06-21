@@ -80,7 +80,7 @@ void ObjectsEditonMode::mouseDown(int x, int y, Qt::MouseButtons buttons, Qt::Ke
         {
             Path* path = level->newPath();
             level->paths.append(path);
-            PathNode* node = new PathNode(qMax(toNext10(x-10), 0), qMax(toNext10(y-10), 0), 0, 0, 0, path);
+            PathNode* node = new PathNode(qMax(toNext10(x-10), 0), qMax(toNext10(y-10), 0), 0, 0, 0, 0, 0, 0, path);
             path->insertNode(node);
             if (selectAfterPlacement)
                 selectedObjects.append(node);
@@ -114,7 +114,7 @@ void ObjectsEditonMode::mouseDown(int x, int y, Qt::MouseButtons buttons, Qt::Ke
             {
                 PathNode* oldPNode = dynamic_cast<PathNode*>(oldNode);
                 Path* parentPath = oldPNode->getParentPath();
-                PathNode* newNode = new PathNode(toNext10(x-10), toNext10(y-10), 0, 0, 0, parentPath);
+                PathNode* newNode = new PathNode(toNext10(x-10), toNext10(y-10), 0, 0, 0, 0, 0, 0, parentPath);
                 if (mouseAct.pAdd == AddBefore)
                     parentPath->insertNode(newNode, parentPath->getIndexOfNode(oldPNode));
                 else
@@ -858,7 +858,8 @@ void ObjectsEditonMode::paste(int currX, int currY, int currW, int currH)
         case 1: // Sprite
         {
             Sprite* newSpr = new Sprite(params[2].toInt()+pOffsetX, params[3].toInt()+pOffsetY, params[1].toInt());
-            for (int i=0; i<12; i++) newSpr->setByte(i, params[i+4].toUInt());
+            newSpr->setLayer(params[4].toInt());
+            for (int i=0; i<12; i++) newSpr->setByte(i, params[i+5].toUInt());
             newSpr->setRect();
             level->sprites.append(newSpr);
             level->sortCameraLimits(newSpr);
@@ -900,7 +901,7 @@ void ObjectsEditonMode::paste(int currX, int currY, int currW, int currH)
             for (int i = 0; i < pathNodes.size(); i++)
             {
                 QStringList nodeData = pathNodes[i].split(',');
-                PathNode* newNode = new PathNode(nodeData[1].toInt()+pOffsetX, nodeData[2].toInt()+pOffsetY, nodeData[3].toFloat(), nodeData[4].toFloat(), nodeData[5].toInt(), newPath);
+                PathNode* newNode = new PathNode(nodeData[1].toInt()+pOffsetX, nodeData[2].toInt()+pOffsetY, nodeData[3].toFloat(), nodeData[4].toFloat(), nodeData[5].toInt(), nodeData[6].toInt(), nodeData[7].toInt(), nodeData[8].toInt(), newPath);
                 newPath->insertNode(newNode, nodeData[0].toInt());
 
                 selectedObjects.append(newPath->getNode(i));

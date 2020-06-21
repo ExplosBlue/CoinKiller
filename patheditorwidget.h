@@ -9,6 +9,7 @@
 #include <QDoubleSpinBox>
 #include <QCheckBox>
 #include <QLabel>
+#include <QGroupBox>
 
 class PathEditorWidget : public QWidget
 {
@@ -35,17 +36,17 @@ private:
     QList<Path*> *paths;
 
     QWidget* edits;
+    QGroupBox* nodeGroupbox;
     QListWidget* pathList;
-
-    QLabel* currentNode;
 
     QSpinBox* id;
     QCheckBox* loop;
     QDoubleSpinBox* speed;
     QDoubleSpinBox* acceleration;
-    QDoubleSpinBox* delay;
-
-    class HorLine : public QFrame { public: HorLine() { setFrameStyle(QFrame::HLine | QFrame::Sunken); } };
+    QSpinBox* delay;
+    QSpinBox* rotation;
+    QSpinBox* variableField;
+    QSpinBox* nextPathID;
 
     void updateList();
     void updateInfo();
@@ -56,8 +57,10 @@ private slots:
     void handleLoopChanged();
     void handleSpeedChanged(double speedVal);
     void handleAccelChanged(double accelVal);
-    void handleDelayChanged(double delayVal);
-
+    void handleDelayChanged(int delayVal);
+    void handleRotationChanged(int rotation);
+    void handleVariableFieldChanged(int variableField);
+    void handleNextPathIDChanged(int nextPathID);
 };
 
 #endif // PATHEDITORWIDGET_H
