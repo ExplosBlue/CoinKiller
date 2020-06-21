@@ -720,10 +720,16 @@ void Sprite::setRect()
         offsety = -16;
         break;
     case 97: // End of Level Flag
-        width = 62;
+        {
+        width = 340;
         height = 200;
-        offsetx = -22;
-        renderOffsetW = 280;
+
+        QList<QRect> selRects;
+        selRects.append(QRect(-22, 0, 62, 200)); // flag
+        selRects.append(QRect(200, 80, 120, 120)); // fort
+
+        selectionRects = selRects;
+        }
         break;
     case 99: // Wiggler
         width = 89;
@@ -1125,34 +1131,27 @@ void Sprite::setRect()
         else width = getNybble(17) * 40;
         break;
     case 151: // Scale Lift
-        if(getNybble(11) == 0)
-        {
-            width = 64;
-            offsetx = -(width/2);
-        }
-        else
-        {
-            if(getNybble(17) == 0)
-            {
-                width = 64+((getNybble(11))*20);
-                offsetx = -32;
-            }
-            else
-            {
-                for (int i = 0; i < getNybble(17) + 1; i++)
-                {
-                    width = 64+((getNybble(11))*20)+(i*20);
-                    offsetx = -32-(i*10);
-                }
-            }
-        }
+    {
+        int topLength = qMax(20 * getNybble(11) + 20, 40);
+        int leftLength = 20 * getNybble(9) - 10;
+        int rightLength = 20 * getNybble(10) - 10;
 
-        if(getNybble(9) >= getNybble(10))
-            height = 40+(getNybble(9)*20);
-        else
-            height = 40+(getNybble(10)*20);
+        int platformOffset = 10 * getNybble(17) + 32;
+        int platformLength = 20 * getNybble(17) + 64;
 
-        offsety = -20;
+        height = qMax(leftLength, rightLength) + 42;
+        width = platformLength + topLength;
+
+        QList<QRect> selRects;
+        selRects.append(QRect(-10, -20, topLength, 20)); // top rope
+        selRects.append(QRect(-10, 0, 20, leftLength)); // left rope
+        selRects.append(QRect(-30 + topLength, 0, 20, rightLength)); // right rope
+
+        selRects.append(QRect(-platformOffset, leftLength, platformLength, 22)); // left platform
+        selRects.append(QRect(-20 -platformOffset + topLength, rightLength, platformLength, 22)); // right platform
+
+        selectionRects = selRects;
+    }
         break;
     case 152: // Path Controlled Lift With Peepa
         if(getNybble(11) == 0)
@@ -2336,6 +2335,40 @@ QString Sprite::toString(qint32 xOffset, qint32 yOffset) const
     QString str("1:%1:%2:%3:%4");
     for (qint32 i=0; i<12; i++) str.append(QString(":%1").arg(getByte(i)));
     return str.arg(id).arg(x+xOffset).arg(y+yOffset).arg(layer);
+}
+
+bool Sprite::clickDetection(qint32 xcheck, qint32 ycheck)
+{
+    if (selectionRects.empty())
+        return Object::clickDetection(xcheck, ycheck);
+
+    bool intersects = false;
+    foreach (QRect r, selectionRects)
+    {
+        intersects = r.contains(xcheck, ycheck);
+
+        if (intersects)
+            break;
+    }
+
+    return intersects;
+}
+
+bool Sprite::clickDetection(QRect rect)
+{
+    if (selectionRects.empty())
+        return Object::clickDetection(rect);
+
+    bool intersects = false;
+    foreach (QRect r, selectionRects)
+    {
+        intersects = QRect(r.x() + x, r.y() + y, r.width(), r.height()).intersects(rect);
+
+        if (intersects)
+            break;
+    }
+
+    return intersects;
 }
 
 

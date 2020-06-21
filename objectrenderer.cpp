@@ -1643,12 +1643,12 @@ GoalRenderer::GoalRenderer(const Sprite *spr)
 {
     if (spr->getNybble(4) == 1)
     {
-        pole = new NormalImageRenderer(spr, "flagpole_secret.png");
+        pole = new NormalImageRenderer(QRect(spr->getx()-22, spr->gety(), 62, 200), "flagpole_secret.png");
         fort = new NormalImageRenderer(QRect(spr->getx()+200, spr->gety()+80, 120, 120), "castle_secret.png");
     }
     else
     {
-        pole = new NormalImageRenderer(spr, "flagpole.png");
+        pole = new NormalImageRenderer(QRect(spr->getx()-22, spr->gety(), 62, 200), "flagpole.png");
         fort = new NormalImageRenderer(QRect(spr->getx()+200, spr->gety()+80, 120, 120), "castle.png");
     }
 }

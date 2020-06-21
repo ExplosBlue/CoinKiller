@@ -106,6 +106,12 @@ public:
     void setNybbleData(qint32 data, qint32 startNybble, qint32 endNybble);
     quint8 getLayer() { return this->layer; }
     void setLayer(quint8 layer) { this->layer = layer; }
+
+    bool clickDetection(qint32 xcheck, qint32 ycheck);
+    bool clickDetection(QRect rect);
+
+    QList<QRect> getSelectionRects() { return selectionRects; }
+
 protected:
     qint16 id;
     quint8 spriteData[12] = {0,0,0,0,0,0,0,0,0,0,0,0};
@@ -114,6 +120,8 @@ protected:
     qint32 renderOffsetW;
     qint32 renderOffsetH;
     quint8 layer = 0;
+
+    QList<QRect> selectionRects;
 };
 
 

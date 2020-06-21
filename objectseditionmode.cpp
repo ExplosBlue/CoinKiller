@@ -381,11 +381,27 @@ void ObjectsEditonMode::render(QPainter *painter)
 {
     foreach (Object* obj, selectedObjects)
     {
-        QRect objrect(obj->getx()+obj->getOffsetX(), obj->gety()+obj->getOffsetY(), obj->getwidth(), obj->getheight());
+        if (is<Sprite*>(obj) && !static_cast<Sprite*>(obj)->getSelectionRects().empty())
+        {
+            Sprite* spr = static_cast<Sprite*>(obj);
 
-        painter->setPen(QPen(QColor(255,255,255,200), 1, Qt::DotLine));
-        painter->drawRect(objrect);
-        painter->fillRect(objrect, QColor(255,255,255,75));
+            foreach (QRect rect, spr->getSelectionRects())
+            {
+                QRect objrect(obj->getx() + rect.x(), obj->gety() + rect.y(), rect.width(), rect.height());
+
+                painter->setPen(QPen(QColor(255,255,255,200), 1, Qt::DotLine));
+                painter->drawRect(objrect);
+                painter->fillRect(objrect, QColor(255,255,255,75));
+            }
+        }
+        else
+        {
+            QRect objrect(obj->getx()+obj->getOffsetX(), obj->gety()+obj->getOffsetY(), obj->getwidth(), obj->getheight());
+
+            painter->setPen(QPen(QColor(255,255,255,200), 1, Qt::DotLine));
+            painter->drawRect(objrect);
+            painter->fillRect(objrect, QColor(255,255,255,75));
+        }
 
         if (obj->isResizable())
         {
