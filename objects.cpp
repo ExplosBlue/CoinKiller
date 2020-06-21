@@ -1187,6 +1187,10 @@ void Sprite::setRect()
         offsetx = -52;
         offsety = -37;
         break;
+    case 158:
+        if (getNybble(11)%4 == 1)
+            offsety = -5;
+        break;
     case 159: // Spike Top
         if(getNybble(10) == 1)
         {
@@ -1659,31 +1663,50 @@ void Sprite::setRect()
         offsetx = 10 - width/2;
         offsety = +10 - height/2;
         break;
-    case 232: // Spiny
-        if(getNybble(11) == 1)
-        {
-            width = 22;
-            height = 19;
-        }
-        else if(getNybble(11) == 2)
-        {
-            width = 21;
-            height = 20;
-        }
-        else if(getNybble(11) == 3)
-        {
-            width = 21;
-            height = 20;
-        }
+    case 231: // Boohemoth
+        width = 354;
+        height = 366;
+        offsety = -98;
+
+        if (getNybble(10) %2)
+            offsetx = -173;
         else
-        {
-            width = 22;
+            offsetx = -181;
+
+        break;
+    case 232: // Spiny
+        switch(getNybble(11) %4) {
+        case 1:
+            width = 20;
+            height = 22;
+            offsety = 9;
+            break;
+        case 2:
+            width = 21;
+            height = 20;
+            offsetx = -1;
+            break;
+        case 3:
+            width = 21;
             height = 19;
+            offsety = 3;
+            break;
+        default:
+            width = 22;
+            height = 21;
+            offsety = -1;
+            offsetx = -3;
+            break;
         }
         break;
-    case 233: // Upside Down Spiny
+    case 233: // Ceiling Spiny
         width = 21;
         height = 20;
+        offsetx = -1;
+
+        if (getNybble(8) %2)
+            offsetx = 0;
+
         break;
     case 234: // Spiked Ball
         width = 38;
@@ -1724,6 +1747,18 @@ void Sprite::setRect()
         height = 150;
         offsetx = -90;
         offsety = -110;
+        break;
+    case 243: // Ghost Wall
+        width = 506;
+        height = 510;
+        offsetx = -280;
+        offsety = -120;
+
+        offsety -= (-10*getNybble(7));
+
+        if(getNybble(8)%4 == 1) offsetx = 0;
+        else if(getNybble(8)%4 == 2) offsetx = -486;
+
         break;
     case 244: // Chain Chomp
         width = 63;
@@ -2235,6 +2270,15 @@ void Sprite::setRect()
             }
             break;
         }
+    case 320: // Path Controlled Lift
+        if(getNybble(11) == 0)
+            width = 46;
+        else
+            width = getNybble(11)*20 + 46;
+
+        height = 22;
+        offsetx = -(width/2);
+        break;
     case 322: // Big Grinder
         width = 86;
         height = 86;

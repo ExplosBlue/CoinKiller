@@ -552,6 +552,26 @@ protected:
     bool isBelow;
 };
 
+// Sprite 158: Buzzy Beetle
+class BuzzyBeetleRenderer: public SpriteRenderer
+{
+public:
+    BuzzyBeetleRenderer(const Sprite *spr);
+    void render(QPainter *painter, QRect *drawrect);
+protected:
+    NormalImageRenderer* img;
+};
+
+// Sprite 159: Spike Top
+class SpikeTopRenderer: public SpriteRenderer
+{
+public:
+    SpikeTopRenderer(const Sprite *spr);
+    void render(QPainter *painter, QRect *drawrect);
+protected:
+    NormalImageRenderer *img;
+};
+
 // Sprite 160/161: Horizontal Camera Limits
 class HCameraLimitRenderer: public SpriteRenderer
 {
@@ -565,16 +585,6 @@ protected:
     int xRenderOffset;
     bool permiable;
     bool isRight;
-};
-
-// Sprite 159: Spike Top
-class SpikeTopRenderer: public SpriteRenderer
-{
-public:
-    SpikeTopRenderer(const Sprite *spr);
-    void render(QPainter *painter, QRect *drawrect);
-protected:
-    NormalImageRenderer *img;
 };
 
 // Sprite 163: Climbing Koopa - Horizontal
@@ -733,14 +743,34 @@ protected:
     CircleRenderer *circle;
 };
 
+// Sprite 231: Boohemoth
+class BoohemothRenderer: public SpriteRenderer
+{
+public:
+    BoohemothRenderer(const Sprite *spr);
+    void render(QPainter *painter, QRect *drawrect);
+protected:
+    NormalImageRenderer* img;
+};
+
 // Sprite 232: Spiny
 class SpinyRenderer: public SpriteRenderer
 {
 public:
-    SpinyRenderer(const Sprite *spr, QString filename);
+    SpinyRenderer(const Sprite *spr);
     void render(QPainter *painter, QRect *drawrect);
 protected:
-    QString filename;
+    NormalImageRenderer* img;
+};
+
+// Sprite 233: Ceiling Spiny
+class CeilingSpinyRenderer: public SpriteRenderer
+{
+public:
+    CeilingSpinyRenderer(const Sprite *spr);
+    void render(QPainter *painter, QRect *drawrect);
+protected:
+    NormalImageRenderer* img;
 };
 
 // Sprite 240: Urchin
@@ -748,6 +778,16 @@ class UrchinRenderer: public SpriteRenderer
 {
 public:
     UrchinRenderer(const Sprite *spr);
+    void render(QPainter *painter, QRect *drawrect);
+protected:
+    NormalImageRenderer* img;
+};
+
+// Sprite 243: Ghost Wall
+class GhostWallRenderer: public SpriteRenderer
+{
+public:
+    GhostWallRenderer(const Sprite *spr);
     void render(QPainter *painter, QRect *drawrect);
 protected:
     NormalImageRenderer* img;
@@ -924,6 +964,14 @@ public:
     void render(QPainter *painter, QRect *drawrect);
 protected:
     NormalImageRenderer *img;
+};
+
+// Sprite 320: Path Controlled Lift
+class PathLiftRenderer: public SpriteRenderer
+{
+public:
+    PathLiftRenderer(const Sprite *spr);
+    void render(QPainter *painter, QRect *drawrect);
 };
 
 class EntranceRenderer : public ObjectRenderer

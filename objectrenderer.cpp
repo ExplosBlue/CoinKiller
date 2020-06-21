@@ -394,7 +394,7 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
         ret = new NormalImageRenderer(spr, "ludwig.png");
         break;
     case 158: // Buzzy Beetle
-        ret = new SpinyRenderer(spr, "buzzy_beetle");
+        ret = new BuzzyBeetleRenderer(spr);
         break;
     case 159: // Spike Top
         ret = new SpikeTopRenderer(spr);
@@ -573,11 +573,14 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
     case 230: // Peepa Circle
         ret = new CoinCircleRenderer(spr);
         break;
+    case 231: // Boohemoth
+        ret = new BoohemothRenderer(spr);
+        break;
     case 232: // Spiny
-        ret = new SpinyRenderer(spr, "spiny");
+        ret = new SpinyRenderer(spr);
         break;
     case 233: // Celing Spiny
-        ret = new NormalImageRenderer(spr, "spiny_ceiling.png");
+        ret = new CeilingSpinyRenderer(spr);
         break;
     case 234: // Spiked Ball
         ret = new NormalImageRenderer(spr, "spiked_ball.png");
@@ -593,6 +596,9 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
         break;
     case 242: // Whirlpool
         ret = new NormalImageRenderer(spr, "whirlpool.png");
+        break;
+    case 243: // Ghost Wall
+        ret = new GhostWallRenderer(spr);
         break;
     case 244: // Chain Chomp
         ret = new ChainChompRenderer(spr);
@@ -749,6 +755,9 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
         break;
     case 318: // Event Controlled Rectangle Lift
         ret = new EventRecLiftRenderer(spr, "event_rect_lift_tower");
+        break;
+    case 320: // Path Controlled Lift
+        ret = new PathLiftRenderer(spr);
         break;
     case 321: // Snowy Mushroom Platform
         ret = new MushroomPlatformRenderer(spr);
@@ -2244,6 +2253,37 @@ void FourPlatRickRenderer::render(QPainter *painter, QRect *drawrect)
     img->render(painter, drawrect);
 }
 
+// Sprite 158: Buzzy Beetle
+BuzzyBeetleRenderer::BuzzyBeetleRenderer(const Sprite *spr)
+{
+    this->spr = spr;
+    QString imgName = "buzzy_beetle_l";
+
+    if (spr->getNybble(9)%4 == 1)
+        imgName = "buzzy_beetle_r";
+
+    switch (spr->getNybble(11) %4) {
+    case 1:
+        imgName.append("_ceiling");
+        break;
+    case 2:
+        imgName.append("_shell");
+        break;
+    case 3:
+        imgName.append("_shell_upsidedown");
+        break;
+    default:
+        break;
+    }
+
+    img = new NormalImageRenderer(spr, QString("%1.png").arg(imgName));
+}
+
+void BuzzyBeetleRenderer::render(QPainter *painter, QRect *drawrect)
+{
+
+    img->render(painter, drawrect);
+}
 
 // Sprite 159: Spike Top
 SpikeTopRenderer::SpikeTopRenderer(const Sprite *spr)
@@ -2915,26 +2955,69 @@ void CoinCircleRenderer::render(QPainter *painter, QRect *drawrect)
     }
 }
 
-
-// Sprite 232: Spiny/Buzzy Beetle
-SpinyRenderer::SpinyRenderer(const Sprite *spr, QString filename)
+// Sprite 231: Boohemoth
+BoohemothRenderer::BoohemothRenderer(const Sprite *spr)
 {
     this->spr = spr;
-    this->filename = filename;
+
+    QString imgName = "boohemoth_r.png";
+
+    if (spr->getNybble(10) %2)
+        imgName = "boohemoth_l.png";
+
+    img = new NormalImageRenderer(spr, imgName);
 }
 
-void SpinyRenderer::render(QPainter *painter, QRect *)
+void BoohemothRenderer::render(QPainter *painter, QRect *drawrect)
 {
-    if (spr->getNybble(11) == 1)
-        painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), ImageCache::getInstance()->get(SpriteImg, filename + "_ceiling.png"));
-    else if (spr->getNybble(11) == 2)
-        painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), ImageCache::getInstance()->get(SpriteImg, filename + "_shell.png"));
-    else if (spr->getNybble(11) == 3)
-        painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), ImageCache::getInstance()->get(SpriteImg, filename + "_shell_ceiling.png"));
-    else
-        painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), ImageCache::getInstance()->get(SpriteImg, filename + ".png"));
+    img->render(painter, drawrect);
 }
 
+// Sprite 232: Spiny
+SpinyRenderer::SpinyRenderer(const Sprite *spr)
+{
+    this->spr = spr;
+
+    QString imgName = "spiny";
+
+    switch (spr->getNybble(11) %4) {
+    case 1:
+        imgName.append("_egg");
+        break;
+    case 2:
+        imgName.append("_shell");
+        break;
+    case 3:
+        imgName.append("_shell_upsidedown");
+        break;
+    default:
+        break;
+    }
+
+    img = new NormalImageRenderer(spr, QString("%1.png").arg(imgName));
+}
+
+void SpinyRenderer::render(QPainter *painter, QRect *drawrect)
+{
+    img->render(painter, drawrect);
+}
+
+// Sprite 233: Ceiling Spiny
+CeilingSpinyRenderer::CeilingSpinyRenderer(const Sprite *spr)
+{
+    this->spr = spr;
+
+    QString imgName = "spiny_ceiling";
+
+    if (spr->getNybble(8) %2)
+        imgName = "spiny_falling";
+    img = new NormalImageRenderer(spr, QString("%1.png").arg(imgName));
+}
+
+void CeilingSpinyRenderer::render(QPainter *painter, QRect *drawrect)
+{
+    img->render(painter, drawrect);
+}
 
 // Sprite 240: Urchin
 UrchinRenderer::UrchinRenderer(const Sprite *spr)
@@ -2952,6 +3035,26 @@ void UrchinRenderer::render(QPainter *painter, QRect *drawrect)
     img->render(painter, drawrect);
 }
 
+// Sprite 243: Ghost Wall
+GhostWallRenderer::GhostWallRenderer(const Sprite *spr)
+{
+    this->spr = spr;
+
+    QString imgName = "ghost_wall_right";
+
+    if (spr->getNybble(8)%4 == 2)
+        imgName = "ghost_wall_left";
+
+    if (spr->getNybble(6) &1)
+        imgName.append("_boos");
+
+    img = new NormalImageRenderer(spr, QString("%1.png").arg(imgName));
+}
+
+void GhostWallRenderer::render(QPainter *painter, QRect *drawrect)
+{
+    img->render(painter, drawrect);
+}
 
 // Sprite 244: Chain Chomp
 ChainChompRenderer::ChainChompRenderer(const Sprite *spr)
@@ -3597,6 +3700,21 @@ void UnderwaterRecLiftRenderer::render(QPainter *painter, QRect *drawrect)
     }
 
     img->render(painter, drawrect);
+}
+
+// Sprite 320: Path Controlled Lift
+PathLiftRenderer::PathLiftRenderer(const Sprite *spr)
+{
+    this->spr = spr;
+}
+
+void PathLiftRenderer::render(QPainter *painter, QRect *)
+{
+    // Draw Platform
+    painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX(), spr->gety(), 23, 22), ImageCache::getInstance()->get(SpriteImg, "lift_platform/l.png"));
+    painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()+(spr->getNybble(11))*20+23, spr->gety(), 23, 22), ImageCache::getInstance()->get(SpriteImg, "lift_platform/r.png"));
+    for (int i = 20; i < spr->getwidth()-43; i += 20)
+        painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()+i+3, spr->gety(), 20, 22), ImageCache::getInstance()->get(SpriteImg, "lift_platform/m.png"));
 }
 
 // Entrance Renderer

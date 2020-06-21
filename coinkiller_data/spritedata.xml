@@ -2,7 +2,7 @@
 <sprites>
   <sprite id="0" name="Autoscrolling Controller" notes="Actor: 0x1A5&#13;&#10;Description: A Controller that causes the screen to automatically scroll.&#13;&#10;Event Triggerable: Yes&#13;&#10;Affected by Gold Ring: No&#13;&#10;Requirements: Must be paired with a path.">
     <value nybble="0-1" title="Triggering Event ID" comment="When triggered, the controller will start moving."/>
-    <value nybble="1-2" title="Target Event ID" comment="Triggered when the controller starts moving"/>
+    <value nybble="2-3" title="Target Event ID" comment="Triggered when the controller starts moving"/>
     <value nybble="4-5" title="Midway Starting Node" comment="Value+1. The path node that movement should start from if the level is entered from a checkpoint."/>
     <list nybble="6" title="Starting Behavior" comment="Determines how the controller will act when starting.">
       <entry value="0">Lock All Camera Movement</entry>
@@ -1188,7 +1188,7 @@
       <entry value="2">Moves when Touched</entry>
       <entry value="3">Already Moving</entry>
     </list>
-    <value nybble="14" title="Rotation Node" comment="When this path node is reached, the fence will rotate clockwise."/>
+    <value nybble="14" title="unknown 14"/>
     <bitfield nybble="16-19" title="Row Layout" comment="In a horizontal view, each row is a set of 4. This number converted to binary represents the layout. (0 = no fence, 1 = fence)."/>
   </sprite>
   <sprite id="108" name="Spider Web">
@@ -1309,11 +1309,8 @@
       <entry value="0">Colored Stem</entry>
       <entry value="1">Gray Stem</entry>
     </list>
-    <list nybble="9" title="Expanded Width">
-      <entry value="0">10 Blocks</entry>
-      <entry value="5">5 Blocks</entry>
-    </list>
-    <list nybble="10" title="Starts Out:">
+    <checkbox nybble="9" title="Shorter Platform"/>
+    <list nybble="10" title="Starts Out">
       <entry value="0">Contracted</entry>
       <entry value="1">Expanded</entry>
     </list>
@@ -1325,11 +1322,8 @@
       <entry value="0">Colored Stem</entry>
       <entry value="1">Gray Stem</entry>
     </list>
-    <list nybble="9" title="Expanded Width">
-      <entry value="0">10 Blocks</entry>
-      <entry value="1">5 Blocks</entry>
-    </list>
-    <list nybble="10" title="Starts Out:">
+    <checkbox nybble="9" title="Shorter Platform"/>
+    <list nybble="10" title="Starts Out">
       <entry value="0">Contracted</entry>
       <entry value="1">Expanded</entry>
     </list>
@@ -1434,8 +1428,6 @@
       <entry value="0">Above layer 1 Tiles</entry>
       <entry value="1">Below Layer 1 Tiles</entry>
     </list>
-    <checkbox nybble="14" title="Unused Checkbox 17"/>
-    <checkbox nybble="15" title="Unused Checkbox 18"/>
     <checkbox nybble="16" title="Crash" comment="Check this to crash the game."/>
   </sprite>
   <sprite id="139" name="Goomba Tower">
@@ -1659,7 +1651,7 @@
       <entry value="0">Normal</entry>
       <entry value="1">On Ceiling</entry>
       <entry value="2">Empty Shell</entry>
-      <entry value="3">Empty Shell On Ceiling</entry>
+      <entry value="3">Upside-Down Empty Shell</entry>
     </list>
   </sprite>
   <sprite id="159" name="Spike Top" notes="A buzzy beetle, but with a red shell with a spike on top.">
@@ -1789,9 +1781,9 @@
     <checkbox nybble="11" title="Upside-down"/>
   </sprite>
   <sprite id="179" name="Grounded Bone Piranha Plant">
-    <value nybble="7" title="Unknown Value 10"/>
-    <value nybble="10" title="Unknown Value 5"/>
+    <value nybble="10" title="Unknown Value 10"/>
     <checkbox nybble="11" title="Upside-down"/>
+    <value nybble="13" title="Unknown Value 13"/>
   </sprite>
   <sprite id="180" name="Grounded Big Bone Piranha Plant">
     <value nybble="10" title="Unknown Value 5"/>
@@ -2141,11 +2133,12 @@
     <value nybble="19" title="Height" comment="Value + 1. If it's 0 the game will set it to 1."/>
   </sprite>
   <sprite id="194" name="Cheep Cheep" notes="A fish that lurks the oceans and rivers to attack Mario. Takes 1 fireball shot be killed.">
-    <list nybble="4" title="Direction" comment="Determines the direction of the cheep cheep.">
+    <list nybble="4" title="Direction" comment="Determines the direction of the cheep cheep. This setting acts differently depending on the type setting. Values &gt;2 produdce unintended behaviour.">
       <entry value="0">Towards Player</entry>
       <entry value="1">Left</entry>
       <entry value="2">Right</entry>
     </list>
+    <value nybble="7" title="Range" comment="Only used when The Cheep Cheep is set to Ranged."/>
     <list nybble="8" title="Swim Speed" comment="Determines the speed of the cheep cheep. All other values are repeats of 4 and 6. Values greater than 1 are unused.">
       <entry value="0">Fastest</entry>
       <entry value="1">Slow</entry>
@@ -2155,11 +2148,10 @@
       <entry value="6">Static Horizontal</entry>
       <entry value="13">Too Fast</entry>
     </list>
-    <list nybble="11" title="Type" comment="Determines the type of the cheep cheep. All other values are repeats. Diagonal Types only move left.">
+    <list nybble="11" title="Type" comment="Determines the type of the cheep cheep. All other values have unintended behaviour.">
       <entry value="0">Cheep Cheep</entry>
       <entry value="1">Deep Cheep</entry>
-      <entry value="2">Cheep Cheep (Frozen)</entry>
-      <entry value="3">Cheep Cheep (Range 4 blocks)</entry>
+      <entry value="3">Cheep Cheep (Ranged)</entry>
       <entry value="8">Eep Cheep</entry>
       <entry value="9">Cheep Cheep (Diagonal-Up)</entry>
       <entry value="10">Cheep Cheep (Diagonal-Down)</entry>
@@ -2171,6 +2163,7 @@
       <entry value="1">Left</entry>
       <entry value="2">Right</entry>
     </list>
+    <checkbox nybble="5" title="Huge Cheep Cheep" comment="Makes the cheep cheep huge. Unused."/>
     <list nybble="8" title="Slower Swim Speed" comment="Determines the speed of the cheep cheep. All other values are repeats of 4. Values greater than 1 are unused.">
       <entry value="0">Fastest</entry>
       <entry value="1">Slow</entry>
@@ -2187,16 +2180,27 @@
   <sprite id="196" name="Coin Cheep" notes="A Coin Cheep.">
     <value nybble="8" title="Swim Speed" comment="Higher values are slower, values &gt;= 4 are buggy. [Unused]"/>
   </sprite>
-  <sprite id="197" name="Jumping Cheep Cheep" notes="Distance is randomised, the cheep cheep will always jump either 7, 8 or 9 tiles ahead of where it is placed.">
-    <value nybble="0-1" title="Triggering Event ID"/>
-    <list nybble="4" title="Direction" comment="Values Repeat.">
+  <sprite id="197" name="Jumping Cheep Cheep">
+    <list nybble="4" title="Direction" comment="Determines the direction the cheep cheep will jump. Values &gt; 3 jump to the right">
       <entry value="0">Right</entry>
       <entry value="1">Left</entry>
+      <entry value="2">Towards Player</entry>
+      <entry value="3">Away From Player</entry>
     </list>
     <value nybble="5" title="Horizontal Offset" comment="Spawns n number of blocks to the left of where it was placed."/>
-    <value nybble="9" title="Unknown Value 8"/>
-    <value nybble="10" title="Unknown Value 5" comment="Setting this to any value above 1 caused it to not show up."/>
-    <checkbox nybble="11" title="Jumps Up" mask="4" comment="If this is greater than 3 the Cheep Cheep will jump directly up."/>
+    <value nybble="9" title="Unknown Value 9"/>
+    <list nybble="10" title="Spawn Behaviour">
+      <entry value="0">Always Spawn</entry>
+      <entry value="1">If Gold Ring Isn't Active</entry>
+      <entry value="2">If Gold Ring Is Active</entry>
+    </list>
+    <list nybble="11" title="Jump Distance" comment="Determines the horizontal distance the cheep cheep will jump. Random will choose between 6.5, 7.5 and 8 tiles.">
+      <entry value="0">Random Distance</entry>
+      <entry value="1">6.5 Tiles</entry>
+      <entry value="2">7.5 Tiles</entry>
+      <entry value="3">8 Tiles</entry>
+      <entry value="4">0 Tiles</entry>
+    </list>
   </sprite>
   <sprite id="198" name="Jumping Cheep Cheep Spawner OR Spawn Area">
     <value nybble="4" title="Unknown Value 11" comment="Checkbox?"/>
@@ -2226,10 +2230,13 @@
     <bitfield nybble="16-19" title="Cheep Cheep Gap Position" comment="The gap where the player can jump through."/>
   </sprite>
   <sprite id="200" name="Spiny Cheep Cheep">
-    <value nybble="0-1" title="Triggering Event ID"/>
-    <value nybble="4" title="Unknown Value 11"/>
-    <checkbox nybble="7" title="Moves Right" comment="When checked, it will move right instead of left."/>
-    <value nybble="20-21" title="Movement ID"/>
+    <value nybble="0-1" title="Triggering Event ID" comment="When activated the Cheep Cheep will stop following the player."/>
+    <list nybble="4" title="Starting Direction" comment="Determines the Starting direction for the spiny cheep cheep.">
+      <entry value="0">Towards Player</entry>
+      <entry value="1">Left</entry>
+      <entry value="2">Right</entry>
+    </list>
+    <value nybble="7" title="Patrol Range" comment="How far the spiny Cheep Cheep will patrol when not following the player."/>
   </sprite>
   <sprite id="201" name="Cheep Cheep Spawn Area" notes="A Cheep Cheep spawner that uses locations.">
     <value nybble="8" title="Location ID"/>
@@ -2684,18 +2691,17 @@
   </sprite>
   <sprite id="232" name="Spiny">
     <value nybble="8" title="Unknown Value 7" comment="Checkbox?"/>
-    <list nybble="11" title="State" comment="Unused.">
+    <list nybble="11" title="State" comment="Determines the state the spiny will spawn in. Unused.">
       <entry value="0">Normal</entry>
-      <entry value="1">Upside Down</entry>
-      <entry value="2">Empty Shell</entry>
-      <entry value="3">Upside-Down Empty Shell</entry>
+      <entry value="1">Spiny Egg</entry>
+      <entry value="2">In Shell</entry>
+      <entry value="3">Upside-Down In Shell</entry>
     </list>
   </sprite>
   <sprite id="233" name="Ceiling Spiny" notes="A spiny that is already upside-down on a ceiling.">
-    <list nybble="8" title="Initial Position" comment="The position of the spiny on load.">
-      <entry value="0">Hanging Upside Down</entry>
-      <entry value="1">Already empty shell and falls on load</entry>
-      <entry value="2">Hanging Upside Down</entry>
+    <list nybble="8" title="State" comment="Determines the initial state of the spiny.">
+      <entry value="0">Hanging</entry>
+      <entry value="1">Already Falling</entry>
     </list>
   </sprite>
   <sprite id="234" name="Spiked Ball">
@@ -2894,11 +2900,18 @@
   <sprite id="242" name="Whirlpool" notes="A whirlpool that will try to suck the player downward.">
     <checkbox nybble="11" title="Disappear Upon Retraction" comment="If this is checked, once the whirlpool retracts, it disappears instead of staying small. [Unused]"/>
   </sprite>
-  <sprite id="243" name="Ghost House Moving Wall">
-    <value nybble="6" title="Unknown Value 9" comment="Checkbox?"/>
-    <value nybble="7" title="Ending Node" comment="The path node the wall should stop moving at"/>
-    <checkbox nybble="8" title="Left Wall" mask="2" comment="If checked the wall is oriented as a left wall. Values of 0 and 1 produce right walls."/>
-    <value nybble="9" title="Unknown Value 8" comment="Checkbox?"/>
+  <sprite id="243" name="Ghost House Moving Wall" notes="Uses the path node &quot;Variable Use&quot; setting to cause the boos to shake upon reaching that node, higher values = more shaking.">
+    <list nybble="6" title="Boo Behaviour" comment="If set to &quot;Appear After Stopping&quot; the boos will appear when reaching a node with a delay value set, or when reaching the final node in the path.">
+      <entry value="0">Appear After Stopping</entry>
+      <entry value="1">Always Visible</entry>
+    </list>
+    <value nybble="7" title="Y Position Offset" comment="Offsets the wall's y position."/>
+    <list nybble="8" title="Wall Type" comment="Determines the wall type, value of 3 crashes the game, values &gt;3 repeat.">
+      <entry value="0">Right Side</entry>
+      <entry value="1">Right Side With Offset</entry>
+      <entry value="2">Left Side</entry>
+    </list>
+    <value nybble="9" title="Start Delay" comment="Determines how long to wait before the wall starts moving."/>
     <value nybble="10" title="Unknown Value 5"/>
     <value nybble="11" title="Path ID" comment="Sets what path the wall should move along."/>
   </sprite>

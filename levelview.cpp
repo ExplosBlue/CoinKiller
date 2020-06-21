@@ -305,12 +305,12 @@ void LevelView::paint(QPainter& painter, QRect rect, float zoomLvl, bool selecti
 
             foreach (Sprite* s, level->sprites)
             {
-                if (s->getid() != 107 && s->getid() != 152 && s->getid() != 290 && s->getid() != 291)
+                if (s->getid() != 107 && s->getid() != 152 && s->getid() != 290 && s->getid() != 291 && s->getid() != 320)
                     continue;
 
                 int pathID = 0;
-                if (s->getid() == 152)
-                    pathID = (s->getNybble(10)+(s->getNybble(9)*16));
+                if (s->getid() == 152 || s->getid() == 320)
+                    pathID = (s->getNybbleData(9, 10));
                 else
                     pathID = (s->getNybble(10));
 
