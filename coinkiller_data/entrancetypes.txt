@@ -12,7 +12,7 @@ Swimming
 Normal (Mispositioned)
 Normal (Mispositioned)
 Normal (Mispositioned)
-Normal
+Normal (Allow Instant Movement)
 Boss Door Exit
 Mini Pipe Facing Up
 Mini Pipe Facing Down

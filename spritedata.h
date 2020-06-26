@@ -26,7 +26,7 @@ public:
     int startNybble;
     int endNybble;
 
-    QMap<int, QString> listEntries;
+    QList<QPair<int, QString>> listEntries;
     quint8 mask;
 };
 

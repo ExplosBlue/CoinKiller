@@ -34,14 +34,14 @@ PathEditorWidget::PathEditorWidget(QList<Path*> *paths)
     speed = new QDoubleSpinBox();
     speed->setRange(-1000000, 1000000);
     speed->setDecimals(8);
-    speed->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    speed->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Fixed);
     nodeGroupLayout->addWidget(speed, 0, 1);
 
     nodeGroupLayout->addWidget(new QLabel(tr("Acceleration:")), 0, 2, 1, 1, Qt::AlignRight);
     acceleration = new QDoubleSpinBox();
     acceleration->setRange(-1000000, 1000000);
     acceleration->setDecimals(8);
-    acceleration->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    acceleration->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Fixed);
     nodeGroupLayout->addWidget(acceleration, 0, 3);
 
     nodeGroupLayout->addWidget(new QLabel(tr("Delay:")), 1, 0, 1, 1, Qt::AlignRight);

@@ -159,7 +159,9 @@ void SpriteEditorWidget::search(QString text)
 void SpriteEditorWidget::handleIndexChange(QTreeWidgetItem *item)
 {
     int data = item->data(0, Qt::UserRole).toInt();
+
     emit(currentSpriteChanged(data));
+    editor->updateEditor();
     emit editMade();
 }
 
@@ -382,6 +384,30 @@ void SpriteDataEditorWidget::handleLayerChanged(int layer)
     editSprite->setLayer(layer);
 }
 
+void SpriteDataEditorWidget::updateEditor()
+{
+    if (editingASprite)
+        reloadFields();
+}
+
+void SpriteDataEditorWidget::reloadFields()
+{
+    if (editSprite == nullptr)
+        return;
+
+    foreach (QLabel* fieldName, fieldNames) { layout->removeWidget(fieldName); delete fieldName; } fieldNames.clear();
+    foreach (SpriteValueFieldWidget* field, valueFieldWidgets) { layout->removeWidget(field); delete field; } valueFieldWidgets.clear();
+    foreach (SpriteListFieldWidget* field, listFieldWidgets) { layout->removeWidget(field); delete field; } listFieldWidgets.clear();
+    foreach (SpriteCheckboxFieldWidget* field, checkboxFieldWidgets) { layout->removeWidget(field); delete field; } checkboxFieldWidgets.clear();
+    foreach (SpriteBitFieldWidget* field, bitFieldWidgets) { layout->removeWidget(field); delete field; } bitFieldWidgets.clear();
+
+    layout->removeWidget(splitterLine);
+    layout->removeWidget(layerComboBox);
+    layout->removeWidget(layerLabel);
+
+    select(editSprite);
+}
+
 // Field Widgets
 
 SpriteValueFieldWidget::SpriteValueFieldWidget(Sprite *sprite, Field *field)
@@ -451,24 +477,41 @@ SpriteListFieldWidget::SpriteListFieldWidget(Sprite *sprite, Field *field)
     this->field = field;
     this->setToolTip(field->comment);
 
-    addItems(field->listEntries.values());
+    for (int i = 0; i < field->listEntries.count(); i++)
+    {
+        addItem(field->listEntries[i].second);
+        setItemData(i, field->listEntries[i].first);
+    }
 
     updateValue();
-    connect(this, SIGNAL(currentIndexChanged(QString)), this, SLOT(handleIndexChange(QString)));
+    connect(this, SIGNAL(currentIndexChanged(int)), this, SLOT(handleIndexChange(int)));
 }
 
 void SpriteListFieldWidget::updateValue()
 {
     handleValueChanges = false;
-    if (field->listEntries.keys().contains(sprite->getNybbleData(field->startNybble, field->endNybble))) setCurrentText(field->listEntries.value(sprite->getNybbleData(field->startNybble, field->endNybble)));
-    else setCurrentIndex(-1);
+
+    bool found = false;
+    for (int i = 0; i < field->listEntries.count(); i++)
+    {
+        if (field->listEntries[i].first == sprite->getNybbleData(field->startNybble, field->endNybble))
+        {
+            setCurrentIndex(i);
+            found = true;
+            break;
+        }
+    }
+
+    if (!found)
+        setCurrentIndex(-1);
+
     handleValueChanges = true;
 }
 
-void SpriteListFieldWidget::handleIndexChange(QString text)
+void SpriteListFieldWidget::handleIndexChange(int index)
 {
     if (!handleValueChanges) return;
-    sprite->setNybbleData(field->listEntries.key(text, 0), field->startNybble, field->endNybble);
+    sprite->setNybbleData(itemData(index).toInt(), field->startNybble, field->endNybble);
     sprite->setRect();
     emit updateHex();
     emit updateFields();

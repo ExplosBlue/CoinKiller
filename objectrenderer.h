@@ -319,6 +319,16 @@ public:
     void render(QPainter *painter, QRect *drawrect);
 };
 
+// Sprite 95: Blooper
+class BlooperRenderer: public SpriteRenderer
+{
+public:
+    BlooperRenderer(const Sprite *spr);
+    void render(QPainter *painter, QRect *drawrect);
+protected:
+    NormalImageRenderer *img;
+};
+
 // Sprite 97: End of Level Flag
 class GoalRenderer: public SpriteRenderer
 {
@@ -787,10 +797,11 @@ protected:
 class CoinCircleRenderer: public SpriteRenderer
 {
 public:
-    CoinCircleRenderer(const Sprite *spr);
+    CoinCircleRenderer(const Sprite *spr, Tileset* tileset);
     void render(QPainter *painter, QRect *drawrect);
 protected:
     CircleRenderer *circle;
+    Tileset *tileset;
 };
 
 // Sprite 231: Boohemoth

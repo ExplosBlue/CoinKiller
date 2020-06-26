@@ -17,7 +17,9 @@ SpriteIdWidget::SpriteIdWidget(QList<Sprite*> *sprites)
               << tr("Triggering IDs")
               << tr("Target IDs")
               << tr("Rotation IDs")
-              << tr("Group IDs");
+              << tr("Group IDs")
+              << tr("Movement IDs")
+              << tr("Path IDs");
 
     viewComboBox = new QComboBox();
     viewComboBox->addItems(viewTypes);
@@ -213,6 +215,64 @@ void SpriteIdWidget::updateList()
             spriteTree->resizeColumnToContents(i);
         break;
     }
+    case 5: // Has Movement ID
+    {
+        foreach (Sprite* sprite, *sprites)
+        {
+            for (int i = 0; i < spriteData.getSpriteDef(sprite->getid()).getFieldCount(); i++)
+            {
+                Field* field = spriteData.getSpriteDef(sprite->getid()).getFieldPtr(i);
+
+                QString match = "movement";
+
+                if (field->title.toLower().contains(match) && field->title.toLower().contains("id") && sprite->getNybbleData(field->startNybble, field->endNybble) != 0)
+                {
+                    QTreeWidgetItem* spriteItem = new QTreeWidgetItem();
+                    spriteItem->setText(0, QString("%1: %2").arg(sprite->getid()).arg(spriteData.getSpriteDef(sprite->getid()).getName()));
+                    spriteItem->setText(1, QString(tr("Movement ID: %1")).arg(sprite->getNybbleData(field->startNybble, field->endNybble)));
+                    spriteItem->setData(0, Qt::UserRole, sprite->getid());
+                    spriteItem->setData(1, Qt::UserRole, sprite->getx());
+                    spriteItem->setData(2, Qt::UserRole, sprite->gety());
+                    spriteItem->setData(3, Qt::UserRole, sprite->getNybbleData(0, 23));
+                    spriteTree->addTopLevelItem(spriteItem);
+                }
+            }
+        }
+        spriteTree->setColumnCount(2);
+        spriteTree->setHeaderHidden(false);
+        for(int i = 0; i < 2; i++)
+            spriteTree->resizeColumnToContents(i);
+        break;
+    }
+    case 6: // Has Path ID
+    {
+        foreach (Sprite* sprite, *sprites)
+        {
+            for (int i = 0; i < spriteData.getSpriteDef(sprite->getid()).getFieldCount(); i++)
+            {
+                Field* field = spriteData.getSpriteDef(sprite->getid()).getFieldPtr(i);
+
+                QString match = "path";
+
+                if (field->title.toLower().contains(match) && field->title.toLower().contains("id") && sprite->getNybbleData(field->startNybble, field->endNybble) != 0)
+                {
+                    QTreeWidgetItem* spriteItem = new QTreeWidgetItem();
+                    spriteItem->setText(0, QString("%1: %2").arg(sprite->getid()).arg(spriteData.getSpriteDef(sprite->getid()).getName()));
+                    spriteItem->setText(1, QString(tr("Path ID: %1")).arg(sprite->getNybbleData(field->startNybble, field->endNybble)));
+                    spriteItem->setData(0, Qt::UserRole, sprite->getid());
+                    spriteItem->setData(1, Qt::UserRole, sprite->getx());
+                    spriteItem->setData(2, Qt::UserRole, sprite->gety());
+                    spriteItem->setData(3, Qt::UserRole, sprite->getNybbleData(0, 23));
+                    spriteTree->addTopLevelItem(spriteItem);
+                }
+            }
+        }
+        spriteTree->setColumnCount(2);
+        spriteTree->setHeaderHidden(false);
+        for(int i = 0; i < 2; i++)
+            spriteTree->resizeColumnToContents(i);
+        break;
+    }
     default: // All in Level
     {
         foreach (Sprite* sprite, *sprites)
@@ -255,6 +315,12 @@ void SpriteIdWidget::setView(int view)
         break;
     case 4: // Has Group ID
         viewMode = 4;
+        break;
+    case 5: // Has Movement ID
+        viewMode = 5;
+        break;
+    case 6: // Has Path ID
+        viewMode = 6;
         break;
     default: // All in Level
         viewMode = 0;

@@ -34,6 +34,7 @@ public:
     void toggleSprites(bool toggle) { spriteInteraction = toggle; }
     void togglePaths(bool toggle) { pathInteraction = toggle; }
     void toggleLocations(bool toggle) { locationInteraction = toggle; }
+    void toggleEntrances(bool toggle) { entranceInteraction = toggle; }
 
     void select(Object* obj);
     void selectAll();
@@ -128,6 +129,7 @@ private:
     bool pathInteraction;
     bool spriteInteraction;
     bool locationInteraction;
+    bool entranceInteraction;
 
     bool selectAfterPlacement;
 

@@ -87,6 +87,7 @@ LevelEditorWindow::LevelEditorWindow(LevelManager* lvlMgr, int initialArea) :
     ui->actionToggleLocations->setIcon(QIcon(basePath + "location.png"));
     ui->actionToggle3DOverlay->setIcon(QIcon(basePath + "3D.png"));
     ui->actionToggle2DTile->setIcon(QIcon(basePath + "2D.png"));
+    ui->actionToggleEntrances->setIcon(QIcon(basePath + "entrance.png"));
 
     toolboxDock = new QDockWidget(this);
     toolboxDock->setObjectName("toolboxDock");
@@ -200,6 +201,11 @@ void LevelEditorWindow::on_actionToggle2DTile_toggled(bool toggle)
     update();
 }
 
+void LevelEditorWindow::on_actionToggleEntrances_toggled(bool toggle)
+{
+    levelView->toggleEntrances(toggle);
+    update();
+}
 
 void LevelEditorWindow::on_actionZoom_In_triggered()
 {
@@ -559,6 +565,7 @@ void LevelEditorWindow::loadArea(int id, bool closeLevel, bool init)
     ui->actionToggleLocations->setChecked(true);
     ui->actionToggle2DTile->setChecked(true);
     ui->actionToggle3DOverlay->setChecked(true);
+    ui->actionToggleEntrances->setChecked(true);
     ui->actionSelectAfterPlacement->setChecked(settings->get("SelectAfterPlacement").toBool());
     levelView->setLayerMask(layerMask);
     levelView->toggleGrid(ui->actionGrid->isChecked());
@@ -574,6 +581,7 @@ void LevelEditorWindow::loadArea(int id, bool closeLevel, bool init)
     levelView->toggleSprites(ui->actionToggleSprites->isChecked());
     levelView->togglePaths(ui->actionTogglePaths->isChecked());
     levelView->toggleLocations(ui->actionToggleLocations->isChecked());
+    levelView->toggleEntrances(ui->actionToggleEntrances->isChecked());
 
     zoom = 1.0;
 

@@ -3,6 +3,7 @@
 #include "imagecache.h"
 
 #include <QPainter>
+#include <QPainterPath>
 
 SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
 {
@@ -43,7 +44,7 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
         ret = new NormalImageRenderer(spr, "amp.png");
         break;
     case 17: // Amp Circle
-        ret = new CoinCircleRenderer(spr);
+        ret = new CoinCircleRenderer(spr, tilesets[0]);
         break;
     case 18: // Tile God
         ret = new TileGodRenderer(spr, tilesets[0]);
@@ -235,10 +236,10 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
         ret = new FlipperRenderer(spr);
         break;
     case 95: // Blooper
-        ret = new NormalImageRenderer(spr, "blooper.png");
+        ret = new BlooperRenderer(spr);
         break;
     case 96: // Blooper Nanny
-        ret = new NormalImageRenderer(spr, "blooper_nanny.png");
+        ret = new BlooperRenderer(spr);
         break;
     case 97: // End of Level Flag
         ret = new GoalRenderer(spr);
@@ -469,7 +470,7 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
         ret = new KoopaParatroopaRenderer(spr);
         break;
     case 186: // Paratroopa Circle
-        ret = new CoinCircleRenderer(spr);
+        ret = new CoinCircleRenderer(spr, tilesets[0]);
         break;
     case 187: // Path Controlled Rectangle Lift
         ret = new PathRecLiftRenderer(spr, tilesets[0]);
@@ -502,7 +503,7 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
         ret = new JumpingCheepRenderer(spr);
         break;
     case 199: // Cheep Cheep Circle
-        ret = new CoinCircleRenderer(spr);
+        ret = new CoinCircleRenderer(spr, tilesets[0]);
         break;
     case 200: // Spiny Cheep Cheep
         ret = new SpinyCheepRenderer(spr);
@@ -580,7 +581,7 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
         ret = new BigBooRenderer(spr);
         break;
     case 230: // Peepa Circle
-        ret = new CoinCircleRenderer(spr);
+        ret = new CoinCircleRenderer(spr, tilesets[0]);
         break;
     case 231: // Boohemoth
         ret = new BoohemothRenderer(spr);
@@ -1519,15 +1520,18 @@ FireBarRenderer::FireBarRenderer(const Sprite *spr)
 {
     this->spr = spr;
 
-    int size = (spr->getNybble(11)*30) + 15;
-    int posoff = (spr->getNybble(11)*15);
-    radius = new CircleRenderer(spr->getx()-posoff, spr->gety()-posoff, size, size, "", QColor(0,0,0));
+    int rad = (spr->getNybble(11)*15);
+    int diameter = rad*2;
+
+    int posoff = rad-10;
+
+    radius = new CircleRenderer(spr->getx()-posoff, spr->gety()-posoff, diameter, diameter, "", QColor(0,0,0));
 }
 
 void FireBarRenderer::render(QPainter *painter, QRect *drawrect)
 {
     // Draw Center tile first
-    if (spr->getNybble(6) == 1)
+    if (spr->getNybble(6)%2)
         painter->drawPixmap(QRect(spr->getx()-10, spr->gety(), 40, 20), ImageCache::getInstance()->get(SpriteImg, "firebar_center_wide.png"));
     else
         painter->drawPixmap(QRect(spr->getx(), spr->gety(), 20, 20), ImageCache::getInstance()->get(SpriteImg, "firebar_center.png"));
@@ -1544,20 +1548,30 @@ void FireBarRenderer::render(QPainter *painter, QRect *drawrect)
     int rad = spr->getNybble(11);
     int barCount = spr->getNybble(10)+1;
 
+    if (barCount > 4)
+        barCount = 4;
+
     int rads = 0;
 
     // Calc Positions on a circle
     for (int i = 0; i < barCount; i++)
     {
-        gap = int(0.75 - (1 / barCount));
+        gap = float(0.75 - (1 / barCount));
         angle = -360 * i / (barCount + gap);
-        angle = qDegreesToRadians(angle)+1.5708;
+        angle = qDegreesToRadians(angle+90);
 
         // Draw Firebar flame
         while (rads <= rad)
         {
-            x = int(qSin(angle) * ((rads * 15)));
-            y = int(-(qCos(angle) * ((rads * 15))));
+            // prevent middle flame from being drawn for every bar
+            if (rads == 0)
+            {
+                rads++;
+                continue;
+            }
+
+            x = float(qSin(angle) * ((rads * 15)));
+            y = float(-(qCos(angle) * ((rads * 15))));
 
             painter->drawPixmap(spr->getx()+x, spr->gety()+y, 20, 20, ImageCache::getInstance()->get(SpriteImg, "firebar_fire.png"));
 
@@ -1566,6 +1580,7 @@ void FireBarRenderer::render(QPainter *painter, QRect *drawrect)
         rads = 0;
     }
 
+    painter->drawPixmap(spr->getx(), spr->gety(), 20, 20, ImageCache::getInstance()->get(SpriteImg, "firebar_fire.png"));
 }
 
 // Sprite 84/85/86/87/88: Flags
@@ -1675,6 +1690,27 @@ void FlipperRenderer::render(QPainter *painter, QRect *)
     }
 
     painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), img);
+}
+
+// Sprite 95/96: Blooper/Blooper Nanny
+BlooperRenderer::BlooperRenderer(const Sprite *spr)
+{
+    this->spr = spr;
+
+    if (spr->getNybble(4) == 0 || spr->getNybble(4) > 12)
+    {
+        if (spr->getid() == 96)
+            img = new NormalImageRenderer(spr, "blooper_nanny.png");
+        else
+            img = new NormalImageRenderer(spr, "blooper.png");
+    }
+    else
+        img = new NormalImageRenderer(spr, QString("blooper_pipe_%1.png").arg(spr->getNybble(4)));
+}
+
+void BlooperRenderer::render(QPainter *painter, QRect *drawrect)
+{
+       img->render(painter, drawrect);
 }
 
 // Sprite 97: End of Level Flag
@@ -3104,9 +3140,10 @@ void BigBooRenderer::render(QPainter* painter, QRect*)
 }
 
 // Sprite 17/186/199/230: Amp/Paratroopa/CheepCheep/Peepa Circle
-CoinCircleRenderer::CoinCircleRenderer(const Sprite *spr)
+CoinCircleRenderer::CoinCircleRenderer(const Sprite *spr, Tileset* tileset)
 {
     this->spr = spr;
+    this->tileset = tileset;
     circle = new CircleRenderer(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), "", QColor(0,0,0));
 }
 
@@ -3114,24 +3151,44 @@ void CoinCircleRenderer::render(QPainter *painter, QRect *drawrect)
 {
     circle->render(painter, drawrect);
 
-    QString img;
-    QString coinImg;
+    QPixmap img;
 
     if (spr->getid() == 17)
-        img = "amp_circle.png";
+        img = ImageCache::getInstance()->get(SpriteImg, "amp_circle.png");
     else if (spr->getid() == 186)
-        img = "paratroopa_circle.png";
+        img = ImageCache::getInstance()->get(SpriteImg, "paratroopa_circle.png");
     else if (spr->getid() == 199)
-        img = "cheepcheep_circle.png";
+        img = ImageCache::getInstance()->get(SpriteImg, "cheepcheep_circle.png");
     else
-        img = "peepa.png";
+        img = ImageCache::getInstance()->get(SpriteImg, "peepa.png");
 
-    if (spr->getNybble(15) == 1)
-        coinImg = "peepa_coin.png";
-    else if (spr->getNybble(15) == 2)
-        img = "peepa_coin.png";
+    QPixmap coin(40, 40);
+    coin.fill(QColor(0,0,0,0));
+    QPainter coinPainter(&coin);
+
+    TileGrid tileGrid;
+    tileGrid[0xFFFFFFFF] = 1;
+
+    if (tileset == nullptr)
+    {
+        coinPainter.drawPixmap(10, 10, 20, 20, ImageCache::getInstance()->get(TileOverride, "error.png"));
+    }
     else
-        coinImg = "";
+    {
+        QPixmap tempCoin(20, 20);
+        tempCoin.fill(QColor(0,0,0,0));
+        QPainter tempPainter(&tempCoin);
+
+        if (spr->getNybble(8)%2 == 1)
+            tileset->drawTile(tempPainter, tileGrid, 16, 0, 0, 1, 0);
+        else
+            tileset->drawTile(tempPainter, tileGrid, 15, 0, 0, 1, 0);
+
+        coinPainter.drawPixmap(10, 10, 20, 20, tempCoin);
+    }
+
+    if (spr->getNybble(15) == 2)
+        img = coin;
 
     int missingImgWeight = 0;
     qreal angle = 0;
@@ -3143,47 +3200,27 @@ void CoinCircleRenderer::render(QPainter *painter, QRect *drawrect)
 
     for (int i = 0; i < imgCount; i++)
     {
-        missingImgWeight = int(0.75 - (1 / imgCount));
+        missingImgWeight = float(0.75 - (1 / imgCount));
         angle = -360 * i / (imgCount + missingImgWeight);
-        angle = qDegreesToRadians(angle)+1.5708;
+        angle = qDegreesToRadians(angle+90);
 
-        x = int(qSin(angle) * ((radius * 20)) - 10);
-        y = int(-(qCos(angle) * ((radius * 20))) - 10);
+        x = float(qSin(angle) * ((radius * 20)) - 10);
+        y = float(-(qCos(angle) * ((radius * 20))) - 10);
 
-        if (spr->getid() == 186)
-            y -= 10;
+        // Peepa circles are -14 pixels higher than other circles
+        if (spr->getid() == 230)
+            y -= 14;
 
-        for (int j = 0; j < 4; j++)
-        {
-            if (i == j)
-            {
-                if ((spr->getNybble(19) & (1 << j)) == (1 << j))
-                    painter->drawPixmap(spr->getx()+x, spr->gety()+y, 40, 40, ImageCache::getInstance()->get(SpriteImg, coinImg));
-                else if(i == j)
-                    painter->drawPixmap(spr->getx()+x, spr->gety()+y, 40, 40, ImageCache::getInstance()->get(SpriteImg, img));
-            }
-            else if (i == j+4)
-            {
-                if ((spr->getNybble(18) & (1 << j)) == (1 << j))
-                    painter->drawPixmap(spr->getx()+x, spr->gety()+y, 40, 40, ImageCache::getInstance()->get(SpriteImg, coinImg));
-                else if(i == j+4)
-                    painter->drawPixmap(spr->getx()+x, spr->gety()+y, 40, 40, ImageCache::getInstance()->get(SpriteImg, img));
-            }
-            else if (i == j+8)
-            {
-                if ((spr->getNybble(17) & (1 << j)) == (1 << j))
-                    painter->drawPixmap(spr->getx()+x, spr->gety()+y, 40, 40, ImageCache::getInstance()->get(SpriteImg, coinImg));
-                else if(i == j+8)
-                    painter->drawPixmap(spr->getx()+x, spr->gety()+y, 40, 40, ImageCache::getInstance()->get(SpriteImg, img));
-            }
-            else if (i == j+12)
-            {
-                if ((spr->getNybble(16) & (1 << j)) == (1 << j))
-                    painter->drawPixmap(spr->getx()+x, spr->gety()+y, 40, 40, ImageCache::getInstance()->get(SpriteImg, coinImg));
-                else if(i == j+12)
-                    painter->drawPixmap(spr->getx()+x, spr->gety()+y, 40, 40, ImageCache::getInstance()->get(SpriteImg, img));
-            }
-        }
+        // Koopas appear -16 pixels higher on the circle than coins
+        int imgOffsetY = 0;
+        if (spr->getid() == 186 && spr->getNybble(15) != 2)
+            imgOffsetY = -16;
+
+        if ((spr->getNybbleData(16, 19) & (1 << i)) == (1 << i) && spr->getNybble(15) == 1)
+            painter->drawPixmap(spr->getx()+x, spr->gety()+y, 40, 40, coin);
+
+        else if ((spr->getNybbleData(16, 19) & (1 << i)) != (1 << i))
+            painter->drawPixmap(spr->getx()+x, spr->gety()+y+imgOffsetY, 40, 40, img);
     }
 }
 

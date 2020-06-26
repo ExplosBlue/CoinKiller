@@ -218,9 +218,14 @@
     <checkbox nybble="10" title="Shift 1/2 Block Right" comment="Useless."/>
   </sprite>
   <sprite id="17" name="Amp Circle" notes="Actor: 0x133&#13;&#10;Description: A rotating circle of Amps.&#13;&#10;Event Triggerable: No&#13;&#10;Affected by Gold Ring: No &#13;&#10;Requirements: N/A">
-    <value nybble="5" title="Unknown Value 12"/>
+    <value nybble="0-1" title="Triggering Event ID" comment="When triggered the coins will spawn."/>
+    <value nybble="5" title="Unknown Value 5"/>
     <value nybble="6" title="Circle Radius" comment="Value +1.5."/>
     <value nybble="7" title="Number of Amps" comment="The number of Amps in the circle. Value +1."/>
+    <list nybble="8" title="Coin Type" comment="Determines the type of coin the circle will use.">
+      <entry value="0">Normal</entry>
+      <entry value="1">Blue Coin</entry>
+    </list>
     <checkbox nybble="9" title="Visible Rail" comment="If checked, a rail will be shown."/>
     <list nybble="10" title="Rotation Speed" comment="The speed of the Amps as they rotate. Any values equal to or above 3 return 0.">
       <entry value="0">Slow</entry>
@@ -231,7 +236,7 @@
       <entry value="0">Clockwise</entry>
       <entry value="1">Counterclockwise</entry>
     </list>
-    <value nybble="13" title="Unknown Value 20"/>
+    <value nybble="13" title="Unknown Value 13"/>
     <list nybble="15" title="Gap Replacement" comment="Coins in circle jump up 1 tile after level fade-in.">
       <entry value="0">Empty</entry>
       <entry value="1">Coins</entry>
@@ -902,7 +907,12 @@
       <entry value="0">Counterclockwise</entry>
       <entry value="1">Clockwise</entry>
     </list>
-    <value nybble="10" title="Number of Bars" comment="Value + 1 High values may cause bars to not spawn."/>
+    <list nybble="10" title="Number of Bars" comment="Value +1. Values higher than 3 cause unintended behaviour.">
+      <entry value="0">One Bar</entry>
+      <entry value="1">Two Bars</entry>
+      <entry value="2">Three Bars</entry>
+      <entry value="3">Four Bars</entry>
+    </list>
     <value nybble="11" title="Length" comment="Value + 1. Number of fire balls."/>
     <list nybble="15" title="Speed" comment="2 is very glitchy and is not advised under normal circumstances. 1, however, works pretty fine. [Unused]">
       <entry value="0">Normal</entry>
@@ -1086,21 +1096,159 @@
       <entry value="7">Down Swings right</entry>
     </list>
   </sprite>
-  <sprite id="95" name="Blooper" notes="A swimming squid that swims at a 45 degree angle in the direction specified.">
-    <value nybble="4" title="Unknown Value 11"/>
-    <value nybble="5" title="Unknown Value 12"/>
-    <value nybble="7" title="Unknown Value 10"/>
-    <checkbox nybble="8" title="Swim Less Distance" comment="When checked, the blooper will not swim as high as normal."/>
-    <value nybble="9" title="Unknown Value 8"/>
-    <value nybble="10" title="Unknown Value 5" comment="This value is subtracted by 1 in the game and then compared to 0xB (11)."/>
-    <list nybble="11" title="Swim Direction" comment="The direction the blooper swims in.">
-      <entry value="0">Left</entry>
+  <sprite id="95" name="Blooper" notes="Will exit pipe when the player is two blocks closer than the hide distance.">
+    <list nybble="4" title="Type">
+      <entry value="      0">Normal</entry>
+      <entry value="1">From Pipe Facing Up - 45&#xB0; Right</entry>
+      <entry value="2">From Pipe Facing Right - 45&#xB0; Up</entry>
+      <entry value="3">From Pipe Facing Right</entry>
+      <entry value="4">From Pipe Facing Right - 45&#xB0; Down</entry>
+      <entry value="5">From Pipe Facing Down - 45&#xB0; Right</entry>
+      <entry value="6">From Pipe Facing Down</entry>
+      <entry value="7">From Pipe Facing Down - 45&#xB0; Left</entry>
+      <entry value="8">From Pipe Facing Left -  45&#xB0; Down</entry>
+      <entry value="9">From Pipe Facing Left</entry>
+      <entry value="10">From Pipe Facing Left  -  45&#xB0; Up</entry>
+      <entry value="11">From Pipe Facing Up - 45&#xB0; Left</entry>
+      <entry value="12">From Pipe Facing Up</entry>
+    </list>
+    <value nybble="5" title="Unknown Value 5"/>
+    <list nybble="7" title="Swim Distance (From Pipe)" comment="Determines how far the blooper will swim when coming out of a pipe.">
+      <entry value="0">Default (9 Blocks)</entry>
+      <entry value="1">2 Blocks</entry>
+      <entry value="2">3 Blocks</entry>
+      <entry value="3">4 Blocks</entry>
+      <entry value="4">5 Blocks</entry>
+      <entry value="5">6 Blocks</entry>
+      <entry value="6">7 Blocks</entry>
+      <entry value="7">8 Blocks</entry>
+      <entry value="8">9 Blocks</entry>
+      <entry value="9">10 Blocks</entry>
+      <entry value="10">11 Blocks</entry>
+      <entry value="11">12 Blocks</entry>
+      <entry value="12">13 Blocks</entry>
+      <entry value="13">14 Blocks</entry>
+      <entry value="14">15 Blocks</entry>
+      <entry value="15">16 Blocks</entry>
+    </list>
+    <value nybble="8" title="Unknown Value 8"/>
+    <list nybble="9" title="Activation Distance (Horizontal)" comment="Determines how close the player can get to the pipe horizontally before the blooper will hide. Launch distance = hide distance -2.">
+      <entry value="0">Default (7 Blocks)</entry>
+      <entry value="1">2 Blocks</entry>
+      <entry value="2">3 Blocks</entry>
+      <entry value="3">4 Blocks</entry>
+      <entry value="4">5 Blocks</entry>
+      <entry value="5">6 Blocks</entry>
+      <entry value="6">7 Blocks</entry>
+      <entry value="7">8 Blocks</entry>
+      <entry value="8">9 Blocks</entry>
+      <entry value="9">10 Blocks</entry>
+      <entry value="10">11 Blocks</entry>
+      <entry value="11">12 Blocks</entry>
+      <entry value="12">13 Blocks</entry>
+      <entry value="13">14 Blocks</entry>
+      <entry value="14">15 Blocks</entry>
+      <entry value="15">16 Blocks</entry>
+    </list>
+    <list nybble="10" title="Activation Distance (Vertical)" comment="Determines how close the player can get to the pipe vertically before the blooper will hide. Launch distance = hide distance -2.">
+      <entry value="0">Default (Unlimited)</entry>
+      <entry value="1">2 Blocks</entry>
+      <entry value="2">3 Blocks</entry>
+      <entry value="3">4 Blocks</entry>
+      <entry value="4">5 Blocks</entry>
+      <entry value="5">6 Blocks</entry>
+      <entry value="6">7 Blocks</entry>
+      <entry value="7">8 Blocks</entry>
+      <entry value="8">9 Blocks</entry>
+      <entry value="9">10 Blocks</entry>
+      <entry value="10">11 Blocks</entry>
+      <entry value="11">12 Blocks</entry>
+      <entry value="12">13 Blocks</entry>
+      <entry value="13">14 Blocks</entry>
+      <entry value="14">15 Blocks</entry>
+      <entry value="15">16 Blocks</entry>
+    </list>
+    <list nybble="11" title="Start Direction" comment="The direction the blooper swims in.">
+      <entry value="0">Towards Player</entry>
       <entry value="1">Right</entry>
     </list>
   </sprite>
   <sprite id="96" name="Blooper Nanny" notes="A blooper with a few smaller bloopers following it.">
-    <checkbox nybble="8" title="Lower Swimming Height" comment="Seems to make the blooper have a lower swimming height when it shoots up.  [Unused]"/>
-    <checkbox nybble="11" title="Moves Right" comment="When checked, the blooper will move right. [Unused]"/>
+    <list nybble="4" title="Type">
+      <entry value="0">Normal</entry>
+      <entry value="1">From Pipe Facing Up - 45&#xB0; Right</entry>
+      <entry value="2">From Pipe Facing Right - 45&#xB0; Up</entry>
+      <entry value="3">From Pipe Facing Right</entry>
+      <entry value="4">From Pipe Facing Right - 45&#xB0; Down</entry>
+      <entry value="5">From Pipe Facing Down - 45&#xB0; Right</entry>
+      <entry value="6">From Pipe Facing Down</entry>
+      <entry value="7">From Pipe Facing Down - 45&#xB0; Left</entry>
+      <entry value="8">From Pipe Facing Left -  45&#xB0; Down</entry>
+      <entry value="9">From Pipe Facing Left</entry>
+      <entry value="10">From Pipe Facing Left  -  45&#xB0; Up</entry>
+      <entry value="11">From Pipe Facing Up - 45&#xB0; Left</entry>
+      <entry value="12">From Pipe Facing Up</entry>
+    </list>
+    <value nybble="5" title="Unknown Value 5"/>
+    <list nybble="7" title="Swim Distance (From Pipe)" comment="Determines how far the blooper will swim when coming out of a pipe.">
+      <entry value="0">Default (9 Blocks)</entry>
+      <entry value="1">2 Blocks</entry>
+      <entry value="2">3 Blocks</entry>
+      <entry value="3">4 Blocks</entry>
+      <entry value="4">5 Blocks</entry>
+      <entry value="5">6 Blocks</entry>
+      <entry value="6">7 Blocks</entry>
+      <entry value="7">8 Blocks</entry>
+      <entry value="8">9 Blocks</entry>
+      <entry value="9">10 Blocks</entry>
+      <entry value="10">11 Blocks</entry>
+      <entry value="11">12 Blocks</entry>
+      <entry value="12">13 Blocks</entry>
+      <entry value="13">14 Blocks</entry>
+      <entry value="14">15 Blocks</entry>
+      <entry value="15">16 Blocks</entry>
+    </list>
+    <value nybble="8" title="Unknown Value 8"/>
+    <list nybble="9" title="Activation Distance (Horizontal)" comment="Determines how close the player can get to the pipe horizontally before the blooper will hide. Launch distance = hide distance -2.">
+      <entry value="0">Default (7 Blocks)</entry>
+      <entry value="1">2 Blocks</entry>
+      <entry value="2">3 Blocks</entry>
+      <entry value="3">4 Blocks</entry>
+      <entry value="4">5 Blocks</entry>
+      <entry value="5">6 Blocks</entry>
+      <entry value="6">7 Blocks</entry>
+      <entry value="7">8 Blocks</entry>
+      <entry value="8">9 Blocks</entry>
+      <entry value="9">10 Blocks</entry>
+      <entry value="10">11 Blocks</entry>
+      <entry value="11">12 Blocks</entry>
+      <entry value="12">13 Blocks</entry>
+      <entry value="13">14 Blocks</entry>
+      <entry value="14">15 Blocks</entry>
+      <entry value="15">16 Blocks</entry>
+    </list>
+    <list nybble="10" title="Activation Distance (Vertical)" comment="Determines how close the player can get to the pipe vertically before the blooper will hide. Launch distance = hide distance -2.">
+      <entry value="0">Default (Unlimited)</entry>
+      <entry value="1">2 Blocks</entry>
+      <entry value="2">3 Blocks</entry>
+      <entry value="3">4 Blocks</entry>
+      <entry value="4">5 Blocks</entry>
+      <entry value="5">6 Blocks</entry>
+      <entry value="6">7 Blocks</entry>
+      <entry value="7">8 Blocks</entry>
+      <entry value="8">9 Blocks</entry>
+      <entry value="9">10 Blocks</entry>
+      <entry value="10">11 Blocks</entry>
+      <entry value="11">12 Blocks</entry>
+      <entry value="12">13 Blocks</entry>
+      <entry value="13">14 Blocks</entry>
+      <entry value="14">15 Blocks</entry>
+      <entry value="15">16 Blocks</entry>
+    </list>
+    <list nybble="11" title="Start Direction" comment="The direction the blooper swims in.">
+      <entry value="0">Towards Player</entry>
+      <entry value="1">Right</entry>
+    </list>
   </sprite>
   <sprite id="97" name="Goal Pole and Fort" notes="This sprite is sometimes used on the top block of a 1x10 invisible solid. This might to be a leftover from when this was necessary, or it was just for visualization.">
     <checkbox nybble="4" title="Secret Exit" comment="Turns it into a secret exit, which looks different and makes a different path on the Map if there is a secret there."/>
@@ -1168,11 +1316,26 @@
   <sprite id="102" name="Iggy Koopa"/>
   <sprite id="103" name="Toad House Controller" notes="Causes the level to be exited once all items have been collected."/>
   <sprite id="104" name="Lakitu's Cloud" notes="Only seems to be used in retail in the early beta levels with mismatched sprite numbers.">
-    <value nybble="7" title="Movement Speed" comment="[Unused]"/>
+    <value nybble="4" title="Time Between Throws" comment="Determines the amount of time between each spiny thown. Higher values = longer time. [Unused]"/>
+    <checkbox nybble="5" title="Slower Movement" mask="2" comment="If enabled, the Lakitu will move slower. [Unused]"/>
+    <value nybble="8" title="Spiny Limit" comment="The Lakitu will only throw spinies if there is less than this ammount on screen. 0 = 4 Spinies. [Unused]"/>
+    <list nybble="9" title="Spawn Behaviour" comment="Sets the spawn behaviour for the lakitu. [Unused]">
+      <entry value="0">Normal</entry>
+      <entry value="1">Fly In From Background</entry>
+    </list>
   </sprite>
   <sprite id="105" name="Lakitu Spawn Area">
-    <value nybble="0-1" title="Triggering Event ID"/>
+    <value nybble="0-1" title="[Defunct] Gold Ring ID" comment="Presumably would have been used by the gold ring at some point."/>
+    <value nybble="4" title="Time Between Throws" comment="Determines the amount of time between each spiny thown. Higher values = longer time."/>
+    <value nybble="5" title="Unknown Value 5"/>
+    <checkbox nybble="6" title="Delay Before First Throw" comment="Adds a small delay before lakitu starts throwing spinies."/>
+    <value nybble="7" title="Spiny Limit" comment="The Lakitu will only throw spinies if there is less than this ammount on screen. 0 = 4 Spinies."/>
     <value nybble="8-9" title="Location ID"/>
+    <value nybble="11" title="Unknown Value 11"/>
+    <list nybble="19" title="Spawn Behaviour" comment="This determines how the lakitu will spawn.">
+      <entry value="0">Fly In From Background</entry>
+      <entry value="1">Fly In From Right</entry>
+    </list>
   </sprite>
   <sprite id="106" name="Springboard">
     <list nybble="8" title="Z-Order" comment="Determines the Z position of the springboard.">
@@ -1502,9 +1665,7 @@
     <value nybble="17" title="Width (0 is 4 blocks)" comment="The width of the platform. Setting it to 0 makes the platform 4 blocks. No other value adds 4 blocks to the width."/>
   </sprite>
   <sprite id="147" name="Spinning Tri-Platform Lift" notes="A rickshaw lift that can be moved by the player.">
-    <checkbox nybble="4" title="Unused Checkbox 11"/>
     <checkbox nybble="5" title="Faster Rotation" comment="When checked the platform will rotate faster. [Unused]"/>
-    <value nybble="6" title="Unused Value 9" comment="Possible values up to 3."/>
     <checkbox nybble="7" title="Spins Clockwise"/>
     <list nybble="11" title="Size">
       <entry value="0">Small</entry>
@@ -1562,7 +1723,7 @@
     <value nybble="11" title="Distance between steps"/>
     <value nybble="17" title="Length of steps"/>
   </sprite>
-  <sprite id="152" name="Path-controlled Lift - with Peepa">
+  <sprite id="152" name="Path-controlled Lift - with Peepa" notes="Uses the Path Node &quot;Variable Use&quot; field to determine how rotation acts, a value of 0 will cause the platform to wobble, a value of 1 will cause the platform to be at a fixed rotation.">
     <value nybble="5" title="Unknown Value 12"/>
     <value nybble="8" title="Path Node" comment="Value +1 is added,"/>
     <value nybble="9-10" title="Path ID" comment="Value*1 is added to the Path ID."/>
@@ -1793,13 +1954,10 @@
   <sprite id="182" name="Pipe Piranha Plant - Right"/>
   <sprite id="183" name="Pipe Piranha Plant - Up" notes="Notes: Should be placed on top left corner of pipe&#13;&#10;Existing In-Game Sprite Data:&#13;&#10;Incorrect"/>
   <sprite id="184" name="Parabomb">
-    <value nybble="4" title="Unused Value 11" comment="Values go up to 3."/>
-    <value nybble="5" title="Unused Value 12"/>
     <list nybble="8" title="Upon Load" comment="[Unused]">
       <entry value="0">Fall Normally</entry>
       <entry value="1">Fly Upwards Then Fall</entry>
     </list>
-    <value nybble="10" title="Unused Value 5" comment="Values go up to 3."/>
   </sprite>
   <sprite id="185" name="Koopa Paratroopa">
     <value nybble="0-1" title="Triggering Event ID (Broken)" comment="Defunct Triggering Event that was presumably required for Gold Ring functionality at one point."/>
@@ -1828,10 +1986,15 @@
     </list>
     <value nybble="19" title="Unknown 14"/>
   </sprite>
-  <sprite id="186" name="Koopa Paratroopa/Coin Circle" notes="Requires at least one Koopa to be placed somewhere in the stage.">
-    <value nybble="5" title="Unknown Value 12"/>
+  <sprite id="186" name="Koopa Paratroopa Circle" notes="Requires at least one Koopa to be placed somewhere in the stage.">
+    <value nybble="0-1" title="Triggering Event ID" comment="When triggered the coins will spawn."/>
+    <value nybble="5" title="Unknown Value 5"/>
     <value nybble="6" title="Circle Radius" comment="Value +1.5"/>
     <value nybble="7" title="Number of Koopa Paratroopas" comment="The number of Koopa Paratroopas in the circle. Value +1"/>
+    <list nybble="8" title="Coin Type" comment="Determines the type of coin the circle will use.">
+      <entry value="0">Normal</entry>
+      <entry value="1">Blue Coin</entry>
+    </list>
     <list nybble="10" title="Rotation Speed" comment="The speed of the Koopa Paratroopas as they rotate. Any values equal to or above 3 return 0.">
       <entry value="0">Slow</entry>
       <entry value="1">Medium</entry>
@@ -1841,7 +2004,7 @@
       <entry value="0">Clockwise</entry>
       <entry value="1">Counterclockwise</entry>
     </list>
-    <value nybble="13" title="Unknown Value 20"/>
+    <value nybble="13" title="Unknown Value 13"/>
     <list nybble="15" title="Gap Replacement" comment="Coins in circle jump up 1 tile after level fade-in.">
       <entry value="0">Empty</entry>
       <entry value="1">Coins</entry>
@@ -2208,10 +2371,15 @@
     <value nybble="8" title="Location ID"/>
     <value nybble="11" title="Unknown Value 6" comment="Checkbox?"/>
   </sprite>
-  <sprite id="199" name="Cheep Cheep/Coin Circle" notes="Existing In-Game Sprite Data: Incomplete">
-    <value nybble="5" title="Unknown Value 12"/>
+  <sprite id="199" name="Cheep Cheep Circle" notes="Existing In-Game Sprite Data: Incomplete">
+    <value nybble="0-1" title="Triggering Event ID" comment="When triggered the coins will spawn."/>
+    <value nybble="5" title="Unknown Value 5"/>
     <value nybble="6" title="Circle Radius" comment="Value +1.5"/>
     <value nybble="7" title="Number of Cheep Cheeps" comment="The number of Cheep Cheeps in the circle. Value +1"/>
+    <list nybble="8" title="Coin Type" comment="Determines the type of coin the circle will use.">
+      <entry value="0">Normal</entry>
+      <entry value="1">Blue Coin</entry>
+    </list>
     <list nybble="10" title="Rotation Speed" comment="The speed of the Cheep Cheeps as they rotate. Any values equal to or above 3 return 0.">
       <entry value="0">Slow</entry>
       <entry value="1">Medium</entry>
@@ -2221,7 +2389,7 @@
       <entry value="0">Clockwise</entry>
       <entry value="1">Counterclockwise</entry>
     </list>
-    <value nybble="13" title="Unknown Value 20"/>
+    <value nybble="13" title="Unknown Value 13"/>
     <list nybble="15" title="Gap Replacement" comment="Coins in circle jump up 1 tile after level fade-in.">
       <entry value="0">Empty</entry>
       <entry value="1">Coins</entry>
@@ -2524,7 +2692,6 @@
   </sprite>
   <sprite id="219" name="Star Coin">
     <value nybble="0-1" title="Target Event ID" comment="When it is collected, this Flag will be switched on."/>
-    <checkbox nybble="4" title="Unused Checkbox 11"/>
     <value nybble="5" title="Unknown Value 12"/>
     <value nybble="7" title="Unknown Value 10"/>
     <list nybble="8" title="Number">
@@ -2660,9 +2827,13 @@
     <checkbox nybble="11" title="Faster Movement" comment="Causes the boo to move faster. All values produce the same result. [Unused]"/>
   </sprite>
   <sprite id="230" name="Peepa Circle" notes="Possible unused settings:&#13;&#10;* Made up of Boos&#13;&#10;Actor: 0x142">
-    <value nybble="5" title="Unknown 12"/>
+    <value nybble="5" title="Unknown 5"/>
     <value nybble="6" title="Circle Radius" comment="Value +1.5"/>
     <value nybble="7" title="Number Of Peepas" comment="The number of Peepas in the circle. Value +1"/>
+    <list nybble="8" title="Coin Type" comment="Determines the type of coin the circle will use.">
+      <entry value="0">Normal</entry>
+      <entry value="1">Blue Coin</entry>
+    </list>
     <list nybble="10" title="Rotation Speed" comment="The speed of the peepas as they rotate. Any values equal to or above 3 return 0.">
       <entry value="0">Slow</entry>
       <entry value="1">Medium</entry>
@@ -2672,7 +2843,7 @@
       <entry value="0">Clockwise</entry>
       <entry value="1">Counterclockwise</entry>
     </list>
-    <value nybble="13" title="Unknown Value 20"/>
+    <value nybble="13" title="Unknown Value 13"/>
     <list nybble="15" title="Gap Replacement" comment="Coins in circle jump up 1 tile after level fade-in.">
       <entry value="0">Empty</entry>
       <entry value="1">Coins</entry>
@@ -2985,6 +3156,7 @@
     <value nybble="0-1" title="Triggering Event ID" comment="Spawns when flag is on. Doesn't despawn when flag is off."/>
     <list nybble="4" title="Item" comment="Determines the type of item to spawn. All other values spawn Mushrooms.">
       <entry value="0">Super Mushroom</entry>
+      <entry value="1">Super Mushroom</entry>
       <entry value="2">Fire Flower</entry>
       <entry value="4">Super Leaf</entry>
       <entry value="5">Gold Flower</entry>
@@ -3598,7 +3770,7 @@
   </sprite>
   <sprite id="309" name="Resource Loader - Ghost House Stairs" notes="Must be placed to allow the ghost house stairs to fold and unfold.&#13;&#10;&#13;&#10;When placed this allows target events to activate the staircase tiles:&#13;&#10;Target event 2 to activate tileset objects 24 &amp; 30&#13;&#10;Target event 3 to activate tileset objects 25 &amp; 31&#13;&#10;Target event 4 to activate tileset objects 26 &amp; 32&#13;&#10;&#13;&#10;"/>
   <sprite id="310" name="Big Bowser Battles - Up-moving Lift ">
-    <value nybble="0-1" title="Triggeirng Event ID"/>
+    <value nybble="0-1" title="Triggering Event ID"/>
     <value nybble="10" title="Spawn Delay" comment="Higher values spawn first."/>
     <value nybble="11" title="Length" comment="Values greater than 3 cause the game to crash."/>
   </sprite>
@@ -3656,9 +3828,7 @@
     </list>
   </sprite>
   <sprite id="314" name="Spinning Tri-Platform Lift - Ruins">
-    <checkbox nybble="4" title="Unused Checkbox 11"/>
     <checkbox nybble="5" title="Faster Rotation" comment="When checked the platform will rotate faster. [Unused]"/>
-    <value nybble="6" title="Unused Value 9" comment="Possible values up to 3."/>
     <checkbox nybble="7" title="Spins Clockwise"/>
     <list nybble="11" title="Size">
       <entry value="0">Small</entry>
@@ -3709,7 +3879,7 @@
     </list>
   </sprite>
   <sprite id="319" name="Staff Credits - Koopa Clown Car" notes="The Koopa Clown Car actor used for the staff credits."/>
-  <sprite id="320" name="Move-once-on Path-controlled Lift">
+  <sprite id="320" name="Move-once-on Path-controlled Lift" notes="Uses the Path Node &quot;Variable Use&quot; field to determine how rotation acts, a value of 0 will cause the platform to wobble, a value of 1 will cause the platform to be at a fixed rotation.">
     <value nybble="8" title="Path Node" comment="Value +1 is added."/>
     <value nybble="9-10" title="Path ID" comment="The Path ID."/>
     <value nybble="11" title="Platform Length" comment="Length of the platform."/>
@@ -3726,8 +3896,8 @@
       <entry value="3">Starts on top*</entry>
       <entry value="4">Disappears</entry>
     </list>
-    <value nybble="16" title="Unknown Value 15"/>
-    <value nybble="17" title="Unknown Value 16"/>
+    <value nybble="16" title="Unknown Value 16"/>
+    <value nybble="17" title="Unknown Value 17"/>
   </sprite>
   <sprite id="321" name="Mushroom Platform - Snow" notes="Actor: 0x02f">
     <value nybble="4" title="Stem Length" comment="Value + 4"/>

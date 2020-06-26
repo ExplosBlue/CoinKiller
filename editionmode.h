@@ -43,6 +43,7 @@ public:
     virtual void toggleSprites(bool) {}
     virtual void togglePaths(bool) {}
     virtual void toggleLocations(bool) {}
+    virtual void toggleEntrances(bool) {}
 
     virtual void select(Object*) {}
     virtual void selectAll() {}

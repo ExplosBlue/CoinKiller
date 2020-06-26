@@ -159,7 +159,10 @@ SpriteDefinition::SpriteDefinition(QDomElement spriteElement)
             for (int i = 0; i < entries.size(); i++)
             {
                 QDomElement entryElement = entries.at(i).toElement();
-                field.listEntries.insert(entryElement.attribute("value").toInt(), entryElement.text());
+                QPair<int, QString> entry;
+                entry.first = entryElement.attribute("value").toInt();
+                entry.second = entryElement.text();
+                field.listEntries.append(entry);
             }
         }
 

@@ -145,6 +145,8 @@ private slots:
 
     void on_actionToggle2DTile_toggled(bool arg1);
 
+    void on_actionToggleEntrances_toggled(bool arg1);
+
 private:
     Ui::LevelEditorWindow *ui;
 

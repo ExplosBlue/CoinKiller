@@ -61,7 +61,7 @@ public:
     SpriteListFieldWidget(Sprite* sprite, Field* field);
     void updateValue();
 private slots:
-    void handleIndexChange(QString text);
+    void handleIndexChange(int index);
 signals:
     void updateHex();
     void updateFields();
@@ -104,7 +104,7 @@ public:
     SpriteDataEditorWidget(SpriteData* spriteData);
     void select(Sprite* sprite);
     void deselect();
-    void updateEditor() {}
+    void updateEditor();
 
 private slots:
     void handleRawSpriteDataChange(QString text);
@@ -143,6 +143,7 @@ private:
     QString spriteNotes;
 
     void addField(Field* field, int pos);
+    void reloadFields();
 };
 
 class SpriteEditorWidget : public QWidget

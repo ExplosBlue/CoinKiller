@@ -28,6 +28,7 @@
 #include <QRect>
 #include <QRectF>
 #include <QPaintEvent>
+#include <QPainterPath>
 #include <QClipboard>
 #include <QMessageBox>
 
@@ -52,6 +53,7 @@ LevelView::LevelView(QWidget *parent, Level* level) : QWidget(parent)
     renderLocations = true;
     render2DTile = true;
     render3DOverlay = true;
+    renderEntrances = true;
 
 #ifdef USE_KDE_BLUR
     setBackgroundColor(QColor(0,0,0,0));
@@ -63,8 +65,6 @@ LevelView::~LevelView()
     mode->deactivate();
     delete objectEditionMode;
 }
-
-
 
 void LevelView::paintEvent(QPaintEvent* evt)
 {
@@ -461,19 +461,21 @@ void LevelView::paint(QPainter& painter, QRect rect, float zoomLvl, bool selecti
     }
 
     // Render Entrances
-    for (int i = 0; i < level->entrances.size(); i++)
+    if (renderEntrances)
     {
-        const Entrance* entr = level->entrances.at(i);
+        for (int i = 0; i < level->entrances.size(); i++)
+        {
+            const Entrance* entr = level->entrances.at(i);
 
-        QRect entrrect(entr->getx(), entr->gety(), entr->getwidth(), entr->getheight());
+            QRect entrrect(entr->getx(), entr->gety(), entr->getwidth(), entr->getheight());
 
-        if (!drawrect.intersects(entrrect))
-            continue;
+            if (!drawrect.intersects(entrrect))
+                continue;
 
-        EntranceRenderer entrRend(entr);
-        entrRend.render(&painter, &drawrect);
+            EntranceRenderer entrRend(entr);
+            entrRend.render(&painter, &drawrect);
+        }
     }
-
     // Render Paths
     if (renderPaths)
     {
@@ -776,6 +778,13 @@ void LevelView::toggleLocations(bool toggle)
 {
     renderLocations = toggle;
     editionModePtr()->toggleLocations(toggle);
+    update();
+}
+
+void LevelView::toggleEntrances(bool toggle)
+{
+    renderEntrances = toggle;
+    editionModePtr()->toggleEntrances(toggle);
     update();
 }
 

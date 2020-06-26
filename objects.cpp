@@ -269,27 +269,33 @@ void Sprite::setRect()
         break;
     case 17: // Amp Circle
     {
-        width = 30 + getNybble(6)*40;
-        height = 30 + getNybble(6)*40;
+        int radius = getNybble(6)+1;
+
+        width = (radius*2)*20;
+        height = (radius*2)*20;
         offsetx = 10 - width/2;
-        offsety = +10 - height/2;
+        offsety = 10 - height/2;
+
+        renderOffsetW = 40;
+        renderOffsetH = 40;
+        renderOffsetY = -20;
+        renderOffsetX = -20;
 
         int missingImgWeight = 0;
         qreal angle = 0;
         int x = 0;
         int y = 0;
 
-        int radius = getNybble(6)+1;
         int imgCount = 1+getNybble(7);
 
         for (int i = 0; i < imgCount; i++)
         {
-            missingImgWeight = int(0.75 - (1 / imgCount));
+            missingImgWeight = float(0.75 - (1 / imgCount));
             angle = -360 * i / (imgCount + missingImgWeight);
-            angle = qDegreesToRadians(angle)+1.5708;
+            angle = qDegreesToRadians(angle+90);
 
-            x = int(qSin(angle) * ((radius * 20)) - 10);
-            y = int(-(qCos(angle) * ((radius * 20))) - 10);
+            x = float(qSin(angle) * ((radius * 20)) - 10);
+            y = float(-(qCos(angle) * ((radius * 20))) - 10);
 
             int imgSize = 40;
             int rectOffset = 0;
@@ -299,37 +305,11 @@ void Sprite::setRect()
                 rectOffset = 10;
             }
 
-            for (int j = 0; j < 4; j++)
-            {
-                if (i == j)
-                {
-                    if ((getNybble(19) & (1 << j)) == (1 << j) && getNybble(15) == 1)
-                        selectionRects.append(QRect(x+10, y+10, 20, 20));
-                    else if(i == j && (getNybble(19) & (1 << j)) != (1 << j))
-                        selectionRects.append(QRect(x+rectOffset, y+rectOffset, imgSize, imgSize));
-                }
-                else if (i == j+4)
-                {
-                    if ((getNybble(18) & (1 << j)) == (1 << j) && getNybble(15) == 1)
-                        selectionRects.append(QRect(x+10, y+10, 20, 20));
-                    else if(i == j+4 && (getNybble(18) & (1 << j)) != (1 << j))
-                        selectionRects.append(QRect(x+rectOffset, y+rectOffset, imgSize, imgSize));
-                }
-                else if (i == j+8)
-                {
-                    if ((getNybble(17) & (1 << j)) == (1 << j) && getNybble(15) == 1)
-                        selectionRects.append(QRect(x+10, y+10, 20, 20));
-                    else if(i == j+8 && (getNybble(17) & (1 << j)) != (1 << j))
-                        selectionRects.append(QRect(x+rectOffset, y+rectOffset, imgSize, imgSize));
-                }
-                else if (i == j+12)
-                {
-                    if ((getNybble(16) & (1 << j)) == (1 << j) && getNybble(15) == 1)
-                        selectionRects.append(QRect(x+10, y+10, 20, 20));
-                    else if(i == j+12 && (getNybble(16) & (1 << j)) != (1 << j))
-                        selectionRects.append(QRect(x+rectOffset, y+rectOffset, imgSize, imgSize));
-                }
-            }
+            if ((getNybbleData(16, 19) & (1 << i)) == (1 << i) && getNybble(15) == 1)
+                selectionRects.append(QRect(x+10, y+10, 20, 20));
+
+            else if((getNybbleData(16, 19) & (1 << i)) != (1 << i))
+                selectionRects.append(QRect(x+rectOffset, y+rectOffset, imgSize, imgSize));
         }
     }
         break;
@@ -695,15 +675,52 @@ void Sprite::setRect()
         offsety = -2;
         break;
     case 78: // Firebar
-        if (getNybble(6) == 1)
-        {
-            width = 40;
-            offsetx = -10;
-        }
+    {
         renderOffsetH = (getNybble(11)*40) + 20;
         renderOffsetW = (getNybble(11)*40) + 20;
         renderOffsetX = offsetx - (getNybble(11)*20);
         renderOffsetY = offsety - (getNybble(11)*20);
+
+        int gap = 0;
+        qreal angle = 0;
+        int x = 0;
+        int y = 0;
+
+        int rad = getNybble(11);
+        int barCount = getNybble(10)+1;
+
+        for (int i = 0; i < barCount; i++)
+        {
+            gap = float(0.75 - (1 / barCount));
+            angle = -360 * i / (barCount + gap);
+            angle = qDegreesToRadians(angle+90);
+
+            if (barCount > 4)
+                barCount = 4;
+
+            int rads = 0;
+            while (rads <= rad)
+            {
+                // prevent middle hitbox from being drawn for every bar
+                if (rads == 0)
+                {
+                    rads++;
+                    continue;
+                }
+
+                x = float(qSin(angle) * ((rads * 15)));
+                y = float(-(qCos(angle) * ((rads * 15))));
+
+                selectionRects.append(QRect(x+3, y+2, 15, 15));
+
+                rads++;
+            }
+        }
+        if (getNybble(6)%2)
+            selectionRects.append(QRect(-10, 0, 40, 20));
+        else
+            selectionRects.append(QRect(0, 0, 20, 20));
+    }
         break;
     case 81: // Fireball Pipe - ! Junction
         width = 40;
@@ -769,17 +786,91 @@ void Sprite::setRect()
             }
         }
         break;
-    case 95: // Blooper
-        width = 28;
-        height = 36;
-        offsetx = -4;
-        offsety = -9;
-        break;
-    case 96: // Blooper Nanny
-        width = 50;
-        height = 50;
-        offsetx = -14;
-        offsety = -16;
+    case 95: case 96: // Blooper/Blooper Nanny
+    {
+        switch (getNybble(4))
+        {
+        case 1:
+            width = 28;
+            height = 33;
+            offsety = -10;
+            offsetx = -3;
+            break;
+        case 2:
+            width = 33;
+            height = 28;
+            offsety = -5;
+            offsetx = -3;
+            break;
+        case 3:
+            width = 36;
+            height = 24;
+            offsety = -2;
+            offsetx = -4;
+            break;
+        case 4:
+            width = 33;
+            height = 28;
+            offsety = -3;
+            offsetx = -3;
+            break;
+        case 5:
+            width = 28;
+            height = 33;
+            offsety = -3;
+            offsetx = -3;
+            break;
+        case 6:
+            width = 24;
+            height = 36;
+            offsety = -4;
+            offsetx = -2;
+            break;
+        case 7:
+            width = 28;
+            height = 33;
+            offsety = -3;
+            offsetx = -5;
+            break;
+        case 8:
+            width = 33;
+            height = 28;
+            offsety = -3;
+            offsetx = -10;
+            break;
+        case 9:
+            width = 36;
+            height = 24;
+            offsety = -2;
+            offsetx = -12;
+            break;
+        case 10:
+            width = 33;
+            height = 28;
+            offsety = -5;
+            offsetx = -10;
+            break;
+        case 11:
+            width = 28;
+            height = 33;
+            offsety = -10;
+            offsetx = -5;
+            break;
+        case 12:
+            width = 24;
+            height = 36;
+            offsety = -12;
+            offsetx = -2;
+            break;
+        default:
+            width = 28;
+            height = 36;
+            offsetx = -4;
+            offsety = -9;
+            break;
+        }
+
+    }
         break;
     case 97: // End of Level Flag
         {
@@ -1248,6 +1339,8 @@ void Sprite::setRect()
         height = qMax(leftLength, rightLength) + 42;
         width = platformLength + topLength;
 
+        renderOffsetX = -platformLength/2;
+
         selectionRects.append(QRect(-10, -20, topLength, 20)); // top rope
         selectionRects.append(QRect(-10, 0, 20, leftLength)); // left rope
         selectionRects.append(QRect(-30 + topLength, 0, 20, rightLength)); // right rope
@@ -1498,10 +1591,10 @@ void Sprite::setRect()
         offsety = -37;
         break;
     case 184: // Parabomb
-        width = 29;
-        height = 38;
-        offsetx = -5;
-        offsety = -18;
+        width = 24;
+        height = 39;
+        offsetx = -1;
+        offsety = -17;
         break;
     case 185: // Koopa Paratroopa
         width = 32;
@@ -1541,67 +1634,49 @@ void Sprite::setRect()
         break;
     case 186: // Paratroopa Circle
     {
-        width = 30 + getNybble(6)*40;
-        height = 30 + getNybble(6)*40;
+        int radius = getNybble(6)+1;
+
+        width = (radius*2)*20;
+        height = (radius*2)*20;
         offsetx = 10 - width/2;
-        offsety = -1 * height/2;
+        offsety = 10 - height/2;
+
+        renderOffsetW = 40;
+        renderOffsetH = 40;
+        renderOffsetY = -20;
+        renderOffsetX = -20;
 
         int missingImgWeight = 0;
         qreal angle = 0;
         int x = 0;
         int y = 0;
 
-        int radius = getNybble(6)+1;
         int imgCount = 1+getNybble(7);
 
         for (int i = 0; i < imgCount; i++)
         {
-            missingImgWeight = int(0.75 - (1 / imgCount));
+            missingImgWeight = float(0.75 - (1 / imgCount));
             angle = -360 * i / (imgCount + missingImgWeight);
-            angle = qDegreesToRadians(angle)+1.5708;
+            angle = qDegreesToRadians(angle+90);
 
-            x = int(qSin(angle) * ((radius * 20)) - 10);
-            y = int(-(qCos(angle) * ((radius * 20))) - 20);
+            x = float(qSin(angle) * ((radius * 20)) - 10);
+            y = float(-(qCos(angle) * ((radius * 20))) - 10);
 
             int imgSize = 40;
-            int rectOffset = 0;
+            int rectOffsetX = 0;
+            int rectOffsetY = -16;
             if (getNybble(15) == 2)
             {
                 imgSize = 20;
-                rectOffset = 10;
+                rectOffsetX = 10;
+                rectOffsetY = 10;
             }
 
-            for (int j = 0; j < 4; j++)
-            {
-                if (i == j)
-                {
-                    if ((getNybble(19) & (1 << j)) == (1 << j) && getNybble(15) == 1)
-                        selectionRects.append(QRect(x+10, y+10, 20, 20));
-                    else if(i == j && (getNybble(19) & (1 << j)) != (1 << j))
-                        selectionRects.append(QRect(x+rectOffset, y+rectOffset, imgSize, imgSize));
-                }
-                else if (i == j+4)
-                {
-                    if ((getNybble(18) & (1 << j)) == (1 << j) && getNybble(15) == 1)
-                        selectionRects.append(QRect(x+10, y+10, 20, 20));
-                    else if(i == j+4 && (getNybble(18) & (1 << j)) != (1 << j))
-                        selectionRects.append(QRect(x+rectOffset, y+rectOffset, imgSize, imgSize));
-                }
-                else if (i == j+8)
-                {
-                    if ((getNybble(17) & (1 << j)) == (1 << j) && getNybble(15) == 1)
-                        selectionRects.append(QRect(x+10, y+10, 20, 20));
-                    else if(i == j+8 && (getNybble(17) & (1 << j)) != (1 << j))
-                        selectionRects.append(QRect(x+rectOffset, y+rectOffset, imgSize, imgSize));
-                }
-                else if (i == j+12)
-                {
-                    if ((getNybble(16) & (1 << j)) == (1 << j) && getNybble(15) == 1)
-                        selectionRects.append(QRect(x+10, y+10, 20, 20));
-                    else if(i == j+12 && (getNybble(16) & (1 << j)) != (1 << j))
-                        selectionRects.append(QRect(x+rectOffset, y+rectOffset, imgSize, imgSize));
-                }
-            }
+            if ((getNybbleData(16, 19) & (1 << i)) == (1 << i) && getNybble(15) == 1)
+                selectionRects.append(QRect(x+10, y+10, 20, 20));
+
+            else if ((getNybbleData(16, 19) & (1 << i)) != (1 << i))
+                selectionRects.append(QRect(x+rectOffsetX, y+rectOffsetY, imgSize, imgSize));
         }
     }
         break;
@@ -1738,67 +1813,47 @@ void Sprite::setRect()
         break;
     case 199: // Cheep Cheep Circle
     {
-        width = 30 + getNybble(6)*40;
-        height = 30 + getNybble(6)*40;
+        int radius = getNybble(6)+1;
+
+        width = (radius*2)*20;
+        height = (radius*2)*20;
         offsetx = 10 - width/2;
-        offsety = +10 - height/2;
+        offsety = 10 - height/2;
+
+        renderOffsetW = 40;
+        renderOffsetH = 40;
+        renderOffsetY = -20;
+        renderOffsetX = -20;
 
         int missingImgWeight = 0;
         qreal angle = 0;
         int x = 0;
         int y = 0;
 
-        int radius = getNybble(6)+1;
         int imgCount = 1+getNybble(7);
 
         for (int i = 0; i < imgCount; i++)
         {
-            missingImgWeight = int(0.75 - (1 / imgCount));
+            missingImgWeight = float(0.75 - (1 / imgCount));
             angle = -360 * i / (imgCount + missingImgWeight);
-            angle = qDegreesToRadians(angle)+1.5708;
+            angle = qDegreesToRadians(angle+90);
 
-            x = int(qSin(angle) * ((radius * 20)) - 10);
-            y = int(-(qCos(angle) * ((radius * 20))) - 10);
+            x = float(qSin(angle) * ((radius * 20)) - 10);
+            y = float(-(qCos(angle) * ((radius * 20))) - 10);
 
-            int imgSize = 40;
-            int rectOffset = 0;
+            int imgSize = 22;
+            int rectOffset = 9;
             if (getNybble(15) == 2)
             {
                 imgSize = 20;
                 rectOffset = 10;
             }
 
-            for (int j = 0; j < 4; j++)
-            {
-                if (i == j)
-                {
-                    if ((getNybble(19) & (1 << j)) == (1 << j) && getNybble(15) == 1)
-                        selectionRects.append(QRect(x+10, y+10, 20, 20));
-                    else if(i == j && (getNybble(19) & (1 << j)) != (1 << j))
-                        selectionRects.append(QRect(x+rectOffset, y+rectOffset, imgSize, imgSize));
-                }
-                else if (i == j+4)
-                {
-                    if ((getNybble(18) & (1 << j)) == (1 << j) && getNybble(15) == 1)
-                        selectionRects.append(QRect(x+10, y+10, 20, 20));
-                    else if(i == j+4 && (getNybble(18) & (1 << j)) != (1 << j))
-                        selectionRects.append(QRect(x+rectOffset, y+rectOffset, imgSize, imgSize));
-                }
-                else if (i == j+8)
-                {
-                    if ((getNybble(17) & (1 << j)) == (1 << j) && getNybble(15) == 1)
-                        selectionRects.append(QRect(x+10, y+10, 20, 20));
-                    else if(i == j+8 && (getNybble(17) & (1 << j)) != (1 << j))
-                        selectionRects.append(QRect(x+rectOffset, y+rectOffset, imgSize, imgSize));
-                }
-                else if (i == j+12)
-                {
-                    if ((getNybble(16) & (1 << j)) == (1 << j) && getNybble(15) == 1)
-                        selectionRects.append(QRect(x+10, y+10, 20, 20));
-                    else if(i == j+12 && (getNybble(16) & (1 << j)) != (1 << j))
-                        selectionRects.append(QRect(x+rectOffset, y+rectOffset, imgSize, imgSize));
-                }
-            }
+            if ((getNybbleData(16,19) & (1 << i)) == (1 << i) && getNybble(15) == 1)
+                selectionRects.append(QRect(x+10, y+10, 20, 20));
+
+            else if((getNybbleData(16,19) & (1 << i)) != (1 << i))
+                selectionRects.append(QRect(x+rectOffset, y+rectOffset, imgSize, imgSize));
         }
     }
         break;
@@ -2050,27 +2105,33 @@ void Sprite::setRect()
         break;
     case 230: // Peepa Circle
     {
-        width = 30 + getNybble(6)*40;
-        height = 30 + getNybble(6)*40;
+        int radius = getNybble(6)+1;
+
+        width = (radius*2)*20;
+        height = (radius*2)*20;
         offsetx = 10 - width/2;
-        offsety = +10 - height/2;
+        offsety = -4 - height/2;
+
+        renderOffsetW = 40;
+        renderOffsetH = 40;
+        renderOffsetY = -20;
+        renderOffsetX = -20;
 
         int missingImgWeight = 0;
         qreal angle = 0;
         int x = 0;
         int y = 0;
 
-        int radius = getNybble(6)+1;
         int imgCount = 1+getNybble(7);
 
         for (int i = 0; i < imgCount; i++)
         {
-            missingImgWeight = int(0.75 - (1 / imgCount));
+            missingImgWeight = float(0.75 - (1 / imgCount));
             angle = -360 * i / (imgCount + missingImgWeight);
-            angle = qDegreesToRadians(angle)+1.5708;
+            angle = qDegreesToRadians(angle+90);
 
-            x = int(qSin(angle) * ((radius * 20)) - 10);
-            y = int(-(qCos(angle) * ((radius * 20))) - 10);
+            x = float(qSin(angle) * ((radius * 20)) - 10);
+            y = float(-(qCos(angle) * ((radius * 20))) - 24);
 
             int imgSize = 40;
             int rectOffset = 0;
@@ -2080,37 +2141,11 @@ void Sprite::setRect()
                 rectOffset = 10;
             }
 
-            for (int j = 0; j < 4; j++)
-            {
-                if (i == j)
-                {
-                    if ((getNybble(19) & (1 << j)) == (1 << j) && getNybble(15) == 1)
-                        selectionRects.append(QRect(x+10, y+10, 20, 20));
-                    else if(i == j && (getNybble(19) & (1 << j)) != (1 << j))
-                        selectionRects.append(QRect(x+rectOffset, y+rectOffset, imgSize, imgSize));
-                }
-                else if (i == j+4)
-                {
-                    if ((getNybble(18) & (1 << j)) == (1 << j) && getNybble(15) == 1)
-                        selectionRects.append(QRect(x+10, y+10, 20, 20));
-                    else if(i == j+4 && (getNybble(18) & (1 << j)) != (1 << j))
-                        selectionRects.append(QRect(x+rectOffset, y+rectOffset, imgSize, imgSize));
-                }
-                else if (i == j+8)
-                {
-                    if ((getNybble(17) & (1 << j)) == (1 << j) && getNybble(15) == 1)
-                        selectionRects.append(QRect(x+10, y+10, 20, 20));
-                    else if(i == j+8 && (getNybble(17) & (1 << j)) != (1 << j))
-                        selectionRects.append(QRect(x+rectOffset, y+rectOffset, imgSize, imgSize));
-                }
-                else if (i == j+12)
-                {
-                    if ((getNybble(16) & (1 << j)) == (1 << j) && getNybble(15) == 1)
-                        selectionRects.append(QRect(x+10, y+10, 20, 20));
-                    else if(i == j+12 && (getNybble(16) & (1 << j)) != (1 << j))
-                        selectionRects.append(QRect(x+rectOffset, y+rectOffset, imgSize, imgSize));
-                }
-            }
+            if ((getNybbleData(16, 19) & (1 << i)) == (1 << i) && getNybble(15) == 1)
+                selectionRects.append(QRect(x+10, y+10, 20, 20));
+
+            else if((getNybbleData(16, 19) & (1 << i)) != (1 << i))
+                selectionRects.append(QRect(x+rectOffset, y+rectOffset, imgSize, imgSize));
         }
     }
         break;
