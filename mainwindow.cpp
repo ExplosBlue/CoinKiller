@@ -39,6 +39,7 @@
 #include "sarcexplorerwindow.h"
 #include "newtilesetdialog.h"
 #include "newleveldialog.h"
+#include "spritedata.h"
 
 MainWindow::MainWindow(WindowBase *parent) :
     WindowBase(parent),
@@ -85,6 +86,17 @@ MainWindow::MainWindow(WindowBase *parent) :
     {
         loadGame(settings->getLastRomFSPath());
         ui->actionOpenlastROMFSDir->setEnabled(true);
+    }
+
+    // Check Spritedata.xml is the latest version
+    SpriteData spriteData;
+    if (spriteData.getVersion() != "2.0")
+    {
+        QMessageBox message(QMessageBox::Information, "CoinKiller", tr("Spritedata.xml is outdated, CoinKiller will now attempt to update it."), QMessageBox::Ok);
+        message.exec();
+
+        this->setEnabled(false);
+        FileDownloader::download(QUrl("http://smbnext.net/spritedb/spritexml.php"), this, SLOT(sdDownload_finished(QNetworkReply::NetworkError, const QByteArray&, const QUrl&)));
     }
 }
 

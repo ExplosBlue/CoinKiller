@@ -107,6 +107,9 @@ public:
     quint8 getLayer() { return this->layer; }
     void setLayer(quint8 layer) { this->layer = layer; }
 
+    qint32 getBits(qint32 startBit, qint32 endBit) const;
+    void setBits(qint32 data, qint32 startBit, qint32 endBit);
+
     bool clickDetection(qint32 xcheck, qint32 ycheck);
     bool clickDetection(QRect rect);
 

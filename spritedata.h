@@ -19,12 +19,19 @@ public:
         Bitfield
     };
 
+    enum posType
+    {
+        Nybbles,
+        Bits
+    };
+
     Field() {}
     QString title;
     QString comment;
     fieldType type;
-    int startNybble;
-    int endNybble;
+    int startPos;
+    int endPos;
+    posType posType;
 
     QList<QPair<int, QString>> listEntries;
     quint8 mask;
@@ -76,9 +83,13 @@ public:
     void loadSpriteDefs();
     void loadSpriteViews();
 
+    QString getVersion() { return spriteDataVersion; }
+
 private:
     QList<spriteView> spriteViews;
     QHash<int, SpriteDefinition> spriteDefs;
+
+    QString spriteDataVersion;
 };
 
 #endif // SPRITEDATA_H

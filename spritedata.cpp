@@ -18,6 +18,8 @@ void SpriteData::loadSpriteDefs()
     xmlSpriteData.setContent(&f);
     f.close();
 
+    spriteDataVersion =  xmlSpriteData.documentElement().attribute("version", "1.0");
+
     QDomElement spriteElement = xmlSpriteData.documentElement().firstChild().toElement();
     while (!spriteElement.isNull())
     {
@@ -129,20 +131,35 @@ SpriteDefinition::SpriteDefinition(QDomElement spriteElement)
         field.title = fieldElement.attribute("title", "INVALID TITLE");
         field.comment = fieldElement.attribute("comment", "");
 
-        QString nybbleStr = fieldElement.attribute("nybble");
-        if (nybbleStr.contains('-'))
+        QString posTypeStr = fieldElement.attribute("pos_type");
+
+        if (posTypeStr == "nybbles")
+            field.posType = Field::Nybbles;
+        else if (posTypeStr == "bits")
+            field.posType = Field::Bits;
+        else
         {
-            QStringList nybbleParts = nybbleStr.split('-');
-            field.startNybble = nybbleParts[0].toInt();
-            field.endNybble = nybbleParts[1].toInt();
+            qDebug() << QString("Sprite %1 field %2 has invalid pos_type.").arg(id).arg(field.title);
+            fieldElement = fieldElement.nextSibling().toElement();
+            continue;
+        }
+
+        QString posString = fieldElement.attribute("pos");
+
+        if (posString.contains('-'))
+        {
+            QStringList posParts = posString.split('-');
+            field.startPos = posParts[0].toInt();
+            field.endPos = posParts[1].toInt();
         }
         else
         {
-            field.startNybble = fieldElement.attribute("nybble").toInt();
-            field.endNybble = field.startNybble;
+            field.startPos = posString.toInt();
+            field.endPos = field.startPos;
         }
 
-        if (fieldElement.tagName() == "value") field.type = Field::Value;
+        if (fieldElement.tagName() == "value")
+            field.type = Field::Value;
 
         else if (fieldElement.tagName() == "checkbox")
         {
@@ -167,11 +184,7 @@ SpriteDefinition::SpriteDefinition(QDomElement spriteElement)
         }
 
         else if (fieldElement.tagName() == "bitfield")
-        {
             field.type = Field::Bitfield;
-            quint32 mask = fieldElement.attribute("value", "0").toUInt();
-            field.mask = mask;
-        }
 
         fields.append(field);
 

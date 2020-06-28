@@ -2866,6 +2866,29 @@ void Sprite::setNybbleData(qint32 data, qint32 startNybble, qint32 endNybble)
     }
 }
 
+qint32 Sprite::getBits(qint32 startBit, qint32 endBit) const
+{
+    quint32 data = 0;
+    int mask = 1;
+
+    for (int i = startBit; i <= endBit; i++)
+    {
+        if (1 << (i % 8) & spriteData[i/8])
+           data |= mask;
+        mask <<= 1;
+    }
+    return data;
+}
+
+void Sprite::setBits(qint32 data, qint32 startBit, qint32 endBit)
+{
+    for (int i = startBit; i <= endBit; i++)
+    {
+        spriteData[i/8] ^= (((data & 0x1) << i % 8) ^ spriteData[i/8]) & (1 << i % 8);
+        data = data >> 1;
+    }
+}
+
 // Format: 1:ID:X:Y:SD0:SD1:...:SD11
 QString Sprite::toString(qint32 xOffset, qint32 yOffset) const
 {

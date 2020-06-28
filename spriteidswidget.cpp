@@ -109,11 +109,11 @@ void SpriteIdWidget::updateList()
 
                 QString match = "triggering";
 
-                if (field->title.toLower().contains(match) && field->title.toLower().contains("id") && sprite->getNybbleData(field->startNybble, field->endNybble) != 0)
+                if (field->title.toLower().contains(match) && field->title.toLower().contains("id") && sprite->getNybbleData(field->startPos, field->endPos) != 0)
                 {
                     QTreeWidgetItem* spriteItem = new QTreeWidgetItem();
                     spriteItem->setText(0, QString("%1: %2").arg(sprite->getid()).arg(spriteData.getSpriteDef(sprite->getid()).getName()));
-                    spriteItem->setText(1, QString(tr("Triggering ID: %1")).arg(sprite->getNybbleData(field->startNybble, field->endNybble)));
+                    spriteItem->setText(1, QString(tr("Triggering ID: %1")).arg(sprite->getNybbleData(field->startPos, field->endPos)));
                     spriteItem->setData(0, Qt::UserRole, sprite->getid());
                     spriteItem->setData(1, Qt::UserRole, sprite->getx());
                     spriteItem->setData(2, Qt::UserRole, sprite->gety());
@@ -138,11 +138,11 @@ void SpriteIdWidget::updateList()
 
                 QString match = "target";
 
-                if (field->title.toLower().contains(match) && field->title.toLower().contains("id") && sprite->getNybbleData(field->startNybble, field->endNybble) != 0)
+                if (field->title.toLower().contains(match) && field->title.toLower().contains("id") && sprite->getNybbleData(field->startPos, field->endPos) != 0)
                 {
                     QTreeWidgetItem* spriteItem = new QTreeWidgetItem();
                     spriteItem->setText(0, QString("%1: %2").arg(sprite->getid()).arg(spriteData.getSpriteDef(sprite->getid()).getName()));
-                    spriteItem->setText(1, QString(tr("Target ID: %1")).arg(sprite->getNybbleData(field->startNybble, field->endNybble)));
+                    spriteItem->setText(1, QString(tr("Target ID: %1")).arg(sprite->getNybbleData(field->startPos, field->endPos)));
                     spriteItem->setData(0, Qt::UserRole, sprite->getid());
                     spriteItem->setData(1, Qt::UserRole, sprite->getx());
                     spriteItem->setData(2, Qt::UserRole, sprite->gety());
@@ -167,11 +167,11 @@ void SpriteIdWidget::updateList()
 
                 QString match = "rotation";
 
-                if (field->title.toLower().contains(match) && field->title.toLower().contains("id") && sprite->getNybbleData(field->startNybble, field->endNybble) != 0)
+                if (field->title.toLower().contains(match) && field->title.toLower().contains("id") && sprite->getNybbleData(field->startPos, field->endPos) != 0)
                 {
                     QTreeWidgetItem* spriteItem = new QTreeWidgetItem();
                     spriteItem->setText(0, QString("%1: %2").arg(sprite->getid()).arg(spriteData.getSpriteDef(sprite->getid()).getName()));
-                    spriteItem->setText(1, QString(tr("Rotation ID: %1")).arg(sprite->getNybbleData(field->startNybble, field->endNybble)));
+                    spriteItem->setText(1, QString(tr("Rotation ID: %1")).arg(sprite->getNybbleData(field->startPos, field->endPos)));
                     spriteItem->setData(0, Qt::UserRole, sprite->getid());
                     spriteItem->setData(1, Qt::UserRole, sprite->getx());
                     spriteItem->setData(2, Qt::UserRole, sprite->gety());
@@ -196,11 +196,11 @@ void SpriteIdWidget::updateList()
 
                 QString match = "group";
 
-                if (field->title.toLower().contains(match) && field->title.toLower().contains("id") && sprite->getNybbleData(field->startNybble, field->endNybble) != 0)
+                if (field->title.toLower().contains(match) && field->title.toLower().contains("id") && sprite->getNybbleData(field->startPos, field->endPos) != 0)
                 {
                     QTreeWidgetItem* spriteItem = new QTreeWidgetItem();
                     spriteItem->setText(0, QString("%1: %2").arg(sprite->getid()).arg(spriteData.getSpriteDef(sprite->getid()).getName()));
-                    spriteItem->setText(1, QString(tr("Group ID: %1")).arg(sprite->getNybbleData(field->startNybble, field->endNybble)));
+                    spriteItem->setText(1, QString(tr("Group ID: %1")).arg(sprite->getNybbleData(field->startPos, field->endPos)));
                     spriteItem->setData(0, Qt::UserRole, sprite->getid());
                     spriteItem->setData(1, Qt::UserRole, sprite->getx());
                     spriteItem->setData(2, Qt::UserRole, sprite->gety());
@@ -225,11 +225,11 @@ void SpriteIdWidget::updateList()
 
                 QString match = "movement";
 
-                if (field->title.toLower().contains(match) && field->title.toLower().contains("id") && sprite->getNybbleData(field->startNybble, field->endNybble) != 0)
+                if (field->title.toLower().contains(match) && field->title.toLower().contains("id") && sprite->getNybbleData(field->startPos, field->endPos) != 0)
                 {
                     QTreeWidgetItem* spriteItem = new QTreeWidgetItem();
                     spriteItem->setText(0, QString("%1: %2").arg(sprite->getid()).arg(spriteData.getSpriteDef(sprite->getid()).getName()));
-                    spriteItem->setText(1, QString(tr("Movement ID: %1")).arg(sprite->getNybbleData(field->startNybble, field->endNybble)));
+                    spriteItem->setText(1, QString(tr("Movement ID: %1")).arg(sprite->getNybbleData(field->startPos, field->endPos)));
                     spriteItem->setData(0, Qt::UserRole, sprite->getid());
                     spriteItem->setData(1, Qt::UserRole, sprite->getx());
                     spriteItem->setData(2, Qt::UserRole, sprite->gety());
@@ -254,11 +254,11 @@ void SpriteIdWidget::updateList()
 
                 QString match = "path";
 
-                if (field->title.toLower().contains(match) && field->title.toLower().contains("id") && sprite->getNybbleData(field->startNybble, field->endNybble) != 0)
+                if (field->title.toLower().contains(match) && field->title.toLower().contains("id") && sprite->getNybbleData(field->startPos, field->endPos) != 0)
                 {
                     QTreeWidgetItem* spriteItem = new QTreeWidgetItem();
                     spriteItem->setText(0, QString("%1: %2").arg(sprite->getid()).arg(spriteData.getSpriteDef(sprite->getid()).getName()));
-                    spriteItem->setText(1, QString(tr("Path ID: %1")).arg(sprite->getNybbleData(field->startNybble, field->endNybble)));
+                    spriteItem->setText(1, QString(tr("Path ID: %1")).arg(sprite->getNybbleData(field->startPos, field->endPos)));
                     spriteItem->setData(0, Qt::UserRole, sprite->getid());
                     spriteItem->setData(1, Qt::UserRole, sprite->getx());
                     spriteItem->setData(2, Qt::UserRole, sprite->gety());

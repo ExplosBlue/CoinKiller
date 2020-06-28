@@ -415,7 +415,11 @@ SpriteValueFieldWidget::SpriteValueFieldWidget(Sprite *sprite, Field *field)
     this->sprite = sprite;
     this->field = field;
     this->setToolTip(field->comment);
-    setRange(0, (1 << ((field->endNybble - field->startNybble + 1) * 4)) - 1);
+
+    if (field->posType == Field::Bits)
+        setRange(0, (1 << (field->endPos - field->startPos + 1)) - 1);
+    else
+        setRange(0, (1 << ((field->endPos - field->startPos + 1) * 4)) - 1);
 
     updateValue();
     connect(this, SIGNAL(valueChanged(int)), this, SLOT(handleValueChange(int)));
@@ -424,14 +428,24 @@ SpriteValueFieldWidget::SpriteValueFieldWidget(Sprite *sprite, Field *field)
 void SpriteValueFieldWidget::updateValue()
 {
     handleValueChanges = false;
-    setValue(sprite->getNybbleData(field->startNybble, field->endNybble));
+
+    if (field->posType == Field::Bits)
+        setValue(sprite->getBits(field->startPos, field->endPos));
+    else
+        setValue(sprite->getNybbleData(field->startPos, field->endPos));
+
     handleValueChanges = true;
 }
 
 void SpriteValueFieldWidget::handleValueChange(int value)
 {
     if (!handleValueChanges) return;
-    sprite->setNybbleData(value, field->startNybble, field->endNybble);
+
+    if (field->posType == Field::Bits)
+        sprite->setBits(value, field->startPos, field->endPos);
+    else
+        sprite->setNybbleData(value, field->startPos, field->endPos);
+
     sprite->setRect();
     emit updateHex();
     emit updateFields();
@@ -453,7 +467,12 @@ SpriteCheckboxFieldWidget::SpriteCheckboxFieldWidget(Sprite *sprite, Field *fiel
 void SpriteCheckboxFieldWidget::updateValue()
 {
     handleValueChanges = false;
-    setChecked((sprite->getNybbleData(field->startNybble, field->endNybble) & field->mask) == field->mask);
+
+    if (field->posType == Field::Bits)
+        setChecked(sprite->getBits(field->startPos, field->endPos));
+    else
+        setChecked((sprite->getNybbleData(field->startPos, field->endPos) & field->mask) == field->mask);
+
     handleValueChanges = true;
 }
 
@@ -461,9 +480,17 @@ void SpriteCheckboxFieldWidget::handleValueChange(bool checked)
 {
     if (!handleValueChanges) return;
 
-    quint8 newData = sprite->getNybbleData(field->startNybble, field->endNybble) & (~field->mask);
-    if (checked) newData |= field->mask;
-    sprite->setNybbleData((int)newData, field->startNybble, field->endNybble);
+    if (field->posType == Field::Bits)
+    {
+        sprite->setBits(checked, field->startPos, field->endPos);
+    }
+    else
+    {
+        quint8 newData = sprite->getNybbleData(field->startPos, field->endPos) & (~field->mask);
+        if (checked) newData |= field->mask;
+        sprite->setNybbleData((int)newData, field->startPos, field->endPos);
+    }
+
     sprite->setRect();
     emit updateHex();
     emit updateFields();
@@ -491,17 +518,22 @@ void SpriteListFieldWidget::updateValue()
 {
     handleValueChanges = false;
 
+    int fieldData = 0;
+    if (field->posType == Field::Bits)
+        fieldData = sprite->getBits(field->startPos, field->endPos);
+    else
+        fieldData = sprite->getNybbleData(field->startPos, field->endPos);
+
     bool found = false;
     for (int i = 0; i < field->listEntries.count(); i++)
     {
-        if (field->listEntries[i].first == sprite->getNybbleData(field->startNybble, field->endNybble))
-        {
-            setCurrentIndex(i);
-            found = true;
-            break;
-        }
+            if (field->listEntries[i].first == fieldData)
+            {
+                setCurrentIndex(i);
+                found = true;
+                break;
+            }
     }
-
     if (!found)
         setCurrentIndex(-1);
 
@@ -511,7 +543,12 @@ void SpriteListFieldWidget::updateValue()
 void SpriteListFieldWidget::handleIndexChange(int index)
 {
     if (!handleValueChanges) return;
-    sprite->setNybbleData(itemData(index).toInt(), field->startNybble, field->endNybble);
+
+    if (field->posType == Field::Bits)
+        sprite->setBits(itemData(index).toInt(), field->startPos, field->endPos);
+    else
+        sprite->setNybbleData(itemData(index).toInt(), field->startPos, field->endPos);
+
     sprite->setRect();
     emit updateHex();
     emit updateFields();
@@ -530,26 +567,20 @@ SpriteBitFieldWidget::SpriteBitFieldWidget(Sprite *sprite, Field *field)
     QGridLayout* layout = new QGridLayout();
     layout->setAlignment(this, Qt::AlignCenter);
 
-    int length = field->endNybble - field->startNybble + 1;
+    int length = field->endPos - field->startPos + 1;
+    int numBits = length;
 
-    int numBits = length * 4;
+    if (field->posType == Field::Nybbles)
+        numBits *= 4;
 
     for (int i = 0; i < numBits;)
     {
         for (int j = 0; j < 4; j++)
         {
-            if ((field->mask >> i) & 1U)
-            {
-                QCheckBox* checkbox = new QCheckBox();
-                checkbox->setDisabled(true);
-                layout->addWidget(checkbox, length - i/4, 4 - j);
-                checkboxWidgets.append(checkbox);
-                i++;
-                continue;
-            }
+            if (i >= numBits)
+                break;
 
             QCheckBox* checkbox = new QCheckBox();
-
             layout->addWidget(checkbox, length - i/4, 4 - j);
             checkboxWidgets.append(checkbox);
             connect(checkbox, SIGNAL(toggled(bool)), this, SLOT(handleValueChange()));
@@ -565,20 +596,20 @@ void SpriteBitFieldWidget::updateValue()
 {
     handleValueChanges = false;
 
-    int value = sprite->getNybbleData(field->startNybble, field->endNybble);
-    int length = field->endNybble - field->startNybble + 1;
+    int value = 0;
+    int length = field->endPos - field->startPos + 1;
 
-    for(int i = 0; i < 4 * length; i++, value = value >> 1)
+    if (field->posType == Field::Bits)
+        value = sprite->getBits(field->startPos, field->endPos);
+    else
     {
-        if (value & 1)
-        {
-            checkboxWidgets[i]->setChecked(true);
-        }
-        else
-        {
-            checkboxWidgets[i]->setChecked(false);
-        }
+        value = sprite->getNybbleData(field->startPos, field->endPos);
+        length *= 4;
     }
+
+    for(int i = 0; i < length; i++, value = value >> 1)
+        checkboxWidgets[i]->setChecked(value & 1);
+
     handleValueChanges = true;
 }
 
@@ -586,14 +617,23 @@ void SpriteBitFieldWidget::handleValueChange()
 {
     if (!handleValueChanges) return;
 
-    int value = sprite->getNybbleData(field->startNybble, field->endNybble);
-
     QCheckBox* checkbox = qobject_cast<QCheckBox*>(sender());
     int bit = checkboxWidgets.indexOf(checkbox);
 
-    value ^= 1UL << bit;
+    if (field->posType == Field::Bits)
+    {
+        int value = sprite->getBits(field->startPos, field->endPos);
+        value ^= 1 << bit;
+        sprite->setBits(value, field->startPos, field->endPos);
 
-    sprite->setNybbleData(value, field->startNybble, field->endNybble);
+    }
+    else
+    {
+        int value = sprite->getNybbleData(field->startPos, field->endPos);
+        value ^= 1 << bit;
+        sprite->setNybbleData(value, field->startPos, field->endPos);
+    }
+
     sprite->setRect();
     emit updateHex();
     emit updateFields();
