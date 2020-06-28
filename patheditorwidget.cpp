@@ -127,7 +127,7 @@ void PathEditorWidget::updateInfo()
     else
         loop->setChecked(false);
 
-    nodeGroupbox->setTitle(tr("Node: %1").arg(editPath->getIndexOfNode(editNode) + 1));
+    nodeGroupbox->setTitle(tr("Node: %1").arg(editPath->getIndexOfNode(editNode)));
     speed->setValue(editNode->getSpeed());
     acceleration->setValue(editNode->getAccel());
     delay->setValue(editNode->getDelay());

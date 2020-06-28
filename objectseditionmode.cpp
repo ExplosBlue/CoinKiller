@@ -382,11 +382,11 @@ void ObjectsEditonMode::render(QPainter *painter)
 {
     foreach (Object* obj, selectedObjects)
     {
-        if (is<Sprite*>(obj) && !static_cast<Sprite*>(obj)->getSelectionRects().empty())
+        if (is<Sprite*>(obj) && !static_cast<Sprite*>(obj)->getSelectionRects()->empty())
         {
             Sprite* spr = static_cast<Sprite*>(obj);
 
-            foreach (QRect rect, spr->getSelectionRects())
+            foreach (QRect rect, *spr->getSelectionRects())
             {
                 QRect objrect(obj->getx() + rect.x(), obj->gety() + rect.y(), rect.width(), rect.height());
 

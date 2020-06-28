@@ -2748,21 +2748,25 @@ void SnakeBlockRenderer::render(QPainter *painter, QRect *)
     int curX = 0;
     int curY = 0;
 
-    QString ice = "";
+    QString img = "snakeblock.png";
     if (spr->getNybble(15) == 1)
-        ice = "ice_";
+        img = "ice_snakeblock.png";
 
     if (!(nextNode >= path->getNumberOfNodes()))
     {
         curX = path->getNode(curNode)->getx();
         curY = path->getNode(curNode)->gety();
-        painter->drawPixmap(QRect(curX, curY, 20, 20), ImageCache::getInstance()->get(SpriteImg, ice + "snakeblock_tail.png"));
+        painter->drawPixmap(QRect(curX, curY, 20, 20), ImageCache::getInstance()->get(SpriteImg, img));
     }
 
+    spr->getSelectionRects()->clear();
+
+    spr->getSelectionRects()->append(QRect(0, 0, 20, 20));
 
     if (startnode < path->getNumberOfNodes())
     {
-        painter->drawPixmap(QRect(path->getNode(startnode)->getx(), path->getNode(startnode)->gety(), 20, 20), ImageCache::getInstance()->get(SpriteImg, ice + "snakeblock_tail.png"));
+        painter->drawPixmap(QRect(path->getNode(startnode)->getx(), path->getNode(startnode)->gety(), 20, 20), ImageCache::getInstance()->get(SpriteImg, img));
+        spr->getSelectionRects()->append(QRect(curX - spr->getx(), curY - spr->gety(), 20, 20));
 
         while (blocksToDraw > 0)
         {
@@ -2787,11 +2791,11 @@ void SnakeBlockRenderer::render(QPainter *painter, QRect *)
             curX = curX+x;
             curY = curY+y;
 
-            if (blocksToDraw == 1)
-                painter->drawPixmap(QRect(curX, curY, 20, 20), ImageCache::getInstance()->get(SpriteImg, ice + "snakeblock.png"));
-            else
-                painter->drawPixmap(QRect(curX, curY, 20, 20), ImageCache::getInstance()->get(SpriteImg, ice + "snakeblock_tail.png"));
+            painter->drawPixmap(QRect(curX, curY, 20, 20), ImageCache::getInstance()->get(SpriteImg, img));
 
+            spr->getSelectionRects()->append(QRect(curX - spr->getx(), curY - spr->gety(), 20, 20));
+
+            // Check if the current position is a node
             if (curX == path->getNode(nextNode)->getx() && curY == path->getNode(nextNode)->gety())
             {
                 curNode++;

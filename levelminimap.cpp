@@ -45,9 +45,9 @@ void LevelMiniMap::paintEvent(QPaintEvent* evt)
 
     foreach (Sprite* spr, level->sprites)
     {
-        if (!spr->getSelectionRects().empty())
+        if (!spr->getSelectionRects()->empty())
         {
-            foreach (QRect rect, spr->getSelectionRects())
+            foreach (QRect rect, *spr->getSelectionRects())
             {
                 painter.fillRect(QRect(spr->getx()+rect.x(), spr->gety()+rect.y(), rect.width(), rect.height()), QColor(0,90,150,150));
             }

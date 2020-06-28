@@ -124,6 +124,8 @@ Sprite::Sprite(qint32 x, qint32 y, qint16 id)
     this->x = x;
     this->y = y;
     this->id = id;
+
+    selectionRects = new QList<QRect>();
 }
 
 Sprite::Sprite(Sprite* spr)
@@ -132,6 +134,7 @@ Sprite::Sprite(Sprite* spr)
     y = spr->gety();
     id = spr->getid();
     for (qint32 i = 0; i < 12; i++) spriteData[i] = spr->getByte(i);
+    selectionRects = new QList<QRect>();
     setRect();
 }
 
@@ -147,7 +150,7 @@ void Sprite::setRect()
     renderOffsetW = 0;
     renderOffsetH = 0;
 
-    selectionRects.clear();
+    selectionRects->clear();
 
     switch (id) {
     case 1: // Water Flow For Pipe
@@ -306,10 +309,10 @@ void Sprite::setRect()
             }
 
             if ((getNybbleData(16, 19) & (1 << i)) == (1 << i) && getNybble(15) == 1)
-                selectionRects.append(QRect(x+10, y+10, 20, 20));
+                selectionRects->append(QRect(x+10, y+10, 20, 20));
 
             else if((getNybbleData(16, 19) & (1 << i)) != (1 << i))
-                selectionRects.append(QRect(x+rectOffset, y+rectOffset, imgSize, imgSize));
+                selectionRects->append(QRect(x+rectOffset, y+rectOffset, imgSize, imgSize));
         }
     }
         break;
@@ -711,15 +714,15 @@ void Sprite::setRect()
                 x = float(qSin(angle) * ((rads * 15)));
                 y = float(-(qCos(angle) * ((rads * 15))));
 
-                selectionRects.append(QRect(x+3, y+2, 15, 15));
+                selectionRects->append(QRect(x+3, y+2, 15, 15));
 
                 rads++;
             }
         }
         if (getNybble(6)%2)
-            selectionRects.append(QRect(-10, 0, 40, 20));
+            selectionRects->append(QRect(-10, 0, 40, 20));
         else
-            selectionRects.append(QRect(0, 0, 20, 20));
+            selectionRects->append(QRect(0, 0, 20, 20));
     }
         break;
     case 81: // Fireball Pipe - ! Junction
@@ -877,8 +880,8 @@ void Sprite::setRect()
         width = 340;
         height = 200;
 
-        selectionRects.append(QRect(-22, 0, 62, 200)); // flag
-        selectionRects.append(QRect(200, 80, 120, 120)); // fort
+        selectionRects->append(QRect(-22, 0, 62, 200)); // flag
+        selectionRects->append(QRect(200, 80, 120, 120)); // fort
         }
         break;
     case 99: // Wiggler
@@ -913,16 +916,16 @@ void Sprite::setRect()
         for (int i = 0; i < 4; i++)
         {
             if ((getNybble(16) & (1 << i)) != 0) // row 1
-                selectionRects.append(QRect(-((i-1)*60), offsety, 60, 60));
+                selectionRects->append(QRect(-((i-1)*60), offsety, 60, 60));
 
             if ((getNybble(17) & (1 << i)) != 0) // row 2
-                selectionRects.append(QRect(-((i-1)*60), offsety+60, 60, 60));
+                selectionRects->append(QRect(-((i-1)*60), offsety+60, 60, 60));
 
             if ((getNybble(18) & (1 << i)) != 0) // row 3
-                selectionRects.append(QRect(-((i-1)*60), offsety+120, 60, 60));
+                selectionRects->append(QRect(-((i-1)*60), offsety+120, 60, 60));
 
             if ((getNybble(19) & (1 << i)) != 0) // row 4
-                selectionRects.append(QRect(-((i-1)*60), offsety+180, 60, 60));
+                selectionRects->append(QRect(-((i-1)*60), offsety+180, 60, 60));
         }
         }
         break;
@@ -1062,8 +1065,8 @@ void Sprite::setRect()
             renderOffsetH = height;
         }
 
-        selectionRects.append(QRect(offsetx, 0, mushroomLength, 30)); // mushroom
-        selectionRects.append(QRect(0, 30, 20, stemLength)); // stem
+        selectionRects->append(QRect(offsetx, 0, mushroomLength, 30)); // mushroom
+        selectionRects->append(QRect(0, 30, 20, stemLength)); // stem
     }
         break;
     case 121: case 122: // Expanding Mushroom Platforms
@@ -1103,8 +1106,8 @@ void Sprite::setRect()
         width = mushroomLength;
         height = stemLength + 20;
 
-        selectionRects.append(QRect(offsetx, 0, mushroomLength, 20)); // mushroom
-        selectionRects.append(QRect(offsetx + mushroomLength/2 - 10, 20, 20, stemLength)); // stem
+        selectionRects->append(QRect(offsetx, 0, mushroomLength, 20)); // mushroom
+        selectionRects->append(QRect(offsetx + mushroomLength/2 - 10, 20, 20, stemLength)); // stem
     }
         break;
     case 123: // Bouncy Mushroom Platform
@@ -1341,17 +1344,17 @@ void Sprite::setRect()
 
         renderOffsetX = -platformLength/2;
 
-        selectionRects.append(QRect(-10, -20, topLength, 20)); // top rope
-        selectionRects.append(QRect(-10, 0, 20, leftLength)); // left rope
-        selectionRects.append(QRect(-30 + topLength, 0, 20, rightLength)); // right rope
+        selectionRects->append(QRect(-10, -20, topLength, 20)); // top rope
+        selectionRects->append(QRect(-10, 0, 20, leftLength)); // left rope
+        selectionRects->append(QRect(-30 + topLength, 0, 20, rightLength)); // right rope
 
-        selectionRects.append(QRect(-platformOffset, leftLength, platformLength, 22)); // left platform
+        selectionRects->append(QRect(-platformOffset, leftLength, platformLength, 22)); // left platform
 
         // right platform
         if (getNybble(11) == 0)
-            selectionRects.append(QRect(-platformOffset, rightLength, platformLength, 22));
+            selectionRects->append(QRect(-platformOffset, rightLength, platformLength, 22));
         else
-            selectionRects.append(QRect(-20 -platformOffset + topLength, rightLength, platformLength, 22));
+            selectionRects->append(QRect(-20 -platformOffset + topLength, rightLength, platformLength, 22));
     }
         break;
     case 152: // Path Controlled Lift With Peepa
@@ -1673,10 +1676,10 @@ void Sprite::setRect()
             }
 
             if ((getNybbleData(16, 19) & (1 << i)) == (1 << i) && getNybble(15) == 1)
-                selectionRects.append(QRect(x+10, y+10, 20, 20));
+                selectionRects->append(QRect(x+10, y+10, 20, 20));
 
             else if ((getNybbleData(16, 19) & (1 << i)) != (1 << i))
-                selectionRects.append(QRect(x+rectOffsetX, y+rectOffsetY, imgSize, imgSize));
+                selectionRects->append(QRect(x+rectOffsetX, y+rectOffsetY, imgSize, imgSize));
         }
     }
         break;
@@ -1850,10 +1853,10 @@ void Sprite::setRect()
             }
 
             if ((getNybbleData(16,19) & (1 << i)) == (1 << i) && getNybble(15) == 1)
-                selectionRects.append(QRect(x+10, y+10, 20, 20));
+                selectionRects->append(QRect(x+10, y+10, 20, 20));
 
             else if((getNybbleData(16,19) & (1 << i)) != (1 << i))
-                selectionRects.append(QRect(x+rectOffset, y+rectOffset, imgSize, imgSize));
+                selectionRects->append(QRect(x+rectOffset, y+rectOffset, imgSize, imgSize));
         }
     }
         break;
@@ -1958,7 +1961,6 @@ void Sprite::setRect()
     case 217: case 218: // SnakeBlock
         width = 20;
         height = 20;
-        offsety = -20;
         break;
     case 215: // Bob-omb Cannon
         {
@@ -2142,10 +2144,10 @@ void Sprite::setRect()
             }
 
             if ((getNybbleData(16, 19) & (1 << i)) == (1 << i) && getNybble(15) == 1)
-                selectionRects.append(QRect(x+10, y+10, 20, 20));
+                selectionRects->append(QRect(x+10, y+10, 20, 20));
 
             else if((getNybbleData(16, 19) & (1 << i)) != (1 << i))
-                selectionRects.append(QRect(x+rectOffset, y+rectOffset, imgSize, imgSize));
+                selectionRects->append(QRect(x+rectOffset, y+rectOffset, imgSize, imgSize));
         }
     }
         break;
@@ -2482,10 +2484,10 @@ void Sprite::setRect()
         offsety = -25;
 
         // Row 1
-        selectionRects.append(QRect(-70, -20, 60, 20));
-        selectionRects.append(QRect(30, -20, 60, 20));
+        selectionRects->append(QRect(-70, -20, 60, 20));
+        selectionRects->append(QRect(30, -20, 60, 20));
         // Row 2
-        selectionRects.append(QRect(-30, 0, 80, 20));
+        selectionRects->append(QRect(-30, 0, 80, 20));
         break;
     case 285: // Chandelier Lift - Medium
         width = 270;
@@ -2494,17 +2496,17 @@ void Sprite::setRect()
         offsety = -45;
 
         // Row 1
-        selectionRects.append(QRect(0, -40, 20, 20));
+        selectionRects->append(QRect(0, -40, 20, 20));
         // Row 2
-        selectionRects.append(QRect(-20, -20, 60, 20));
-        selectionRects.append(QRect(-120, -20, 60, 20));
-        selectionRects.append(QRect(80, -20, 60, 20));
+        selectionRects->append(QRect(-20, -20, 60, 20));
+        selectionRects->append(QRect(-120, -20, 60, 20));
+        selectionRects->append(QRect(80, -20, 60, 20));
         // Row 3
-        selectionRects.append(QRect(-80, 0, 180, 20));
+        selectionRects->append(QRect(-80, 0, 180, 20));
         // Row 4
-        selectionRects.append(QRect(-60, 20, 140, 20));
+        selectionRects->append(QRect(-60, 20, 140, 20));
         // Row 5
-        selectionRects.append(QRect(0, 40, 20, 20));
+        selectionRects->append(QRect(0, 40, 20, 20));
         break;
     case 286: // Chandelier Lift - Big
         width = 410;
@@ -2513,30 +2515,30 @@ void Sprite::setRect()
         offsety = -165;
 
         // Row 1
-        selectionRects.append(QRect(-150, -160, 60, 20));
-        selectionRects.append(QRect(-50, -160, 40, 20));
-        selectionRects.append(QRect(30, -160, 40, 20));
-        selectionRects.append(QRect(110, -160, 60, 20));
+        selectionRects->append(QRect(-150, -160, 60, 20));
+        selectionRects->append(QRect(-50, -160, 40, 20));
+        selectionRects->append(QRect(30, -160, 40, 20));
+        selectionRects->append(QRect(110, -160, 60, 20));
         // Row 2
-        selectionRects.append(QRect(-190, -140, 180, 20));
-        selectionRects.append(QRect(30, -140, 180, 20));
+        selectionRects->append(QRect(-190, -140, 180, 20));
+        selectionRects->append(QRect(30, -140, 180, 20));
         // Row 3
-        selectionRects.append(QRect(-150, -120, 60, 20));
-        selectionRects.append(QRect(110, -120, 60, 20));
+        selectionRects->append(QRect(-150, -120, 60, 20));
+        selectionRects->append(QRect(110, -120, 60, 20));
         // Row 4
-        selectionRects.append(QRect(-30, -70, 80, 20));
+        selectionRects->append(QRect(-30, -70, 80, 20));
         // Row 5
-        selectionRects.append(QRect(-100, -20, 40, 20));
-        selectionRects.append(QRect(80, -20, 40, 20));
+        selectionRects->append(QRect(-100, -20, 40, 20));
+        selectionRects->append(QRect(80, -20, 40, 20));
         // Row 6
-        selectionRects.append(QRect(-80, 0, 60, 20));
-        selectionRects.append(QRect(40, 0, 60, 20));
+        selectionRects->append(QRect(-80, 0, 60, 20));
+        selectionRects->append(QRect(40, 0, 60, 20));
         // Row 7
-        selectionRects.append(QRect(-60, 80, 140, 20));
+        selectionRects->append(QRect(-60, 80, 140, 20));
         // Row 8
-        selectionRects.append(QRect(-20, 100, 60, 20));
+        selectionRects->append(QRect(-20, 100, 60, 20));
         // Row 9
-        selectionRects.append(QRect(0, 120, 20, 20));
+        selectionRects->append(QRect(0, 120, 20, 20));
         break;
     case 287: // Toad House Door
         width = 40;
@@ -2874,11 +2876,11 @@ QString Sprite::toString(qint32 xOffset, qint32 yOffset) const
 
 bool Sprite::clickDetection(qint32 xcheck, qint32 ycheck)
 {
-    if (selectionRects.empty())
+    if (selectionRects->empty())
         return Object::clickDetection(xcheck, ycheck);
 
     bool intersects = false;
-    foreach (QRect r, selectionRects)
+    foreach (QRect r, *selectionRects)
     {
         intersects = r.contains(xcheck, ycheck);
 
@@ -2891,11 +2893,11 @@ bool Sprite::clickDetection(qint32 xcheck, qint32 ycheck)
 
 bool Sprite::clickDetection(QRect rect)
 {
-    if (selectionRects.empty())
+    if (selectionRects->empty())
         return Object::clickDetection(rect);
 
     bool intersects = false;
-    foreach (QRect r, selectionRects)
+    foreach (QRect r, *selectionRects)
     {
         intersects = QRect(r.x() + x, r.y() + y, r.width(), r.height()).intersects(rect);
 

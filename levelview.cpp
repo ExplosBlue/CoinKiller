@@ -335,7 +335,6 @@ void LevelView::paint(QPainter& painter, QRect rect, float zoomLvl, bool selecti
 
                 if (path->getid() == pathID)
                 {
-
                     SnakeBlockRenderer SnakeBlockRenderer(s, path);
                     SnakeBlockRenderer.render(&painter, &drawrect);
                 }
@@ -523,7 +522,7 @@ void LevelView::paint(QPainter& painter, QRect rect, float zoomLvl, bool selecti
                 painter.fillPath(painterPath, color);
                 painter.drawPath(painterPath);
 
-                QString pathText = QString("%1-%2").arg(path->getid()).arg(j+1);
+                QString pathText = QString("%1-%2").arg(path->getid()).arg(j);
                 painter.setFont(QFont("Arial", 7, QFont::Normal));
                 painter.drawText(pathrect, pathText, Qt::AlignHCenter | Qt::AlignVCenter);
             }
@@ -564,7 +563,7 @@ void LevelView::paint(QPainter& painter, QRect rect, float zoomLvl, bool selecti
                 painter.fillPath(path, color);
                 painter.drawPath(path);
 
-                QString pPathText = QString("%1-%2").arg(pPath->getid()).arg(j+1);
+                QString pPathText = QString("%1-%2").arg(pPath->getid()).arg(j);
                 painter.setFont(QFont("Arial", 7, QFont::Normal));
                 painter.drawText(ppathrect, pPathText, Qt::AlignHCenter | Qt::AlignVCenter);
             }

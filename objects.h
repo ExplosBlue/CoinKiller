@@ -110,7 +110,7 @@ public:
     bool clickDetection(qint32 xcheck, qint32 ycheck);
     bool clickDetection(QRect rect);
 
-    QList<QRect> getSelectionRects() { return selectionRects; }
+    QList<QRect>* getSelectionRects() const { return selectionRects; }
 
 protected:
     qint16 id;
@@ -121,7 +121,7 @@ protected:
     qint32 renderOffsetH;
     quint8 layer = 0;
 
-    QList<QRect> selectionRects;
+    QList<QRect>* selectionRects;
 };
 
 
