@@ -118,8 +118,12 @@ void MainWindow::changeEvent(QEvent* event)
     if (event->type() == QEvent::LanguageChange)
     {
         ui->retranslateUi(this);
-        ui->levelList->setModel(game->getCourseModel());
-        ui->tilesetView->setModel(game->getTilesetModel());
+
+        if (gameLoaded)
+        {
+            ui->levelList->setModel(game->getCourseModel());
+            ui->tilesetView->setModel(game->getTilesetModel());
+        }
     }
 
     QMainWindow::changeEvent(event);

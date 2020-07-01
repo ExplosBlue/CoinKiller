@@ -493,6 +493,10 @@ The level will automatically save afterwards and therefore the deletion of this 
         <source>CoinKiller</source>
         <translation>CoinKiller</translation>
     </message>
+    <message>
+        <source>Toggle Entrances</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>LocationEditorWidget</name>
@@ -691,6 +695,10 @@ Connecssione a %1 fallita!</translation>
     <message>
         <source>CoinKiller</source>
         <translation>CoinKiller</translation>
+    </message>
+    <message>
+        <source>Spritedata.xml is outdated, CoinKiller will now attempt to update it.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1079,6 +1087,22 @@ Check the notes of whatever sprite is paired to this path to see how to use this
     </message>
     <message>
         <source>Group ID: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Movement IDs</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Path IDs</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Movement ID: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Path ID: %1</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

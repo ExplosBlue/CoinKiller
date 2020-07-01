@@ -291,7 +291,9 @@
     </list>
   </sprite>
   <sprite id="21" name="Note Block" notes="Actor: 0x0B0&#13;&#10;Description: A block that the player can bounce on.&#13;&#10;Event Triggerable: No&#13;&#10;Affected by Gold Ring: No &#13;&#10;Requirements: N/A">
-    <value pos="9" pos_type="nybbles" title="Unknown Value 8" comment="Max value is 0x0F. Seems to be be used in odd/even patterns."/>
+    <value pos="8" pos_type="nybbles" title="Width (Buggy)" comment="Sets the width = n+1 tiles. Collision is not changed. [Unused]"/>
+    <value pos="9" pos_type="nybbles" title="Unknown Value 9" comment="Max value is 0x0F. Seems to be be used in odd/even patterns."/>
+    <checkbox pos="11" pos_type="nybbles" title="Auto Triggered - Uses Tileset Tile" comment="Uses slot 1 tileset tile with id 98 [Unused]"/>
     <list pos="19" pos_type="nybbles" title="Item" comment="The item is only spawned if the block is hit from below.">
       <entry value="0">None</entry>
       <entry value="1">Coin</entry>
@@ -689,51 +691,54 @@
   </sprite>
   <sprite id="54" name="Rotation Controller - Spinning" notes="Actor: 0x01E&#13;&#10;Description: A Controller that makes sprites rotate around a point.&#13;&#10;Event Triggerable: Yes&#13;&#10;Affected by Gold Ring: No &#13;&#10;Requirements: Must have a Rotation ID and a Swing Arc set.">
     <value pos="0-1" pos_type="nybbles" title="Triggering Event ID"/>
-    <list pos="4" pos_type="nybbles" title="Starting Rotation" comment="No Starting Rotation at 0. Value that sets an initial Rotation for any controlled Sprite. Upon initial Rotation, it will shift the Sprite (arc * 11.25) degrees per Value. For Coins and Blocks the Starting Rotation Value is doubled, e.g. 4 = 180 degrees">
-      <entry value="0">No Arc</entry>
-      <entry value="1">22.5 degrees</entry>
-      <entry value="2">45 degrees</entry>
-      <entry value="3">67.5 degrees</entry>
-      <entry value="4">90 degrees</entry>
-      <entry value="5">112.5 degrees</entry>
-      <entry value="6">135 degrees</entry>
-      <entry value="7">157.5 degrees</entry>
-      <entry value="8">180 degrees</entry>
-      <entry value="9">202.5 degrees</entry>
-      <entry value="10">225 degrees</entry>
-      <entry value="11">247.5 degrees</entry>
-      <entry value="12">270 degrees</entry>
-      <entry value="13">292.5 degrees</entry>
-      <entry value="14">315 degrees</entry>
-      <entry value="15">337.5 degrees</entry>
+    <list pos="4" pos_type="nybbles" title="Starting Rotation Offset" comment="Sets the intital rotation for this controller. Some sprites will ignore this if the event mode is set to 1 or 2, unless a setting is enabled in the sprite. This value is doubled for coins and bricks if event mode is set to event triggered.">
+      <entry value="0">0&#xB0;</entry>
+      <entry value="1">22.5&#xB0;</entry>
+      <entry value="2">45&#xB0;</entry>
+      <entry value="3">67.5&#xB0;</entry>
+      <entry value="4">90&#xB0;</entry>
+      <entry value="5">112.5&#xB0;</entry>
+      <entry value="6">135&#xB0;</entry>
+      <entry value="7">157.5&#xB0;</entry>
+      <entry value="8">180&#xB0;</entry>
+      <entry value="9">202.5&#xB0;</entry>
+      <entry value="10">225&#xB0;</entry>
+      <entry value="11">247.5&#xB0;</entry>
+      <entry value="12">270&#xB0;</entry>
+      <entry value="13">292.5&#xB0;</entry>
+      <entry value="14">315&#xB0;</entry>
+      <entry value="15">337.5&#xB0;</entry>
     </list>
-    <list pos="5" pos_type="nybbles" title="Swing Arc (Rotation Distance)" comment="No swing arc at 0. Distance Value that sets how large its swing arc is. It will swing (arc * 11.25) degrees in each Direction per Value. Unlike the Starting Rotation and both rotations in NSMBW, the value doesn't seem to be doubled for coins and blocks.">
-      <entry value="0">No Arc</entry>
-      <entry value="1">22.5 degrees</entry>
-      <entry value="2">45 degrees</entry>
-      <entry value="3">67.5 degrees</entry>
-      <entry value="4">90 degrees</entry>
-      <entry value="5">112.5 degrees</entry>
-      <entry value="6">135 degrees</entry>
-      <entry value="7">157.5 degrees</entry>
-      <entry value="8">180 degrees</entry>
-      <entry value="9">202.5 degrees</entry>
-      <entry value="10">225 degrees</entry>
-      <entry value="11">247.5 degrees</entry>
-      <entry value="12">270 degrees</entry>
-      <entry value="13">292.5 degrees</entry>
-      <entry value="14">315 degrees</entry>
-      <entry value="15">337.5 degrees</entry>
+    <list pos="5" pos_type="nybbles" title="Rotation Distance" comment="Determines how far this controller will rotate.">
+      <entry value="0">0&#xB0;</entry>
+      <entry value="1">22.5&#xB0;</entry>
+      <entry value="2">45&#xB0;</entry>
+      <entry value="3">67.5&#xB0;</entry>
+      <entry value="4">90&#xB0;</entry>
+      <entry value="5">112.5&#xB0;</entry>
+      <entry value="6">135&#xB0;</entry>
+      <entry value="7">157.5&#xB0;</entry>
+      <entry value="8">180&#xB0;</entry>
+      <entry value="9">202.5&#xB0;</entry>
+      <entry value="10">225&#xB0;</entry>
+      <entry value="11">247.5&#xB0;</entry>
+      <entry value="12">270&#xB0;</entry>
+      <entry value="13">292.5&#xB0;</entry>
+      <entry value="14">315&#xB0;</entry>
+      <entry value="15">337.5&#xB0;</entry>
     </list>
-    <list pos="7" pos_type="nybbles" title="Mode" comment="0 it completes rotation specified in Rotation Distance and goes back when event is switched off. 1 it spins constantly at the speed and direction set and when the event is switched on it slows down to a halt then reverses direction. 2 it rotates constantly while the event is on (playing the effect again and again). It is unknown what decides if it stops at the start or end rotation (e.g. if it stops at 0&#xB0;  or 180&#xB0;). 3 seems to be the same as 2.">
-      <entry value="0">Event Triggered</entry>
-      <entry value="1">Already Spinning</entry>
-      <entry value="2">Spinning while event is on</entry>
+    <list pos="7" pos_type="nybbles" title="Event Mode" comment="This changes how events interact with this rotation controller.">
+      <entry value="0">Event Triggered - Rotates Back When Deactivated (Fastest)</entry>
+      <entry value="1">Already Spinning - Event Reverses Direction</entry>
+      <entry value="2">Continuous Spinning While Event Active</entry>
+      <entry value="4">Event Triggered - Rotates Back When Deactivated (Slow)</entry>
+      <entry value="8">Event Triggered - Rotates Back When Deactivated (Slowest)</entry>
     </list>
     <checkbox pos="8" pos_type="nybbles" title="Spin Clockwise"/>
-    <list pos="9" pos_type="nybbles" title="Effect" comment="1 seems to be same as 0. 3+ ditto or non-existent.">
+    <list pos="9" pos_type="nybbles" title="Effect" comment="Determines the effect type to use. Effect 1 requires event mode to be set to 4 or 8. Effect 2 requires coins to be paired to the controller.">
       <entry value="0">None</entry>
-      <entry value="2">Coin sound</entry>
+      <entry value="1">Screen Shake For Direction Change</entry>
+      <entry value="2">Coin Sound</entry>
     </list>
     <list pos="15" pos_type="nybbles" title="Speed of Rotation">
       <entry value="4">Slowest</entry>
@@ -805,25 +810,14 @@
     <value pos="11" pos_type="nybbles" title="Arc Width" comment="Determines how wide the arc will be."/>
   </sprite>
   <sprite id="59" name="Rotation-controlled Coin" notes="Actor: 0x0E0&#13;&#10;Description: A Coin that can be rotated.&#13;&#10;Event Triggerable: Yes&#13;&#10;Affected by Gold Ring: No &#13;&#10;Requirements: Must have A Rotation ID set.">
-    <value pos="0-1" pos_type="nybbles" title="Target Event ID"/>
-    <list pos="5" pos_type="nybbles" title="Behavior" comment="The behavior of this rotating coin.">
+    <list pos="16-18" pos_type="bits" title="Rotation Mode" comment="The behavior of this rotating coin.">
       <entry value="0">Normal</entry>
-      <entry value="1">Normal</entry>
-      <entry value="2">Rotate Facing Camera</entry>
-      <entry value="3">Rotate Facing Camera</entry>
-      <entry value="4">Rotate Facing Controller</entry>
-      <entry value="5">Rotate Facing Controller</entry>
-      <entry value="6">Rotate Facing Camera</entry>
-      <entry value="7">Rotate Facing Camera</entry>
-      <entry value="8">Inverted</entry>
-      <entry value="9">Normal</entry>
-      <entry value="10">Rotate Facing Camera</entry>
-      <entry value="11">Rotate Facing Camera</entry>
-      <entry value="12">Rotate Facing Controller</entry>
-      <entry value="13">Rotate Facing Controller</entry>
-      <entry value="14">Rotate Facing Camera</entry>
-      <entry value="15">Rotate Facing Camera</entry>
+      <entry value="1">Coin Starts Upside Down</entry>
+      <entry value="2">Coin Faces Screen</entry>
+      <entry value="4">Coin Starts Upside Down</entry>
     </list>
+    <checkbox pos="19" pos_type="bits" title="Use Rotation Controller Starting Rotation Offset" comment="If enabled, the Coin Will use the start offset spesified in the rotation controller."/>
+    <value pos="0-1" pos_type="nybbles" title="Target Event ID"/>
     <value pos="15" pos_type="nybbles" title="Unknown 18"/>
     <value pos="18" pos_type="nybbles" title="Unknown 13"/>
     <value pos="20-21" pos_type="nybbles" title="Rotation ID"/>
@@ -848,25 +842,14 @@
     <value pos="11" pos_type="nybbles" title="Unknown Value 6"/>
   </sprite>
   <sprite id="62" name="Rotation-controlled Red Coin" notes="Actor: 0x0D7&#13;&#10;Description: A Red Coin that is appears when a red coin ring triggers it.&#13;&#10;Event Triggerable: Yes&#13;&#10;Affected by Gold Ring: No &#13;&#10;Requirements: Must have a triggering ID and a Rotation ID set.">
-    <value pos="0-1" pos_type="nybbles" title="Triggering Event ID"/>
-    <list pos="5" pos_type="nybbles" title="Behavior" comment="The behavior of this rotating red coin.">
-      <entry value="0">Normal</entry>
-      <entry value="1">Normal</entry>
-      <entry value="2">Rotate Facing Camera</entry>
-      <entry value="3">Rotate Facing Camera</entry>
-      <entry value="4">Rotate Facing Controller</entry>
-      <entry value="5">Rotate Facing Controller</entry>
-      <entry value="6">Rotate Facing Camera</entry>
-      <entry value="7">Rotate Facing Camera</entry>
-      <entry value="8">Inverted</entry>
-      <entry value="9">Normal</entry>
-      <entry value="10">Rotate Facing Camera</entry>
-      <entry value="11">Rotate Facing Camera</entry>
-      <entry value="12">Rotate Facing Controller</entry>
-      <entry value="13">Rotate Facing Controller</entry>
-      <entry value="14">Rotate Facing Camera</entry>
-      <entry value="15">Rotate Facing Camera</entry>
+    <list pos="16-18" pos_type="bits" title="Rotation Mode" comment="The behavior of this rotating red coin.">
+      <entry value="0">Normal (Default)</entry>
+      <entry value="2">Gimbal Rotation</entry>
+      <entry value=" 3">Upside Down Gimbal Rotation</entry>
+      <entry value="4">Normal</entry>
     </list>
+    <checkbox pos="19" pos_type="bits" title="Use Rotation Controller Starting Rotation Offset" comment="If enabled, the Star Coin Will use the start offset spesified in the rotation controller."/>
+    <value pos="0-1" pos_type="nybbles" title="Triggering Event ID"/>
     <value pos="11" pos_type="nybbles" title="Unknown Value 6"/>
     <value pos="20-21" pos_type="nybbles" title="Rotation ID"/>
   </sprite>
@@ -941,6 +924,7 @@
   <sprite id="75" name="Door - Tower Boss" notes="A door that is used in towers to indicate that the next room is a tower boss."/>
   <sprite id="76" name="Big Thwomp">
     <checkbox pos="8" pos_type="nybbles" title="Wider Detection Range" comment="Widens the detection area that triggers the thwomp to fall."/>
+    <checkbox pos="10" pos_type="nybbles" title="Doesn't Fall" comment="When checked, the Thwomp will not fall. [Unused]"/>
     <list pos="11" pos_type="nybbles" title="Actions" comment="Unused for this sprite. Used on 77, however.">
       <entry value="0">Normal</entry>
       <entry value="1">???</entry>
@@ -949,6 +933,7 @@
   </sprite>
   <sprite id="77" name="Thwomp" notes="Actor: 0x103">
     <checkbox pos="8" pos_type="nybbles" title="Wider Detection Range" comment="Widens the detection area that triggers the thwomp to fall."/>
+    <checkbox pos="10" pos_type="nybbles" title="Doesn't Fall" comment="When checked, the Thwomp will not fall. [Unused]"/>
     <list pos="11" pos_type="nybbles" title="Actions">
       <entry value="0">Normal</entry>
       <entry value="1">???</entry>
@@ -1314,25 +1299,13 @@
     <value pos="11" pos_type="nybbles" title="Unknown Value 6" comment="Set to 1 in 3-4 ~ Doesn't seem to change anything"/>
   </sprite>
   <sprite id="100" name="Rotation-controlled ? Block" notes="A ? block that can be assigned to a rotation controller to rotate.">
-    <value pos="0-1" pos_type="nybbles" title="Triggering Event ID"/>
-    <list pos="5" pos_type="nybbles" title="Behavior" comment="The behavior of this rotating ? block.">
+    <list pos="16-17" pos_type="bits" title="Rotation Mode" comment="The behavior of this rotating ? block.">
       <entry value="0">Normal</entry>
-      <entry value="1">Normal</entry>
-      <entry value="2">Rotate Facing Camera</entry>
-      <entry value="3">Rotate Facing Camera</entry>
-      <entry value="4">Rotate Facing Controller</entry>
-      <entry value="5">Rotate Facing Controller</entry>
-      <entry value="6">Rotate Facing Camera</entry>
-      <entry value="7">Rotate Facing Camera</entry>
-      <entry value="8">Inverted</entry>
-      <entry value="9">Normal</entry>
-      <entry value="10">Rotate Facing Camera</entry>
-      <entry value="11">Rotate Facing Camera</entry>
-      <entry value="12">Rotate Facing Controller</entry>
-      <entry value="13">Rotate Facing Controller</entry>
-      <entry value="14">Rotate Facing Camera</entry>
-      <entry value="15">Rotate Facing Camera</entry>
+      <entry value="1">Start Upside Down</entry>
+      <entry value="2">Gimbal Rotation</entry>
     </list>
+    <checkbox pos="19" pos_type="bits" title="Use Rotation Controller Starting Rotation Offset" comment="If enabled, the ? Block Will use the start offset spesified in the rotation controller."/>
+    <value pos="0-1" pos_type="nybbles" title="Triggering Event ID"/>
     <value pos="18" pos_type="nybbles" title="Unknown Value 13"/>
     <list pos="19" pos_type="nybbles" title="Contents" comment="3, 9, 12 and 15 are all empty blocks">
       <entry value="0">Nothing</entry>
@@ -1728,7 +1701,14 @@
       <entry value="1">Big</entry>
     </list>
   </sprite>
-  <sprite id="148" name="Move-when-on Boat Lift" notes="Only moves right.">
+  <sprite id="148" name="Move-when-on Boat Lift">
+    <list pos="6" pos_type="nybbles" title="Direction" comment="Determines the direction of movement. Values &gt; 3 don't move. [Unused]">
+      <entry value="0">Right</entry>
+      <entry value="1">Left</entry>
+      <entry value="2">Up</entry>
+      <entry value="3">Down</entry>
+      <entry value="4">Does Not Move</entry>
+    </list>
     <list pos="9" pos_type="nybbles" title="Movement">
       <entry value="0">Moves Back When Not On It</entry>
       <entry value="1">Continuously Moves Once On It</entry>
@@ -1743,7 +1723,7 @@
       <entry value="10">Faster</entry>
       <entry value="12">Fastest</entry>
     </list>
-    <value pos="17" pos_type="nybbles" title="Unknown Value 16"/>
+    <value pos="17" pos_type="nybbles" title="Unknown Value 17"/>
   </sprite>
   <sprite id="149" name="Changeable Direction Platform" notes="It is still at first, it starts moving when landed on. After that it reverses direction when landed on.">
     <value pos="0-1" pos_type="nybbles" title="Triggering Event ID" comment="When this flag is triggered, the platform will disappear."/>
@@ -1984,26 +1964,29 @@
   <sprite id="173" name="Pipe Bone Piranha Plant - Left"/>
   <sprite id="174" name="Pipe Bone Piranha Plant  - Right"/>
   <sprite id="175" name="Grounded Piranha Plant">
-    <value pos="10" pos_type="nybbles" title="Unknown Value 5"/>
+    <checkbox pos="10" pos_type="nybbles" title="Gravity Affected" comment="If enabled, the Piranha Plant will be affected by gravity."/>
     <checkbox pos="11" pos_type="nybbles" title="Upside-down"/>
   </sprite>
   <sprite id="176" name="Grounded Big Piranha Plant">
+    <checkbox pos="10" pos_type="nybbles" title="Gravity Affected" comment="If enabled, the Piranha Plant will be affected by gravity."/>
     <checkbox pos="11" pos_type="nybbles" title="Upside-down"/>
-    <value pos="13" pos_type="nybbles" title="Unknown Value 20"/>
+    <value pos="13" pos_type="nybbles" title="Unknown Value 13"/>
   </sprite>
   <sprite id="177" name="Grounded Fire Piranha Plant" notes="A grounded Piranha Plant that spits fireballs.">
+    <checkbox pos="10" pos_type="nybbles" title="Gravity Affected" comment="If enabled, the Piranha Plant will be affected by gravity."/>
     <checkbox pos="11" pos_type="nybbles" title="Upside-down"/>
   </sprite>
-  <sprite id="178" name="Grounded Big Fire Piranha Plant" notes="A bit grounded Piranha Plant.">
+  <sprite id="178" name="Grounded Big Fire Piranha Plant">
+    <checkbox pos="10" pos_type="nybbles" title="Gravity Affected" comment="If enabled, the Piranha Plant will be affected by gravity."/>
     <checkbox pos="11" pos_type="nybbles" title="Upside-down"/>
   </sprite>
   <sprite id="179" name="Grounded Bone Piranha Plant">
-    <value pos="10" pos_type="nybbles" title="Unknown Value 10"/>
+    <checkbox pos="10" pos_type="nybbles" title="Gravity Affected" comment="If enabled, the Piranha Plant will be affected by gravity."/>
     <checkbox pos="11" pos_type="nybbles" title="Upside-down"/>
     <value pos="13" pos_type="nybbles" title="Unknown Value 13"/>
   </sprite>
   <sprite id="180" name="Grounded Big Bone Piranha Plant">
-    <value pos="10" pos_type="nybbles" title="Unknown Value 5"/>
+    <checkbox pos="10" pos_type="nybbles" title="Gravity Affected" comment="If enabled, the Piranha Plant will be affected by gravity."/>
     <checkbox pos="11" pos_type="nybbles" title="Upside-down"/>
   </sprite>
   <sprite id="181" name="Pipe Piranha Plant - Left"/>
@@ -2479,25 +2462,13 @@
     <value pos="11" pos_type="nybbles" title="Path ID"/>
   </sprite>
   <sprite id="203" name="Rotation-controlled Brick Block">
-    <value pos="0-1" pos_type="nybbles" title="Triggering Event ID"/>
-    <list pos="5" pos_type="nybbles" title="Behavior" comment="The behavior of this brick block.">
+    <list pos="16-17" pos_type="bits" title="Rotation Mode" comment="The behavior of this brick block.">
       <entry value="0">Normal</entry>
-      <entry value="1">Normal</entry>
-      <entry value="2">Rotate Facing Camera</entry>
-      <entry value="3">Rotate Facing Camera</entry>
-      <entry value="4">Rotate Facing Controller</entry>
-      <entry value="5">Rotate Facing Controller</entry>
-      <entry value="6">Rotate Facing Camera</entry>
-      <entry value="7">Rotate Facing Camera</entry>
-      <entry value="8">Inverted</entry>
-      <entry value="9">Normal</entry>
-      <entry value="10">Rotate Facing Camera</entry>
-      <entry value="11">Rotate Facing Camera</entry>
-      <entry value="12">Rotate Facing Controller</entry>
-      <entry value="13">Rotate Facing Controller</entry>
-      <entry value="14">Rotate Facing Camera</entry>
-      <entry value="15">Rotate Facing Camera</entry>
+      <entry value="1">Start Upside Down</entry>
+      <entry value="2">Gimbal Rotation</entry>
     </list>
+    <checkbox pos="19" pos_type="bits" title="Use Rotation Controller Starting Rotation Offset" comment="If enabled, the Brick Block Will use the start offset spesified in the rotation controller."/>
+    <value pos="0-1" pos_type="nybbles" title="Triggering Event ID"/>
     <list pos="19" pos_type="nybbles" title="Contents" comment="3, 9, 12 and 15 are all empty blocks">
       <entry value="0">Nothing</entry>
       <entry value="1">Coin</entry>
@@ -2775,25 +2746,14 @@
     <value pos="20-21" pos_type="nybbles" title="Rotation ID" comment="Used to pair with either a swaying or spinning controller. [Unused]"/>
   </sprite>
   <sprite id="220" name="Rotation-controlled Star Coin">
-    <value pos="0-1" pos_type="nybbles" title="Target Event ID"/>
-    <list pos="5" pos_type="nybbles" title="Behavior" comment="The behavior of this star coin.">
+    <list pos="16-18" pos_type="bits" title="Rotation Mode" comment="The behavior of this star coin.">
       <entry value="0">Normal</entry>
-      <entry value="1">Normal</entry>
-      <entry value="2">Rotate Facing Camera</entry>
-      <entry value="3">Rotate Facing Camera</entry>
-      <entry value="4">Rotate Facing Controller</entry>
-      <entry value="5">Rotate Facing Controller</entry>
-      <entry value="6">Rotate Facing Camera</entry>
-      <entry value="7">Rotate Facing Camera</entry>
-      <entry value="8">Inverted</entry>
-      <entry value="9">Normal</entry>
-      <entry value="10">Rotate Facing Camera</entry>
-      <entry value="11">Rotate Facing Camera</entry>
-      <entry value="12">Rotate Facing Controller</entry>
-      <entry value="13">Rotate Facing Controller</entry>
-      <entry value="14">Rotate Facing Camera</entry>
-      <entry value="15">Rotate Facing Camera</entry>
+      <entry value="1">Upside Down Coin</entry>
+      <entry value="2">Gimbal Rotation</entry>
+      <entry value="4">Upside Down Coin</entry>
     </list>
+    <checkbox pos="19" pos_type="bits" title="Use Rotation Controller Starting Rotation Offset" comment="If enabled, the Star Coin Will use the start offset spesified in the rotation controller."/>
+    <value pos="0-1" pos_type="nybbles" title="Target Event ID"/>
     <value pos="6" pos_type="nybbles" title="Unknown Value 6"/>
     <list pos="8" pos_type="nybbles" title="Number">
       <entry value="0">One</entry>
@@ -2814,10 +2774,15 @@
     <checkbox pos="4" pos_type="nybbles" title="Gravity Affected" comment="When checked the switch will be affected by gravity."/>
     <value pos="5" pos_type="nybbles" title="Location ID"/>
     <checkbox pos="6" pos_type="nybbles" title="Not Timed" comment="Disables the timer on the switch."/>
-    <list pos="9" pos_type="nybbles" title="Behaviour" comment="Determines the behaviour of the switch. A value of 1 allows the switch to be used multiple times. A value of 2 causes the switch to remain in it's pressed down state instead of dissapearing (Only effective when the switch is not timed).">
-      <entry value="0">Normal</entry>
-      <entry value="1">Reuseable</entry>
-      <entry value="2">Don't Dissapear After Use</entry>
+    <checkbox pos="7" pos_type="nybbles" title="Shift Up a Tile" comment="When checked the switch will appear a tile higher."/>
+    <list pos="8" pos_type="nybbles" title="Activation Mode" comment="This determines if the switch will activate or deactivate the event.">
+      <entry value="0">Activates Event</entry>
+      <entry value="1">Deactivates Event</entry>
+    </list>
+    <list pos="9" pos_type="nybbles" title="Usage Mode" comment="Determines the behaviour of the switch. A value of 1 allows the switch to be used multiple times. A value of 2 causes the switch to remain in it's pressed down state instead of dissapearing (Only effective when the switch is not timed).">
+      <entry value="0">Single Use</entry>
+      <entry value="1">Multi-Use</entry>
+      <entry value="2">Reactivatable</entry>
     </list>
     <checkbox pos="10" pos_type="nybbles" title="Shift Half a Tile Right" comment="Shifts the switch half a tile to the right."/>
     <checkbox pos="11" pos_type="nybbles" title="Upside Down" comment="Makes the switch upside down."/>
@@ -2828,10 +2793,14 @@
     <checkbox pos="4" pos_type="nybbles" title="Gravity Affected" comment="When checked the switch will be affected by gravity."/>
     <value pos="5" pos_type="nybbles" title="Location ID"/>
     <checkbox pos="6" pos_type="nybbles" title="Not Timed" comment="Disables the timer on the switch."/>
-    <list pos="9" pos_type="nybbles" title="Behaviour" comment="Determines the behaviour of the switch. A value of 1 allows the switch to be used multiple times. A value of 2 causes the switch to remain in it's pressed down state instead of dissapearing (Only effective when the switch is not timed).">
-      <entry value="0">Normal</entry>
-      <entry value="1">Reuseable</entry>
-      <entry value="2">Don't Dissapear After Use</entry>
+    <list pos="8" pos_type="nybbles" title="Activation Mode" comment="This determines if the switch will activate or deactivate the event.">
+      <entry value="0">Activates Event</entry>
+      <entry value="1">Deactivates Event</entry>
+    </list>
+    <list pos="9" pos_type="nybbles" title="Usage Mode" comment="Determines the behaviour of the switch. A value of 1 allows the switch to be used multiple times. A value of 2 causes the switch to remain in it's pressed down state instead of dissapearing (Only effective when the switch is not timed).">
+      <entry value="0">Single Use</entry>
+      <entry value="1">Multi-Use</entry>
+      <entry value="2">Reactivatable</entry>
     </list>
     <checkbox pos="10" pos_type="nybbles" title="Shift Half a Tile Right" comment="Shifts the switch half a tile to the right."/>
     <checkbox pos="11" pos_type="nybbles" title="Upside Down" comment="Makes the switch upside down."/>
@@ -2842,10 +2811,15 @@
     <checkbox pos="4" pos_type="nybbles" title="Gravity Affected" comment="When checked the switch will be affected by gravity."/>
     <value pos="5" pos_type="nybbles" title="Location ID"/>
     <checkbox pos="6" pos_type="nybbles" title="Not Timed" comment="Disables the timer on the switch."/>
-    <list pos="9" pos_type="nybbles" title="Behaviour" comment="Determines the behaviour of the switch. A value of 1 allows the switch to be used multiple times. A value of 2 causes the switch to remain in it's pressed down state instead of dissapearing (Only effective when the switch is not timed).">
-      <entry value="0">Normal</entry>
-      <entry value="1">Reuseable</entry>
-      <entry value="2">Don't Dissapear After Use</entry>
+    <checkbox pos="7" pos_type="nybbles" title="Shift Up a Tile" comment="When checked the switch will appear a tile higher."/>
+    <list pos="8" pos_type="nybbles" title="Activation Mode" comment="This determines if the switch will activate or deactivate the event.">
+      <entry value="0">Activates Event</entry>
+      <entry value="1">Deactivates Event</entry>
+    </list>
+    <list pos="9" pos_type="nybbles" title="Usage Mode" comment="Determines the behaviour of the switch. A value of 1 allows the switch to be used multiple times. A value of 2 causes the switch to remain in it's pressed down state instead of dissapearing (Only effective when the switch is not timed).">
+      <entry value="0">Single Use</entry>
+      <entry value="1">Multi-Use</entry>
+      <entry value="2">Reactivatable</entry>
     </list>
     <checkbox pos="10" pos_type="nybbles" title="Shift Half a Tile Right" comment="Shifts the switch half a tile to the right."/>
     <checkbox pos="11" pos_type="nybbles" title="Upside Down" comment="Makes the switch upside down."/>
@@ -2856,10 +2830,14 @@
     <checkbox pos="4" pos_type="nybbles" title="Gravity Affected" comment="When checked the switch will be affected by gravity."/>
     <value pos="5" pos_type="nybbles" title="Location ID"/>
     <checkbox pos="6" pos_type="nybbles" title="Not Timed" comment="Disables the timer on the switch."/>
-    <list pos="9" pos_type="nybbles" title="Behaviour" comment="Determines the behaviour of the switch. A value of 1 allows the switch to be used multiple times. A value of 2 causes the switch to remain in it's pressed down state instead of dissapearing (Only effective when the switch is not timed).">
-      <entry value="0">Normal</entry>
-      <entry value="1">Reuseable</entry>
-      <entry value="2">Don't Dissapear After Use</entry>
+    <list pos="8" pos_type="nybbles" title="Activation Mode" comment="This determines if the switch will activate or deactivate the event.">
+      <entry value="0">Activates Event</entry>
+      <entry value="1">Deactivates Event</entry>
+    </list>
+    <list pos="9" pos_type="nybbles" title="Usage Mode" comment="Determines the behaviour of the switch. A value of 1 allows the switch to be used multiple times. A value of 2 causes the switch to remain in it's pressed down state instead of dissapearing (Only effective when the switch is not timed).">
+      <entry value="0">Single Use</entry>
+      <entry value="1">Multi-Use</entry>
+      <entry value="2">Reactivatable</entry>
     </list>
     <checkbox pos="10" pos_type="nybbles" title="Shift Half a Tile Right" comment="Shifts the switch half a tile to the right."/>
     <checkbox pos="11" pos_type="nybbles" title="Upside Down" comment="Makes the switch upside down."/>
@@ -2870,10 +2848,15 @@
     <checkbox pos="4" pos_type="nybbles" title="Gravity Affected" comment="When checked the switch will be affected by gravity."/>
     <value pos="5" pos_type="nybbles" title="Location ID"/>
     <checkbox pos="6" pos_type="nybbles" title="Not Timed" comment="Disables the timer on the switch."/>
-    <list pos="9" pos_type="nybbles" title="Reusable" comment="Determines the behaviour of the switch. A value of 1 allows the switch to be used multiple times. A value of 2 causes the switch to remain in it's pressed down state instead of dissapearing (Only effective when the switch is not timed).">
-      <entry value="0">Normal</entry>
-      <entry value="1">Reuseable</entry>
-      <entry value="2">Don't Dissapear After Use</entry>
+    <checkbox pos="7" pos_type="nybbles" title="Shift Up a Tile" comment="When checked the switch will appear a tile higher."/>
+    <list pos="8" pos_type="nybbles" title="Activation Mode" comment="This determines if the switch will activate or deactivate the event.">
+      <entry value="0">Activates Event</entry>
+      <entry value="1">Deactivates Event</entry>
+    </list>
+    <list pos="9" pos_type="nybbles" title="Usage Mode" comment="Determines the behaviour of the switch. A value of 1 allows the switch to be used multiple times. A value of 2 causes the switch to remain in it's pressed down state instead of dissapearing (Only effective when the switch is not timed).">
+      <entry value="0">Single Use</entry>
+      <entry value="1">Multi-Use</entry>
+      <entry value="2">Reactivatable</entry>
     </list>
     <checkbox pos="10" pos_type="nybbles" title="Shift Half a Tile Right" comment="Shifts the switch half a tile to the right."/>
     <checkbox pos="11" pos_type="nybbles" title="Upside Down" comment="Makes the switch upside down."/>
@@ -2884,10 +2867,14 @@
     <checkbox pos="4" pos_type="nybbles" title="Gravity Affected" comment="When checked the switch will be affected by gravity."/>
     <value pos="5" pos_type="nybbles" title="Location ID"/>
     <checkbox pos="6" pos_type="nybbles" title="Not Timed" comment="Disables the timer on the switch."/>
-    <list pos="9" pos_type="nybbles" title="Reusable" comment="Determines the behaviour of the switch. A value of 1 allows the switch to be used multiple times. A value of 2 causes the switch to remain in it's pressed down state instead of dissapearing (Only effective when the switch is not timed).">
-      <entry value="0">Normal</entry>
-      <entry value="1">Reuseable</entry>
-      <entry value="2">Don't Dissapear After Use</entry>
+    <list pos="8" pos_type="nybbles" title="Activation Mode" comment="This determines if the switch will activate or deactivate the event.">
+      <entry value="0">Activates Event</entry>
+      <entry value="1">Deactivates Event</entry>
+    </list>
+    <list pos="9" pos_type="nybbles" title="Usage Mode" comment="Determines the behaviour of the switch. A value of 1 allows the switch to be used multiple times. A value of 2 causes the switch to remain in it's pressed down state instead of dissapearing (Only effective when the switch is not timed).">
+      <entry value="0">Single Use</entry>
+      <entry value="1">Multi-Use</entry>
+      <entry value="2">Reactivatable</entry>
     </list>
     <checkbox pos="10" pos_type="nybbles" title="Shift Half a Tile Right" comment="Shifts the switch half a tile to the right."/>
     <checkbox pos="11" pos_type="nybbles" title="Upside Down" comment="Makes the switch upside down."/>
@@ -3323,24 +3310,12 @@
     <checkbox pos="11" pos_type="nybbles" title="Is Dry Bowser"/>
   </sprite>
   <sprite id="259" name="Rotation-controlled Hard Block">
-    <list pos="5" pos_type="nybbles" title="Behavior" comment="The behavior of this rotating hard block.">
+    <list pos="16-17" pos_type="bits" title="Rotation Mode" comment="The behavior of this rotating hard block.">
       <entry value="0">Normal</entry>
-      <entry value="1">Normal</entry>
-      <entry value="2">Rotate Facing Camera</entry>
-      <entry value="3">Rotate Facing Camera</entry>
-      <entry value="4">Rotate Facing Controller</entry>
-      <entry value="5">Rotate Facing Controller</entry>
-      <entry value="6">Rotate Facing Camera</entry>
-      <entry value="7">Rotate Facing Camera</entry>
-      <entry value="8">Inverted</entry>
-      <entry value="9">Normal</entry>
-      <entry value="10">Rotate Facing Camera</entry>
-      <entry value="11">Rotate Facing Camera</entry>
-      <entry value="12">Rotate Facing Controller</entry>
-      <entry value="13">Rotate Facing Controller</entry>
-      <entry value="14">Rotate Facing Camera</entry>
-      <entry value="15">Rotate Facing Camera</entry>
+      <entry value="1">Start Upside Down</entry>
+      <entry value="2">Gimbal Rotation</entry>
     </list>
+    <checkbox pos="19" pos_type="bits" title="Use Rotation Controller Starting Rotation Offset" comment="If enabled, the Block Will use the start offset spesified in the rotation controller."/>
     <list pos="18" pos_type="nybbles" title="Type" comment="3 only has the appearance of a Brick Block. Seems to repeat after 3.">
       <entry value="0">Stone</entry>
       <entry value="1">Rotation Pivot</entry>
@@ -3735,25 +3710,14 @@
     <value pos="20-21" pos_type="nybbles" title="Rotation ID" comment="Used to pair with either a swaying or spinning controller. [Unused]"/>
   </sprite>
   <sprite id="303" name="Rotation-controlled Moon Coin">
-    <value pos="0-1" pos_type="nybbles" title="Target Event ID"/>
-    <list pos="5" pos_type="nybbles" title="Behavior" comment="The behavior of this rotating moon coin.">
+    <list pos="16-18" pos_type="bits" title="Rotation Mode" comment="The behavior of this rotating moon coin.">
       <entry value="0">Normal</entry>
-      <entry value="1">Normal</entry>
-      <entry value="2">Rotate Facing Camera</entry>
-      <entry value="3">Rotate Facing Camera</entry>
-      <entry value="4">Rotate Facing Controller</entry>
-      <entry value="5">Rotate Facing Controller</entry>
-      <entry value="6">Rotate Facing Camera</entry>
-      <entry value="7">Rotate Facing Camera</entry>
-      <entry value="8">Inverted</entry>
-      <entry value="9">Normal</entry>
-      <entry value="10">Rotate Facing Camera</entry>
-      <entry value="11">Rotate Facing Camera</entry>
-      <entry value="12">Rotate Facing Controller</entry>
-      <entry value="13">Rotate Facing Controller</entry>
-      <entry value="14">Rotate Facing Camera</entry>
-      <entry value="15">Rotate Facing Camera</entry>
+      <entry value="1">Upside Down Coin</entry>
+      <entry value="2">Gimbal Rotation</entry>
+      <entry value="4">Upside Down Coin</entry>
     </list>
+    <checkbox pos="19" pos_type="bits" title="Use Rotation Controller Starting Rotation Offset" comment="If enabled, the Star Coin Will use the start offset spesified in the rotation controller."/>
+    <value pos="0-1" pos_type="nybbles" title="Target Event ID"/>
     <value pos="6" pos_type="nybbles" title="Unknown 6"/>
     <list pos="8" pos_type="nybbles" title="Number">
       <entry value="0">One</entry>
@@ -3882,7 +3846,7 @@
       <entry value="1">Right</entry>
     </list>
     <value pos="9" pos_type="nybbles" title="Y Position Offset" comment="Offsets the Y position by +2 blocks for each value."/>
-    <value pos="10" pos_type="nybbles" title="Unknown Value 5"/>
+    <value pos="10" pos_type="nybbles" title="X Position Offset" comment="Offsets the X position by +2 blocks for each value."/>
     <list pos="11" pos_type="nybbles" title="Coin Value" comment="Determines the value of the coin. Values after 1 are repeated.">
       <entry value="0">10</entry>
       <entry value="1">100</entry>
@@ -3979,20 +3943,18 @@
   </sprite>
   <sprite id="319" name="Staff Credits - Koopa Clown Car" notes="The Koopa Clown Car actor used for the staff credits."/>
   <sprite id="320" name="Move-once-on Path-controlled Lift" notes="Uses the Path Node &quot;Variable Use&quot; field to determine how rotation acts, a value of 0 will cause the platform to wobble, a value of 1 will cause the platform to be at a fixed rotation.">
-    <value pos="8" pos_type="nybbles" title="Path Node" comment="Value +1 is added."/>
-    <value pos="9-10" pos_type="nybbles" title="Path ID" comment="The Path ID."/>
+    <value pos="8" pos_type="nybbles" title="Starting Path Node" comment="The ID of the path node the platform will start at."/>
+    <value pos="9-10" pos_type="nybbles" title="Path ID" comment="The ID of the path the platform will follow."/>
     <value pos="11" pos_type="nybbles" title="Platform Length" comment="Length of the platform."/>
-    <list pos="12" pos_type="nybbles" title="Start Behaviour" comment="Determines Starting Behaviour. Values repeat.">
-      <entry value="0">Moves when Touched</entry>
+    <list pos="12" pos_type="nybbles" title="Start Behaviour" comment="Determines Starting Behaviour.">
+      <entry value="0">Moves when Touched (Default)</entry>
       <entry value="1">Already Moving</entry>
-      <entry value="2">Moves when Touched</entry>
-      <entry value="3">Already Moving</entry>
+      <entry value="2">Moves when Touched,</entry>
     </list>
-    <list pos="14" pos_type="nybbles" title="End Behaviour" comment="The behavior of the platform after it hits the last node. (* starts at the top, goes down, and disappears.)">
+    <list pos="14" pos_type="nybbles" title="End Behaviour" comment="The behavior of the platform after it hits the last node. ">
       <entry value="0">Falls</entry>
-      <entry value="1">Goes Backwards</entry>
-      <entry value="2">Falls</entry>
-      <entry value="3">Starts on top*</entry>
+      <entry value="1">Changes Direction</entry>
+      <entry value="2">Stops</entry>
       <entry value="4">Disappears</entry>
     </list>
     <value pos="16" pos_type="nybbles" title="Unknown Value 16"/>
