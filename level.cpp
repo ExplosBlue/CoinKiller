@@ -1085,34 +1085,8 @@ void Level::sortCameraLimits(Sprite *spr)
         topCamLimits.append(spr);
 
     // Sort right limits from smallest to largest xPos
-    for (int i = 0; i < rightCamLimits.size()-1; i++)
-    {
-        if (rightCamLimits[i]->getx() > rightCamLimits[i+1]->getx())
-        {
-            rightCamLimits.swapItemsAt(i, i+1);
-            int j = i;
-            while (j > 0)
-            {
-                if (rightCamLimits[j-1]->getx() > rightCamLimits[j]->getx())
-                    rightCamLimits.swapItemsAt(j-1, j);
-                j--;
-            }
-        }
-    }
+    std::sort(rightCamLimits.begin(), rightCamLimits.end(), [](const Sprite* a, const Sprite* b) -> bool { return a->getx() < b->getx(); });
 
     // Sort bottom limits from smallest to largest yPos
-    for (int i = 0; i < bottomCamLimits.size()-1; i++)
-    {
-        if (bottomCamLimits[i]->gety() > bottomCamLimits[i+1]->gety())
-        {
-            bottomCamLimits.swapItemsAt(i, i+1);
-            int j = i;
-            while (j > 0)
-            {
-                if (bottomCamLimits[j-1]->gety() > bottomCamLimits[j]->gety())
-                    bottomCamLimits.swapItemsAt(j-1, j);
-                j--;
-            }
-        }
-    }
+    std::sort(bottomCamLimits.begin(), bottomCamLimits.end(), [](const Sprite* a, const Sprite* b) -> bool { return a->gety() < b->gety(); });
 }
