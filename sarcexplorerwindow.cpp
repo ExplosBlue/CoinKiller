@@ -264,7 +264,7 @@ void SarcExplorerWindow::on_exportButton_clicked()
         if (l.count() > 1)
             fileExtension = l.at(l.count()-1);
 
-        QString filePath = QFileDialog::getSaveFileName(this, tr("Export File"), basePath + name, " (*.%1)").arg(fileExtension);
+        QString filePath = QFileDialog::getSaveFileName(this, tr("Export File"), basePath + name, QString(" (*.%1)").arg(fileExtension));
 
         if (filePath.isEmpty() || filePath.isEmpty())
         {
@@ -349,7 +349,7 @@ void SarcExplorerWindow::on_importButton_clicked()
     if (l.count() > 1)
         fileExtension = l.at(l.count()-1);
 
-    QString importPath = QFileDialog::getOpenFileName(this, tr("Import"), basePath + name, " (*.%1)").arg(fileExtension);
+    QString importPath = QFileDialog::getOpenFileName(this, tr("Import"), basePath + name,QString(" (*.%1)").arg(fileExtension));
 
     if (importPath.isEmpty() || importPath.isEmpty())
     {
