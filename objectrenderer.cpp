@@ -2028,6 +2028,9 @@ void MushroomPlatformRenderer::render(QPainter *painter, QRect *)
         }
     }
 
+    painter->setRenderHint(QPainter::Antialiasing);
+
+
     // Draw the platform into a pixmap for use later
     platformPainter.drawPixmap(0, 0, 24, 20, ImageCache::getInstance()->get(SpriteImg, basepath + "/l.png"));
     for (int i = 20; i < spr->getwidth()-44; i += 20)

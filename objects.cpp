@@ -3169,6 +3169,9 @@ PathNode::PathNode(qint32 x, qint32 y, float speed, float accel, quint16 delay, 
     this->variableField = variableField;
     this->nextPathID = nextPathID;
     this->parentPath = parentPath;
+
+    this->offsetx = -10;
+    this->offsety = -10;
 }
 
 PathNode::PathNode(PathNode *node, Path* parentPath)
@@ -3182,6 +3185,9 @@ PathNode::PathNode(PathNode *node, Path* parentPath)
     variableField = node->getVariableField();
     nextPathID = node->getNextPathID();
     this->parentPath = parentPath;
+
+    this->offsetx = -10;
+    this->offsety = -10;
 }
 
 QString PathNode::toString(qint32 xOffset, qint32 yOffset) const
@@ -3253,6 +3259,9 @@ ProgressPathNode::ProgressPathNode(qint32 x, qint32 y, ProgressPath *parentPath)
     this->x = x;
     this->y = y;
     this->parentPath = parentPath;
+
+    this->offsetx = -10;
+    this->offsety = -10;
 }
 
 ProgressPathNode::ProgressPathNode(ProgressPathNode *node, ProgressPath *parentPath)
@@ -3260,6 +3269,9 @@ ProgressPathNode::ProgressPathNode(ProgressPathNode *node, ProgressPath *parentP
     x = node->getx();
     y = node->gety();
     this->parentPath = parentPath;
+
+    this->offsetx = -10;
+    this->offsety = -10;
 }
 
 QString ProgressPathNode::toString(qint32 xOffset, qint32 yOffset) const

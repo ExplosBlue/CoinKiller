@@ -426,21 +426,21 @@ void ObjectsEditonMode::render(QPainter *painter)
             painter->setPen(QPen(Qt::black));
 
             QPainterPath path1;
-            path1.moveTo(node->getx(), node->gety());
-            path1.quadTo(QPoint(node->getx()-14, node->gety()), QPoint(node->getx()-20, node->gety()+10));
-            path1.quadTo(QPoint(node->getx()-14, node->gety()+20), QPoint(node->getx(), node->gety()+20));
+            path1.moveTo(node->getx()-10, node->gety()-10);
+            path1.quadTo(QPoint(node->getx()-24, node->gety()-10), QPoint(node->getx()-30, node->gety()));
+            path1.quadTo(QPoint(node->getx()-24, node->gety()+10), QPoint(node->getx()-10, node->gety()+10));
             painter->fillPath(path1, QBrush(QColor(100, 100, 100, 175)));
             painter->drawPath(path1);
 
             QPainterPath path2;
-            path2.moveTo(node->getx()+20, node->gety());
-            path2.quadTo(QPoint(node->getx()+34, node->gety()), QPoint(node->getx()+40, node->gety()+10));
-            path2.quadTo(QPoint(node->getx()+34, node->gety()+20), QPoint(node->getx()+20, node->gety()+20));
+            path2.moveTo(node->getx()+10, node->gety()-10);
+            path2.quadTo(QPoint(node->getx()+24, node->gety()-10), QPoint(node->getx()+30, node->gety()));
+            path2.quadTo(QPoint(node->getx()+24, node->gety()+10), QPoint(node->getx()+10, node->gety()+10));
             painter->fillPath(path2, QBrush(QColor(100, 100, 100, 175)));
             painter->drawPath(path2);
 
-            drawPlus(painter, node->getx()-18, node->gety());
-            drawPlus(painter, node->getx()+18, node->gety());
+            drawPlus(painter, node->getx()-28, node->gety()-10);
+            drawPlus(painter, node->getx()+8, node->gety()-10);
         }
     }
 

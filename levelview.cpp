@@ -309,14 +309,22 @@ void LevelView::paint(QPainter& painter, QRect rect, float zoomLvl, bool selecti
                     continue;
 
                 int pathID = 0;
+                int nodeID = 0;
+
                 if (s->getid() == 152 || s->getid() == 320)
-                    pathID = (s->getNybbleData(9, 10));
+                {
+                    pathID = s->getNybbleData(9, 10);
+                    nodeID = s->getNybbleData(7,8);
+                }
                 else
                     pathID = (s->getNybble(10));
 
                 if (path->getid() == pathID)
                 {
-                    s->setPosition(path->getNode(0)->getx(), path->getNode(0)->gety());
+                    if (nodeID > path->getNumberOfNodes())
+                        nodeID = 0;
+
+                    s->setPosition(path->getNode(nodeID)->getx(), path->getNode(nodeID)->gety());
                 }
             }
         }
@@ -485,7 +493,7 @@ void LevelView::paint(QPainter& painter, QRect rect, float zoomLvl, bool selecti
 
             for (int j = 0; j < nodes.size() - 1; j++)
             {
-                QLine pathLine(QPoint(nodes[j]->getx()+10, nodes[j]->gety()+10), QPoint(nodes[j+1]->getx()+10, nodes[j+1]->gety()+10));
+                QLine pathLine(QPoint(nodes[j]->getx(), nodes[j]->gety()), QPoint(nodes[j+1]->getx(), nodes[j+1]->gety()));
 
                 if (!drawrect.intersects(QRect(pathLine.x1(), pathLine.y1(), pathLine.x2()-pathLine.x1(), pathLine.y2()-pathLine.y1())))
                     continue;
@@ -499,7 +507,7 @@ void LevelView::paint(QPainter& painter, QRect rect, float zoomLvl, bool selecti
             // Connect path end to start if loop flag is enabled
             if (((path->getLoop() & 2) != 0) && (nodes.size() > 2))
             {
-                QLine pathLine(QPoint(nodes[0]->getx()+10, nodes[0]->gety()+10), QPoint(nodes[nodes.size()-1]->getx()+10, nodes[nodes.size()-1]->gety()+10));
+                QLine pathLine(QPoint(nodes[0]->getx(), nodes[0]->gety()), QPoint(nodes[nodes.size()-1]->getx(), nodes[nodes.size()-1]->gety()));
 
                 QPen pen(QColor(0,255,20));
                 pen.setWidth(2);
@@ -509,7 +517,7 @@ void LevelView::paint(QPainter& painter, QRect rect, float zoomLvl, bool selecti
 
             for (int j = 0; j < nodes.size(); j++)
             {
-                QRect pathrect(nodes[j]->getx(), nodes[j]->gety(), 20, 20);
+                QRect pathrect(nodes[j]->getx()-10, nodes[j]->gety()-10, 20, 20);
 
                 if (!drawrect.intersects(pathrect))
                     continue;
@@ -537,7 +545,7 @@ void LevelView::paint(QPainter& painter, QRect rect, float zoomLvl, bool selecti
 
             for (int j = 0; j < nodes.size() - 1; j++)
             {
-                QLine ppathLine(QPoint(nodes[j]->getx()+10, nodes[j]->gety()+10), QPoint(nodes[j+1]->getx()+10, nodes[j+1]->gety()+10));
+                QLine ppathLine(QPoint(nodes[j]->getx(), nodes[j]->gety()), QPoint(nodes[j+1]->getx(), nodes[j+1]->gety()));
 
                 if (!drawrect.intersects(QRect(ppathLine.x1(), ppathLine.y1(), ppathLine.x2()-ppathLine.x1(), ppathLine.y2()-ppathLine.y1())))
                     continue;
@@ -550,7 +558,7 @@ void LevelView::paint(QPainter& painter, QRect rect, float zoomLvl, bool selecti
 
             for (int j = 0; j < nodes.size(); j++)
             {
-                QRect ppathrect(nodes[j]->getx(), nodes[j]->gety(), 20, 20);
+                QRect ppathrect(nodes[j]->getx()-10, nodes[j]->gety()-10, 20, 20);
 
                 if (!drawrect.intersects(ppathrect))
                     continue;
