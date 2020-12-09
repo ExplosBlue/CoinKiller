@@ -96,7 +96,7 @@ MainWindow::MainWindow(WindowBase *parent) :
         message.exec();
 
         this->setEnabled(false);
-        FileDownloader::download(QUrl("http://smbnext.net/spritedb/spritexml.php"), this, SLOT(sdDownload_finished(QNetworkReply::NetworkError, const QByteArray&, const QUrl&)));
+        FileDownloader::download(QUrl("https://smbnext.net/spritedb/spritexml.php"), this, SLOT(sdDownload_finished(QNetworkReply::NetworkError, const QByteArray&, const QUrl&)));
     }
 }
 
@@ -263,7 +263,7 @@ void MainWindow::on_updateSpriteData_clicked()
 
     this->setEnabled(false);
 
-    FileDownloader::download(QUrl("http://smbnext.net/spritedb/spritexml.php"), this, SLOT(sdDownload_finished(QNetworkReply::NetworkError, const QByteArray&, const QUrl&)));
+    FileDownloader::download(QUrl("https://smbnext.net/spritedb/spritexml.php"), this, SLOT(sdDownload_finished(QNetworkReply::NetworkError, const QByteArray&, const QUrl&)));
 }
 
 void MainWindow::sdDownload_finished(QNetworkReply::NetworkError error, const QByteArray& data, const QUrl& url)

@@ -577,7 +577,7 @@ ObjectsEditonMode::mouseAction ObjectsEditonMode::getActionAtPos(int x, int y)
                 PathNode* n = dynamic_cast<PathNode*>(node);
                 int nodeID = n->getParentPath()->getIndexOfNode(n);
 
-                if (nodeID == 0 && n->getParentPath()->getNumberOfNodes() >= nodeID+1)
+                if (nodeID == 0 && n->getParentPath()->getNumberOfNodes() > nodeID+1)
                 {
                     if (n->getx() >= n->getParentPath()->getNode(nodeID+1)->getx())
                         act.pAdd = AddBefore;
@@ -607,7 +607,7 @@ ObjectsEditonMode::mouseAction ObjectsEditonMode::getActionAtPos(int x, int y)
 
                     int nodeID = n->getParentPath()->getIndexOfNode(n);
 
-                    if (nodeID == 0 && n->getParentPath()->getNumberOfNodes() >= nodeID+1)
+                    if (nodeID == 0 && n->getParentPath()->getNumberOfNodes() > nodeID+1)
                     {
                         if (n->getx() >= n->getParentPath()->getNode(nodeID+1)->getx())
                             act.pAdd = AddAfter;
@@ -624,10 +624,16 @@ ObjectsEditonMode::mouseAction ObjectsEditonMode::getActionAtPos(int x, int y)
                 else if (QRect(node->getx()+10, node->gety()-10, 20, 20).contains(x, y))
                 {
                     ProgressPathNode* n = dynamic_cast<ProgressPathNode*>(node);
-
                     int nodeID = n->getParentPath()->getIndexOfNode(n);
 
-                    if (nodeID == 0)
+                    if (nodeID == 0 && n->getParentPath()->getNumberOfNodes() > nodeID+1)
+                    {
+                        if (n->getx() >= n->getParentPath()->getNode(nodeID+1)->getx())
+                            act.pAdd = AddBefore;
+                        else
+                            act.pAdd = AddAfter;
+                    }
+                    else if (nodeID == 0)
                         act.pAdd = AddAfter;
                     else if (n->getx() >= n->getParentPath()->getNode(nodeID-1)->getx())
                         act.pAdd = AddAfter;

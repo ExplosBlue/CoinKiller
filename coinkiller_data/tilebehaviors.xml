@@ -45,7 +45,11 @@
 		</behavior>
 
 		<behavior value = "2" description = "Coin Outline" />
-		<behavior value = "3" description = "Coin" />
+		<behavior value = "3" description = "Coin" >
+			<value id = "0" description = "Normal Coin" />
+			<value id = "1" description = "Red Coin (Buggy)" />
+			<value id = "2" description = "Blue Coin" />
+		</behavior>
 		<behavior value = "4" description = "Blue Coin" />
 
 		<behavior value = "5" description = "Explodable Block">
@@ -157,16 +161,18 @@
 			<value id = "34" description = "8x1 Up: Part 8" />
 		</behavior>
 
-		<behavior value = "13" description = "Animation related?">
+		<behavior value = "13" description = "Liquid">
 			<value id = "0" description = "unk0" />
 			<value id = "1" description = "unk1" />
 			<value id = "2" description = "unk2" />
 			<value id = "3" description = "unk3" />
-			<value id = "4" description = "unk4" />
+			<value id = "4" description = "Quicksand" />
 		</behavior>
 
-		<behavior value = "14" description = "Vine/Climbable Fence">
+		<behavior value = "14" description = "Climbable Surface">
 			<value id = "0" description = "Vine" />
+			<value id = "1" description = "Wall" />
+			<value id = "2" description = "Spiderweb" />
 			<value id = "3" description = "Fence: Top-Left" />
 			<value id = "4" description = "Fence: Top" />
 			<value id = "5" description = "Fence: Top-Right" />
@@ -178,15 +184,21 @@
 			<value id = "11" description = "Fence: Bottom-Right" />
 		</behavior>
 
-		<behavior value = "15" description = "Spikes">
-			<value id = "3" description = "Left" />
-			<value id = "4" description = "Right" />
-			<value id = "5" description = "Top" />
-			<value id = "6" description = "Bottom" />
-			<value id = "10" description = "Top-Left" />
-			<value id = "11" description = "Top-Right" />
-			<value id = "12" description = "Bottom-Left" />
-			<value id = "13" description = "Bottom-Right" />
+		<behavior value = "15" description = "Damage Tile">
+			<value id = "0" description = "Icicle 1x1" />
+			<value id = "1" description = "Icicle 1x2: Top" />
+			<value id = "2" description = "Icicle 1x2: Bottom" />
+			<value id = "3" description = "Spikes: Left" />
+			<value id = "4" description = "Spikes: Right" />
+			<value id = "5" description = "Spikes: Top" />
+			<value id = "6" description = "Spikes: Bottom" />
+			<value id = "10" description = "Spikes: Top-Left" />
+			<value id = "11" description = "Spikes: Top-Right" />
+			<value id = "12" description = "Spikes: Bottom-Left" />
+			<value id = "13" description = "Spikes: Bottom-Right" />
+			<value id = "7" description = "Insta-Death" />
+			<value id = "8" description = "Lava (Buggy)" />
+			<value id = "9" description = "Poison (Buggy)" />
 		</behavior>
 
 		<behavior value = "16" description = "Pipe">
@@ -233,13 +245,14 @@
 			<value id = "5" description = "3x1: Right" />
 		</behavior>
 
+		<behavior value = "20" description = "No Jump" />
 		<behavior value = "21" description = "Horizontal Climbing Rope" />
 		<behavior value = "22" description = "Vertical Climbing Pole" />
 		<behavior value = "33" description = "Clown Car Flash Safe Area" />
 		<behavior value = "34" description = "No Headbonk" />
 		<behavior value = "35" description = "Note-Block" />
 
-		<behavior value = "36" description = "Ghosthouse spring">
+		<behavior value = "36" description = "Ghosthouse Spring">
 			<value id = "1" description = "unknown (0x01)" />
 			<value id = "2" description = "unknown (0x02)" />
 			<value id = "3" description = "unknown (0x03)" />
@@ -267,11 +280,12 @@
 	<terrainTypes>
 		<value id = "0" description = "Normal" />
 		<value id = "1" description = "Icy" />
-		<value id = "2" description = "Snowy" />
+		<value id = "2" description = "Snow" />
 		<value id = "3" description = "Quicksand" />
-		<value id = "4" description = "Sand (desert)" />
+		<value id = "4" description = "Desert Sand" />
 		<value id = "5" description = "Grass" />
-		<value id = "7" description = "Sand (beach)" />
+		<value id = "6" description = "Cloud" />
+		<value id = "7" description = "Beach Sand" />
 		<value id = "8" description = "Carpet (Unused)" />
 		<value id = "9" description = "Leaves (Unused)" />
 		<value id = "10" description = "Wood" />
@@ -280,8 +294,8 @@
 
 	<depthBehaviors>
 		<value id = "0" description = "Normal" />
-		<value id = "1" description = "Further in the Foreground?" />
-		<value id = "2" description = "Further in the Background / Blurred" />
+		<value id = "1" description = "Further in the Foreground" />
+		<value id = "2" description = "Further in the Background" />
 	</depthBehaviors>
 
 	<pipeColors>

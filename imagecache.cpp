@@ -3,6 +3,7 @@
 
 #include <QDirIterator>
 #include <QDebug>
+#include <stdexcept>
 
 ImageCache* ImageCache::instance = NULL;
 

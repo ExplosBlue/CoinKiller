@@ -25,7 +25,7 @@
 #include <QMessageBox>
 #include <QStringList>
 #include <QStandardPaths>
-
+#include <stdexcept>
 
 SettingsManager* SettingsManager::instance = NULL;
 

@@ -13,7 +13,7 @@
     <list pos="7" pos_type="nybbles" title="Ending Behavior" comment="Determines how the controller will act when ending.">
       <entry value="0">Unlocks Camera Movement</entry>
       <entry value="1">Move To Target Node</entry>
-      <entry value="2">Lock X-Axis Movement</entry>
+      <entry value="2">Maintain Existing Locks</entry>
       <entry value="3">Lock Backwards X-Axis Movement</entry>
     </list>
     <checkbox pos="10" pos_type="nybbles" title="No Ending Wait" comment="If checked, the ending behaviour will happen as soon as the final node is reached, rather than having a pause first."/>
@@ -814,9 +814,9 @@
       <entry value="0">Normal</entry>
       <entry value="1">Coin Starts Upside Down</entry>
       <entry value="2">Coin Faces Screen</entry>
-      <entry value="4">Coin Starts Upside Down</entry>
+      <entry value="4">Coin Faces Controller</entry>
     </list>
-    <checkbox pos="19" pos_type="bits" title="Use Rotation Controller Starting Rotation Offset" comment="If enabled, the Coin Will use the start offset spesified in the rotation controller."/>
+    <checkbox pos="19" pos_type="bits" title="Use Rotation Controller Starting Rotation Offset" comment="If enabled, the Coin Will use the start offset specified in the rotation controller."/>
     <value pos="0-1" pos_type="nybbles" title="Target Event ID"/>
     <value pos="15" pos_type="nybbles" title="Unknown 18"/>
     <value pos="18" pos_type="nybbles" title="Unknown 13"/>
@@ -848,7 +848,7 @@
       <entry value=" 3">Upside Down Gimbal Rotation</entry>
       <entry value="4">Normal</entry>
     </list>
-    <checkbox pos="19" pos_type="bits" title="Use Rotation Controller Starting Rotation Offset" comment="If enabled, the Star Coin Will use the start offset spesified in the rotation controller."/>
+    <checkbox pos="19" pos_type="bits" title="Use Rotation Controller Starting Rotation Offset" comment="If enabled, the Star Coin Will use the start offset specified in the rotation controller."/>
     <value pos="0-1" pos_type="nybbles" title="Triggering Event ID"/>
     <value pos="11" pos_type="nybbles" title="Unknown Value 6"/>
     <value pos="20-21" pos_type="nybbles" title="Rotation ID"/>
@@ -1304,7 +1304,7 @@
       <entry value="1">Start Upside Down</entry>
       <entry value="2">Gimbal Rotation</entry>
     </list>
-    <checkbox pos="19" pos_type="bits" title="Use Rotation Controller Starting Rotation Offset" comment="If enabled, the ? Block Will use the start offset spesified in the rotation controller."/>
+    <checkbox pos="19" pos_type="bits" title="Use Rotation Controller Starting Rotation Offset" comment="If enabled, the ? Block Will use the start offset specified in the rotation controller."/>
     <value pos="0-1" pos_type="nybbles" title="Triggering Event ID"/>
     <value pos="18" pos_type="nybbles" title="Unknown Value 13"/>
     <list pos="19" pos_type="nybbles" title="Contents" comment="3, 9, 12 and 15 are all empty blocks">
@@ -1387,13 +1387,9 @@
     <value pos="11" pos_type="nybbles" title="Width" comment="Never used as anything but &quot;2&quot;"/>
   </sprite>
   <sprite id="109" name="Signboard" notes="&quot;Post&quot; part will be behind layer 2 tiles.">
+    <checkbox pos="44" pos_type="bits" title="Below Layer 1"/>
+    <checkbox pos="45" pos_type="bits" title="Gravity Affected"/>
     <value pos="9" pos_type="nybbles" title="Fall speed" comment="Game will crash if this is &gt;0 and Behaviour isn't set to &quot;Gravity affected&quot;."/>
-    <list pos="10" pos_type="nybbles" title="Behavior" comment="1 - Whole sign is behind certain things, 2 - vertical movement only.">
-      <entry value="0">Normal</entry>
-      <entry value="1">Below Layer 1 Tiles</entry>
-      <entry value="2">Gravity affected</entry>
-      <entry value="3">Unknown 3</entry>
-    </list>
     <list pos="11" pos_type="nybbles" title="Inscription" comment="8 is unused.">
       <entry value="0">Arrow Right</entry>
       <entry value="1">Arrow Right-Up</entry>
@@ -1491,6 +1487,7 @@
   </sprite>
   <sprite id="120" name="Up/Down Mushrooms" notes="if Stem Height &gt; Final Height then Blue (down)&#13;&#10;if Stem Height &lt; Final Height then Pink (up)">
     <checkbox pos="7" pos_type="nybbles" title="Slower Movement" comment="Makes the platform go slower when moving."/>
+    <checkbox pos="8" pos_type="nybbles" title="Stay Activated" comment="The platform will stay activated even when the player jumps off."/>
     <value pos="9" pos_type="nybbles" title="Ending Height" comment="Destination height when stood on, from stem bottom."/>
     <value pos="10" pos_type="nybbles" title="Starting Height" comment="Initial height of stem."/>
     <value pos="11" pos_type="nybbles" title="Platform Width" comment="The platform's width."/>
@@ -1527,33 +1524,27 @@
     <checkbox pos="17" pos_type="nybbles" title="Longer Platform"/>
   </sprite>
   <sprite id="124" name="Mushroom Platform">
+    <value pos="24-26" pos_type="bits" title="Stretch Length" comment="Value is used differently depending on selected stretch mode."/>
+    <list pos="32-34" pos_type="bits" title="Tilt Angle" comment="Determines the angle the mushroom will tilt to.">
+      <entry value="0">0&#xB0;</entry>
+      <entry value="1">11.25&#xB0;</entry>
+      <entry value="2">22.5&#xB0;</entry>
+      <entry value="3">33.75&#xB0;</entry>
+      <entry value="4">45&#xB0;</entry>
+      <entry value="5">56.25&#xB0;</entry>
+      <entry value="6">67.5&#xB0;</entry>
+      <entry value="7">78.75&#xB0;</entry>
+    </list>
+    <list pos="35" pos_type="bits" title="Start Direction" comment="Determines the initial direction the mushroom will tilt.">
+      <entry value="0">Left</entry>
+      <entry value="1">Right</entry>
+    </list>
     <value pos="4" pos_type="nybbles" title="Stem Length" comment="(value+4)"/>
-    <checkbox pos="6" pos_type="nybbles" title="Stretches Vertically" mask="2"/>
-    <list pos="7" pos_type="nybbles" title="Stretch Height" comment="Values after 3 repeat.">
-      <entry value="0">No Stretch</entry>
-      <entry value="1">One Tile</entry>
-      <entry value="2">Two Tiles</entry>
-      <entry value="3">Three Tiles</entry>
+    <list pos="6" pos_type="nybbles" title="Stretch Mode">
+      <entry value="0">Extend Stem</entry>
+      <entry value="2">Stretch When Tilting</entry>
     </list>
-    <value pos="8" pos_type="nybbles" title="Length" comment="(value+3)"/>
-    <list pos="9" pos_type="nybbles" title="Starting Tilt/Tilt Angle">
-      <entry value="0">No Tilt</entry>
-      <entry value="1">Left - 11.25 Degrees</entry>
-      <entry value="2">Left - 22.5 Degrees</entry>
-      <entry value="3">Left - 33.75 Degrees</entry>
-      <entry value="4">Left - 45 Degrees</entry>
-      <entry value="5">Left - 56.25 Degrees</entry>
-      <entry value="6">Left - 67.5 Degrees</entry>
-      <entry value="7">Left - 78.75 Degrees</entry>
-      <entry value="8">No Tilt</entry>
-      <entry value="9">Right - 11.25 Degrees</entry>
-      <entry value="10">Right - 22.5 Degrees</entry>
-      <entry value="11">Right - 33.75 Degrees</entry>
-      <entry value="12">Right - 45 Degrees</entry>
-      <entry value="13">Right - 56.25 Degrees</entry>
-      <entry value="14">Right - 67.5 Degrees</entry>
-      <entry value="15">Right - 78.75 Degrees</entry>
-    </list>
+    <value pos="8" pos_type="nybbles" title="Mushroom Length" comment="(value+3)"/>
     <value pos="10-11" pos_type="nybbles" title="Tilt Speed" comment="Value Modulo 64. Speed increases for values 1-32, then decreases for values 33-63."/>
   </sprite>
   <sprite id="125" name="Bowser" notes="Used without data"/>
@@ -1753,31 +1744,34 @@
     <value pos="17" pos_type="nybbles" title="Platform Width" comment="Sets the width of the platform. Values &lt; 7 produce smaller width, values &gt; 7 produce larger widths. (This is buggy and unused, The texture is stretched) [Unused]"/>
   </sprite>
   <sprite id="151" name="Scale Lift">
-    <value pos="0-1" pos_type="nybbles" title="Triggering Event ID" comment="Needs an as-of-yet undetermined nybble to be set to 1 for this to work"/>
+    <value pos="0-1" pos_type="nybbles" title="Triggering Event ID"/>
+    <checkbox pos="4" pos_type="nybbles" title="Event Triggered" comment="Ignores triggering event, will be triggered as soon as any event is activated. [Unused]"/>
     <value pos="9" pos_type="nybbles" title="Left side rope height"/>
     <value pos="10" pos_type="nybbles" title="Right side rope height"/>
     <value pos="11" pos_type="nybbles" title="Distance between steps"/>
     <value pos="17" pos_type="nybbles" title="Length of steps"/>
   </sprite>
   <sprite id="152" name="Path-controlled Lift - with Peepa" notes="Uses the Path Node &quot;Variable Use&quot; field to determine how rotation acts, a value of 0 will cause the platform to wobble, a value of 1 will cause the platform to be at a fixed rotation.">
-    <value pos="5" pos_type="nybbles" title="Unknown Value 12"/>
-    <value pos="8" pos_type="nybbles" title="Path Node" comment="Value +1 is added,"/>
+    <value pos="5" pos_type="nybbles" title="Platform Group Number" comment="All platforms using this value will be activated at the same time."/>
+    <value pos="7-8" pos_type="nybbles" title="Path Node" comment="Determines the path node the platform will start from."/>
     <value pos="9-10" pos_type="nybbles" title="Path ID" comment="Value*1 is added to the Path ID."/>
     <value pos="11" pos_type="nybbles" title="Platform Length" comment="Length of the platform."/>
     <list pos="12" pos_type="nybbles" title="Start Behaviour" comment="Determines Starting Behaviour. Values repeat.">
-      <entry value="0">Moves when Touched</entry>
+      <entry value="0">Moves when Touched (Default)</entry>
       <entry value="1">Already Moving</entry>
       <entry value="2">Moves when Touched</entry>
-      <entry value="3">Already Moving</entry>
+    </list>
+    <list pos="13" pos_type="nybbles" title="Direction" comment="Sets the direction of movement. If set to backwards while starting at node 0, the platform will spin in a circle. [Unused]">
+      <entry value="0">Forwards</entry>
+      <entry value="1">Backwards</entry>
     </list>
     <list pos="14" pos_type="nybbles" title="End Behaviour" comment="The behavior of the platform after it hits the last node. (* starts at the top, goes down, and disappears.)">
       <entry value="0">Falls</entry>
-      <entry value="1">Goes Backwards</entry>
-      <entry value="2">Falls</entry>
-      <entry value="3">Starts on top*</entry>
+      <entry value="1">Changes Direction</entry>
+      <entry value="2">Stops</entry>
       <entry value="4">Disappears</entry>
     </list>
-    <checkbox pos="15" pos_type="nybbles" title="Curved Movement" comment="This makes the platform turn in a more curvy fashion."/>
+    <checkbox pos="15" pos_type="nybbles" title="Smooth Direction Changes" comment="When enabled, the platform will smooth out all all direction changes instead of snapping sharply."/>
     <list pos="16" pos_type="nybbles" title="Peepa Behavior">
       <entry value="0">Appear While on Lift Only</entry>
       <entry value="3">Shown based on Start Behavior</entry>
@@ -1799,12 +1793,20 @@
     <value pos="17" pos_type="nybbles" title="Width"/>
   </sprite>
   <sprite id="154" name="Spinning Four-Platform Lift" notes="Can move with and without tracks.&#13;&#10;Can be big or small.">
-    <list pos="6" pos_type="nybbles" title="Movement">
-      <entry value="0">Left/Right</entry>
-      <entry value="1">Uses Tracks</entry>
-      <entry value="2">No Movement</entry>
+    <value pos="0-1" pos_type="nybbles" title="Triggering Event ID" comment="The platform will appear when triggered. [Unused]"/>
+    <checkbox pos="4" pos_type="nybbles" title="Event Triggered" comment="Allows the platform to be triggered by events. [Unused]"/>
+    <checkbox pos="5" pos_type="nybbles" title="Slower Rotation" comment="When Checked, the platform's rotation speed will be slower. [Unused]"/>
+    <list pos="6" pos_type="nybbles" title="Movement" comment="Determines how the platform will act. ">
+      <entry value="0">Move Horizontally</entry>
+      <entry value="1">Use Tracks</entry>
+      <entry value="2">Spin In Place</entry>
+      <entry value="3">Automatically Spin In Place</entry>
     </list>
-    <list pos="11" pos_type="nybbles" title="Size">
+    <list pos="7" pos_type="nybbles" title="Auto-Spin Direction" comment="Determines the direction the platform will spin when set to spin automatically. [Unused]">
+      <entry value="0">Counter Clockwise</entry>
+      <entry value="1">Clockwise</entry>
+    </list>
+    <list pos="11" pos_type="nybbles" title="Size" comment="Changes the size of the platform.">
       <entry value="0">Big</entry>
       <entry value="1">Small</entry>
     </list>
@@ -2467,7 +2469,7 @@
       <entry value="1">Start Upside Down</entry>
       <entry value="2">Gimbal Rotation</entry>
     </list>
-    <checkbox pos="19" pos_type="bits" title="Use Rotation Controller Starting Rotation Offset" comment="If enabled, the Brick Block Will use the start offset spesified in the rotation controller."/>
+    <checkbox pos="19" pos_type="bits" title="Use Rotation Controller Starting Rotation Offset" comment="If enabled, the Brick Block Will use the start offset specified in the rotation controller."/>
     <value pos="0-1" pos_type="nybbles" title="Triggering Event ID"/>
     <list pos="19" pos_type="nybbles" title="Contents" comment="3, 9, 12 and 15 are all empty blocks">
       <entry value="0">Nothing</entry>
@@ -2577,8 +2579,26 @@
     </list>
   </sprite>
   <sprite id="210" name="Tightrope" notes="This appeared in NSMB.">
-    <value pos="4" pos_type="nybbles" title="Rope Length"/>
-    <list pos="5" pos_type="nybbles" title="Height">
+    <value pos="0-1" pos_type="nybbles" title="Triggering Event ID" comment="Rope will appear when this event is activated. [Unused]"/>
+    <list pos="4" pos_type="nybbles" title="Rope Length" comment="Determines the length of the rope.">
+      <entry value="0">17 Tiles (Default)</entry>
+      <entry value="1">2 Tiles</entry>
+      <entry value="2">3 Tiles</entry>
+      <entry value="3">4 Tiles</entry>
+      <entry value="4">5 Tiles</entry>
+      <entry value="5">6 Tiles</entry>
+      <entry value="6">7 Tiles</entry>
+      <entry value="7">8 Tiles</entry>
+      <entry value="8">9 Tiles</entry>
+      <entry value="9">10 Tiles</entry>
+      <entry value="10">11 Tiles</entry>
+      <entry value="11">12 Tiles</entry>
+      <entry value="12">13 Tiles</entry>
+      <entry value="13">14 Tiles</entry>
+      <entry value="14">15 Tiles</entry>
+      <entry value="15">16 Tiles </entry>
+    </list>
+    <list pos="5" pos_type="nybbles" title="Height" comment="Determines the height and direction of the rope.">
       <entry value="0">Flat</entry>
       <entry value="1">Up One Tile</entry>
       <entry value="2">Up Two Tiles</entry>
@@ -2595,6 +2615,12 @@
       <entry value="13">Down Three Tiles</entry>
       <entry value="14">Down Two Tiles</entry>
       <entry value="15">Down One Tiles</entry>
+    </list>
+    <list pos="11" pos_type="nybbles" title="Joint Visibility" comment="Toggles the visibility for the end joints. [Unused]">
+      <entry value="0">Both Joints Visible</entry>
+      <entry value="1">Right Joint Only</entry>
+      <entry value="2">Left Joint Only</entry>
+      <entry value="3">No Joints</entry>
     </list>
   </sprite>
   <sprite id="211" name="Roy Koopa" notes="Requires a castle boss controller to function correctly."/>
@@ -2752,7 +2778,7 @@
       <entry value="2">Gimbal Rotation</entry>
       <entry value="4">Upside Down Coin</entry>
     </list>
-    <checkbox pos="19" pos_type="bits" title="Use Rotation Controller Starting Rotation Offset" comment="If enabled, the Star Coin Will use the start offset spesified in the rotation controller."/>
+    <checkbox pos="19" pos_type="bits" title="Use Rotation Controller Starting Rotation Offset" comment="If enabled, the Star Coin Will use the start offset specified in the rotation controller."/>
     <value pos="0-1" pos_type="nybbles" title="Target Event ID"/>
     <value pos="6" pos_type="nybbles" title="Unknown Value 6"/>
     <list pos="8" pos_type="nybbles" title="Number">
@@ -2982,13 +3008,20 @@
     </list>
   </sprite>
   <sprite id="236" name="Mega Spiked Ball">
-    <value pos="5" pos_type="nybbles" title="Speed Up When Offscreen" comment="If checked the Spiked Balls speed will increase when it is off screen."/>
+    <checkbox pos="5" pos_type="nybbles" title="Speed Up When Offscreen" comment="If checked the Spiked Balls speed will increase when it is off screen."/>
     <checkbox pos="8" pos_type="nybbles" title="Maintain Momentum" comment="Spiked Ball keeps it's momentum when it hits other objects."/>
     <list pos="10" pos_type="nybbles" title="Direction" comment="Sets the starting direction.">
       <entry value="0">Left</entry>
       <entry value="1">Right</entry>
     </list>
-    <value pos="11" pos_type="nybbles" title="Speed" comment="Determines the speed of the spiked ball. Some values ignore the direction nybble and go right regardless."/>
+    <list pos="11" pos_type="nybbles" title="Speed" comment="Determines the speed of the spiked ball. Some values ignore the direction nybble and go right regardless.">
+      <entry value="0">Slow</entry>
+      <entry value="1">Fastest</entry>
+      <entry value="2">Faster</entry>
+      <entry value="3">Slower</entry>
+      <entry value="4">Slowest (Ignores Direction)</entry>
+      <entry value="5">Only Moves on Slope</entry>
+    </list>
     <checkbox pos="16" pos_type="nybbles" title="Don't Keep Last Position" comment="If checked the spiked ball will return to it's initial position when the player gets too far away from it."/>
     <value pos="17" pos_type="nybbles" title="Unknown 16"/>
     <list pos="19" pos_type="nybbles" title="Behaviour" comment="Determines how the spiked ball will act. Behaviours loop after value 3">
@@ -3315,7 +3348,7 @@
       <entry value="1">Start Upside Down</entry>
       <entry value="2">Gimbal Rotation</entry>
     </list>
-    <checkbox pos="19" pos_type="bits" title="Use Rotation Controller Starting Rotation Offset" comment="If enabled, the Block Will use the start offset spesified in the rotation controller."/>
+    <checkbox pos="19" pos_type="bits" title="Use Rotation Controller Starting Rotation Offset" comment="If enabled, the Block Will use the start offset specified in the rotation controller."/>
     <list pos="18" pos_type="nybbles" title="Type" comment="3 only has the appearance of a Brick Block. Seems to repeat after 3.">
       <entry value="0">Stone</entry>
       <entry value="1">Rotation Pivot</entry>
@@ -3716,7 +3749,7 @@
       <entry value="2">Gimbal Rotation</entry>
       <entry value="4">Upside Down Coin</entry>
     </list>
-    <checkbox pos="19" pos_type="bits" title="Use Rotation Controller Starting Rotation Offset" comment="If enabled, the Star Coin Will use the start offset spesified in the rotation controller."/>
+    <checkbox pos="19" pos_type="bits" title="Use Rotation Controller Starting Rotation Offset" comment="If enabled, the Star Coin Will use the start offset specified in the rotation controller."/>
     <value pos="0-1" pos_type="nybbles" title="Target Event ID"/>
     <value pos="6" pos_type="nybbles" title="Unknown 6"/>
     <list pos="8" pos_type="nybbles" title="Number">
@@ -3943,13 +3976,17 @@
   </sprite>
   <sprite id="319" name="Staff Credits - Koopa Clown Car" notes="The Koopa Clown Car actor used for the staff credits."/>
   <sprite id="320" name="Move-once-on Path-controlled Lift" notes="Uses the Path Node &quot;Variable Use&quot; field to determine how rotation acts, a value of 0 will cause the platform to wobble, a value of 1 will cause the platform to be at a fixed rotation.">
-    <value pos="8" pos_type="nybbles" title="Starting Path Node" comment="The ID of the path node the platform will start at."/>
+    <value pos="7-8" pos_type="nybbles" title="Starting Path Node" comment="The ID of the path node the platform will start at."/>
     <value pos="9-10" pos_type="nybbles" title="Path ID" comment="The ID of the path the platform will follow."/>
     <value pos="11" pos_type="nybbles" title="Platform Length" comment="Length of the platform."/>
     <list pos="12" pos_type="nybbles" title="Start Behaviour" comment="Determines Starting Behaviour.">
       <entry value="0">Moves when Touched (Default)</entry>
       <entry value="1">Already Moving</entry>
-      <entry value="2">Moves when Touched,</entry>
+      <entry value="2">Moves when Touched</entry>
+    </list>
+    <list pos="13" pos_type="nybbles" title="Direction" comment="Sets the direction of movement. If set to backwards while starting at node 0, the platform will spin in a circle. [Unused]">
+      <entry value="0">Forwards</entry>
+      <entry value="1">Backwards</entry>
     </list>
     <list pos="14" pos_type="nybbles" title="End Behaviour" comment="The behavior of the platform after it hits the last node. ">
       <entry value="0">Falls</entry>
@@ -3957,37 +3994,32 @@
       <entry value="2">Stops</entry>
       <entry value="4">Disappears</entry>
     </list>
+    <checkbox pos="15" pos_type="nybbles" title="Smooth Direction Changes" comment="When enabled, the platform will smooth out all all direction changes instead of snapping sharply."/>
     <value pos="16" pos_type="nybbles" title="Unknown Value 16"/>
     <value pos="17" pos_type="nybbles" title="Unknown Value 17"/>
   </sprite>
   <sprite id="321" name="Mushroom Platform - Snow" notes="Actor: 0x02f">
+    <value pos="24-26" pos_type="bits" title="Stretch Length" comment="Value is used differently depending on selected stretch mode."/>
+    <list pos="32-34" pos_type="bits" title="Tilt Angle" comment="Determines the angle the mushroom will tilt to.">
+      <entry value="0">0&#xB0;</entry>
+      <entry value="1">11.25&#xB0;</entry>
+      <entry value="2">22.5&#xB0;</entry>
+      <entry value="3">33.75&#xB0;</entry>
+      <entry value="4">45&#xB0;</entry>
+      <entry value="5">56.25&#xB0;</entry>
+      <entry value="6">67.5&#xB0;</entry>
+      <entry value="7">78.75&#xB0;</entry>
+    </list>
+    <list pos="35" pos_type="bits" title="Start Direction" comment="Determines the initial direction the mushroom will tilt.">
+      <entry value="0">Left</entry>
+      <entry value="1">Right</entry>
+    </list>
     <value pos="4" pos_type="nybbles" title="Stem Length" comment="Value + 4"/>
-    <checkbox pos="6" pos_type="nybbles" title="Stretches Vertically" mask="2"/>
-    <list pos="7" pos_type="nybbles" title="Stretch Height" comment="Values after 3 repeat.">
-      <entry value="0">No Stretch</entry>
-      <entry value="1">One Tile</entry>
-      <entry value="2">Two Tiles</entry>
-      <entry value="3">Three Tiles</entry>
+    <list pos="6" pos_type="nybbles" title="Stretch Mode">
+      <entry value="0">Extend Stem</entry>
+      <entry value="2">Stretch When Tilting</entry>
     </list>
-    <value pos="8" pos_type="nybbles" title="Length" comment="Value + 3."/>
-    <list pos="9" pos_type="nybbles" title="Starting Tilt/Tilt Angle" comment="In degrees.">
-      <entry value="0">No Tilt</entry>
-      <entry value="1">Left - 11.25</entry>
-      <entry value="2">Left - 22.5</entry>
-      <entry value="3">Left - 33.75</entry>
-      <entry value="4">Left - 45</entry>
-      <entry value="5">Left - 56.25</entry>
-      <entry value="6">Left - 67.5</entry>
-      <entry value="7">Left - 78.75</entry>
-      <entry value="8">No Tilt</entry>
-      <entry value="9">Right - 11.25</entry>
-      <entry value="10">Right - 22.5</entry>
-      <entry value="11">Right - 33.75</entry>
-      <entry value="12">Right - 45</entry>
-      <entry value="13">Right - 56.25</entry>
-      <entry value="14">Right - 67.5</entry>
-      <entry value="15">Right - 78.75</entry>
-    </list>
+    <value pos="8" pos_type="nybbles" title="Mushroom Length" comment="Value + 3."/>
     <value pos="10-11" pos_type="nybbles" title="Tilt Speed" comment="Value Modulo 64. Speed increases for values 1-32, then decreases for values 33-63."/>
   </sprite>
   <sprite id="322" name="Big Grinder" notes="Actor: 0x148">
