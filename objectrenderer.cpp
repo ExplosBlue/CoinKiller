@@ -2008,28 +2008,11 @@ void MushroomPlatformRenderer::render(QPainter *painter, QRect *)
     platform.fill(Qt::transparent);
     QPainter platformPainter(&platform);
 
-    int stretchHeight = 0;
-    if (spr->getNybble(6) == 2)
+    int extendLength = 0;
+    if (spr->getNybble(6)%3 == 0)
     {
-        switch (spr->getNybble(7))
-        {
-            case 1: case 5: case 9: case 13:
-                stretchHeight = 10;
-                break;
-            case 2: case 6: case 10: case 14:
-                stretchHeight = 20;
-                break;
-            case 3: case 7: case 11: case 15:
-                stretchHeight = 30;
-                break;
-            default:
-                stretchHeight = 0;
-                break;
-        }
+        extendLength = spr->getBits(24,26) * 20;
     }
-
-    painter->setRenderHint(QPainter::Antialiasing);
-
 
     // Draw the platform into a pixmap for use later
     platformPainter.drawPixmap(0, 0, 24, 20, ImageCache::getInstance()->get(SpriteImg, basepath + "/l.png"));
@@ -2037,42 +2020,74 @@ void MushroomPlatformRenderer::render(QPainter *painter, QRect *)
         platformPainter.drawPixmap(4+i, 0, 20, 20, ImageCache::getInstance()->get(SpriteImg, basepath + "/m.png"));
     platformPainter.drawPixmap(spr->getwidth()-24, 0, 24, 20, ImageCache::getInstance()->get(SpriteImg, basepath + "/r.png"));
 
-    // Draw transparent flat version of platform
-    painter->setOpacity(0.3);
+//    // No guides if angle is 0
+//    if (spr->getBits(32,34) != 0)
+//    {
+//        // Draw guides
+//        painter->setOpacity(0.3);
+//        QPixmap guideL = platform.transformed(QTransform().rotate(-11.25*(spr->getBits(32,34))));
+//        QPixmap guideR = platform.transformed(QTransform().rotate(11.25*(spr->getBits(32,34))));
+
+//        // Extended Guide
+//        if (spr->getNybble(6)%3 == 0)
+//        {
+//            int offsetx = 9 * spr->getBits(24,26);
+//            int offsety = 3 * spr->getBits(24,26);
+
+//            switch (spr->getBits(32,34))
+//            {
+//            case 2: // 22.5
+//                offsety += 4;
+//                offsetx += 15;
+//                break;
+//            case 3: // 33.75
+//                offsety += 8;
+//                offsetx += 30;
+//                break;
+//            case 4: // 45
+//                offsety += 18;
+//                offsetx += 50;
+//                break;
+//            case 5: // 56.25
+//                offsety += 24;
+//                offsetx += 60;
+//                break;
+//            case 6: // 67.5
+//                offsety += 34;
+//                offsetx += 75;
+//                break;
+//            case 7: // 78.75
+//                offsety += 45;
+//                offsetx += 84;
+//                break;
+//            }
+
+//            painter->drawPixmap(spr->getx()-(guideR.width()/2)-18 + offsetx, spr->gety()-(guideR.height()/2)-4 + offsety, guideR.width(), guideR.height(), guideR);
+//            painter->drawPixmap(spr->getx()-(guideL.width()/2)+36 - offsetx, spr->gety()-(guideL.height()/2)-4 + offsety, guideL.width(), guideL.height(), guideL);
+//        }
+//        painter->setOpacity(1.0);
+//    }
+
+    // Draw the stem top
+    for (int i = 0; i < extendLength; i+=20)
+        painter->drawPixmap(QRect(spr->getx(), spr->gety() + 20 + i, 20, 20), ImageCache::getInstance()->get(SpriteImg, basepath + "/stem_top.png"));
+
+    // Draw the stem center
+    painter->drawPixmap(QRect(spr->getx(), spr->gety()+extendLength+20, 20, 80), ImageCache::getInstance()->get(SpriteImg, basepath + "/stem.png"));
+
+    // Draw the stem bottom
+    for (int i = 0; i < spr->getNybble(4)*20; i+=20)
+        painter->drawPixmap(QRect(spr->getx(), spr->gety() + 100 + extendLength + i, 20, 20), ImageCache::getInstance()->get(SpriteImg, basepath + "/stem_bottom.png"));
+
+    // Draw the platform
     painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety(), platform.width(), platform.height(), platform);
-    painter->setOpacity(1);
 
-    // Draw the stem
-    painter->drawPixmap(QRect(spr->getx(), spr->gety()+5-stretchHeight, 20, 80), ImageCache::getInstance()->get(SpriteImg, basepath + "/stem_top_extended.png"));
-    painter->drawPixmap(QRect(spr->getx(), spr->gety()+20-stretchHeight, 20, 80), ImageCache::getInstance()->get(SpriteImg, basepath + "/stem_top.png"));
-    for (int i = 0; i < spr->getNybble(4) + (stretchHeight/20); i++)
-        painter->drawPixmap(QRect(spr->getx(), spr->gety()+100+i*20-stretchHeight, 20, 20), ImageCache::getInstance()->get(SpriteImg, basepath + "/stem.png"));
 
-    if (spr->getNybble(9) > 8)
-    {
-        // Draw transparent tilted version of the platform - Facing Left
-        painter->setOpacity(0.3);
-        QPixmap platformRotatedL = platform.transformed(QTransform().rotate(-11.25*(spr->getNybble(9)-8)));
-        painter->drawPixmap(spr->getx()-(platformRotatedL.width()/2)+10, spr->gety()-(platformRotatedL.height()/2)+10-stretchHeight, platformRotatedL.width(), platformRotatedL.height(), platformRotatedL);
-        painter->setOpacity(1);
 
-        // Draw solid tilted version of the platform - Facing Right
-        QPixmap platformRotated = platform.transformed(QTransform().rotate(11.25*(spr->getNybble(9)-8)));
-        painter->drawPixmap(spr->getx()-(platformRotated.width()/2)+10, spr->gety()-(platformRotated.height()/2)+10-stretchHeight, platformRotated.width(), platformRotated.height(), platformRotated);
-    }
+//    // Stretch - 7 tile
+//    painter->drawPixmap(spr->getx()-(guideR.width()/2)+73, spr->gety()-(guideR.height()/2)-39, guideR.width(), guideR.height(), guideR);
 
-    if (spr->getNybble(9) < 8)
-    {
-        // Draw transparent tilted version of the platform - Facing Right
-        painter->setOpacity(0.3);
-        QPixmap platformRotatedR = platform.transformed(QTransform().rotate(11.25*spr->getNybble(9)));
-        painter->drawPixmap(spr->getx()-(platformRotatedR.width()/2)+10, spr->gety()-(platformRotatedR.height()/2)+10-stretchHeight, platformRotatedR.width(), platformRotatedR.height(), platformRotatedR);
-        painter->setOpacity(1);
-
-        // Draw solid tilted version of the platform - Facing Left
-        QPixmap platformRotated = platform.transformed(QTransform().rotate(-11.25*spr->getNybble(9)));
-        painter->drawPixmap(spr->getx()-(platformRotated.width()/2)+10, spr->gety()-(platformRotated.height()/2)+10-stretchHeight, platformRotated.width(), platformRotated.height(), platformRotated);
-    }
+    // todo: draw stem indicator
 }
 
 

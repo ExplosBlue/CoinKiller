@@ -1131,28 +1131,14 @@ void Sprite::setRect()
     case 124: // Mushroom Platform & Snowy Mushroom Platform
         width = 68 + 20*getNybble(8);
         height = 100 + 20*getNybble(4);
-        if (getNybble(6) == 2)
+        if (getNybble(6)%3 == 0)
         {
-            switch (getNybble(7))
-            {
-                case 1: case 5: case 9: case 13:
-                    height = 100 + 20*getNybble(4)+10;
-                    offsety = -10;
-                    break;
-                case 2: case 6: case 10: case 14:
-                    height = 100 + 20*getNybble(4)+20;
-                    offsety = -20;
-                    break;
-                case 3: case 7: case 11: case 15:
-                    height = 100 + 20*getNybble(4)+30;
-                    offsety = -30;
-                    break;
-                default:
-                    height = 100 + 20*getNybble(4);
-                    break;
-            }
+            height += getBits(24,26) * 20;
         }
         offsetx = 10 - (width / 2);
+
+        selectionRects->append(QRect(10-width/2, 0, width, 20)); // mushroom
+        selectionRects->append(QRect(0, 20, 20, height-20)); // stem
         break;
     case 125: // Bowser
         width = 138;
