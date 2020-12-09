@@ -30,44 +30,50 @@ PathEditorWidget::PathEditorWidget(QList<Path*> *paths)
     QGridLayout* nodeGroupLayout = new QGridLayout();
     nodeGroupbox->setTitle(tr("Node: "));
 
-    nodeGroupLayout->addWidget(new QLabel(tr("Speed:")), 0, 0, 1, 1, Qt::AlignRight);
+    nodeGroupLayout->addWidget(new QLabel(tr("Node ID:")), 0, 0, 1, 1, Qt::AlignRight);
+    nodeID = new QSpinBox();
+    nodeID->setRange(0, 255);
+    nodeID->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    nodeGroupLayout->addWidget(nodeID, 0, 1, 1, 3);
+
+    nodeGroupLayout->addWidget(new QLabel(tr("Speed:")), 1, 0, 1, 1, Qt::AlignRight);
     speed = new QDoubleSpinBox();
     speed->setRange(-1000000, 1000000);
     speed->setDecimals(8);
     speed->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Fixed);
-    nodeGroupLayout->addWidget(speed, 0, 1);
+    nodeGroupLayout->addWidget(speed, 1, 1);
 
-    nodeGroupLayout->addWidget(new QLabel(tr("Acceleration:")), 0, 2, 1, 1, Qt::AlignRight);
+    nodeGroupLayout->addWidget(new QLabel(tr("Acceleration:")), 1, 2, 1, 1, Qt::AlignRight);
     acceleration = new QDoubleSpinBox();
     acceleration->setRange(-1000000, 1000000);
     acceleration->setDecimals(8);
     acceleration->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Fixed);
-    nodeGroupLayout->addWidget(acceleration, 0, 3);
+    nodeGroupLayout->addWidget(acceleration, 1, 3);
 
-    nodeGroupLayout->addWidget(new QLabel(tr("Delay:")), 1, 0, 1, 1, Qt::AlignRight);
+    nodeGroupLayout->addWidget(new QLabel(tr("Delay:")), 2, 0, 1, 1, Qt::AlignRight);
     delay = new QSpinBox();
     delay->setRange(0, 65535);
     delay->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-    nodeGroupLayout->addWidget(delay, 1, 1);
+    nodeGroupLayout->addWidget(delay, 2, 1);
 
-    nodeGroupLayout->addWidget(new QLabel(tr("Rotation:")), 1, 2, 1, 1, Qt::AlignRight);
+    nodeGroupLayout->addWidget(new QLabel(tr("Rotation:")), 2, 2, 1, 1, Qt::AlignRight);
     rotation = new QSpinBox();
     rotation->setRange(-32768, 32767);
     rotation->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-    nodeGroupLayout->addWidget(rotation, 1, 3);
+    nodeGroupLayout->addWidget(rotation, 2, 3);
 
-    nodeGroupLayout->addWidget(new QLabel(tr("Variable Use:")), 2, 0, 1, 1, Qt::AlignRight);
+    nodeGroupLayout->addWidget(new QLabel(tr("Variable Use:")), 3, 0, 1, 1, Qt::AlignRight);
     variableField = new QSpinBox();
     variableField->setRange(0, 255);
     variableField->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     variableField->setToolTip(tr("This is a multi-purpose field. \nCheck the notes of whatever sprite is paired to this path to see how to use this field."));
-    nodeGroupLayout->addWidget(variableField, 2, 1);
+    nodeGroupLayout->addWidget(variableField, 3, 1);
 
-    nodeGroupLayout->addWidget(new QLabel(tr("Next Path ID:")), 2, 2, 1, 1, Qt::AlignRight);
+    nodeGroupLayout->addWidget(new QLabel(tr("Next Path ID:")), 3, 2, 1, 1, Qt::AlignRight);
     nextPathID = new QSpinBox();
     nextPathID->setRange(0, 255);
     nextPathID->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-    nodeGroupLayout->addWidget(nextPathID, 2, 3);
+    nodeGroupLayout->addWidget(nextPathID, 3, 3);
 
     nodeGroupbox->setLayout(nodeGroupLayout);
     editsLayout->addWidget(nodeGroupbox, 2, 0, 1, 4);
@@ -86,6 +92,7 @@ PathEditorWidget::PathEditorWidget(QList<Path*> *paths)
     connect(rotation, SIGNAL(valueChanged(int)), this, SLOT(handleRotationChanged(int)));
     connect(variableField, SIGNAL(valueChanged(int)), this, SLOT(handleVariableFieldChanged(int)));
     connect(nextPathID, SIGNAL(valueChanged(int)), this, SLOT(handleNextPathIDChanged(int)));
+    connect(nodeID, SIGNAL(valueChanged(int)), this, SLOT(handleNodeIDChanged(int)));
 
     updateList();
     updateInfo();
@@ -134,6 +141,7 @@ void PathEditorWidget::updateInfo()
     rotation->setValue(editNode->getRotation());
     variableField->setValue(editNode->getVariableField());
     nextPathID->setValue(editNode->getNextPathID());
+    nodeID->setValue(editPath->getIndexOfNode(editNode));
     handleChanges = true;
 }
 
@@ -225,5 +233,20 @@ void PathEditorWidget::handleNextPathIDChanged(int nextPathID)
 {
     if (!handleChanges) return;
     editNode->setNextPathID(nextPathID);
+    emit editMade();
+}
+
+void PathEditorWidget::handleNodeIDChanged(int nodeID)
+{
+    if (!handleChanges) return;
+    if (nodeID >= editPath->getNumberOfNodes())
+    {
+        this->nodeID->setValue(editPath->getIndexOfNode(editNode));
+        return;
+    }
+
+    editPath->swapNodes(editPath->getIndexOfNode(editNode), nodeID);
+    emit updateLevelView();
+    emit updateInfo();
     emit editMade();
 }

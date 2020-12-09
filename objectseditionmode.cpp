@@ -81,7 +81,7 @@ void ObjectsEditonMode::mouseDown(int x, int y, Qt::MouseButtons buttons, Qt::Ke
         {
             Path* path = level->newPath();
             level->paths.append(path);
-            PathNode* node = new PathNode(qMax(toNext10(x-10), 0), qMax(toNext10(y-10), 0), 0, 0, 0, 0, 0, 0, path);
+            PathNode* node = new PathNode(qMax(toNext10(x), 0), qMax(toNext10(y), 0), 0, 0, 0, 0, 0, 0, path);
             path->insertNode(node);
             if (selectAfterPlacement)
                 selectedObjects.append(node);
@@ -90,7 +90,7 @@ void ObjectsEditonMode::mouseDown(int x, int y, Qt::MouseButtons buttons, Qt::Ke
         {
             ProgressPath* path = level->newProgressPath();
             level->progressPaths.append(path);
-            ProgressPathNode* node = new ProgressPathNode(qMax(toNext10(x-10), 0), qMax(toNext10(y-10), 0), path);
+            ProgressPathNode* node = new ProgressPathNode(qMax(toNext10(x), 0), qMax(toNext10(y), 0), path);
             path->insertNode(node);
             if (selectAfterPlacement)
                 selectedObjects.append(node);
@@ -115,7 +115,7 @@ void ObjectsEditonMode::mouseDown(int x, int y, Qt::MouseButtons buttons, Qt::Ke
             {
                 PathNode* oldPNode = dynamic_cast<PathNode*>(oldNode);
                 Path* parentPath = oldPNode->getParentPath();
-                PathNode* newNode = new PathNode(toNext10(x-10), toNext10(y-10), 0, 0, 0, 0, 0, 0, parentPath);
+                PathNode* newNode = new PathNode(toNext10(x), toNext10(y), 0, 0, 0, 0, 0, 0, parentPath);
                 if (mouseAct.pAdd == AddBefore)
                     parentPath->insertNode(newNode, parentPath->getIndexOfNode(oldPNode));
                 else
@@ -123,14 +123,13 @@ void ObjectsEditonMode::mouseDown(int x, int y, Qt::MouseButtons buttons, Qt::Ke
                 selectedObjects.append(newNode);
 
                 emit editMade();
-
             }
             else
             {
                 ProgressPathNode* oldPNode = dynamic_cast<ProgressPathNode*>(oldNode);
                 ProgressPath* parentPath = oldPNode->getParentPath();
 
-                ProgressPathNode* newNode = new ProgressPathNode(toNext10(x-10), toNext10(y-10), parentPath);
+                ProgressPathNode* newNode = new ProgressPathNode(toNext10(x), toNext10(y), parentPath);
                 if (mouseAct.pAdd == AddBefore)
                     parentPath->insertNode(newNode, parentPath->getIndexOfNode(oldPNode));
                 else
@@ -138,8 +137,9 @@ void ObjectsEditonMode::mouseDown(int x, int y, Qt::MouseButtons buttons, Qt::Ke
                 selectedObjects.append(newNode);
 
                 emit editMade();
-
             }
+
+            if (selectedObjects.size() == 1) emit selectdObjectChanged(selectedObjects[0]);
         }
 
         else if (!mouseAct.drag || (mouseAct.hor == ResizeNone && mouseAct.vert == ResizeNone))
@@ -550,15 +550,94 @@ ObjectsEditonMode::mouseAction ObjectsEditonMode::getActionAtPos(int x, int y)
     {
         Object* node = selectedObjects[0];
 
-        if (is<PathNode*>(node) || is<ProgressPathNode*>(node))
+        if (is<PathNode*>(node))
         {
-            if (QRect(node->getx()-20, node->gety(), 20, 20).contains(x, y))
-                act.pAdd = AddBefore;
-            else if (QRect(node->getx()+20, node->gety(), 20, 20).contains(x, y))
-                act.pAdd = AddAfter;
+            if (QRect(node->getx()-30, node->gety()-10, 20, 20).contains(x, y))
+            {
+                PathNode* n = dynamic_cast<PathNode*>(node);
+
+                int nodeID = n->getParentPath()->getIndexOfNode(n);
+
+                if (nodeID == 0 && n->getParentPath()->getNumberOfNodes() >= nodeID+1)
+                {
+                    if (n->getx() >= n->getParentPath()->getNode(nodeID+1)->getx())
+                        act.pAdd = AddAfter;
+                    else
+                        act.pAdd = AddBefore;
+                }
+                else if (nodeID == 0)
+                    act.pAdd = AddBefore;
+                else if (n->getx() >= n->getParentPath()->getNode(nodeID-1)->getx())
+                    act.pAdd = AddBefore;
+                else
+                    act.pAdd = AddAfter;
+            }
+            else if (QRect(node->getx()+10, node->gety()-10, 20, 20).contains(x, y))
+            {
+                PathNode* n = dynamic_cast<PathNode*>(node);
+                int nodeID = n->getParentPath()->getIndexOfNode(n);
+
+                if (nodeID == 0 && n->getParentPath()->getNumberOfNodes() >= nodeID+1)
+                {
+                    if (n->getx() >= n->getParentPath()->getNode(nodeID+1)->getx())
+                        act.pAdd = AddBefore;
+                    else
+                        act.pAdd = AddAfter;
+                }
+                else if (nodeID == 0)
+                    act.pAdd = AddAfter;
+                else if (n->getx() >= n->getParentPath()->getNode(nodeID-1)->getx())
+                    act.pAdd = AddAfter;
+                else
+                    act.pAdd = AddBefore;
+            }
 
             if (act.pAdd != AddNone)
                 return act;
+        }
+        else if (is<ProgressPathNode*>(node))
+        {
+            Object* node = selectedObjects[0];
+
+            if (is<ProgressPathNode*>(node))
+            {
+                if (QRect(node->getx()-30, node->gety()-10, 20, 20).contains(x, y))
+                {
+                    ProgressPathNode* n = dynamic_cast<ProgressPathNode*>(node);
+
+                    int nodeID = n->getParentPath()->getIndexOfNode(n);
+
+                    if (nodeID == 0 && n->getParentPath()->getNumberOfNodes() >= nodeID+1)
+                    {
+                        if (n->getx() >= n->getParentPath()->getNode(nodeID+1)->getx())
+                            act.pAdd = AddAfter;
+                        else
+                            act.pAdd = AddBefore;
+                    }
+                    else if (nodeID == 0)
+                        act.pAdd = AddBefore;
+                    else if (n->getx() >= n->getParentPath()->getNode(nodeID-1)->getx())
+                        act.pAdd = AddBefore;
+                    else
+                        act.pAdd = AddAfter;
+                }
+                else if (QRect(node->getx()+10, node->gety()-10, 20, 20).contains(x, y))
+                {
+                    ProgressPathNode* n = dynamic_cast<ProgressPathNode*>(node);
+
+                    int nodeID = n->getParentPath()->getIndexOfNode(n);
+
+                    if (nodeID == 0)
+                        act.pAdd = AddAfter;
+                    else if (n->getx() >= n->getParentPath()->getNode(nodeID-1)->getx())
+                        act.pAdd = AddAfter;
+                    else
+                        act.pAdd = AddBefore;
+                }
+
+                if (act.pAdd != AddNone)
+                    return act;
+            }
         }
     }
 

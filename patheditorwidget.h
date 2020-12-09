@@ -48,6 +48,9 @@ private:
     QSpinBox* variableField;
     QSpinBox* nextPathID;
 
+    QSpinBox* nodeID;
+
+
     void updateList();
     void updateInfo();
 
@@ -61,6 +64,9 @@ private slots:
     void handleRotationChanged(int rotation);
     void handleVariableFieldChanged(int variableField);
     void handleNextPathIDChanged(int nextPathID);
+
+    void handleNodeIDChanged(int nodeID);
+
 };
 
 #endif // PATHEDITORWIDGET_H

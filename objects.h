@@ -333,6 +333,8 @@ public:
     void setId(qint32 id) { this->id = id; }
     void setLoop(qint32 loop) {this->loop = loop; }
     QString toString(qint32 xOffset, qint32 yOffset);
+    void swapNodes(qint32 node1, quint32 node2) { nodes.swapItemsAt(node1, node2); }
+
 protected:
     quint16 id;
     quint16 loop;
