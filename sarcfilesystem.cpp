@@ -191,7 +191,7 @@ bool SarcFilesystem::save(FileBase *file)
         ifile->nameHash = filenameHash(ifile->name);
         sortedFiles.append(ifile);
     }
-    qSort(sortedFiles.begin(), sortedFiles.end(), hashSort);
+    std::sort(sortedFiles.begin(), sortedFiles.end(), hashSort);
 
 
     // recreate SARC
@@ -325,7 +325,7 @@ void SarcFilesystem::repack()
         ifile->nameHash = filenameHash(ifile->name);
         sortedFiles.append(ifile);
     }
-    qSort(sortedFiles.begin(), sortedFiles.end(), hashSort);
+    std::sort(sortedFiles.begin(), sortedFiles.end(), hashSort);
 
 
     // recreate SARC

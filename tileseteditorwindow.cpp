@@ -1147,12 +1147,12 @@ void TilesetEditorWindow::on_actionImportImageLegacy_triggered()
         if (pkg.open(QIODevice::ReadWrite))
         {
            QTextStream stream(&pkg);
-           stream << "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" << endl
-                  << "<ctr_texturepackager>" << endl
-                  << "<texture type=\"2D\" miplimit=\"1\" format=\"ETC1_A4\" etcmethod=\"" + quality + "\">" << endl
-                  << "<imagefile src=\"" << tileset->getName() << ".tga\" />" << endl
-                  << "</texture>" << endl
-                  << "</ctr_texturepackager>" << endl;
+           stream << "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" << Qt::endl
+                  << "<ctr_texturepackager>" << Qt::endl
+                  << "<texture type=\"2D\" miplimit=\"1\" format=\"ETC1_A4\" etcmethod=\"" + quality + "\">" << Qt::endl
+                  << "<imagefile src=\"" << tileset->getName() << ".tga\" />" << Qt::endl
+                  << "</texture>" << Qt::endl
+                  << "</ctr_texturepackager>" << Qt::endl;
         }
 
         QMessageBox* msgBox = new QMessageBox(QMessageBox::Information, "CoinKiller",

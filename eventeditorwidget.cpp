@@ -39,7 +39,7 @@ EventEditorWidget::EventEditorWidget(Level* level)
     for (int i = 0; i < 64; i++)
     {
         QListWidgetItem* listItem = new QListWidgetItem(tr("Event %1").arg(i), eventsList);
-        listItem->setCheckState(((states >> i) & 0x1) ? Qt::Checked : Qt::Unchecked);
+        listItem->setCheckState(((states >> i) & 1ULL) ? Qt::Checked : Qt::Unchecked);
         listItem->setData(Qt::UserRole, i);
         eventsList->addItem(listItem);
     }
@@ -50,7 +50,7 @@ EventEditorWidget::EventEditorWidget(Level* level)
 
 void EventEditorWidget::handleEventListItemChanged(QListWidgetItem* item)
 {
-    level->eventState ^= 1 << item->data(Qt::UserRole).toInt();
+    level->eventState ^= 1ULL << item->data(Qt::UserRole).toInt();
 }
 
 void EventEditorWidget::handleFilterChanged(int filter)

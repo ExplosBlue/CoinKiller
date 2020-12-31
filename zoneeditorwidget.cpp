@@ -42,7 +42,7 @@ ZoneEditorWidget::ZoneEditorWidget(QList<Zone*> *zones, QList<ZoneBackground*> *
 
     multiplayerTracking = new QComboBox();
     multiplayerTracking->addItems(multiplayerTrackings.values());
-    connect(multiplayerTracking, SIGNAL(currentIndexChanged(QString)), this, SLOT(handleMultiPlayerTrackingChange(QString)));
+    connect(multiplayerTracking, SIGNAL(currentTextChanged(QString)), this, SLOT(handleMultiPlayerTrackingChange(QString)));
 
     progPathId = new QSpinBox();
     progPathId->setRange(0, 255);
@@ -51,7 +51,7 @@ ZoneEditorWidget::ZoneEditorWidget(QList<Zone*> *zones, QList<ZoneBackground*> *
     musicId = new QComboBox();
     for (QPair<int, QString> i : musicIds.values()) musicId->addItem(i.second);
     musicId->setSizeAdjustPolicy(QComboBox::SizeAdjustPolicy::AdjustToMinimumContentsLengthWithIcon);
-    connect(musicId, SIGNAL(currentIndexChanged(QString)), this, SLOT(handleMusicIDChange(QString)));
+    connect(musicId, SIGNAL(currentTextChanged(QString)), this, SLOT(handleMusicIDChange(QString)));
 
     unk1 = new QSpinBox();
     unk1->setRange(0, 255);
@@ -89,7 +89,7 @@ ZoneEditorWidget::ZoneEditorWidget(QList<Zone*> *zones, QList<ZoneBackground*> *
 
     settingsGroup = new QGroupBox();
     QGridLayout* settingsLayout = new QGridLayout();
-    settingsLayout->setMargin(5);
+    settingsLayout->setContentsMargins(5, 5, 5, 5);
     id->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);  // All Controls at maximum possible width
 
     settingsLayout->addWidget(new QLabel(tr("ID:")), 0, 0, 1, 1, Qt::AlignRight);
@@ -172,7 +172,7 @@ void ZoneEditorWidget::loadMusicIDs()
         return;
 
     QTextStream in(&file);
-    in.setCodec("UTF-8");
+    in.setEncoding(QStringConverter::Utf8);
     int i = 0;
 
     musicIds.clear();
@@ -421,7 +421,7 @@ ZoneBackgroundWidget::ZoneBackgroundWidget(QList<ZoneBackground*> *backgrounds)
     background = new QComboBox();
     background->setSizeAdjustPolicy(QComboBox::SizeAdjustPolicy::AdjustToMinimumContentsLengthWithIcon);
     loadBackgrounds();
-    connect(background, SIGNAL(currentIndexChanged(QString)), this, SLOT(handleBackgroundChange(QString)));
+    connect(background, SIGNAL(currentTextChanged(QString)), this, SLOT(handleBackgroundChange(QString)));
 
     backgroundPreview = new BgPreview();
 
@@ -440,7 +440,7 @@ ZoneBackgroundWidget::ZoneBackgroundWidget(QList<ZoneBackground*> *backgrounds)
     settingsGroup->setDisabled(true);
 
     QGridLayout* settingsLayout = new QGridLayout();
-    settingsLayout->setMargin(5);
+    settingsLayout->setContentsMargins(5, 5, 5, 5);
     backgroundId->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);  // All Controls at maximum possible width
 
     settingsLayout->addWidget(new QLabel(tr("ID:")), 0, 0, 1, 1, Qt::AlignRight);
@@ -691,7 +691,7 @@ ZoneBoundingWidget::ZoneBoundingWidget(QList<ZoneBounding*> *boundings)
     settingsGroup->setDisabled(true);
 
     QGridLayout* settingsLayout = new QGridLayout();
-    settingsLayout->setMargin(5);
+    settingsLayout->setContentsMargins(5, 5, 5, 5);
     boundingId->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);  // All Controls at maximum possible width
 
     settingsLayout->addWidget(new QLabel(tr("ID:")), 0, 0, 1, 1, Qt::AlignRight);

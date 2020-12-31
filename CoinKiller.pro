@@ -11,7 +11,7 @@ greaterThan(KDE_BLUR, 0) {
     DEFINES += USE_KDE_BLUR
 }
 
-greaterThan(QT_MAJOR_VERSION, 4) {
+greaterThan(QT_MAJOR_VERSION, 5) {
     QT  += core gui\
            xml\
            network\
@@ -120,4 +120,4 @@ TRANSLATIONS += English.ts \
     German.ts \
     Italian.ts
 
-CONFIG += c++11
+CONFIG += c++17

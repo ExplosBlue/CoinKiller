@@ -53,7 +53,7 @@ QStandardItemModel* Game::getCourseModel()
     if (ln.open(QIODevice::ReadOnly))
     {
         QTextStream in(&ln);
-        in.setCodec("UTF-8");
+        in.setEncoding(QStringConverter::Utf8);
 
         levelNames.clear();
         while(!in.atEnd())
@@ -71,7 +71,7 @@ QStandardItemModel* Game::getCourseModel()
     if (wn.open(QIODevice::ReadOnly))
     {
         QTextStream in(&wn);
-        in.setCodec("UTF-8");
+        in.setEncoding(QStringConverter::Utf8);
 
         worldNames.clear();
         while(!in.atEnd())
@@ -169,14 +169,13 @@ QStandardItemModel* Game::getTilesetModel()
     QHash<QString, QString> defaultNames;
 
     QTextStream in(&inputFile);
-    in.setCodec("UTF-8");
+    in.setEncoding(QStringConverter::Utf8);
     while (!in.atEnd())
     {
        QStringList parts = in.readLine().split(':');
        defaultNames.insert(parts[0], parts[1]);
     }
     inputFile.close();
-
 
     QStandardItem* standardSuite = new QStandardItem(QObject::tr("Standard"));
     QStandardItem* stageSuite = new QStandardItem(QObject::tr("Stage"));
@@ -186,6 +185,11 @@ QStandardItemModel* Game::getTilesetModel()
     model->appendRow(stageSuite);
     model->appendRow(backgroundSuite);
     model->appendRow(interactiveSuite);
+
+    model->setItem(0, 1, new QStandardItem());
+    model->setItem(1, 1, new QStandardItem());
+    model->setItem(2, 1, new QStandardItem());
+    model->setItem(3, 1, new QStandardItem());
 
     QList<QString> tilesetfiles;
     fs->directoryContents("/Unit", QDir::Files, tilesetfiles);

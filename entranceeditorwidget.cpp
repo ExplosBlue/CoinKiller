@@ -60,7 +60,7 @@ EntranceEditorWidget::EntranceEditorWidget(QList<Entrance*> *entrances)
 
     edits = new QWidget;
     QGridLayout* subLayout = new QGridLayout();
-    subLayout->setMargin(0);
+    subLayout->setContentsMargins(0, 0, 0, 0);
     edits->setLayout(subLayout);
     layout->addWidget(edits);
 

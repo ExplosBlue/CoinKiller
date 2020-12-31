@@ -45,13 +45,13 @@ AreaEditorWidget::AreaEditorWidget(Level* level, Game *game)
     layout->addWidget(new QLabel(tr("Level Setting 1:")), 3, 0, 1, 1, Qt::AlignRight);
     specialLevelFlag1 = new QComboBox();
     specialLevelFlag1->addItems(specialLevelFlags1.values());
-    connect(specialLevelFlag1, SIGNAL(currentIndexChanged(QString)), this, SLOT(handleSpecialLevelFlag1Change(QString)));
+    connect(specialLevelFlag1, SIGNAL(currentTextChanged(QString)), this, SLOT(handleSpecialLevelFlag1Change(QString)));
     layout->addWidget(specialLevelFlag1, 3, 1);
 
     layout->addWidget(new QLabel(tr("Level Setting 2:")), 4, 0, 1, 1, Qt::AlignRight);
     specialLevelFlag2 = new QComboBox();
     specialLevelFlag2->addItems(specialLevelFlags2.values());
-    connect(specialLevelFlag2, SIGNAL(currentIndexChanged(QString)), this, SLOT(handleSpecialLevelFlag2Change(QString)));
+    connect(specialLevelFlag2, SIGNAL(currentTextChanged(QString)), this, SLOT(handleSpecialLevelFlag2Change(QString)));
     layout->addWidget(specialLevelFlag2, 4, 1);
 
     layout->addWidget(new QLabel(tr("Level Entrance ID:")), 5, 0, 1, 1, Qt::AlignRight);

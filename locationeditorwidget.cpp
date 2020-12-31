@@ -17,7 +17,7 @@ LocationEditorWidget::LocationEditorWidget(QList<Location *> *locations)
 
     edits = new QWidget();
     QGridLayout* subLayout = new QGridLayout();
-    subLayout->setMargin(0);
+    subLayout->setContentsMargins(0, 0, 0, 0);
     edits->setLayout(subLayout);
 
     subLayout->addWidget(new QLabel(tr("ID:")), 0, 0, 1, 1, Qt::AlignRight);

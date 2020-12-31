@@ -5,6 +5,7 @@
 #include <QLabel>
 #include <QStringListModel>
 #include <QMessageBox>
+#include <QRegularExpression>
 
 SpriteEditorWidget::SpriteEditorWidget(QList<Sprite*> *sprites)
 {
@@ -195,7 +196,7 @@ SpriteDataEditorWidget::SpriteDataEditorWidget(SpriteData *spriteData)
     this->spriteData = spriteData;
 
     layout = new QGridLayout();
-    layout->setMargin(0);
+    layout->setContentsMargins(0, 0, 0, 0);
 
     spriteName = new QLabel();
     layout->addWidget(spriteName, 0, 0, 1, 2);
@@ -359,7 +360,7 @@ void SpriteDataEditorWidget::handleEditDetected()
 void SpriteDataEditorWidget::handleShowNotes()
 {
     QString name = spriteName->text();
-    name.remove(QRegExp("<[^>]*>"));
+    name.remove(QRegularExpression("<[^>]*>"));
 
     QMessageBox notes;
     notes.setWindowTitle(name);

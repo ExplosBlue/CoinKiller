@@ -20,7 +20,6 @@
 #include <QStandardItem>
 #include <QCoreApplication>
 #include <QFileDialog>
-#include <QDesktopWidget>
 #include <QByteArray>
 #include <QNetworkAccessManager>
 #include <QNetworkRequest>

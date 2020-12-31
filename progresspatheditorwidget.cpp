@@ -13,7 +13,7 @@ ProgressPathEditorWidget::ProgressPathEditorWidget(QList<ProgressPath*> *paths)
 
     edits = new QWidget();
     QGridLayout* editsLayout = new QGridLayout();
-    editsLayout->setMargin(0);
+    editsLayout->setContentsMargins(0, 0, 0, 0);
 
     editsLayout->addWidget(new QLabel(tr("ID:")), 0, 0, 1, 1, Qt::AlignRight);
     id = new QSpinBox();

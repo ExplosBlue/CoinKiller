@@ -9,8 +9,8 @@ class ClickableLabel : public QLabel
     Q_OBJECT
 
 public:
-    explicit ClickableLabel(QWidget* parent = 0, Qt::WindowFlags f = 0);
-    explicit ClickableLabel(const QString& text, QWidget* parent = 0, Qt::WindowFlags f = 0);
+    explicit ClickableLabel(QWidget* parent = 0, Qt::WindowFlags f = Qt::WindowFlags());
+    explicit ClickableLabel(const QString& text, QWidget* parent = 0, Qt::WindowFlags f = Qt::WindowFlags());
     ~ClickableLabel();
 
 signals:
