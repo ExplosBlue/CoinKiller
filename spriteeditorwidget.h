@@ -15,6 +15,8 @@
 #include <QCheckBox>
 #include <QGridLayout>
 #include <QPushButton>
+#include <QSplitter>
+#include <QScrollArea>
 
 class SpriteValueFieldWidget : public QSpinBox
 {
@@ -97,7 +99,7 @@ private:
 
 };
 
-class SpriteDataEditorWidget : public QWidget
+class SpriteDataEditorWidget : public QScrollArea
 {
     Q_OBJECT
 public:
@@ -146,7 +148,7 @@ private:
     void reloadFields();
 };
 
-class SpriteEditorWidget : public QWidget
+class SpriteEditorWidget : public QSplitter
 {
     Q_OBJECT
 public:
@@ -170,6 +172,7 @@ public slots:
 private slots:
     void handleIndexChange(QTreeWidgetItem *item);
     void handleEditDetected();
+    void handleSplitterMoved();
 
 private:
     SpriteData spriteData;

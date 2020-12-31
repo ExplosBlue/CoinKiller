@@ -428,7 +428,7 @@ void LevelEditorWindow::deselect()
 
 void LevelEditorWindow::updateEditors()
 {
-    spriteEditor->spriteDataEditorPtr()->updateEditor();
+    //spriteEditor->spriteDataEditorPtr()->updateEditor();
     entranceEditor->updateEditor();
     zoneEditor->updateEditor();
     locationEditor->updateEditor();

@@ -1,5 +1,6 @@
 #include "spriteeditorwidget.h"
 #include "unitsconvert.h"
+#include "settingsmanager.h"
 
 #include <QGridLayout>
 #include <QLabel>
@@ -41,7 +42,6 @@ SpriteEditorWidget::SpriteEditorWidget(QList<Sprite*> *sprites)
     tabs->addTab(addSpriteView, tr("Add"));
 
     QStringList viewNames = getViewNames();
-
     viewComboBox->setModel(new QStringListModel(viewNames));
 
     spriteIds = new SpriteIdWidget(sprites);
@@ -49,18 +49,25 @@ SpriteEditorWidget::SpriteEditorWidget(QList<Sprite*> *sprites)
 
     editor = new SpriteDataEditorWidget(&spriteData);
 
-    QVBoxLayout* layout = new QVBoxLayout();
-    layout->addWidget(tabs);
-    layout->addWidget(editor);
-
-    setLayout(layout);
+    this->addWidget(tabs);
+    this->addWidget(editor);
+    this->setOrientation(Qt::Vertical);
+    this->setCollapsible(0, false);
+    this->setCollapsible(1, false);
+    this->restoreState(SettingsManager::getInstance()->get("SpriteEditorSplitter").toByteArray());
 
     connect(spriteTree, SIGNAL(currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)), this, SLOT(handleIndexChange(QTreeWidgetItem*)));
     connect(editor, SIGNAL(editMade()), this, SLOT(handleEditDetected()));
     connect(spriteIds, SIGNAL(selectedSpriteChanged(Object*)), this, SLOT(handleSelectedSpriteChanged(Object*)));
     connect(spriteIds, SIGNAL(updateLevelView()), this, SLOT(handleUpdateLevelView()));
-
+    connect(this, SIGNAL(splitterMoved(int,int)), this, SLOT(handleSplitterMoved()));
 }
+
+void SpriteEditorWidget::handleSplitterMoved()
+{
+    SettingsManager::getInstance()->set("SpriteEditorSplitter", this->saveState());
+}
+
 
 QStringList SpriteEditorWidget::getViewNames()
 {
@@ -196,7 +203,14 @@ SpriteDataEditorWidget::SpriteDataEditorWidget(SpriteData *spriteData)
     this->spriteData = spriteData;
 
     layout = new QGridLayout();
-    layout->setContentsMargins(0, 0, 0, 0);
+
+    this->setWidgetResizable(true);
+    this->setFrameShape(QFrame::NoFrame);
+
+    QWidget* scrollWidget = new QWidget();
+    scrollWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    scrollWidget->setLayout(layout);
+    this->setWidget(scrollWidget);
 
     spriteName = new QLabel();
     layout->addWidget(spriteName, 0, 0, 1, 2);
@@ -224,7 +238,6 @@ SpriteDataEditorWidget::SpriteDataEditorWidget(SpriteData *spriteData)
     layerComboBox->addItems(layerNames);
     connect(layerComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(handleLayerChanged(int)));
 
-    this->setLayout(layout);
     setHidden(true);
 }
 
@@ -300,7 +313,7 @@ void SpriteDataEditorWidget::select(Sprite *sprite)
     layerComboBox->setCurrentIndex(editSprite->getLayer());
 
     int fieldCount = def.getFieldCount();
-    layout->addWidget(splitterLine, fieldCount+2, 0, 1, 4);
+    layout->addWidget(splitterLine, fieldCount+2, 0, 1, 2);
     layout->addWidget(layerLabel, fieldCount+3, 0, 1, 1, Qt::AlignRight);
     layout->addWidget(layerComboBox, fieldCount+3, 1);
 }
