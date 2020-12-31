@@ -607,6 +607,9 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
     case 240: // Urchin
         ret = new UrchinRenderer(spr);
         break;
+    case 241: // Rotating Urchin
+        ret = new RotatingUrchinRenderer(spr);
+        break;
     case 242: // Whirlpool
         ret = new NormalImageRenderer(spr, "whirlpool.png");
         break;
@@ -2953,10 +2956,9 @@ void RecLiftRenderer::render(QPainter *painter, QRect *)
         vOffY = -20;
         break;
     case 2:
-        hOffY = -10;
+        hOffY = 10;
         break;
     case 3:
-        hOffY = -20;
         vOffY = -20;
         break;
     case 4:
@@ -2964,11 +2966,10 @@ void RecLiftRenderer::render(QPainter *painter, QRect *)
         vOffX = -10;
         break;
     case 5:
-        vOffX = -10;
+        vOffX = 10;
         break;
     case 6:
         hOffX = -20;
-        vOffX = -20;
         break;
     default:
         hOffX = 0;
@@ -3342,6 +3343,80 @@ UrchinRenderer::UrchinRenderer(const Sprite *spr)
 }
 
 void UrchinRenderer::render(QPainter *painter, QRect *drawrect)
+{
+    int distance = 20 + spr->getNybble(7)*20;
+
+    int x = spr->getx() + spr->getOffsetX();
+    int y = spr->gety() + spr->getOffsetY();
+
+    if (spr->getNybble(6) == 0) // up/down
+    {
+        if (spr->getNybble(8)) // Start at End
+        {
+            if (spr->getNybble(9)) // Start at Top
+            {
+                MovIndicatorRenderer track(x+spr->getwidth()/2, y+spr->getheight(), x+spr->getwidth()/2, y+spr->getheight()+distance, true, QColor(244,250,255));
+                track.render(painter);
+            }
+            else // Start at Bottom
+            {
+                MovIndicatorRenderer track(x+spr->getwidth()/2, y, x+spr->getwidth()/2, y-distance, true, QColor(244,250,255));
+                track.render(painter);
+            }
+        }
+        else // Start in Middle
+        {
+            distance = distance/2;
+
+            MovIndicatorRenderer upTrack(x+spr->getwidth()/2, y, x+spr->getwidth()/2, y-distance, true, QColor(244,250,255));
+            upTrack.render(painter);
+
+            MovIndicatorRenderer downTrack(x+spr->getwidth()/2, y+spr->getheight(), x+spr->getwidth()/2, y+spr->getheight()+distance, true, QColor(244,250,255));
+            downTrack.render(painter);
+        }
+    }
+    else if (spr->getNybble(6) == 1) // left/right
+    {
+        if (spr->getNybble(8)) // Start an End
+        {
+            if (spr->getNybble(9)) // Start at Right
+            {
+                MovIndicatorRenderer leftTrack(x, y+spr->getheight()/2, x-distance, y+spr->getheight()/2, false, QColor(244,250,255));
+                leftTrack.render(painter);
+            }
+            else // Start at Left
+            {
+                MovIndicatorRenderer rightTrack(x+spr->getwidth(), y+spr->getheight()/2, x+spr->getwidth()+distance, y+spr->getheight(), false, QColor(244,250,255));
+                rightTrack.render(painter);
+            }
+        }
+        else // Start in Middle
+        {
+            distance = distance/2;
+
+            MovIndicatorRenderer leftTrack(x, y+spr->getheight()/2, x-distance, y+spr->getheight()/2, false, QColor(244,250,255));
+            leftTrack.render(painter);
+
+            MovIndicatorRenderer rightTrack(x+spr->getwidth(), y+spr->getheight()/2, x+spr->getwidth()+distance, y+spr->getheight(), false, QColor(244,250,255));
+            rightTrack.render(painter);
+        }
+    }
+
+    img->render(painter, drawrect);
+}
+
+// Sprite 241: Rotating Urchin
+RotatingUrchinRenderer::RotatingUrchinRenderer(const Sprite *spr)
+{
+    this->spr = spr;
+
+    if (spr->getNybble(9) != 1)
+        img = new NormalImageRenderer(spr, "urchin.png");
+    else
+        img = new NormalImageRenderer(spr, "urchin_big.png");
+}
+
+void RotatingUrchinRenderer::render(QPainter *painter, QRect *drawrect)
 {
     img->render(painter, drawrect);
 }

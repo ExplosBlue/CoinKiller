@@ -2205,12 +2205,76 @@ void Sprite::setRect()
         height = (getNybble(11) + 4) * 20;
         break;
     case 240: // Urchin
+    {
         if (getNybble(11) != 1)
         {
             width = 26;
             height = 26;
             offsetx = -3;
             offsety = -3;
+        }
+        else
+        {
+            width = 51;
+            height = 48;
+            offsetx = -5;
+            offsety = -4;
+        }
+        int distance = getNybble(7)*20;
+
+        if (getNybble(6) == 0) // Up/Down
+        {
+            if (getNybble(8)) // Start At End
+            {
+                if (getNybble(9)) // Start at Top
+                {
+                    renderOffsetH = -(height + distance);
+                    renderOffsetY = height + distance;
+                }
+                else // Start at Bottom
+                {
+                    renderOffsetH = height + distance;
+                    renderOffsetY = -(height + distance);
+                }
+            }
+            else // Start in Middle
+            {
+                renderOffsetH = height + distance;
+                renderOffsetY = -(height + distance/2);
+            }
+        }
+        else // Left/Right
+        {
+            if (getNybble(8)) // Start At End
+            {
+                if (getNybble(9)) // Start at Right
+                {
+                    renderOffsetW = width + distance;
+                    renderOffsetX = -(width + distance);
+                }
+                else // Start at Left
+                {
+                    renderOffsetW = -(width + distance);
+                    renderOffsetX = width + distance;
+                }
+            }
+            else // Start in Middle
+            {
+                renderOffsetW = width + distance;
+                renderOffsetX = -(width + distance/2);
+            }
+        }
+    }
+        break;
+    case 241: // Rotating Urchin
+        if (getNybble(9) != 1)
+        {
+            width = 26;
+            height = 26;
+            offsetx = 7;
+            offsety = -3;
+
+            if (getNybble(7) != 1) offsety += 20;
         }
         else
         {

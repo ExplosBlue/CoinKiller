@@ -854,6 +854,16 @@ protected:
     NormalImageRenderer* img;
 };
 
+// Sprite 241: Rotating Urchin
+class RotatingUrchinRenderer: public SpriteRenderer
+{
+public:
+    RotatingUrchinRenderer(const Sprite *spr);
+    void render(QPainter *painter, QRect *drawrect);
+protected:
+    NormalImageRenderer* img;
+};
+
 // Sprite 243: Ghost Wall
 class GhostWallRenderer: public SpriteRenderer
 {
