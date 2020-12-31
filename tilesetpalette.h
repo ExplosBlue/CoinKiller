@@ -2,21 +2,24 @@
 #define TILESETPALETTE_H
 
 #include "level.h"
+#include "game.h"
 #include "objectseditionmode.h"
 
 #include <QWidget>
 #include <QListView>
 #include <QTabWidget>
+#include <QComboBox>
 
 class TilesetPalette : public QWidget
 {
     Q_OBJECT
 public:
-    explicit TilesetPalette(Level* level, ObjectsEditonMode *objEditionMode);
+    explicit TilesetPalette(Level* level, ObjectsEditonMode *objEditionMode, Game *game);
     void select(BgdatObject* obj);
 
-public slots:
-    void reloadTilesets();
+signals:
+    void updateLevelView();
+    void editMade();
 
 private slots:
     void on_objectsListView0_clicked(const QModelIndex &index);
@@ -25,8 +28,11 @@ private slots:
     void on_objectsListView3_clicked(const QModelIndex &index);
     void on_layerRadioButton_toggled(bool checked);
 
+    void handleTilesetChange(int index);
+
 private:
     Level* level;
+    Game* game;
     ObjectsEditonMode* objEditionMode;
 
     QTabWidget* tabWidget;
@@ -34,6 +40,8 @@ private:
 
     void loadTileset(int tilesetNbr);
     void updatePalettes(int actualPal);
+
+    void reloadTilesets();
 };
 
 #endif // TILESETPALETTE_H

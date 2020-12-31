@@ -14,7 +14,7 @@ public:
     EventEditorWidget(Level* level);
 
 signals:
-    //void selectedEventIdChanged(int* id);
+    void editMade();
 
 public slots:
 

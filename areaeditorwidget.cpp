@@ -6,6 +6,7 @@
 #include <QSpacerItem>
 #include <QTabWidget>
 #include <QMessageBox>
+#include <QGroupBox>
 
 AreaEditorWidget::AreaEditorWidget(Level* level, Game *game)
 {
@@ -24,61 +25,75 @@ AreaEditorWidget::AreaEditorWidget(Level* level, Game *game)
     specialLevelFlags2.insert(1, tr("Ghost House"));
     specialLevelFlags2.insert(7, tr("Reznor Battle"));
 
-    QGridLayout* layout = new QGridLayout();
+    QVBoxLayout* layout = new QVBoxLayout();
     setLayout(layout);
 
-    layout->addWidget(new QLabel(tr("Time Limit:")), 0, 0, 1, 1, Qt::AlignRight);
+    QGroupBox* areaSettingsBox = new QGroupBox();
+    areaSettingsBox->setTitle(tr("Area Settings"));
+    layout->addWidget(areaSettingsBox);
+
+    QGridLayout* settingsLayout = new QGridLayout();
+    areaSettingsBox->setLayout(settingsLayout);
+
+    settingsLayout->addWidget(new QLabel(tr("Time Limit:")), 0, 0, 1, 1, Qt::AlignRight);
     timeLimit = new QSpinBox();
     timeLimit->setRange(0, 999);
     connect(timeLimit, SIGNAL(valueChanged(int)), this, SLOT(handleTimeLimitChange(int)));
     timeLimit->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);  // All Controls at maximum possible width
-    layout->addWidget(timeLimit, 0, 1);
+    settingsLayout->addWidget(timeLimit, 0, 1);
 
-    layout->addWidget(new QLabel(tr("CoinRush Time Limit:")), 1, 0, 1, 1, Qt::AlignRight);
+    settingsLayout->addWidget(new QLabel(tr("CoinRush Time Limit:")), 0, 2, 1, 1, Qt::AlignRight);
     coinRushtimeLimit = new QSpinBox();
     coinRushtimeLimit->setRange(0, 999);
     connect(coinRushtimeLimit, SIGNAL(valueChanged(int)), this, SLOT(handleCoinRushTimeLimitChange(int)));
-    layout->addWidget(coinRushtimeLimit, 1, 1);
+    coinRushtimeLimit->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    settingsLayout->addWidget(coinRushtimeLimit, 0, 3);
 
-    layout->addWidget(new HorLine(), 2, 0, 1, 2);
-
-    layout->addWidget(new QLabel(tr("Level Setting 1:")), 3, 0, 1, 1, Qt::AlignRight);
+    settingsLayout->addWidget(new QLabel(tr("Level Setting 1:")), 1, 0, 1, 1, Qt::AlignRight);
     specialLevelFlag1 = new QComboBox();
     specialLevelFlag1->addItems(specialLevelFlags1.values());
     connect(specialLevelFlag1, SIGNAL(currentTextChanged(QString)), this, SLOT(handleSpecialLevelFlag1Change(QString)));
-    layout->addWidget(specialLevelFlag1, 3, 1);
+    specialLevelFlag1->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    settingsLayout->addWidget(specialLevelFlag1, 1, 1);
 
-    layout->addWidget(new QLabel(tr("Level Setting 2:")), 4, 0, 1, 1, Qt::AlignRight);
+    settingsLayout->addWidget(new QLabel(tr("Level Setting 2:")), 1, 2, 1, 1, Qt::AlignRight);
     specialLevelFlag2 = new QComboBox();
     specialLevelFlag2->addItems(specialLevelFlags2.values());
     connect(specialLevelFlag2, SIGNAL(currentTextChanged(QString)), this, SLOT(handleSpecialLevelFlag2Change(QString)));
-    layout->addWidget(specialLevelFlag2, 4, 1);
+    specialLevelFlag2->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    settingsLayout->addWidget(specialLevelFlag2, 1, 3);
 
-    layout->addWidget(new QLabel(tr("Level Entrance ID:")), 5, 0, 1, 1, Qt::AlignRight);
-    levelEntranceID = new QSpinBox();
-    levelEntranceID->setRange(0, 255);
-    connect(levelEntranceID, SIGNAL(valueChanged(int)), this, SLOT(handlelevelEntranceIDChanged(int)));
-    layout->addWidget(levelEntranceID, 5, 1);
-
-    layout->addWidget(new QLabel(tr("Unknown 1:")), 6, 0, 1, 1, Qt::AlignRight);
+    settingsLayout->addWidget(new QLabel(tr("Unknown 1:")), 2, 0, 1, 1, Qt::AlignRight);
     unk1Editor = new QSpinBox();
     unk1Editor->setRange(0, 255);
     connect(unk1Editor, SIGNAL(valueChanged(int)), this, SLOT(handleUnk1Change(int)));
-    layout->addWidget(unk1Editor, 6, 1);
+    unk1Editor->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    settingsLayout->addWidget(unk1Editor, 2, 1);
 
-    layout->addWidget(new QLabel(tr("Unknown 2:")), 7, 0, 1, 1, Qt::AlignRight);
+    settingsLayout->addWidget(new QLabel(tr("Unknown 2:")), 2, 2, 1, 1, Qt::AlignRight);
     unk2Editor = new QSpinBox();
     unk2Editor->setRange(0, 255);
     connect(unk2Editor, SIGNAL(valueChanged(int)), this, SLOT(handleUnk2Change(int)));
-    layout->addWidget(unk2Editor, 7, 1);
+    unk2Editor->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    settingsLayout->addWidget(unk2Editor, 2, 3);
 
-    layout->addWidget(new HorLine(), 8, 0, 1, 2);
+    settingsLayout->addWidget(new QLabel(tr("Level Entrance ID:")), 3, 0, 1, 1, Qt::AlignRight);
+    levelEntranceID = new QSpinBox();
+    levelEntranceID->setRange(0, 255);
+    connect(levelEntranceID, SIGNAL(valueChanged(int)), this, SLOT(handlelevelEntranceIDChanged(int)));
+    levelEntranceID->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    settingsLayout->addWidget(levelEntranceID, 3, 1, 1, 3);
 
-    tsChooser = new TilesetChooser(level, game);
-    connect(tsChooser, SIGNAL(updateLevelEditor()), this, SLOT(passUpdateLevelView()));
-    connect(tsChooser, SIGNAL(relaodTilesetPicker()), this, SLOT(passRelaodTilesetPicker()));
-    connect(tsChooser, SIGNAL(tilesetEditMade()), this, SLOT(passTilesetEditMade()));
-    layout->addWidget(tsChooser, 9, 0, 1, 2);
+    QGroupBox* eventEditorBox = new QGroupBox();
+    eventEditorBox->setTitle(tr("Initial Area Event States"));
+    layout->addWidget(eventEditorBox);
+
+    QVBoxLayout* eventBoxLayout = new QVBoxLayout();
+    eventEditorBox->setLayout(eventBoxLayout);
+
+    eventEditor = new EventEditorWidget(level);
+    connect(eventEditor, SIGNAL(editMade()), this, SLOT(passEditMade()));
+    eventBoxLayout->addWidget(eventEditor);
 
     updateInfo();
 }
@@ -143,68 +158,4 @@ void AreaEditorWidget::handleUnk2Change(int unk)
     if (!handleChanges) return;
     level->unk2 = unk;
     emit editMade();
-}
-
-TilesetChooser::TilesetChooser(Level *level, Game *game)
-{
-    this->game = game;
-    this->level = level;
-
-    for (int i=0; i<4; i++)
-    {
-        QTreeView* tab = new QTreeView(this);
-        tab->setRootIsDecorated(false);
-        tab->setSelectionBehavior (QAbstractItemView::SelectRows);
-        tab->setEditTriggers(QAbstractItemView::NoEditTriggers);
-        tab->setModel(game->getTilesetModel(i, true));
-        tab->model()->setObjectName(QString("%1").arg(i));
-        tab->setColumnWidth(0, 150);
-
-        QString title;
-        if (i == 0) title = tr("Standard");
-        else if (i == 1) title = tr("Stage");
-        else if (i == 2) title = tr("Background");
-        else if (i == 3) title = tr("Interactive");
-
-        if (!level->tilesets[i])
-            tab->selectionModel()->setCurrentIndex(tab->model()->index(0,0), QItemSelectionModel::Select | QItemSelectionModel::Rows);
-        else
-        {
-            QString tsName = level->tilesets[i]->getName();
-
-            for (int j=1; j<tab->model()->rowCount(); j++)
-            {
-                QModelIndex index = tab->model()->index(j, 1);
-                QString indexName = index.data().toString();
-
-                if (tsName == indexName)
-                {
-                    tab->selectionModel()->setCurrentIndex(index, QItemSelectionModel::Select | QItemSelectionModel::Rows);
-                    break;
-                }
-            }
-        }
-
-        connect(tab, SIGNAL(clicked(QModelIndex)), this, SLOT(handleTilesetChange(QModelIndex)));
-        tab->setSortingEnabled(true);
-
-        this->addTab(tab, title);
-    }
-}
-
-void TilesetChooser::handleTilesetChange(QModelIndex index)
-{
-    QString tsName = index.model()->data(index.model()->index(index.row(), 1)).toString();
-    int tsId = index.model()->objectName().toInt();
-
-    delete level->tilesets[tsId];
-
-    if (tsName == "")
-        level->tilesets[tsId] = NULL;
-    else
-        level->tilesets[tsId] = game->getTileset(tsName);
-
-    emit updateLevelEditor();
-    emit relaodTilesetPicker();
-    emit tilesetEditMade();
 }

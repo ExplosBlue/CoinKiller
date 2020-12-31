@@ -7,9 +7,10 @@
 #include <QStandardItemModel>
 #include <QSpacerItem>
 
-TilesetPalette::TilesetPalette(Level* level, ObjectsEditonMode* objEditionMode)
+TilesetPalette::TilesetPalette(Level* level, ObjectsEditonMode* objEditionMode, Game* game)
 {
     this->level = level;
+    this->game = game;
     this->objEditionMode = objEditionMode;
 
     QVBoxLayout* layout = new QVBoxLayout();
@@ -36,10 +37,61 @@ TilesetPalette::TilesetPalette(Level* level, ObjectsEditonMode* objEditionMode)
     tabWidget = new QTabWidget();
     layout->addWidget(tabWidget);
 
+    // Setup Tileset Selector
     for (int i = 0; i < 4; i++)
     {
+        QComboBox* tsNameCombobox = new QComboBox();
+        QStandardItemModel* model = game->getTilesetModel(i, true);
+
+        //model->sort(0, Qt::AscendingOrder);
+
+        for (int j = 0; j < model->rowCount(); j++)
+        {
+            // Tileset Name
+            QModelIndex tsNameIndex = model->index(j, 0);
+            QString tilesetName = tsNameIndex.data().toString();
+
+            tsNameCombobox->addItem(tilesetName);
+
+            // File Name
+            QModelIndex fileNameIndex = model->index(j, 1);
+            QString fileName = fileNameIndex.data().toString();
+
+            tsNameCombobox->setItemData(j, fileName, Qt::UserRole);
+
+            if (level->tilesets[i])
+            {
+                QString selectedTs = level->tilesets[i]->getName();
+
+                if (selectedTs == fileName)
+                    tsNameCombobox->setCurrentIndex(j);
+            }
+        }
+
+        connect(tsNameCombobox, SIGNAL(currentIndexChanged(int)), this, SLOT(handleTilesetChange(int)));
+
+        QWidget* tabPage = new QWidget;
+        QGridLayout* tabLayout = new QGridLayout;
+
+        QLabel* tilesetLabel = new QLabel(tr("Tileset:"));
+        tilesetLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+
+        tabLayout->addWidget(tilesetLabel, 0, 0, 1, 1);
+        tabLayout->addWidget(tsNameCombobox, 0, 1);
+
+        tabPage->setLayout(tabLayout);
+
         objectLists[i] = new QListView();
-        tabWidget->addTab(objectLists[i], QString("%1").arg(i));
+        tabLayout->addWidget(objectLists[i], 1, 0, 1, 2);
+
+        QString title;
+        if (i == 0) title = tr("Standard");
+        else if (i == 1) title = tr("Stage");
+        else if (i == 2) title = tr("Background");
+        else if (i == 3) title = tr("Interactive");
+
+        tabWidget->addTab(tabPage, title);
+
         objectLists[i]->setFlow(QListView::LeftToRight);
         objectLists[i]->setLayoutMode(QListView::SinglePass);
         objectLists[i]->setMovement(QListView::Static);
@@ -153,4 +205,23 @@ void TilesetPalette::select(BgdatObject *obj)
     updatePalettes(tsid);
     objEditionMode->setDrawType(0);
     objEditionMode->setObject(obj->getid()&0x0FFF, (obj->getid() >> 12) & 0x3);
+}
+
+void TilesetPalette::handleTilesetChange(int index)
+{
+    QComboBox* tsNameCombobox = qobject_cast<QComboBox*>(sender());
+
+    QString tsName = tsNameCombobox->itemData(index).toString();
+    int tsId = tabWidget->currentIndex();
+
+    delete level->tilesets[tsId];
+
+    if (tsName == "")
+        level->tilesets[tsId] = NULL;
+    else
+        level->tilesets[tsId] = game->getTileset(tsName);
+
+    emit updateLevelView();
+    emit editMade();
+    reloadTilesets();
 }
