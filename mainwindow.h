@@ -100,7 +100,6 @@ private:
     bool checkForMissingFiles();
 
     void setNightmode(bool nightmode);
-    void setStyleSheetFromPath(QString path);
 
     void changeEvent(QEvent* event);
 };

@@ -25,6 +25,7 @@
 #include <QNetworkRequest>
 #include <QNetworkReply>
 #include <QDesktopServices>
+#include <QStyleFactory>
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
@@ -436,25 +437,37 @@ void MainWindow::setNightmode(bool nightmode)
     settings->set("nightmode", nightmode);
 
     if (nightmode)
-        setStyleSheetFromPath("NightMode.qss");
-    else
-        setStyleSheetFromPath("");
-}
-  
-void MainWindow::setStyleSheetFromPath(QString path)
-{
-    QFile styleSheetFile(settings->dataPath(path));
-
-    if (!styleSheetFile.exists())
     {
+        qApp->setStyle(QStyleFactory::create("Fusion"));
+
+        QPalette darkPalette;
+        darkPalette.setColor(QPalette::Window, QColor(53,53,53));
+        darkPalette.setColor(QPalette::WindowText, Qt::white);
+        darkPalette.setColor(QPalette::Base, QColor(25,25,25));
+        darkPalette.setColor(QPalette::AlternateBase, QColor(53,53,53));
+        darkPalette.setColor(QPalette::ToolTipBase, Qt::white);
+        darkPalette.setColor(QPalette::ToolTipText, Qt::white);
+        darkPalette.setColor(QPalette::PlaceholderText, Qt::lightGray);
+        darkPalette.setColor(QPalette::Text, Qt::white);
+        darkPalette.setColor(QPalette::Button, QColor(53,53,53));
+        darkPalette.setColor(QPalette::ButtonText, Qt::white);
+        darkPalette.setColor(QPalette::BrightText, Qt::red);
+        darkPalette.setColor(QPalette::Link, QColor(42, 130, 218));
+
+        darkPalette.setColor(QPalette::Highlight, QColor(42, 130, 218));
+        darkPalette.setColor(QPalette::HighlightedText, Qt::black);
+
+        qApp->setPalette(darkPalette);
+
+        qApp->setStyleSheet("QToolTip { color: #ffffff; background-color: #2a82da; border: 1px solid white; }");
+    }
+    else
+    {
+        qApp->setStyle(QStyleFactory::keys().first());
         qApp->setStyleSheet("");
+        qApp->setPalette(this->style()->standardPalette());
         return;
     }
-
-    styleSheetFile.open(QFile::ReadOnly | QFile::Text);
-    QString styleSheetTxt = QLatin1String(styleSheetFile.readAll());
-    styleSheetFile.close();
-    qApp->setStyleSheet(styleSheetTxt);
 }
 
 void MainWindow::on_maximisedCheckbox_toggled(bool checkState)
