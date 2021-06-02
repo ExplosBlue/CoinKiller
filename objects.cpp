@@ -3110,7 +3110,7 @@ ZoneBounding::ZoneBounding(quint16 id, quint32 primaryUpperBound, qint32 primary
     this->upScrolling = upScrolling;
 }
 
-ZoneBackground::ZoneBackground(quint16 id, quint16 yPos, quint16 xPos, QString name, quint8 parallaxMode)
+ZoneBackground::ZoneBackground(quint16 id, qint16 yPos, qint16 xPos, QString name, quint8 parallaxMode)
 {
     this->id = id;
     this->yPos = yPos;

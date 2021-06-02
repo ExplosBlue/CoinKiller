@@ -204,15 +204,15 @@ class ZoneBackground
 {
 public:
     ZoneBackground() {}
-    ZoneBackground(quint16 id, quint16 yPos, quint16 xPos, QString name, quint8 parallaxMode);
+    ZoneBackground(quint16 id, qint16 yPos, qint16 xPos, QString name, quint8 parallaxMode);
     quint16 getId() const { return id; }
-    quint16 getYPos() const { return yPos; }
-    quint16 getXPos() const { return xPos; }
+    qint16 getYPos() const { return yPos; }
+    qint16 getXPos() const { return xPos; }
     QString getName() const { return name; }
     quint8 getParallaxMode() const { return parallaxMode; }
     void setId(quint16 id) { this->id = id; }
-    void setYPos(quint16 yPos) { this->yPos = yPos; }
-    void setXPos(quint16 xPos) { this->xPos = xPos; }
+    void setYPos(qint16 yPos) { this->yPos = yPos; }
+    void setXPos(qint16 xPos) { this->xPos = xPos; }
     void setName(QString name) { this->name = name; }
     void setParallaxMode(qint8 parallaxMode) { this->parallaxMode = parallaxMode; }
 
