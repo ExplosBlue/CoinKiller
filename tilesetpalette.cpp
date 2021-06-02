@@ -43,7 +43,7 @@ TilesetPalette::TilesetPalette(Level* level, ObjectsEditonMode* objEditionMode, 
         QComboBox* tsNameCombobox = new QComboBox();
         QStandardItemModel* model = game->getTilesetModel(i, true);
 
-        //model->sort(0, Qt::AscendingOrder);
+        model->sort(0, Qt::AscendingOrder);
 
         for (int j = 0; j < model->rowCount(); j++)
         {

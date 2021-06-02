@@ -33,9 +33,12 @@ class ZoneBackgroundWidget : public QDialog
     Q_OBJECT
 public:
     ZoneBackgroundWidget(QList<ZoneBackground*> *backgrounds);
+    void updateWidget();
+    void setSelectedIndex(int index);
 
 signals:
     void editMade();
+    void selectedBackgroundChanged(int val);
 
 private:
     void loadBackgrounds();
@@ -67,6 +70,7 @@ private:
 
 private slots:
     void handleBackgroundListIndexChange(QListWidgetItem* item);
+    void handleBackgroundListDoubleClick(QListWidgetItem* item);
     void handleBackgroundChange(QString text);
     void handleParallaxModeChange(int val);
     void handleXPosChanged(int val);
@@ -81,9 +85,12 @@ class ZoneBoundingWidget : public QDialog
     Q_OBJECT
 public:
     ZoneBoundingWidget(QList<ZoneBounding*> *boundings);
+    void updateWidget();
+    void setSelectedIndex(int index);
 
 signals:
     void editMade();
+    void selectedBoundingChanged(int val);
 
 private:
     QListWidget* boundingList;
@@ -111,6 +118,7 @@ private:
 
 private slots:
     void handleBoundingListIndexChange(QListWidgetItem* item);
+    void handleBoundingListDoubleClick(QListWidgetItem* item);
     void handleUnlimitedScrollingChange(bool val);
     void handleVertScrollingDistanceChange(int val);
     void handlePrimaryUpperBoundChange(int val);

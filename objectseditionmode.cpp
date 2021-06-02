@@ -65,6 +65,13 @@ void ObjectsEditonMode::mouseDown(int x, int y, Qt::MouseButtons buttons, Qt::Ke
         {
             Zone* zone = level->newZone(x-200, y-120);
             level->zones.append(zone);
+
+            if (level->backgrounds.isEmpty())
+                level->backgrounds.append(new ZoneBackground());
+
+            if (level->boundings.isEmpty())
+                level->boundings.append(new ZoneBounding());
+
             if (selectAfterPlacement)
                 selectedObjects.append(zone);
         }

@@ -89,6 +89,11 @@ LevelEditorWindow::LevelEditorWindow(LevelManager* lvlMgr, int initialArea) :
     ui->actionToggle2DTile->setIcon(QIcon(basePath + "2D.png"));
     ui->actionToggleEntrances->setIcon(QIcon(basePath + "entrance.png"));
 
+    // Set Shortcuts
+    QList<QKeySequence> deleteShortcuts;
+    deleteShortcuts << QKeySequence("del") << QKeySequence("backspace");
+    ui->actionDelete->setShortcuts(deleteShortcuts);
+
     toolboxDock = new QDockWidget(this);
     toolboxDock->setObjectName("toolboxDock");
     toolboxDock->setWindowTitle(tr("Toolbox"));

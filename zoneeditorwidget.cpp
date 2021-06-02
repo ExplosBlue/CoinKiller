@@ -59,11 +59,13 @@ ZoneEditorWidget::ZoneEditorWidget(QList<Zone*> *zones, QList<ZoneBackground*> *
 
     boundingId = new QSpinBox();
     boundingId->setRange(0, 255);
-    connect(boundingId, SIGNAL(valueChanged(int)), this, SLOT(handleBoundingIDChange(int)));
+    boundingId->setReadOnly(true);
+    boundingId->setEnabled(false);
 
     backgroundId = new QSpinBox();
     backgroundId->setRange(0, 255);
-    connect(backgroundId, SIGNAL(valueChanged(int)), this, SLOT(handleBackgroundIDChange(int)));
+    backgroundId->setReadOnly(true);
+    backgroundId->setEnabled(false);
 
     editBounding = new QPushButton(tr("Open Bounding Editor"), this);
     connect(editBounding, SIGNAL(clicked(bool)), this, SLOT(handleEditBoundingClicked()));
@@ -73,9 +75,11 @@ ZoneEditorWidget::ZoneEditorWidget(QList<Zone*> *zones, QList<ZoneBackground*> *
 
     boundingWidget = new ZoneBoundingWidget(bounds);
     connect(boundingWidget, SIGNAL(editMade()), this, SLOT(handleEditMade()));
+    connect(boundingWidget, SIGNAL(selectedBoundingChanged(int)), this, SLOT(handleBoundingIDChange(int)));
 
     backgroundWidget = new ZoneBackgroundWidget(bgs);
     connect(backgroundWidget, SIGNAL(editMade()), this, SLOT(handleEditMade()));
+    connect(backgroundWidget, SIGNAL(selectedBackgroundChanged(int)), this, SLOT(handleBackgroundIDChange(int)));
 
     QVBoxLayout* layout = new QVBoxLayout();
     setLayout(layout);
@@ -316,64 +320,39 @@ void ZoneEditorWidget::handleBoundingIDChange(int val)
 {
     if (!handleChanges) return;
 
-    bool isValid = false;
-    foreach(ZoneBounding* bounding, *zoneBoundings)
-    {
-        if (bounding->getId() == val)
-            isValid = true;
-    }
 
-    if (isValid)
-    {
-        editZone->setBoundingId(val);
-        emit updateLevelView();
-        emit editMade();
-    }
-    else
-    {
-        QMessageBox message(QMessageBox::Information, "CoinKiller", tr("No Bounding With That ID Exists."), QMessageBox::Ok);
-        message.exec();
+    editZone->setBoundingId(val);
+    emit updateLevelView();
+    emit editMade();
 
-        boundingId->setValue(editZone->getBoundingId());
-    }
+    boundingId->setValue(val);
 }
 
 void ZoneEditorWidget::handleBackgroundIDChange(int val)
 {
     if (!handleChanges) return;
 
-    bool isValid = false;
-    foreach(ZoneBackground* bg, *zoneBgs)
-    {
-        if (bg->getId() == val)
-            isValid = true;
-    }
+    editZone->setBackgroundId(val);
+    updateList();
+    emit updateLevelView();
+    emit editMade();
 
-    if (isValid)
-    {
-        editZone->setBackgroundId(val);
-        updateList();
-        emit updateLevelView();
-        emit editMade();
-    }
-    else
-    {
-        QMessageBox message(QMessageBox::Information, "CoinKiller", tr("No Background With That ID Exists."), QMessageBox::Ok);
-        message.exec();
-
-        backgroundId->setValue(editZone->getBackgroundId());
-    }
+    backgroundId->setValue(val);
 }
 
 void ZoneEditorWidget::handleEditBoundingClicked()
 {
     if (!handleChanges) return;
+    boundingWidget->updateWidget();
+    boundingWidget->setSelectedIndex(editZone->getBoundingId());
     boundingWidget->exec();
 }
 
 void ZoneEditorWidget::handleEditBackgroundClicked()
 {
     if (!handleChanges) return;
+    backgroundWidget->updateWidget();
+    backgroundWidget->setSelectedIndex(editZone->getBackgroundId());
     backgroundWidget->exec();
 }
 
@@ -391,6 +370,7 @@ ZoneBackgroundWidget::ZoneBackgroundWidget(QList<ZoneBackground*> *backgrounds)
     backgroundList = new QListWidget();
     backgroundList->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     connect(backgroundList, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(handleBackgroundListIndexChange(QListWidgetItem*)));
+    connect(backgroundList, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(handleBackgroundListDoubleClick(QListWidgetItem*)));
 
     addBackgroundBtn = new QPushButton(tr("Add Background"), this);
     connect(addBackgroundBtn, SIGNAL(clicked(bool)), this, SLOT(handleAddBackgroundClicked()));
@@ -503,6 +483,12 @@ void ZoneBackgroundWidget::updateInfo()
     handleChanges = true;
 }
 
+void ZoneBackgroundWidget::updateWidget()
+{
+    updateList();
+    updateInfo();
+}
+
 void ZoneBackgroundWidget::handleBackgroundListIndexChange(QListWidgetItem *item)
 {
     if (!handleChanges) return;
@@ -570,7 +556,7 @@ void ZoneBackgroundWidget::handleBackgroundIDChanged(int val)
 void ZoneBackgroundWidget::handleBackgroundChange(QString text)
 {
     if (!handleChanges) return;
-    editBg->setName(backgrounds.key(text, "Nohara_Castle"));
+    editBg->setName(backgrounds.key(text, "Nohara"));
     updateBgPreview();
     emit editMade();
 }
@@ -590,7 +576,7 @@ void ZoneBackgroundWidget::handleAddBackgroundClicked()
             return;
     }
 
-    ZoneBackground* bg = new ZoneBackground(id, 0, 0, "Nohara_Castle", 0);
+    ZoneBackground* bg = new ZoneBackground(id, 0, 0, "Nohara", 0);
 
     zoneBgs->append(bg);
     updateList();
@@ -616,6 +602,32 @@ void ZoneBackgroundWidget::handleRemoveBackgroundClicked()
     emit editMade();
 }
 
+void ZoneBackgroundWidget::handleBackgroundListDoubleClick(QListWidgetItem *item)
+{
+    if (!handleChanges) return;
+    emit selectedBackgroundChanged(zoneBgs->at(backgroundList->row(item))->getId());
+
+    this->close();
+}
+
+void ZoneBackgroundWidget::setSelectedIndex(int index)
+{
+    QList items = backgroundList->findItems(tr("Background %1").arg(index), Qt::MatchExactly);
+
+    if (items.isEmpty())
+        return;
+    else
+    {
+        backgroundList->setCurrentIndex(backgroundList->indexFromItem(items.at(0)));
+        backgroundList->setFocus();
+        editBg = zoneBgs->at(backgroundList->row(items.at(0)));
+        editingABg = true;
+        updateInfo();
+        settingsGroup->setEnabled(true);
+    }
+
+}
+
 
 // Zone Bounding Widget
 
@@ -626,6 +638,7 @@ ZoneBoundingWidget::ZoneBoundingWidget(QList<ZoneBounding*> *boundings)
     boundingList = new QListWidget();
     boundingList->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     connect(boundingList, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(handleBoundingListIndexChange(QListWidgetItem*)));
+    connect(boundingList, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(handleBoundingListDoubleClick(QListWidgetItem*)));
 
     addBoundingBtn = new QPushButton(tr("Add Bounding"), this);
     connect(addBoundingBtn, SIGNAL(clicked(bool)), this, SLOT(handleAddBoundingClicked()));
@@ -758,6 +771,12 @@ void ZoneBoundingWidget::updateInfo()
     handleChanges = true;
 }
 
+void ZoneBoundingWidget::updateWidget()
+{
+    updateList();
+    updateInfo();
+}
+
 void ZoneBoundingWidget::handleBoundingListIndexChange(QListWidgetItem *item)
 {
     if (!handleChanges) return;
@@ -765,6 +784,14 @@ void ZoneBoundingWidget::handleBoundingListIndexChange(QListWidgetItem *item)
     settingsGroup->setEnabled(true);
     editingABounding = true;
     updateInfo();
+}
+
+void ZoneBoundingWidget::handleBoundingListDoubleClick(QListWidgetItem *item)
+{
+    if (!handleChanges) return;
+    emit selectedBoundingChanged(zoneBoundings->at(boundingList->row(item))->getId());
+
+    this->close();
 }
 
 void ZoneBoundingWidget::handleUnlimitedScrollingChange(bool val)
@@ -863,4 +890,21 @@ void ZoneBoundingWidget::handleRemoveBoundingClicked()
 
     updateList();
     emit editMade();
+}
+
+void ZoneBoundingWidget::setSelectedIndex(int index)
+{
+    QList items = boundingList->findItems(tr("Bounding %1").arg(index), Qt::MatchExactly);
+
+    if (items.isEmpty())
+        return;
+    else
+    {
+        boundingList->setCurrentIndex(boundingList->indexFromItem(items.at(0)));
+        boundingList->setFocus();
+        editBounding = zoneBoundings->at(boundingList->row(items.at(0)));
+        editingABounding = true;
+        updateInfo();
+        settingsGroup->setEnabled(true);
+    }
 }
