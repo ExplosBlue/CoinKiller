@@ -4,6 +4,7 @@
 #include <QDebug>
 #include <QtEndian>
 #include "rg_etc1.h"
+#include "crc32.h"
 
 Ctpk::Ctpk(FileBase* file)
 {
@@ -497,6 +498,32 @@ void Ctpk::setTextureEtc1(quint32 entryIndex, QImage& img, bool alpha, uint qual
     file->close();
 }
 
+void Ctpk::setFilename(QString newName)
+{
+    // Hacky fix to ensure ctpk filename is correct when creating new tilesets
+    // TODO: implement proper ctpk writing so files
+    for (uint i = 0; i< numEntries; i++)
+    {
+        file->open();
+        file->seek(entries[i]->filenameOffset);
+        file->writeStringASCII(newName, 36);
+
+        // Calculate filename hash
+        file->seek(hashSectionOffset + i*64);
+
+        quint32 table[256];
+        crc32::generate_table(table);
+
+        std::string utf8_text = newName.toUtf8().constData();
+        const void * a = utf8_text.c_str();
+
+        quint32 crc = crc32::update(table, 0, a, utf8_text.size());
+        file->write32(crc);
+
+        file->save();
+        file->close();
+    }
+}
 
 void Ctpk::printInfo()
 {

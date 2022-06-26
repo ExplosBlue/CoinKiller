@@ -397,6 +397,7 @@ void MainWindow::on_addTilesetBtn_clicked()
 
     Tileset ts(game, ntd.getName());
     ts.setSlot(ntd.getSlot());
+    ts.setInternalName(ntd.getName());
     ts.save();
 
     ui->tilesetView->setModel(game->getTilesetModel());

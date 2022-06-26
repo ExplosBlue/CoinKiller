@@ -64,6 +64,7 @@ SOURCES += main.cpp\
     clickablelabel.cpp
 
 HEADERS  += mainwindow.h \
+    crc32.h \
     eventeditorwidget.h \
     filesystembase.h \
     filebase.h \

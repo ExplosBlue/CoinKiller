@@ -74,6 +74,7 @@ public:
     void moveObjectDown(int objNbr);
     void resizeObject(int objNubr, int width, int height);
     void setSlot(int slot);
+    void setInternalName(QString name);
 
     quint16 getOverlayTile(int selTile);
     quint16 getOverlayTileSlot(int selTile);
