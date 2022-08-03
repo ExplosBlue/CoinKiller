@@ -565,7 +565,7 @@ ObjectsEditonMode::mouseAction ObjectsEditonMode::getActionAtPos(int x, int y)
 
                 int nodeID = n->getParentPath()->getIndexOfNode(n);
 
-                if (nodeID == 0 && n->getParentPath()->getNumberOfNodes() >= nodeID+1)
+                if (nodeID == 0 && n->getParentPath()->getNumberOfNodes() > nodeID+1)
                 {
                     if (n->getx() >= n->getParentPath()->getNode(nodeID+1)->getx())
                         act.pAdd = AddAfter;
