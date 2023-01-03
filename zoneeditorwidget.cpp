@@ -661,7 +661,7 @@ ZoneBoundingWidget::ZoneBoundingWidget(QList<ZoneBounding*> *boundings)
     primaryUpperBound->setRange(-2147483648, 2147483647);
     primaryUpperBound->setToolTip(tr("This is the main upper bounding used by the camera it is used when the player is walking/jumping.\n"
                            "This is used to determine how close the player has to be to the top of the screen before the camera scrolls up.\n"
-                           "Negative values require the player to be closer to the top of the screen, Positive values require the player to be further away.\n"
+                           "Negative values require the player to be closer to the top of the screen, positive values require the player to be further away.\n"
                            "A value of 0 requires the player to be >5 tiles away from the top before the camera will move."));
     connect(primaryUpperBound, SIGNAL(valueChanged(int)), this, SLOT(handlePrimaryUpperBoundChange(int)));
 
@@ -669,7 +669,7 @@ ZoneBoundingWidget::ZoneBoundingWidget(QList<ZoneBounding*> *boundings)
     primaryLowerBound->setRange(-2147483648, 2147483647);
     primaryLowerBound->setToolTip(tr("This is the main upper bounding used by the camera it is used when the player is walking/jumping.\n"
                                     "This is used to determine how close the player has to be to the bottom of the screen before the camera scrolls down.\n"
-                                    "Negative values require the player to be closer to the bottom of the screen, Positive values require the player to be further away.\n"
+                                    "Positive values require the player to be closer to the bottom of the screen, negative values require the player to be further away.\n"
                                     "A value of 0 requires the player to be >5 tiles away from the bottom before the camera will move."));
     connect(primaryLowerBound, SIGNAL(valueChanged(int)), this, SLOT(handlePrimaryLowerBoundChange(int)));
 
@@ -677,7 +677,7 @@ ZoneBoundingWidget::ZoneBoundingWidget(QList<ZoneBounding*> *boundings)
     secondaryUpperBound->setRange(-2147483648, 2147483647);
     secondaryUpperBound->setToolTip(tr("This is the secondary upper bounding used by the camera in certain situations, such as when climbing a vine or fence.\n"
                                     "This is used to determine how close the player has to be to the top of the screen before the camera scrolls up.\n"
-                                    "Negative values require the player to be closer to the top of the screen, Positive values require the player to be further away.\n"
+                                    "Negative values require the player to be closer to the top of the screen, positive values require the player to be further away.\n"
                                     "A value of 0 requires the player to be >5 tiles away from the top before the camera will move."));
     connect(secondaryUpperBound, SIGNAL(valueChanged(int)), this, SLOT(handleSecondaryUpperBoundChange(int)));
 
@@ -685,7 +685,7 @@ ZoneBoundingWidget::ZoneBoundingWidget(QList<ZoneBounding*> *boundings)
     secondaryLowerBound->setRange(-2147483648, 2147483647);
     secondaryLowerBound->setToolTip(tr("This is the secondary lower bounding used by the camera in certain situations, such as when climbing a vine or fence.\n"
                                     "This is used to determine how close the player has to be to the bottom of the screen before the camera scrolls down.\n"
-                                    "Negative values require the player to be closer to the bottom of the screen, Positive values require the player to be further away.\n"
+                                    "Positive values require the player to be closer to the bottom of the screen, negative values require the player to be further away.\n"
                                     "A value of 0 requires the player to be >5 tiles away from the bottom before the camera will move."));
     connect(secondaryLowerBound, SIGNAL(valueChanged(int)), this, SLOT(handleSecondaryLowerBoundChange(int)));
 
