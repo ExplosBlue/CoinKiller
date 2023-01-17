@@ -42,47 +42,47 @@ AreaEditorWidget::AreaEditorWidget(Level* level, Game *game)
     timeLimit->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);  // All Controls at maximum possible width
     settingsLayout->addWidget(timeLimit, 0, 1);
 
-    settingsLayout->addWidget(new QLabel(tr("CoinRush Time Limit:")), 0, 2, 1, 1, Qt::AlignRight);
+    settingsLayout->addWidget(new QLabel(tr("CoinRush Time Limit:")), 1, 0, 1, 1, Qt::AlignRight);
     coinRushtimeLimit = new QSpinBox();
     coinRushtimeLimit->setRange(0, 999);
     connect(coinRushtimeLimit, SIGNAL(valueChanged(int)), this, SLOT(handleCoinRushTimeLimitChange(int)));
     coinRushtimeLimit->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-    settingsLayout->addWidget(coinRushtimeLimit, 0, 3);
+    settingsLayout->addWidget(coinRushtimeLimit, 1, 1);
 
-    settingsLayout->addWidget(new QLabel(tr("Level Setting 1:")), 1, 0, 1, 1, Qt::AlignRight);
+    settingsLayout->addWidget(new QLabel(tr("Level Setting 1:")), 2, 0, 1, 1, Qt::AlignRight);
     specialLevelFlag1 = new QComboBox();
     specialLevelFlag1->addItems(specialLevelFlags1.values());
     connect(specialLevelFlag1, SIGNAL(currentTextChanged(QString)), this, SLOT(handleSpecialLevelFlag1Change(QString)));
     specialLevelFlag1->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-    settingsLayout->addWidget(specialLevelFlag1, 1, 1);
+    settingsLayout->addWidget(specialLevelFlag1, 2, 1);
 
-    settingsLayout->addWidget(new QLabel(tr("Level Setting 2:")), 1, 2, 1, 1, Qt::AlignRight);
+    settingsLayout->addWidget(new QLabel(tr("Level Setting 2:")), 3, 0, 1, 1, Qt::AlignRight);
     specialLevelFlag2 = new QComboBox();
     specialLevelFlag2->addItems(specialLevelFlags2.values());
     connect(specialLevelFlag2, SIGNAL(currentTextChanged(QString)), this, SLOT(handleSpecialLevelFlag2Change(QString)));
     specialLevelFlag2->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-    settingsLayout->addWidget(specialLevelFlag2, 1, 3);
+    settingsLayout->addWidget(specialLevelFlag2, 3, 1);
 
-    settingsLayout->addWidget(new QLabel(tr("Unknown 1:")), 2, 0, 1, 1, Qt::AlignRight);
+    settingsLayout->addWidget(new QLabel(tr("Unknown 1:")), 4, 0, 1, 1, Qt::AlignRight);
     unk1Editor = new QSpinBox();
     unk1Editor->setRange(0, 255);
     connect(unk1Editor, SIGNAL(valueChanged(int)), this, SLOT(handleUnk1Change(int)));
     unk1Editor->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-    settingsLayout->addWidget(unk1Editor, 2, 1);
+    settingsLayout->addWidget(unk1Editor, 4, 1);
 
-    settingsLayout->addWidget(new QLabel(tr("Unknown 2:")), 2, 2, 1, 1, Qt::AlignRight);
+    settingsLayout->addWidget(new QLabel(tr("Unknown 2:")), 5, 0, 1, 1, Qt::AlignRight);
     unk2Editor = new QSpinBox();
     unk2Editor->setRange(0, 255);
     connect(unk2Editor, SIGNAL(valueChanged(int)), this, SLOT(handleUnk2Change(int)));
     unk2Editor->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-    settingsLayout->addWidget(unk2Editor, 2, 3);
+    settingsLayout->addWidget(unk2Editor, 5, 1);
 
-    settingsLayout->addWidget(new QLabel(tr("Level Entrance ID:")), 3, 0, 1, 1, Qt::AlignRight);
+    settingsLayout->addWidget(new QLabel(tr("Level Entrance ID:")), 6, 0, 1, 1, Qt::AlignRight);
     levelEntranceID = new QSpinBox();
     levelEntranceID->setRange(0, 255);
     connect(levelEntranceID, SIGNAL(valueChanged(int)), this, SLOT(handlelevelEntranceIDChanged(int)));
     levelEntranceID->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-    settingsLayout->addWidget(levelEntranceID, 3, 1, 1, 3);
+    settingsLayout->addWidget(levelEntranceID, 6, 1, 1, 1);
 
     QGroupBox* eventEditorBox = new QGroupBox();
     eventEditorBox->setTitle(tr("Initial Area Event States"));
