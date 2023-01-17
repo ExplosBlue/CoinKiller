@@ -677,14 +677,14 @@ void LevelView::mousePressEvent(QMouseEvent* evt)
 
     if (evt->buttons() & Qt::MiddleButton)
     {
-        dragX = evt->x();
-        dragY = evt->y();
+        dragX = evt->position().x();
+        dragY = evt->position().y();
     }
 
     if (mode != NULL)
     {
         if (evt->buttons() == Qt::LeftButton || evt->buttons() == Qt::RightButton)
-            mode->mouseDown(evt->x()/zoom, evt->y()/zoom, evt->buttons(), evt->modifiers(), drawrect);
+            mode->mouseDown(evt->position().x()/zoom, evt->position().y()/zoom, evt->buttons(), evt->modifiers(), drawrect);
         setCursor(QCursor(mode->getActualCursor()));
     }
     update();
@@ -697,16 +697,16 @@ void LevelView::mouseMoveEvent(QMouseEvent* evt)
 {    
     if (evt->buttons() & Qt::MiddleButton)
     {
-        int x = evt->x();
-        int y = evt->y();
+        int x = evt->position().x();
+        int y = evt->position().y();
 
-        emit scrollTo(visibleRegion().boundingRect().x() - x + dragX, visibleRegion().boundingRect().y() - y + dragY);
+        emit scrollTo((visibleRegion().boundingRect().x() - x + dragX)/zoom, (visibleRegion().boundingRect().y() - y + dragY)/zoom);
     }
 
     if (mode != NULL)
     {
-        int x = evt->x()/zoom;
-        int y = evt->y()/zoom;
+        int x = evt->position().x()/zoom;
+        int y = evt->position().y()/zoom;
 
         if (evt->buttons() == Qt::LeftButton || evt->buttons() == Qt::RightButton)
         {
@@ -737,7 +737,7 @@ void LevelView::mouseMoveEvent(QMouseEvent* evt)
 
 void LevelView::mouseReleaseEvent(QMouseEvent *evt)
 {
-    mode->mouseUp(evt->x()/zoom, evt->y()/zoom);
+    mode->mouseUp(evt->position().x()/zoom, evt->position().y()/zoom);
     setCursor(QCursor(mode->getActualCursor()));
     update();
 }
@@ -752,7 +752,7 @@ void LevelView::keyPressEvent(QKeyEvent* evt)
     // Allow scrolling on ScrollView
     if (evt->key() == Qt::Key_Up || evt->key() == Qt::Key_Down ||
         evt->key() == Qt::Key_Left || evt->key() == Qt::Key_Right)
-    {        
+    {
         evt->ignore();
         return;
     }

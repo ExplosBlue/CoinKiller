@@ -61,7 +61,6 @@ public slots:
     void deselect();
     void updateEditors();
     void scrollTo(int x, int y);
-    void scrollToWithZoom(int x, int y);
     void handleEditMade();
 
 private slots:

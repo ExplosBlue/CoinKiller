@@ -669,7 +669,7 @@ void LevelEditorWindow::loadArea(int id, bool closeLevel, bool init)
     miniMap = new LevelMiniMap(this, level);
     connect(levelView, SIGNAL(updateMinimap(QRect)), miniMap, SLOT(update_(QRect)));
     connect(levelView, SIGNAL(updateMinimapBounds()), miniMap, SLOT(updateBounds()));
-    connect(miniMap, SIGNAL(scrollTo(int,int)), this, SLOT(scrollToWithZoom(int,int)));
+    connect(miniMap, SIGNAL(scrollTo(int,int)), this, SLOT(scrollTo(int,int)));
     //ui->miniMap->setWidget(miniMap);
     minimapDock->setWidget(miniMap);
 
@@ -774,14 +774,6 @@ void LevelEditorWindow::handleMgrUpdate()
 }
 
 void LevelEditorWindow::scrollTo(int x, int y)
-{
-    qMax(0, x);
-    qMax(0, y);
-    ui->levelViewArea->horizontalScrollBar()->setValue(x);
-    ui->levelViewArea->verticalScrollBar()->setValue(y);
-}
-
-void LevelEditorWindow::scrollToWithZoom(int x, int y)
 {
     qMax(0.0f, x*zoom);
     qMax(0.0f, y*zoom);
