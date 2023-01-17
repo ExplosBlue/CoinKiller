@@ -97,69 +97,46 @@ void LevelView::paint(QPainter& painter, QRect rect, float zoomLvl, bool selecti
     {
         painter.setRenderHint(QPainter::Antialiasing, false);
 
-        int startx = drawrect.x() - drawrect.x() %160;
-        int endx = startx + drawrect.width() + 160;
+        const int startx = drawrect.x() - drawrect.x() % 160;
+        const int endx = startx + drawrect.width() + 160;
 
-        int starty = drawrect.y() - drawrect.y() %160;
-        int endy = starty + drawrect.height() + 160;
-
-        int x = startx;
-        int y = starty;
-
-        int county = 0;
-        bool xoffset = 0;
+        const int starty = drawrect.y() - drawrect.y() % 160;
+        const int endy = starty + drawrect.height() + 160;
 
         painter.setPen(Qt::NoPen);
         QBrush brush(Qt::SolidPattern);
         brush.setColor(QColor(50,50,50));
         painter.setBrush(brush);
 
-
         // Big Squares
-        while (y <= endy)
+        const int cellCountX = 1 + (endx - startx) / 80;
+        const int cellCountY = 1 + (endy - starty) / 80;
+
+        for(int j = 0; j < cellCountY; j++)
         {
-            while (x <= endx)
+            for(int i = j % 2; i < cellCountX; i+=2)
             {
-                if (xoffset == false)
-                {
-                    painter.setOpacity(0.2);
-                    painter.drawRect(x, y, 80, 80);
-                    x += 80;
-                }
-                x += 80;
-                xoffset = false;
+                painter.setOpacity(0.2);
+                painter.drawRect(startx + (i * 80), starty + (j * 80), 80, 80);
             }
-            x = 0;
-            y += 80;
-            county += 1;
-            if (county %2)
-                xoffset = true;
         }
-        x = 0;
-        y = 0;
+
         // Small Squares
-        if (zoom  > 0.5)
+        if (zoom > 0.5)
         {
-            while (y <= endy)
+            const int cellCountX = 1 + (endx - startx) / 20;
+            const int cellCountY = 1 + (endy - starty) / 20;
+
+            for(int j = 0; j < cellCountY; j++)
             {
-                while (x <= endx)
+                for(int i = j % 2; i < cellCountX; i+=2)
                 {
-                    if (xoffset == false)
-                    {
-                        painter.setOpacity(0.1);
-                        painter.drawRect(x, y, 20, 20);
-                        x += 20;
-                    }
-                    x += 20;
-                    xoffset = false;
+                    painter.setOpacity(0.1);
+                    painter.drawRect(startx + (i * 20), starty + (j * 20), 20, 20);
                 }
-                x = 0;
-                y += 20;
-                county += 1;
-                if (county %2)
-                    xoffset = true;
             }
         }
+
         painter.setRenderHint(QPainter::Antialiasing);
         painter.setBrush(Qt::NoBrush);
         painter.setOpacity(1);
