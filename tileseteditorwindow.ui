@@ -785,6 +785,7 @@
      <string>Edit</string>
     </property>
     <addaction name="actionImportImage"/>
+    <addaction name="actionImportImageWithPadding"/>
     <addaction name="actionImportImageLegacy"/>
     <addaction name="actionExportImage"/>
     <addaction name="separator"/>
@@ -929,6 +930,17 @@
    </property>
    <property name="toolTip">
     <string>Toggle Collision</string>
+   </property>
+  </action>
+  <action name="actionImportImageWithPadding">
+   <property name="text">
+    <string>Import Image (With Padding)...</string>
+   </property>
+   <property name="toolTip">
+    <string>Import Image (With Padding)...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Alt+I</string>
    </property>
   </action>
  </widget>

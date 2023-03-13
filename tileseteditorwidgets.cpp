@@ -20,6 +20,7 @@ TilesetPicker::TilesetPicker(Tileset *tileset, QWidget *parent) : QWidget(parent
 void TilesetPicker::setTilesetImage(QImage& tilesetImage)
 {
     this->tilesetImage = tilesetImage;
+    this->update();
 }
 
 void TilesetPicker::paintEvent(QPaintEvent* evt)

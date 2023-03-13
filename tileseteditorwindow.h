@@ -99,6 +99,8 @@ private slots:
 
     void on_actionImportImage_triggered();
 
+    void on_actionImportImageWithPadding_triggered();
+
     void on_actionImportImageLegacy_triggered();
 
     void on_actionToggleCollision_toggled(bool value);
@@ -156,6 +158,8 @@ private:
     void hideVertEdits(bool toggle);
     void setRepeatSpinBox(int nbr, int value, bool block);
     void clampOBehaviorSpinBoxes();
+
+    void importTilesetImage(bool padded=false);
 
     SettingsManager* settings;
 
