@@ -573,11 +573,17 @@ void Sprite::setRect()
         offsety = -25;
         break;
     case 56: // Coin Bubble
+    {
         width = 30;
         height = 30;
         offsetx = -5;
         offsety = -5;
+
+        if (getNybble(7) % 3 == 2)
+            offsety = -25;
+
         break;
+    }
     case 61: // Red Coin
         if(getNybble(7) >= 1)
         {
