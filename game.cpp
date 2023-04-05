@@ -173,6 +173,10 @@ QStandardItemModel* Game::getTilesetModel()
     while (!in.atEnd())
     {
        QStringList parts = in.readLine().split(':');
+
+       if (parts.length() < 2)
+           break;
+
        defaultNames.insert(parts[0], parts[1]);
     }
     inputFile.close();
@@ -269,6 +273,10 @@ QStandardItemModel* Game::getTilesetModel(int id, bool includeNoneItem)
     while (!in.atEnd())
     {
        QStringList parts = in.readLine().split(':');
+
+       if (parts.length() < 2)
+           break;
+
        defaultNames.insert(parts[0], parts[1]);
     }
     inputFile.close();

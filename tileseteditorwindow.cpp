@@ -35,6 +35,7 @@ TilesetEditorWindow::TilesetEditorWindow(WindowBase *parent, Tileset *tileset) :
     ui->actionSetBackgroundColor->setIcon(QIcon(basePath + "colors.png"));
     ui->actionExportImage->setIcon(QIcon(basePath + "export.png"));
     ui->actionImportImage->setIcon(QIcon(basePath + "import.png"));
+    ui->actionImportImageWithPadding->setIcon(QIcon(basePath + "import.png"));
     ui->actionImportImageLegacy->setIcon(QIcon(basePath + "import.png"));
     ui->actionDeleteAllObjects->setIcon(QIcon(basePath + "delete_objects.png"));
     ui->actionDeleteAll3DOverlays->setIcon(QIcon(basePath + "delete_overlays.png"));
@@ -1033,7 +1034,7 @@ void TilesetEditorWindow::on_actionExportImage_triggered()
     editStatus->setText(tr("Image Exported"));
 }
 
-void TilesetEditorWindow::on_actionImportImage_triggered()
+void TilesetEditorWindow::importTilesetImage(bool padded)
 {
     QString pngFileName = QFileDialog::getOpenFileName(this, tr("Import Tileset Image"), QDir::currentPath(), "PNG Files (*.png)");
     if (!pngFileName.endsWith(".png"))
@@ -1045,9 +1046,11 @@ void TilesetEditorWindow::on_actionImportImage_triggered()
     if (!inputImg.load(pngFileName))
         return;
 
-    if (inputImg.width() != 420 || inputImg.height() != 420)
+    int imageDimensions = padded ? 512 : 420;
+
+    if (inputImg.width() != imageDimensions || inputImg.height() != imageDimensions)
     {
-        QMessageBox::information(this, " ", tr("The input image is not 420x420 pixels."), QMessageBox::Ok);
+        QMessageBox::information(this, " ", tr("The input image is not %1x%1 pixels.").arg(imageDimensions), QMessageBox::Ok);
         return;
     }
 
@@ -1062,11 +1065,25 @@ void TilesetEditorWindow::on_actionImportImage_triggered()
 
     qApp->processEvents();
 
-    QImage img = Tileset::padTilesetImage(inputImg);
-    tileset->setImage(img, quality, dither);
+    if (padded)
+        tileset->setImage(inputImg, quality, dither);
+    else {
+        QImage img = Tileset::padTilesetImage(inputImg);
+        tileset->setImage(img, quality, dither);
+    }
 
     tilesetPicker->setTilesetImage(tileset->getImage());
     setupObjectsModel(true);
+}
+
+void TilesetEditorWindow::on_actionImportImage_triggered()
+{
+    importTilesetImage();
+}
+
+void TilesetEditorWindow::on_actionImportImageWithPadding_triggered()
+{
+    importTilesetImage(true);
 }
 
 void TilesetEditorWindow::on_actionImportImageLegacy_triggered()

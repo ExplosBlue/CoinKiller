@@ -97,69 +97,46 @@ void LevelView::paint(QPainter& painter, QRect rect, float zoomLvl, bool selecti
     {
         painter.setRenderHint(QPainter::Antialiasing, false);
 
-        int startx = drawrect.x() - drawrect.x() %160;
-        int endx = startx + drawrect.width() + 160;
+        const int startx = drawrect.x() - drawrect.x() % 160;
+        const int endx = startx + drawrect.width() + 160;
 
-        int starty = drawrect.y() - drawrect.y() %160;
-        int endy = starty + drawrect.height() + 160;
-
-        int x = startx;
-        int y = starty;
-
-        int county = 0;
-        bool xoffset = 0;
+        const int starty = drawrect.y() - drawrect.y() % 160;
+        const int endy = starty + drawrect.height() + 160;
 
         painter.setPen(Qt::NoPen);
         QBrush brush(Qt::SolidPattern);
         brush.setColor(QColor(50,50,50));
         painter.setBrush(brush);
 
-
         // Big Squares
-        while (y <= endy)
+        const int cellCountX = 1 + (endx - startx) / 80;
+        const int cellCountY = 1 + (endy - starty) / 80;
+
+        for(int j = 0; j < cellCountY; j++)
         {
-            while (x <= endx)
+            for(int i = j % 2; i < cellCountX; i+=2)
             {
-                if (xoffset == false)
-                {
-                    painter.setOpacity(0.2);
-                    painter.drawRect(x, y, 80, 80);
-                    x += 80;
-                }
-                x += 80;
-                xoffset = false;
+                painter.setOpacity(0.2);
+                painter.drawRect(startx + (i * 80), starty + (j * 80), 80, 80);
             }
-            x = 0;
-            y += 80;
-            county += 1;
-            if (county %2)
-                xoffset = true;
         }
-        x = 0;
-        y = 0;
+
         // Small Squares
-        if (zoom  > 0.5)
+        if (zoom > 0.5)
         {
-            while (y <= endy)
+            const int cellCountX = 1 + (endx - startx) / 20;
+            const int cellCountY = 1 + (endy - starty) / 20;
+
+            for(int j = 0; j < cellCountY; j++)
             {
-                while (x <= endx)
+                for(int i = j % 2; i < cellCountX; i+=2)
                 {
-                    if (xoffset == false)
-                    {
-                        painter.setOpacity(0.1);
-                        painter.drawRect(x, y, 20, 20);
-                        x += 20;
-                    }
-                    x += 20;
-                    xoffset = false;
+                    painter.setOpacity(0.1);
+                    painter.drawRect(startx + (i * 20), starty + (j * 20), 20, 20);
                 }
-                x = 0;
-                y += 20;
-                county += 1;
-                if (county %2)
-                    xoffset = true;
             }
         }
+
         painter.setRenderHint(QPainter::Antialiasing);
         painter.setBrush(Qt::NoBrush);
         painter.setOpacity(1);
@@ -677,14 +654,14 @@ void LevelView::mousePressEvent(QMouseEvent* evt)
 
     if (evt->buttons() & Qt::MiddleButton)
     {
-        dragX = evt->x();
-        dragY = evt->y();
+        dragX = evt->position().x();
+        dragY = evt->position().y();
     }
 
     if (mode != NULL)
     {
         if (evt->buttons() == Qt::LeftButton || evt->buttons() == Qt::RightButton)
-            mode->mouseDown(evt->x()/zoom, evt->y()/zoom, evt->buttons(), evt->modifiers(), drawrect);
+            mode->mouseDown(evt->position().x()/zoom, evt->position().y()/zoom, evt->buttons(), evt->modifiers(), drawrect);
         setCursor(QCursor(mode->getActualCursor()));
     }
     update();
@@ -697,16 +674,16 @@ void LevelView::mouseMoveEvent(QMouseEvent* evt)
 {    
     if (evt->buttons() & Qt::MiddleButton)
     {
-        int x = evt->x();
-        int y = evt->y();
+        int x = evt->position().x();
+        int y = evt->position().y();
 
-        emit scrollTo(visibleRegion().boundingRect().x() - x + dragX, visibleRegion().boundingRect().y() - y + dragY);
+        emit scrollTo((visibleRegion().boundingRect().x() - x + dragX)/zoom, (visibleRegion().boundingRect().y() - y + dragY)/zoom);
     }
 
     if (mode != NULL)
     {
-        int x = evt->x()/zoom;
-        int y = evt->y()/zoom;
+        int x = evt->position().x()/zoom;
+        int y = evt->position().y()/zoom;
 
         if (evt->buttons() == Qt::LeftButton || evt->buttons() == Qt::RightButton)
         {
@@ -737,7 +714,7 @@ void LevelView::mouseMoveEvent(QMouseEvent* evt)
 
 void LevelView::mouseReleaseEvent(QMouseEvent *evt)
 {
-    mode->mouseUp(evt->x()/zoom, evt->y()/zoom);
+    mode->mouseUp(evt->position().x()/zoom, evt->position().y()/zoom);
     setCursor(QCursor(mode->getActualCursor()));
     update();
 }
@@ -752,7 +729,7 @@ void LevelView::keyPressEvent(QKeyEvent* evt)
     // Allow scrolling on ScrollView
     if (evt->key() == Qt::Key_Up || evt->key() == Qt::Key_Down ||
         evt->key() == Qt::Key_Left || evt->key() == Qt::Key_Right)
-    {        
+    {
         evt->ignore();
         return;
     }
