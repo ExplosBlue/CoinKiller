@@ -31,7 +31,8 @@ void ObjectsEditonMode::mouseDown(int x, int y, Qt::MouseButtons buttons, Qt::Ke
             if (selTileset == -1 || selObject == -1) return;
             int id = selTileset << 12;
             id = (id & 0xF000) | selObject;
-            BgdatObject* bgdatobj = new BgdatObject(toNext20(x-10), toNext20(y-10), 20, 20, id, selLayer);
+            ObjectDef* obj = level->tilesets[selTileset]->getObjectDef(selObject);
+            BgdatObject* bgdatobj = new BgdatObject(toNext20(x-10), toNext20(y-10), obj->width*20, obj->height*20, id, selLayer);
             level->objects[selLayer].append(bgdatobj);
             newObject = bgdatobj;
             creatNewObject = true;
