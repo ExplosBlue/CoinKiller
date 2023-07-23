@@ -1,0 +1,111 @@
+name: Build and Release
+
+on:
+  push:
+    branches:
+      - 'master'
+  pull_request:
+    branches:
+    - 'master'
+
+env:
+  SOURCE_DIR:   ${{ github.workspace }}
+  QT_VERSION:   6.4.3
+
+permissions:
+  contents: write
+
+jobs:
+  build-windows:
+    runs-on:  windows-2019
+    defaults:
+      run:
+        shell: cmd
+    
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v3
+        with:
+          version:      ${{ env.QT_VERSION }}
+          host:         windows
+          target:       desktop
+          arch:         win64_msvc2019_64
+          dir:          ${{ runner.temp }}
+          cache:        'true'
+          cache-key-prefix: 'install-qt-action'
+          setup-python: false
+
+      - name: Download JOM
+        uses: suisei-cn/actions-download-file@v1.4.0
+        with:
+          url:    http://download.qt.io/official_releases/jom/jom.zip
+          target: ${{ runner.temp }}\
+
+      - name: Unzip JOM
+        working-directory: ${{ runner.temp }}
+        run:  |
+              7z x jom.zip -ojom
+
+      - name: Set up Visual Studio shell
+        uses: egor-tensin/vs-shell@v2
+        with:
+          arch: x64
+
+      - name: Build
+        working-directory: ${{ runner.temp }}
+        run:  |
+              mkdir build
+              cd build
+              qmake -r ${{ env.SOURCE_DIR }}\CoinKiller.pro
+              ${{ runner.temp }}\jom\jom
+
+      - name: Deploy
+        working-directory: ${{ runner.temp }}
+        run:  |
+              mkdir deploy
+              cd deploy
+              windeployqt --dir . ${{ runner.temp }}\build\release\CoinKiller.exe --release --no-translations --no-compiler-runtime
+              xcopy ${{ runner.temp }}\build\release\CoinKiller.exe .
+              xcopy ${{ env.SOURCE_DIR }}\coinkiller_data coinkiller_data\ /E
+              xcopy ${{ env.SOURCE_DIR }}\README.md .
+              xcopy ${{ env.SOURCE_DIR }}\LICENSE .
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: CoinKiller-Windows
+          path: ${{ runner.temp }}\deploy\
+
+  create-release:
+    runs-on: ubuntu-latest
+    needs: build-windows
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: CoinKiller-Windows
+          path: ${{ runner.temp }}/CoinKiller-Windows
+
+      - name: Create timestamp
+        run:  |
+              echo "TIMESTAMP=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
+      
+      - name: Zip artifact
+        working-directory: ${{ runner.temp }}
+        run:  |
+              7z a CoinKiller-Windows-${{ env.TIMESTAMP }}.zip ${{ runner.temp }}/CoinKiller-Windows/* -r
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: Automated-${{ env.TIMESTAMP }}
+          generate_release_notes: true
+          body: Automated release created on ${{ env.TIMESTAMP }}
+          files: ${{ runner.temp }}/*.zip
+      
