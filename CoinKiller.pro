@@ -19,8 +19,28 @@ greaterThan(QT_MAJOR_VERSION, 5) {
 }
 
 TARGET = CoinKiller
-RC_FILE = ck_icon.rc
+RC_FILE = resource/ck_icon.rc
+ICON = resource/app.icns
 TEMPLATE = app
+
+linux-g++ {
+    isEmpty(PREFIX) {
+        PREFIX = /usr
+    }
+    target.path = $$PREFIX/bin
+
+    ck_data.path = $$PREFIX/bin/coinkiller_data
+    ck_data.files += coinkiller_data/*
+    desktop.path = $$PREFIX/share/applications/
+    desktop.files += resource/coinkiller.desktop
+    icon512.path = $$PREFIX/share/icons/hicolor/512x512/apps
+    icon512.files += resource/ck_icon.png
+
+    INSTALLS += icon512
+    INSTALLS += desktop
+    INSTALLS += ck_data
+    INSTALLS += target
+}
 
 SOURCES += main.cpp\
     eventeditorwidget.cpp \

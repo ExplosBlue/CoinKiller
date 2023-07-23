@@ -1,12 +1,10 @@
 name: Build and Release
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - 'master'
-  pull_request:
-    branches:
-    - 'master'
 
 env:
   SOURCE_DIR:   ${{ github.workspace }}
@@ -21,7 +19,7 @@ jobs:
     defaults:
       run:
         shell: cmd
-    
+
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
@@ -35,19 +33,19 @@ jobs:
           arch:         win64_msvc2019_64
           dir:          ${{ runner.temp }}
           cache:        'true'
-          cache-key-prefix: 'install-qt-action'
+          cache-key-prefix: 'install-qt-action-win'
           setup-python: false
 
       - name: Download JOM
         uses: suisei-cn/actions-download-file@v1.4.0
         with:
-          url:    http://download.qt.io/official_releases/jom/jom.zip
+          url: http://download.qt.io/official_releases/jom/jom.zip
           target: ${{ runner.temp }}\
 
       - name: Unzip JOM
         working-directory: ${{ runner.temp }}
-        run:  |
-              7z x jom.zip -ojom
+        run: |
+          7z x jom.zip -ojom
 
       - name: Set up Visual Studio shell
         uses: egor-tensin/vs-shell@v2
@@ -56,22 +54,22 @@ jobs:
 
       - name: Build
         working-directory: ${{ runner.temp }}
-        run:  |
-              mkdir build
-              cd build
-              qmake -r ${{ env.SOURCE_DIR }}\CoinKiller.pro
-              ${{ runner.temp }}\jom\jom
+        run: |
+          mkdir build
+          cd build
+          qmake -r ${{ env.SOURCE_DIR }}\CoinKiller.pro
+          ${{ runner.temp }}\jom\jom
 
       - name: Deploy
         working-directory: ${{ runner.temp }}
-        run:  |
-              mkdir deploy
-              cd deploy
-              windeployqt --dir . ${{ runner.temp }}\build\release\CoinKiller.exe --release --no-translations --no-compiler-runtime
-              xcopy ${{ runner.temp }}\build\release\CoinKiller.exe .
-              xcopy ${{ env.SOURCE_DIR }}\coinkiller_data coinkiller_data\ /E
-              xcopy ${{ env.SOURCE_DIR }}\README.md .
-              xcopy ${{ env.SOURCE_DIR }}\LICENSE .
+        run: |
+          mkdir deploy
+          cd deploy
+          windeployqt --dir . ${{ runner.temp }}\build\release\CoinKiller.exe --release --no-translations --no-compiler-runtime
+          xcopy ${{ runner.temp }}\build\release\CoinKiller.exe .
+          xcopy ${{ env.SOURCE_DIR }}\coinkiller_data coinkiller_data\ /E
+          xcopy ${{ env.SOURCE_DIR }}\README.md .
+          xcopy ${{ env.SOURCE_DIR }}\LICENSE .
 
       - name: Upload artifact
         uses: actions/upload-artifact@v3
@@ -79,27 +77,139 @@ jobs:
           name: CoinKiller-Windows
           path: ${{ runner.temp }}\deploy\
 
-  create-release:
+  build-macos:
+      runs-on: macos-latest
+      defaults:
+        run:
+          shell: bash
+
+      steps:
+        - name: Checkout repo
+          uses: actions/checkout@v3
+
+        - name: Install Qt
+          uses: jurplel/install-qt-action@v3
+          with:
+            version:      ${{ env.QT_VERSION }}
+            host:         mac
+            target:       desktop
+            arch:         clang_64
+            dir:          ${{ runner.temp }}
+            cache:        'true'
+            cache-key-prefix: 'install-qt-action-macos'
+            setup-python: false
+
+        - name: Setup xcode
+          uses: maxim-lobanov/setup-xcode@v1
+          with:
+            xcode-version: latest-stable
+
+        - name: Build
+          working-directory: ${{ runner.temp }}
+          run: |
+            mkdir build
+            cd build
+            qmake -r ${{ env.SOURCE_DIR }}/CoinKiller.pro QMAKE_APPLE_DEVICE_ARCHS="x86_64 arm64"
+            make -j1
+
+        - name: Deploy
+          working-directory: ${{ runner.temp }}/build/
+          run: |
+            cp -R ${{ env.SOURCE_DIR }}/coinkiller_data CoinKiller.app/Contents/MacOS/coinkiller_data
+            macdeployqt CoinKiller.app -dmg
+
+        - name: Upload artifact
+          uses: actions/upload-artifact@v3
+          with:
+            name: CoinKiller-Macos
+            path: ${{ runner.temp }}/build/CoinKiller.dmg
+
+  build-linux:
     runs-on: ubuntu-latest
-    needs: build-windows
     defaults:
       run:
         shell: bash
+
     steps:
-      - name: Download artifact
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo add-apt-repository universe
+          sudo apt-get install -y qt6-base-dev libfuse2
+      
+      - name: Setup Qt
+        run: |
+          qtchooser -install qt6 $(which qmake6)
+          sudo mv ~/.config/qtchooser/qt6.conf /usr/share/qtchooser/qt6.conf
+          sudo mkdir -p /usr/lib/$(uname -p)-linux-gnu/qt-default/qtchooser
+          sudo ln -n /usr/share/qtchooser/qt6.conf /usr/lib/$(uname -p)-linux-gnu/qt-default/qtchooser/default.conf
+
+      - name: Build
+        working-directory: ${{ runner.temp }}
+        run: |
+          mkdir build
+          cd build
+          qmake -r ${{ env.SOURCE_DIR }}/CoinKiller.pro
+          make -j$(nproc)
+          make install INSTALL_ROOT=AppDir
+
+      - name: Deploy
+        working-directory: ${{ runner.temp }}
+        run: |
+          wget https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage
+          chmod +x linuxdeploy-x86_64.AppImage
+          wget https://github.com/linuxdeploy/linuxdeploy-plugin-qt/releases/download/continuous/linuxdeploy-plugin-qt-x86_64.AppImage
+          chmod +x linuxdeploy-plugin-qt-x86_64.AppImage
+          ./linuxdeploy-x86_64.AppImage --appdir ${{ runner.temp }}/build/AppDir --plugin qt --output appimage
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: CoinKiller-Linux
+          path: ${{ runner.temp }}/CoinKiller-x86_64.AppImage
+
+  create-release:
+    runs-on: ubuntu-latest
+    needs: [build-windows, build-macos, build-linux]
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - name: Download artifacts (Windows)
         uses: actions/download-artifact@v3
         with:
           name: CoinKiller-Windows
           path: ${{ runner.temp }}/CoinKiller-Windows
 
+      - name: Download artifacts (Macos)
+        uses: actions/download-artifact@v3
+        with:
+          name: CoinKiller-Macos
+          path: ${{ runner.temp }}/CoinKiller-Macos
+
+      - name: Download artifacts (Linux)
+        uses: actions/download-artifact@v3
+        with:
+          name: CoinKiller-Linux
+          path: ${{ runner.temp }}/CoinKiller-Linux
+
       - name: Create timestamp
-        run:  |
-              echo "TIMESTAMP=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
+        run: |
+          echo "TIMESTAMP=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
       
       - name: Zip artifact
         working-directory: ${{ runner.temp }}
-        run:  |
-              7z a CoinKiller-Windows-${{ env.TIMESTAMP }}.zip ${{ runner.temp }}/CoinKiller-Windows/* -r
+        run: |
+          7z a CoinKiller-Windows-x86_64-${{ env.TIMESTAMP }}.zip ${{ runner.temp }}/CoinKiller-Windows/* -r
+
+      - name: Rename output Files
+        run: |
+          mv ${{ runner.temp }}/CoinKiller-Macos/CoinKiller.dmg ${{ runner.temp }}/CoinKiller-Macos/CoinKiller-MacOS-Universal-${{ env.TIMESTAMP }}.dmg
+          mv ${{ runner.temp }}/CoinKiller-Linux/CoinKiller-x86_64.AppImage ${{ runner.temp }}/CoinKiller-Linux/CoinKiller-Linux-x86_64-${{ env.TIMESTAMP }}.AppImage
 
       - name: Release
         uses: softprops/action-gh-release@v1
@@ -107,5 +217,7 @@ jobs:
           tag_name: Automated-${{ env.TIMESTAMP }}
           generate_release_notes: true
           body: Automated release created on ${{ env.TIMESTAMP }}
-          files: ${{ runner.temp }}/*.zip
-      
+          files: |
+            ${{ runner.temp }}/*.zip
+            ${{ runner.temp }}/CoinKiller-Macos/*.dmg
+            ${{ runner.temp }}/CoinKiller-Linux/*.AppImage
