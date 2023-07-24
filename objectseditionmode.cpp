@@ -206,6 +206,11 @@ void ObjectsEditonMode::mouseDrag(int x, int y, Qt::KeyboardModifiers modifieres
         lx = x;
         ly = y;
 
+        if (qAbs((dx-lx) + (dy-ly)) < 20)
+        {
+            return;
+        }
+
         int xpos = typeRound(dx, newObject->getType());
         int ypos = typeRound(dy, newObject->getType());
 
