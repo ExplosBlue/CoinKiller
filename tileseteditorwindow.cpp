@@ -306,7 +306,7 @@ void TilesetEditorWindow::loadBehaviors()
 
     QDomElement root = xmlBehaviors.documentElement();
     QString time = root.attribute("timestamp", "Invalid Time");
-    qDebug("behaviors.xml from: " + time.toLatin1());
+    qDebug() << "behaviors.xml from: " + time.toLatin1();
 
     QDomElement behaviorElement = root.elementsByTagName("special_behaviors").at(0).firstChild().toElement();
     while (!behaviorElement.isNull())
