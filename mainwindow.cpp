@@ -139,8 +139,20 @@ void MainWindow::setGameLoaded(bool loaded)
 
 void MainWindow::on_actionAbout_triggered()
 {
-    QMessageBox::information(this, tr("About CoinKiller"),
-                             tr("CoinKiller v1.0 -- by StapleButter, RicBent and Explos\n\nhttp://kuribo64.net/\n\nDefault Icons by Icons8\n\nThis is free software, if you paid for it, you got scammed"));
+    QMessageBox msgBox;
+    msgBox.setTextFormat(Qt::MarkdownText);
+    msgBox.setStandardButtons(QMessageBox::Ok);
+    msgBox.setWindowTitle(tr("About CoinKiller"));
+    msgBox.setText(tr("# CoinKiller\n\n"
+                      "Version: %1\n\n"
+                      "Github: https://github.com/Arisotura/CoinKiller\n\n"
+                      "## Credits\n"
+                      "StapleButter, RicBent and Explos\n\n"
+                      "Icons from [Icons8](https://icons8.com/)\n\n"
+                      "CoinKiller is free software: "
+                      "you can redistribute it and/or modify it under the terms of the GNU General Public License "
+                      "as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.").arg(CK_VERSION));
+    msgBox.exec();
 }
 
 void MainWindow::loadGame(const QString& path)

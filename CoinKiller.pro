@@ -42,6 +42,12 @@ linux-g++ {
     INSTALLS += target
 }
 
+isEmpty(CK_VERSION) {
+    CK_VERSION = Unknown
+}
+
+DEFINES += CK_VERSION=\\\"$$CK_VERSION\\\"
+
 SOURCES += main.cpp\
     eventeditorwidget.cpp \
     mainwindow.cpp \

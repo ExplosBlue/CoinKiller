@@ -14,8 +14,27 @@ permissions:
   contents: write
 
 jobs:
+  setup-env:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+
+    outputs:
+      timestamp: ${{ steps.timestamp.outputs.TIMESTAMP }}
+      ck-version: ${{ steps.ck-version.outputs.CK_VERSION }}
+
+    steps:
+      - id: timestamp
+        run: |
+          echo "TIMESTAMP=$(date +'%Y-%m-%d')" >> "$GITHUB_OUTPUT"
+      - id: ck-version
+        run: |
+          echo "CK_VERSION=Automated-${{ steps.timestamp.outputs.TIMESTAMP }}" >> "$GITHUB_OUTPUT"
+
   build-windows:
     runs-on:  windows-2019
+    needs: [setup-env]
     defaults:
       run:
         shell: cmd
@@ -57,7 +76,7 @@ jobs:
         run: |
           mkdir build
           cd build
-          qmake -r ${{ env.SOURCE_DIR }}\CoinKiller.pro
+          qmake -r ${{ env.SOURCE_DIR }}\CoinKiller.pro CK_VERSION=${{ needs.setup-env.outputs.ck-version }}
           ${{ runner.temp }}\jom\jom
 
       - name: Deploy
@@ -79,6 +98,7 @@ jobs:
 
   build-macos:
       runs-on: macos-latest
+      needs: [setup-env]
       defaults:
         run:
           shell: bash
@@ -109,7 +129,7 @@ jobs:
           run: |
             mkdir build
             cd build
-            qmake -r ${{ env.SOURCE_DIR }}/CoinKiller.pro QMAKE_APPLE_DEVICE_ARCHS="x86_64 arm64"
+            qmake -r ${{ env.SOURCE_DIR }}/CoinKiller.pro QMAKE_APPLE_DEVICE_ARCHS="x86_64 arm64" CK_VERSION=${{ needs.setup-env.outputs.ck-version }}
             make -j1
 
         - name: Deploy
@@ -126,6 +146,7 @@ jobs:
 
   build-linux:
     runs-on: ubuntu-latest
+    needs: [setup-env]
     defaults:
       run:
         shell: bash
@@ -152,7 +173,7 @@ jobs:
         run: |
           mkdir build
           cd build
-          qmake -r ${{ env.SOURCE_DIR }}/CoinKiller.pro
+          qmake -r ${{ env.SOURCE_DIR }}/CoinKiller.pro CK_VERSION=${{ needs.setup-env.outputs.ck-version }}
           make -j$(nproc)
           make install INSTALL_ROOT=AppDir
 
@@ -173,7 +194,7 @@ jobs:
 
   create-release:
     runs-on: ubuntu-latest
-    needs: [build-windows, build-macos, build-linux]
+    needs: [setup-env, build-windows, build-macos, build-linux]
     defaults:
       run:
         shell: bash
@@ -197,26 +218,22 @@ jobs:
           name: CoinKiller-Linux
           path: ${{ runner.temp }}/CoinKiller-Linux
 
-      - name: Create timestamp
-        run: |
-          echo "TIMESTAMP=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
-      
       - name: Zip artifact
         working-directory: ${{ runner.temp }}
         run: |
-          7z a CoinKiller-Windows-x86_64-${{ env.TIMESTAMP }}.zip ${{ runner.temp }}/CoinKiller-Windows/* -r
+          7z a CoinKiller-Windows-x86_64-${{ needs.setup-env.outputs.timestamp }}.zip ${{ runner.temp }}/CoinKiller-Windows/* -r
 
       - name: Rename output Files
         run: |
-          mv ${{ runner.temp }}/CoinKiller-Macos/CoinKiller.dmg ${{ runner.temp }}/CoinKiller-Macos/CoinKiller-MacOS-Universal-${{ env.TIMESTAMP }}.dmg
-          mv ${{ runner.temp }}/CoinKiller-Linux/CoinKiller-x86_64.AppImage ${{ runner.temp }}/CoinKiller-Linux/CoinKiller-Linux-x86_64-${{ env.TIMESTAMP }}.AppImage
+          mv ${{ runner.temp }}/CoinKiller-Macos/CoinKiller.dmg ${{ runner.temp }}/CoinKiller-Macos/CoinKiller-MacOS-Universal-${{ needs.setup-env.outputs.timestamp }}.dmg
+          mv ${{ runner.temp }}/CoinKiller-Linux/CoinKiller-x86_64.AppImage ${{ runner.temp }}/CoinKiller-Linux/CoinKiller-Linux-x86_64-${{ needs.setup-env.outputs.timestamp }}.AppImage
 
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: Automated-${{ env.TIMESTAMP }}
+          tag_name: Automated-${{ needs.setup-env.outputs.timestamp }}
           generate_release_notes: true
-          body: Automated release created on ${{ env.TIMESTAMP }}
+          body: Automated release created on ${{ needs.setup-env.outputs.timestamp }}
           files: |
             ${{ runner.temp }}/*.zip
             ${{ runner.temp }}/CoinKiller-Macos/*.dmg
