@@ -204,6 +204,10 @@ void EditManager::mouseDrag(int x, int y, Qt::KeyboardModifiers modifieres, QRec
 {
     if (creatNewObject)
     {
+        if (!selectAfterPlacement) {
+            return;
+        }
+
         lx = x;
         ly = y;
 
