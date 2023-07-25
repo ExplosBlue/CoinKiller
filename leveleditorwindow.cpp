@@ -108,6 +108,31 @@ LevelEditorWindow::LevelEditorWindow(LevelManager* lvlMgr, int initialArea) :
     addDockWidget(Qt::LeftDockWidgetArea, toolboxDock);
     addDockWidget(Qt::LeftDockWidgetArea, minimapDock);
 
+    // Undo/Redo
+    undoStack = new QUndoStack(this);
+
+    actionUndo = undoStack->createUndoAction(this, tr("&Undo"));
+    actionUndo->setIcon(QIcon(basePath + "undo.png"));
+    actionUndo->setShortcuts(QKeySequence::Undo);
+
+    actionRedo = undoStack->createRedoAction(this, tr("&Redo"));
+    actionRedo->setIcon(QIcon(basePath + "redo.png"));
+    actionRedo->setShortcuts(QKeySequence::Redo);
+
+    // Add actions to ui
+    ui->toolBar->addAction(actionUndo);
+    ui->toolBar->addAction(actionRedo);
+
+    // Add actions to ui
+    ui->menuEdit->addAction(actionUndo);
+    ui->menuEdit->addAction(actionRedo);
+
+    // Create undo view
+    QDockWidget *undoDockWidget = new QDockWidget(this);
+    undoDockWidget->setWindowTitle(tr("Command List"));
+    undoDockWidget->setWidget(new QUndoView(undoStack));
+    addDockWidget(Qt::RightDockWidgetArea, undoDockWidget);
+
     restoreState(settings->get("lvleditorState").toByteArray());
     updateDockedWidgetCheckboxes();
     connect(toolboxDock, SIGNAL(visibilityChanged(bool)), this, SLOT(updateDockedWidgetCheckboxes()));
@@ -553,11 +578,13 @@ void LevelEditorWindow::loadArea(int id, bool closeLevel, bool init)
 
         delete levelView;
         delete miniMap;
+
+        undoStack->clear();
     }
 
     level = lvlMgr->openArea(id);
 
-    levelView = new LevelView(this, level);
+    levelView = new LevelView(this, level, undoStack);
     ui->levelViewArea->setWidget(levelView);
     levelView->setMinimumSize(4096*20, 4096*20);
     levelView->setMaximumSize(4096*20, 4096*20);

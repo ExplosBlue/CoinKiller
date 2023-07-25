@@ -33,15 +33,14 @@
 #include <QMessageBox>
 
 
-LevelView::LevelView(QWidget *parent, Level* level) : QWidget(parent)
+LevelView::LevelView(QWidget *parent, Level *level, QUndoStack *undoStack) :
+    QWidget(parent), level(level), undoStack(undoStack)
 {
-    this->level = level;
-
     layerMask = 0x7; // failsafe
 
     setMouseTracking(true);
-    
-    editManager = new EditManager(level);
+
+    editManager = new EditManager(level, undoStack);
     connect(editManager, SIGNAL(updateLevelView()), this, SLOT(update()));
 
     zoom = 1;

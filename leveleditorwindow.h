@@ -18,6 +18,8 @@
 #include <QListView>
 #include <QComboBox>
 #include <QDockWidget>
+#include <QUndoStack>
+#include <QUndoView>
 
 #include "filesystem.h"
 #include "levelview.h"
@@ -192,6 +194,12 @@ private:
     QTabWidget* toolboxTabs;
 
     QDockWidget* minimapDock;
+
+    QUndoStack* undoStack;
+    QUndoView* undoView;
+
+    QAction* actionUndo;
+    QAction* actionRedo;
 
 };
 

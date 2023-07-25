@@ -21,6 +21,7 @@
 #include <QWidget>
 #include <QLayout>
 #include <QList>
+#include <QUndoStack>
 
 #include "filesystem.h"
 #include "level.h"
@@ -31,7 +32,7 @@ class LevelView : public QWidget
 {
     Q_OBJECT
 public:
-    explicit LevelView(QWidget *parent, Level* level);
+    explicit LevelView(QWidget *parent, Level *level, QUndoStack *undoStack);
     ~LevelView();
 
     void setLayerMask(quint8 mask);
@@ -84,6 +85,8 @@ private:
     void paint(QPainter& painter, QRect rect, float zoomLvl, bool selections);
 
     Level* level;
+
+    QUndoStack *undoStack;
 
     QRect drawrect;
     float zoom;

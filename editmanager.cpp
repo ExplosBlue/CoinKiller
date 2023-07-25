@@ -8,9 +8,9 @@
 #include <QClipboard>
 #include <QDebug>
 
-EditManager::EditManager(Level *level)
+EditManager::EditManager(Level *level, QUndoStack *undoStack) :
+    level(level), undoStack(undoStack)
 {
-    this->level = level;
     this->selectAfterPlacement = SettingsManager::getInstance()->get("SelectAfterPlacement").toBool();
 
     selectionMode = false;

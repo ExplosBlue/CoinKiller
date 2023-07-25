@@ -5,13 +5,13 @@
 
 #include <QList>
 #include <QKeyEvent>
-
+#include <QUndoStack>
 
 class EditManager : public QObject
 {
     Q_OBJECT
 public:
-    EditManager(Level *level);
+    EditManager(Level *level, QUndoStack *undoStack);
     ~EditManager() {}
 
     void mouseDown(int x, int y, Qt::MouseButtons buttons, Qt::KeyboardModifiers modifiers, QRect drawrect);
@@ -61,6 +61,7 @@ signals:
 
 private:
     Level *level;
+    QUndoStack *undoStack;
     Qt::CursorShape actualCursor;
 
     QList<Object*> selectedObjects;
