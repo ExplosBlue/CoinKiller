@@ -7,6 +7,7 @@
 #include "commands/setspriteinteraction.h"
 #include "commands/setentranceinteraction.h"
 #include "commands/setpathinteraction.h"
+#include "commands/setlocationinteraction.h"
 
 #include <QApplication>
 #include <QPainterPath>
@@ -1154,4 +1155,10 @@ void EditManager::setEntranceInteraction(bool state)
 {
     QUndoCommand *entranceInteractionCmd = new EditorCommand::setEntranceInteraction(&entranceInteraction, state);
     undoStack->push(entranceInteractionCmd);
+}
+
+void EditManager::setLocationInteraction(bool state)
+{
+    QUndoCommand *locationInteractionCmd = new EditorCommand::setLocationInteraction(&locationInteraction, state);
+    undoStack->push(locationInteractionCmd);
 }

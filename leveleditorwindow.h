@@ -75,7 +75,7 @@ private slots:
 
     void togglePaths(bool toggle);
 
-    void on_actionToggleLocations_toggled(bool arg1);
+    void toggleLocations(bool toggle);
 
     void on_actionZoom_In_triggered();
 

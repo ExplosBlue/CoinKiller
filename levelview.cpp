@@ -50,7 +50,7 @@ LevelView::LevelView(QWidget *parent, Level *level, QUndoStack *undoStack) :
     renderCameraLimits = false;
 //    renderSprites = true;
 //    renderPaths = true;
-    renderLocations = true;
+//    renderLocations = true;
     render2DTile = true;
     render3DOverlay = true;
 //    renderEntrances = true;
@@ -176,7 +176,7 @@ void LevelView::paint(QPainter& painter, QRect rect, float zoomLvl, bool selecti
     painter.setRenderHint(QPainter::Antialiasing);
 
     // Render Locations
-    if (renderLocations)
+    if (editManager->getLocationInteraction())
     {
         for (int i = 0; i < level->locations.size(); i++)
         {
@@ -757,12 +757,12 @@ void LevelView::keyPressEvent(QKeyEvent* evt)
 //    update();
 //}
 
-void LevelView::toggleLocations(bool toggle)
-{
-    renderLocations = toggle;
-    editManager->toggleLocations(toggle);
-    update();
-}
+//void LevelView::toggleLocations(bool toggle)
+//{
+//    renderLocations = toggle;
+//    editManager->toggleLocations(toggle);
+//    update();
+//}
 
 //void LevelView::toggleEntrances(bool toggle)
 //{

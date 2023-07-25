@@ -51,6 +51,7 @@ DEFINES += CK_VERSION=\\\"$$CK_VERSION\\\"
 SOURCES += main.cpp\
     commands/setentranceinteraction.cpp \
     commands/setlayermask.cpp \
+    commands/setlocationinteraction.cpp \
     commands/setpathinteraction.cpp \
     commands/setspriteinteraction.cpp \
     editmanager.cpp \
@@ -96,6 +97,7 @@ SOURCES += main.cpp\
 HEADERS  += mainwindow.h \
     commands/setentranceinteraction.h \
     commands/setlayermask.h \
+    commands/setlocationinteraction.h \
     commands/setpathinteraction.h \
     commands/setspriteinteraction.h \
     crc32.h \

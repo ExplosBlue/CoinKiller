@@ -96,8 +96,9 @@ LevelEditorWindow::LevelEditorWindow(LevelManager* lvlMgr, int initialArea) :
     ui->actionTogglePaths->setIcon(QIcon(basePath + "path.png"));
     connect(ui->actionTogglePaths, SIGNAL(toggled(bool)), this, SLOT(togglePaths(bool)));
 
-
     ui->actionToggleLocations->setIcon(QIcon(basePath + "location.png"));
+    connect(ui->actionToggleLocations, SIGNAL(toggled(bool)), this, SLOT(toggleLocations(bool)));
+
     ui->actionToggle3DOverlay->setIcon(QIcon(basePath + "3D.png"));
     ui->actionToggle2DTile->setIcon(QIcon(basePath + "2D.png"));
 
@@ -235,6 +236,10 @@ void LevelEditorWindow::historyStateChanged(int index)
     ui->actionTogglePaths->setChecked(levelView->editManagerPtr()->getPathInteraction());
     ui->actionTogglePaths->blockSignals(false);
 
+    ui->actionToggleLocations->blockSignals(true);
+    ui->actionToggleLocations->setChecked(levelView->editManagerPtr()->getLocationInteraction());
+    ui->actionToggleLocations->blockSignals(false);
+
     levelView->update();
     update();
 }
@@ -278,10 +283,9 @@ void LevelEditorWindow::togglePaths(bool toggle)
     levelView->editManagerPtr()->setPathInteraction(toggle);
 }
 
-void LevelEditorWindow::on_actionToggleLocations_toggled(bool toggle)
+void LevelEditorWindow::toggleLocations(bool toggle)
 {
-    levelView->toggleLocations(toggle);
-    update();
+    levelView->editManagerPtr()->setLocationInteraction(toggle);
 }
 
 void LevelEditorWindow::on_actionToggle3DOverlay_toggled(bool toggle)
@@ -672,7 +676,7 @@ void LevelEditorWindow::loadArea(int id, bool closeLevel, bool init)
     levelView->editManagerPtr()->setSpriteInteraction(ui->actionToggleSprites->isChecked());
     levelView->editManagerPtr()->setEntranceInteraction(ui->actionToggleEntrances->isChecked());
     levelView->editManagerPtr()->setPathInteraction(ui->actionTogglePaths->isChecked());
-    levelView->toggleLocations(ui->actionToggleLocations->isChecked());
+    levelView->editManagerPtr()->setLocationInteraction(ui->actionToggleLocations->isChecked());
 
     zoom = 1.0;
 

@@ -45,7 +45,8 @@ public:
     void setPathInteraction(bool state);
     const bool getPathInteraction()  { return pathInteraction; }
 
-    void toggleLocations(bool toggle) { entranceInteraction = toggle; }
+    void setLocationInteraction(bool toggle);
+    const bool getLocationInteraction()  { return locationInteraction; }
 
     void select(Object* obj);
     void selectAll();
