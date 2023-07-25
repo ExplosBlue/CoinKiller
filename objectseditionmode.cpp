@@ -466,11 +466,6 @@ void ObjectsEditonMode::render(QPainter *painter)
     }
 }
 
-void ObjectsEditonMode::deactivate()
-{
-    selectedObjects.clear();
-}
-
 void ObjectsEditonMode::drawPlus(QPainter *painter, int x, int y)
 {
     QPainterPath path1;

@@ -58,10 +58,7 @@ public:
     void lowerLayer();
     void setBackgroundColor(QColor bgcolor) {backgroundColor = bgcolor; update(); }
 
-    void setEditonMode(EditMode newMode, bool init = false);
-
-    EditionMode* editionModePtr() { return mode; }
-    ObjectsEditonMode* objEditionModePtr() { return objectEditionMode; }    
+    ObjectsEditonMode* objEditionModePtr() { return objectEditionMode; }
 
 signals:
     void scrollTo(int x, int y);
@@ -95,7 +92,6 @@ private:
     int dragY;
 
     ObjectsEditonMode* objectEditionMode;
-    EditionMode* mode;
 
     bool grid;
     bool checkerboard;

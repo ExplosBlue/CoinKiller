@@ -643,10 +643,10 @@ void LevelEditorWindow::loadArea(int id, bool closeLevel, bool init)
     connect(progPathEditor, SIGNAL(editMade()), this, SLOT(handleEditMade()));
 
     connect(levelView, SIGNAL(scrollTo(int,int)), this, SLOT(scrollTo(int,int)));
-    connect(levelView->editionModePtr(), SIGNAL(selectdObjectChanged(Object*)), this, SLOT(setObjectEdition(Object*)));
-    connect(levelView->editionModePtr(), SIGNAL(deselected()), this, SLOT(deselect()));
-    connect(levelView->editionModePtr(), SIGNAL(updateEditors()), this, SLOT(updateEditors()));
-    connect(levelView->editionModePtr(), SIGNAL(editMade()), this, SLOT(handleEditMade()));
+    connect(levelView->objEditionModePtr(), SIGNAL(selectdObjectChanged(Object*)), this, SLOT(setObjectEdition(Object*)));
+    connect(levelView->objEditionModePtr(), SIGNAL(deselected()), this, SLOT(deselect()));
+    connect(levelView->objEditionModePtr(), SIGNAL(updateEditors()), this, SLOT(updateEditors()));
+    connect(levelView->objEditionModePtr(), SIGNAL(editMade()), this, SLOT(handleEditMade()));
 
     toolboxTabs->setUsesScrollButtons(true);
     toolboxTabs->addTab(areaEditor, QIcon(basePath + "settings.png"), "");

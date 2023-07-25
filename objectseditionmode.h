@@ -1,9 +1,13 @@
 #ifndef OBJECTSEDITIONMODE_H
 #define OBJECTSEDITIONMODE_H
 
-#include "editionmode.h"
+#include "level.h"
 
-class ObjectsEditonMode: public EditionMode
+#include <QList>
+#include <QKeyEvent>
+
+
+class ObjectsEditonMode : public QObject
 {
     Q_OBJECT
 public:
@@ -18,8 +22,6 @@ public:
     void keyPress(QKeyEvent *) {}
 
     void render(QPainter *painter);
-    void activate() {}
-    void deactivate();
 
     void deleteSelection();
     void copy();
@@ -48,7 +50,18 @@ public:
 
     void toggleSelectAfterPlacement(bool toggle) { this->selectAfterPlacement = toggle; }
 
+    Qt::CursorShape getActualCursor() { return actualCursor; }
+
+signals:
+    void deselected();
+    void selectdObjectChanged(Object* obj);
+    void updateEditors();
+    void updateLevelView();
+    void editMade();
+
 private:
+    Level *level;
+    Qt::CursorShape actualCursor;
 
     QList<Object*> selectedObjects;
 

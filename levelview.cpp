@@ -41,7 +41,8 @@ LevelView::LevelView(QWidget *parent, Level* level) : QWidget(parent)
 
     setMouseTracking(true);
 
-    setEditonMode(EditMode_ObjectsMode, true);
+    objectEditionMode = new ObjectsEditonMode(level);
+    connect(objectEditionMode, SIGNAL(updateLevelView()), this, SLOT(update()));
 
     zoom = 1;
     grid = false;
@@ -62,7 +63,6 @@ LevelView::LevelView(QWidget *parent, Level* level) : QWidget(parent)
 
 LevelView::~LevelView()
 {
-    mode->deactivate();
     delete objectEditionMode;
 }
 
@@ -404,7 +404,7 @@ void LevelView::paint(QPainter& painter, QRect rect, float zoomLvl, bool selecti
                 bool isRight = false;
                 int xRenderOffset = 0;
                 foreach (Sprite* bottom, bottomCamLimits)
-                {                    
+                {
                     if (bottom->getx() != top->getx())
                         continue;
 
@@ -584,7 +584,7 @@ void LevelView::paint(QPainter& painter, QRect rect, float zoomLvl, bool selecti
 
     // Render Edition Mode Stuff
     if (selections)
-        mode->render(&painter);
+        objectEditionMode->render(&painter);
 
     // Render Grid
     if (grid)
@@ -658,11 +658,11 @@ void LevelView::mousePressEvent(QMouseEvent* evt)
         dragY = evt->position().y();
     }
 
-    if (mode != NULL)
+    if (objectEditionMode != NULL)
     {
         if (evt->buttons() == Qt::LeftButton || evt->buttons() == Qt::RightButton)
-            mode->mouseDown(evt->position().x()/zoom, evt->position().y()/zoom, evt->buttons(), evt->modifiers(), drawrect);
-        setCursor(QCursor(mode->getActualCursor()));
+            objectEditionMode->mouseDown(evt->position().x()/zoom, evt->position().y()/zoom, evt->buttons(), evt->modifiers(), drawrect);
+        setCursor(QCursor(objectEditionMode->getActualCursor()));
     }
     update();
 
@@ -671,7 +671,7 @@ void LevelView::mousePressEvent(QMouseEvent* evt)
 
 
 void LevelView::mouseMoveEvent(QMouseEvent* evt)
-{    
+{
     if (evt->buttons() & Qt::MiddleButton)
     {
         int x = evt->position().x();
@@ -680,19 +680,19 @@ void LevelView::mouseMoveEvent(QMouseEvent* evt)
         emit scrollTo((visibleRegion().boundingRect().x() - x + dragX)/zoom, (visibleRegion().boundingRect().y() - y + dragY)/zoom);
     }
 
-    if (mode != NULL)
+    if (objectEditionMode != NULL)
     {
         int x = evt->position().x()/zoom;
         int y = evt->position().y()/zoom;
 
         if (evt->buttons() == Qt::LeftButton || evt->buttons() == Qt::RightButton)
         {
-            mode->mouseDrag(x, y, evt->modifiers(), drawrect);
+            objectEditionMode->mouseDrag(x, y, evt->modifiers(), drawrect);
         }
         else
-            mode->mouseMove(x, y);
+            objectEditionMode->mouseMove(x, y);
     }
-    setCursor(QCursor(mode->getActualCursor()));
+    setCursor(QCursor(objectEditionMode->getActualCursor()));
     update();
 
     /*QString ret;
@@ -714,8 +714,8 @@ void LevelView::mouseMoveEvent(QMouseEvent* evt)
 
 void LevelView::mouseReleaseEvent(QMouseEvent *evt)
 {
-    mode->mouseUp(evt->position().x()/zoom, evt->position().y()/zoom);
-    setCursor(QCursor(mode->getActualCursor()));
+    objectEditionMode->mouseUp(evt->position().x()/zoom, evt->position().y()/zoom);
+    setCursor(QCursor(objectEditionMode->getActualCursor()));
     update();
 }
 
@@ -734,41 +734,41 @@ void LevelView::keyPressEvent(QKeyEvent* evt)
         return;
     }
 
-    mode->keyPress(evt);
+    objectEditionMode->keyPress(evt);
 }
 
 void LevelView::setLayerMask(quint8 mask)
 {
     layerMask = mask;
-    editionModePtr()->setLayerMask(layerMask);
+    objectEditionMode->setLayerMask(layerMask);
     update();
 }
 
 void LevelView::toggleSprites(bool toggle)
 {
     renderSprites = toggle;
-    editionModePtr()->toggleSprites(toggle);
+    objectEditionMode->toggleSprites(toggle);
     update();
 }
 
 void LevelView::togglePaths(bool toggle)
 {
     renderPaths = toggle;
-    editionModePtr()->togglePaths(toggle);
+    objectEditionMode->togglePaths(toggle);
     update();
 }
 
 void LevelView::toggleLocations(bool toggle)
 {
     renderLocations = toggle;
-    editionModePtr()->toggleLocations(toggle);
+    objectEditionMode->toggleLocations(toggle);
     update();
 }
 
 void LevelView::toggleEntrances(bool toggle)
 {
     renderEntrances = toggle;
-    editionModePtr()->toggleEntrances(toggle);
+    objectEditionMode->toggleEntrances(toggle);
     update();
 }
 
@@ -779,7 +779,7 @@ qint8 LevelView::saveLevel()
 
 void LevelView::copy()
 {
-    editionModePtr()->copy();
+    objectEditionMode->copy();
 }
 
 void LevelView::paste()
@@ -789,59 +789,59 @@ void LevelView::paste()
     int w = visibleRegion().boundingRect().width()/zoom;
     int h = visibleRegion().boundingRect().height()/zoom;
 
-    editionModePtr()->paste(x, y, w, h);
+    objectEditionMode->paste(x, y, w, h);
     update();
     emit updateMinimapBounds();
 }
 
 void LevelView::raise()
 {
-    objEditionModePtr()->raise();
+    objectEditionMode->raise();
     update();
 }
 
 void LevelView::lower()
 {
-    objEditionModePtr()->lower();
+    objectEditionMode->lower();
     update();
 }
 
 void LevelView::raiseLayer()
 {
-    objEditionModePtr()->raiseLayer();
+    objectEditionMode->raiseLayer();
     update();
 }
 
 void LevelView::lowerLayer()
 {
-    objEditionModePtr()->lowerLayer();
+    objectEditionMode->lowerLayer();
     update();
 }
 
 void LevelView::cut()
 {
-    editionModePtr()->cut();
+    objectEditionMode->cut();
     update();
     emit updateMinimapBounds();
 }
 
 void LevelView::selectAll()
 {
-    editionModePtr()->selectAll();
+    objectEditionMode->selectAll();
     update();
 }
 
 void LevelView::deleteSel()
 {
-    mode->deleteSelection();
-    setCursor(QCursor(mode->getActualCursor()));
+    objectEditionMode->deleteSelection();
+    setCursor(QCursor(objectEditionMode->getActualCursor()));
     update();
     emit updateMinimapBounds();
 }
 
 void LevelView::selectObj(Object *obj)
 {
-    mode->select(obj);
+    objectEditionMode->select(obj);
 
     int x = obj->getx()+obj->getOffsetX();
     int y = obj->gety()+obj->getOffsetY();
@@ -862,31 +862,6 @@ void LevelView::selectObj(Object *obj)
 
 void LevelView::selectZoneContents(Zone* zone)
 {
-    if (is<ObjectsEditonMode*>(mode))
-    {
-        objectEditionMode->selectZoneContents(zone);
-        update();
-    }
-}
-
-void LevelView::setEditonMode(EditMode newMode, bool init)
-{
-    if (init)
-    {
-        objectEditionMode = new ObjectsEditonMode(level);
-        connect(objectEditionMode, SIGNAL(updateLevelView()), this, SLOT(update()));
-    }
-    else
-        mode->deactivate();
-
-    switch (newMode)
-    {
-    case EditMode_ObjectsMode:
-    default:
-        mode = objectEditionMode;
-        break;
-    }
-
-    mode->activate();
+    objectEditionMode->selectZoneContents(zone);
     update();
 }

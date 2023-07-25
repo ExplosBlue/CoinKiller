@@ -113,7 +113,6 @@ HEADERS  += mainwindow.h \
     tileseteditorwindow.h \
     tileseteditorwidgets.h \
     is.h \
-    editionmode.h \
     spritedata.h \
     tilesetpalette.h \
     entranceeditorwidget.h \
