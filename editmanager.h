@@ -36,17 +36,17 @@ public:
     void setLayerMask(LAYER_MASK layer, bool state);
     const quint8 getLayerMask() { return layerMask; }
 
-    void setSpriteInteraction(bool state);
-    const bool getSpriteInteraction() { return spriteInteraction; }
+    void enableSpriteInteraction(bool state);
+    const bool spriteInteractionEnabled() { return spriteInteraction; }
 
-    void setEntranceInteraction(bool state);
-    const bool getEntranceInteraction()  { return entranceInteraction; }
+    void enableEntranceInteraction(bool state);
+    const bool entranceInteractionEnabled()  { return entranceInteraction; }
 
-    void setPathInteraction(bool state);
-    const bool getPathInteraction()  { return pathInteraction; }
+    void enablePathInteraction(bool state);
+    const bool pathInteractionEnabled()  { return pathInteraction; }
 
-    void setLocationInteraction(bool toggle);
-    const bool getLocationInteraction()  { return locationInteraction; }
+    void enableLocationInteraction(bool state);
+    const bool locationInteractionEnabled()  { return locationInteraction; }
 
     void select(Object* obj);
     void selectAll();

@@ -1139,25 +1139,25 @@ void EditManager::setLayerMask(LAYER_MASK layer, bool state)
     undoStack->push(layerMaskCmd);
 }
 
-void EditManager::setSpriteInteraction(bool state)
+void EditManager::enableSpriteInteraction(bool state)
 {
     QUndoCommand *spriteInteractionCmd = new EditorCommand::setSpriteInteraction(&spriteInteraction, state);
     undoStack->push(spriteInteractionCmd);
 }
 
-void EditManager::setPathInteraction(bool state)
+void EditManager::enablePathInteraction(bool state)
 {
     QUndoCommand *pathInteractionCmd = new EditorCommand::setPathInteraction(&pathInteraction, state);
     undoStack->push(pathInteractionCmd);
 }
 
-void EditManager::setEntranceInteraction(bool state)
+void EditManager::enableEntranceInteraction(bool state)
 {
     QUndoCommand *entranceInteractionCmd = new EditorCommand::setEntranceInteraction(&entranceInteraction, state);
     undoStack->push(entranceInteractionCmd);
 }
 
-void EditManager::setLocationInteraction(bool state)
+void EditManager::enableLocationInteraction(bool state)
 {
     QUndoCommand *locationInteractionCmd = new EditorCommand::setLocationInteraction(&locationInteraction, state);
     undoStack->push(locationInteractionCmd);

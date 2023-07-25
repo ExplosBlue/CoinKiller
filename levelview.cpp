@@ -36,8 +36,6 @@
 LevelView::LevelView(QWidget *parent, Level *level, QUndoStack *undoStack) :
     QWidget(parent), level(level), undoStack(undoStack)
 {
-//    layerMask = 0x7; // failsafe
-
     setMouseTracking(true);
 
     editManager = new EditManager(level, undoStack);
@@ -48,12 +46,8 @@ LevelView::LevelView(QWidget *parent, Level *level, QUndoStack *undoStack) :
     checkerboard = false;
     renderLiquids = false;
     renderCameraLimits = false;
-//    renderSprites = true;
-//    renderPaths = true;
-//    renderLocations = true;
     render2DTile = true;
     render3DOverlay = true;
-//    renderEntrances = true;
 
 #ifdef USE_KDE_BLUR
     setBackgroundColor(QColor(0,0,0,0));
@@ -176,7 +170,7 @@ void LevelView::paint(QPainter& painter, QRect rect, float zoomLvl, bool selecti
     painter.setRenderHint(QPainter::Antialiasing);
 
     // Render Locations
-    if (editManager->getLocationInteraction())
+    if (editManager->locationInteractionEnabled())
     {
         for (int i = 0; i < level->locations.size(); i++)
         {
@@ -199,7 +193,7 @@ void LevelView::paint(QPainter& painter, QRect rect, float zoomLvl, bool selecti
         }
     }
 
-    if (editManager->getSpriteInteraction())
+    if (editManager->spriteInteractionEnabled())
     {
         // Render Liquids
         if (renderLiquids)
@@ -444,7 +438,7 @@ void LevelView::paint(QPainter& painter, QRect rect, float zoomLvl, bool selecti
     }
 
     // Render Entrances
-    if (editManager->getEntranceInteraction())
+    if (editManager->entranceInteractionEnabled())
     {
         for (int i = 0; i < level->entrances.size(); i++)
         {
@@ -460,7 +454,7 @@ void LevelView::paint(QPainter& painter, QRect rect, float zoomLvl, bool selecti
         }
     }
     // Render Paths
-    if (editManager->getPathInteraction())
+    if (editManager->pathInteractionEnabled())
     {
         for (int i = 0; i < level->paths.size(); i++)
         {
@@ -735,41 +729,6 @@ void LevelView::keyPressEvent(QKeyEvent* evt)
 
     editManager->keyPress(evt);
 }
-
-//void LevelView::setLayerMask(quint8 mask)
-//{
-//    layerMask = mask;
-//    editManager->setLayerMask(layerMask);
-//    update();
-//}
-
-//void LevelView::toggleSprites(bool toggle)
-//{
-//    renderSprites = toggle;
-//    editManager->toggleSprites(toggle);
-//    update();
-//}
-
-//void LevelView::togglePaths(bool toggle)
-//{
-//    renderPaths = toggle;
-//    editManager->togglePaths(toggle);
-//    update();
-//}
-
-//void LevelView::toggleLocations(bool toggle)
-//{
-//    renderLocations = toggle;
-//    editManager->toggleLocations(toggle);
-//    update();
-//}
-
-//void LevelView::toggleEntrances(bool toggle)
-//{
-//    renderEntrances = toggle;
-//    editManager->toggleEntrances(toggle);
-//    update();
-//}
 
 qint8 LevelView::saveLevel()
 {

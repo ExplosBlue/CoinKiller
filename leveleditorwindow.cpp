@@ -225,19 +225,19 @@ void LevelEditorWindow::historyStateChanged(int index)
     ui->actionToggleLayer2->blockSignals(false);
 
     ui->actionToggleSprites->blockSignals(true);
-    ui->actionToggleSprites->setChecked(levelView->editManagerPtr()->getSpriteInteraction());
+    ui->actionToggleSprites->setChecked(levelView->editManagerPtr()->spriteInteractionEnabled());
     ui->actionToggleSprites->blockSignals(false);
 
     ui->actionToggleEntrances->blockSignals(true);
-    ui->actionToggleEntrances->setChecked(levelView->editManagerPtr()->getEntranceInteraction());
+    ui->actionToggleEntrances->setChecked(levelView->editManagerPtr()->entranceInteractionEnabled());
     ui->actionToggleEntrances->blockSignals(false);
 
     ui->actionTogglePaths->blockSignals(true);
-    ui->actionTogglePaths->setChecked(levelView->editManagerPtr()->getPathInteraction());
+    ui->actionTogglePaths->setChecked(levelView->editManagerPtr()->pathInteractionEnabled());
     ui->actionTogglePaths->blockSignals(false);
 
     ui->actionToggleLocations->blockSignals(true);
-    ui->actionToggleLocations->setChecked(levelView->editManagerPtr()->getLocationInteraction());
+    ui->actionToggleLocations->setChecked(levelView->editManagerPtr()->locationInteractionEnabled());
     ui->actionToggleLocations->blockSignals(false);
 
     levelView->update();
@@ -270,22 +270,22 @@ void LevelEditorWindow::toggleLayer(bool toggle)
 
 void LevelEditorWindow::toggleSprites(bool toggle)
 {
-    levelView->editManagerPtr()->setSpriteInteraction(toggle);
+    levelView->editManagerPtr()->enableSpriteInteraction(toggle);
 }
 
 void LevelEditorWindow::toggleEntrances(bool toggle)
 {
-    levelView->editManagerPtr()->setEntranceInteraction(toggle);
+    levelView->editManagerPtr()->enableEntranceInteraction(toggle);
 }
 
 void LevelEditorWindow::togglePaths(bool toggle)
 {
-    levelView->editManagerPtr()->setPathInteraction(toggle);
+    levelView->editManagerPtr()->enablePathInteraction(toggle);
 }
 
 void LevelEditorWindow::toggleLocations(bool toggle)
 {
-    levelView->editManagerPtr()->setLocationInteraction(toggle);
+    levelView->editManagerPtr()->enableLocationInteraction(toggle);
 }
 
 void LevelEditorWindow::on_actionToggle3DOverlay_toggled(bool toggle)
@@ -673,10 +673,10 @@ void LevelEditorWindow::loadArea(int id, bool closeLevel, bool init)
     setBlurStylesheet();
 #endif
 
-    levelView->editManagerPtr()->setSpriteInteraction(ui->actionToggleSprites->isChecked());
-    levelView->editManagerPtr()->setEntranceInteraction(ui->actionToggleEntrances->isChecked());
-    levelView->editManagerPtr()->setPathInteraction(ui->actionTogglePaths->isChecked());
-    levelView->editManagerPtr()->setLocationInteraction(ui->actionToggleLocations->isChecked());
+    levelView->editManagerPtr()->enableSpriteInteraction(ui->actionToggleSprites->isChecked());
+    levelView->editManagerPtr()->enableEntranceInteraction(ui->actionToggleEntrances->isChecked());
+    levelView->editManagerPtr()->enablePathInteraction(ui->actionTogglePaths->isChecked());
+    levelView->editManagerPtr()->enableLocationInteraction(ui->actionToggleLocations->isChecked());
 
     zoom = 1.0;
 
