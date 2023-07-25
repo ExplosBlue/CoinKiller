@@ -35,7 +35,10 @@ public:
 
     void setLayerMask(LAYER_MASK layer, bool state);
     const quint8 getLayerMask() { return layerMask; }
-    void toggleSprites(bool toggle) { spriteInteraction = toggle; }
+
+    void setSpriteInteraction(bool state);
+    const bool getSpriteInteraction() { return spriteInteraction; }
+
     void togglePaths(bool toggle) { pathInteraction = toggle; }
     void toggleLocations(bool toggle) { locationInteraction = toggle; }
     void toggleEntrances(bool toggle) { entranceInteraction = toggle; }

@@ -2,7 +2,9 @@
 #include "unitsconvert.h"
 #include "settingsmanager.h"
 #include "is.h"
+
 #include "commands/setlayermask.h"
+#include "commands/setspriteinteraction.h"
 
 #include <QApplication>
 #include <QPainterPath>
@@ -1132,4 +1134,10 @@ void EditManager::setLayerMask(LAYER_MASK layer, bool state)
 {
     QUndoCommand *layerMaskCmd = new EditorCommand::setLayerMask(&layerMask, layer, state);
     undoStack->push(layerMaskCmd);
+}
+
+void EditManager::setSpriteInteraction(bool state)
+{
+    QUndoCommand *spriteInteractionCmd = new EditorCommand::setSpriteInteraction(&spriteInteraction, state);
+    undoStack->push(spriteInteractionCmd);
 }

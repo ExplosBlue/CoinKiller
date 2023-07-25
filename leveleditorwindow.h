@@ -69,7 +69,7 @@ public slots:
 private slots:
     void toggleLayer(bool toggle);
 
-    void on_actionToggleSprites_toggled(bool arg1);
+    void toggleSprites(bool toggle);
 
     void on_actionTogglePaths_toggled(bool arg1);
 

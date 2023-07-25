@@ -88,6 +88,8 @@ LevelEditorWindow::LevelEditorWindow(LevelManager* lvlMgr, int initialArea) :
     connect(ui->actionToggleLayer2, SIGNAL(toggled(bool)), this, SLOT(toggleLayer(bool)));
 
     ui->actionToggleSprites->setIcon(QIcon(basePath + "sprite.png"));
+    connect(ui->actionToggleSprites, SIGNAL(toggled(bool)), this, SLOT(toggleSprites(bool)));
+
     ui->actionTogglePaths->setIcon(QIcon(basePath + "path.png"));
     ui->actionToggleLocations->setIcon(QIcon(basePath + "location.png"));
     ui->actionToggle3DOverlay->setIcon(QIcon(basePath + "3D.png"));
@@ -115,6 +117,8 @@ LevelEditorWindow::LevelEditorWindow(LevelManager* lvlMgr, int initialArea) :
 
     // Undo/Redo
     undoStack = new QUndoStack(this);
+    undoStack->setActive(false);
+    undoStack->setUndoLimit(50); // TODO: Make this a setting
     connect(undoStack, SIGNAL(indexChanged(int)), this, SLOT(historyStateChanged(int)));
 
     actionUndo = undoStack->createUndoAction(this, tr("&Undo"));
@@ -199,25 +203,27 @@ void LevelEditorWindow::historyStateChanged(int index)
 {
     Q_UNUSED(index);
 
-    if( undoStack->isClean())
+    if (levelView == nullptr)
     {
         return;
     }
 
-    if (levelView != nullptr) {
+    // Update button states
 
-        // Update button states
+    ui->actionToggleLayer1->blockSignals(true);
+    ui->actionToggleLayer1->setChecked(levelView->editManagerPtr()->getLayerMask() & LAYER_MASK::LAYER_ONE);
+    ui->actionToggleLayer1->blockSignals(false);
 
-        ui->actionToggleLayer1->blockSignals(true);
-        ui->actionToggleLayer1->setChecked(levelView->editManagerPtr()->getLayerMask() & LAYER_MASK::LAYER_ONE);
-        ui->actionToggleLayer1->blockSignals(false);
+    ui->actionToggleLayer2->blockSignals(true);
+    ui->actionToggleLayer2->setChecked(levelView->editManagerPtr()->getLayerMask() & LAYER_MASK::LAYER_TWO);
+    ui->actionToggleLayer2->blockSignals(false);
 
-        ui->actionToggleLayer2->blockSignals(true);
-        ui->actionToggleLayer2->setChecked(levelView->editManagerPtr()->getLayerMask() & LAYER_MASK::LAYER_TWO);
-        ui->actionToggleLayer2->blockSignals(false);
+    ui->actionToggleSprites->blockSignals(true);
+    ui->actionToggleSprites->setChecked(levelView->editManagerPtr()->getSpriteInteraction());
+    ui->actionToggleSprites->blockSignals(false);
 
-        levelView->update();
-    }
+
+    levelView->update();
     update();
 }
 
@@ -245,9 +251,9 @@ void LevelEditorWindow::toggleLayer(bool toggle)
     levelView->editManagerPtr()->setLayerMask(mask, toggle);
 }
 
-void LevelEditorWindow::on_actionToggleSprites_toggled(bool toggle)
+void LevelEditorWindow::toggleSprites(bool toggle)
 {
-    levelView->toggleSprites(toggle);
+    levelView->editManagerPtr()->setSpriteInteraction(toggle);
     update();
 }
 
@@ -623,7 +629,7 @@ void LevelEditorWindow::loadArea(int id, bool closeLevel, bool init)
         delete levelView;
         delete miniMap;
 
-//        undoStack->blockSignals(true);
+        undoStack->setActive(false);
     }
 
     level = lvlMgr->openArea(id);
@@ -654,7 +660,7 @@ void LevelEditorWindow::loadArea(int id, bool closeLevel, bool init)
     setBlurStylesheet();
 #endif
 
-    levelView->toggleSprites(ui->actionToggleSprites->isChecked());
+    levelView->editManagerPtr()->setSpriteInteraction(ui->actionToggleSprites->isChecked());
     levelView->togglePaths(ui->actionTogglePaths->isChecked());
     levelView->toggleLocations(ui->actionToggleLocations->isChecked());
     levelView->toggleEntrances(ui->actionToggleEntrances->isChecked());
@@ -749,9 +755,7 @@ void LevelEditorWindow::loadArea(int id, bool closeLevel, bool init)
     toolboxTabs->blockSignals(false);
 
     undoStack->clear();
-    actionUndo->setEnabled(undoStack->canUndo());
-    actionRedo->setEnabled(undoStack->canRedo());
-//    undoStack->blockSignals(false);
+    undoStack->setActive(true);
 }
 
 void LevelEditorWindow::updateAreaSelector(int index)

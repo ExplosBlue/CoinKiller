@@ -50,6 +50,7 @@ DEFINES += CK_VERSION=\\\"$$CK_VERSION\\\"
 
 SOURCES += main.cpp\
     commands/setlayermask.cpp \
+    commands/setspriteinteraction.cpp \
     editmanager.cpp \
     eventeditorwidget.cpp \
     mainwindow.cpp \
@@ -92,6 +93,7 @@ SOURCES += main.cpp\
 
 HEADERS  += mainwindow.h \
     commands/setlayermask.h \
+    commands/setspriteinteraction.h \
     crc32.h \
     editmanager.h \
     eventeditorwidget.h \
