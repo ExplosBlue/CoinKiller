@@ -2,6 +2,7 @@
 #define EDITMANAGER_H
 
 #include "level.h"
+#include "layermask.h"
 
 #include <QList>
 #include <QKeyEvent>
@@ -32,7 +33,8 @@ public:
     void raiseLayer();
     void lowerLayer();
 
-    void setLayerMask(quint8 mask) { layerMask = mask; }
+    void setLayerMask(LAYER_MASK layer, bool state);
+    const quint8 getLayerMask() { return layerMask; }
     void toggleSprites(bool toggle) { spriteInteraction = toggle; }
     void togglePaths(bool toggle) { pathInteraction = toggle; }
     void toggleLocations(bool toggle) { locationInteraction = toggle; }

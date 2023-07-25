@@ -36,7 +36,7 @@
 LevelView::LevelView(QWidget *parent, Level *level, QUndoStack *undoStack) :
     QWidget(parent), level(level), undoStack(undoStack)
 {
-    layerMask = 0x7; // failsafe
+//    layerMask = 0x7; // failsafe
 
     setMouseTracking(true);
 
@@ -144,7 +144,7 @@ void LevelView::paint(QPainter& painter, QRect rect, float zoomLvl, bool selecti
     // Render Tiles
     for (int l = 1; l >= 0; l--)
     {
-        if (!(layerMask & (1<<l)))
+        if (!(editManager->getLayerMask() & (1<<l)))
             continue;
 
         tileGrid[0xFFFFFFFF] = l+1;
@@ -736,12 +736,12 @@ void LevelView::keyPressEvent(QKeyEvent* evt)
     editManager->keyPress(evt);
 }
 
-void LevelView::setLayerMask(quint8 mask)
-{
-    layerMask = mask;
-    editManager->setLayerMask(layerMask);
-    update();
-}
+//void LevelView::setLayerMask(quint8 mask)
+//{
+//    layerMask = mask;
+//    editManager->setLayerMask(layerMask);
+//    update();
+//}
 
 void LevelView::toggleSprites(bool toggle)
 {

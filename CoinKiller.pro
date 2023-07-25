@@ -49,6 +49,7 @@ isEmpty(CK_VERSION) {
 DEFINES += CK_VERSION=\\\"$$CK_VERSION\\\"
 
 SOURCES += main.cpp\
+    commands/setlayermask.cpp \
     editmanager.cpp \
     eventeditorwidget.cpp \
     mainwindow.cpp \
@@ -90,11 +91,13 @@ SOURCES += main.cpp\
     clickablelabel.cpp
 
 HEADERS  += mainwindow.h \
+    commands/setlayermask.h \
     crc32.h \
     editmanager.h \
     eventeditorwidget.h \
     filesystembase.h \
     filebase.h \
+    layermask.h \
     newleveldialog.h \
     sarcfilesystem.h \
     externalfilesystem.h \

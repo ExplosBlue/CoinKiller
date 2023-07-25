@@ -2,6 +2,7 @@
 #include "unitsconvert.h"
 #include "settingsmanager.h"
 #include "is.h"
+#include "commands/setlayermask.h"
 
 #include <QApplication>
 #include <QPainterPath>
@@ -1123,3 +1124,8 @@ void EditManager::setSprite(int selSprite)
     emit updateLevelView();
 }
 
+void EditManager::setLayerMask(LAYER_MASK layer, bool state)
+{
+    QUndoCommand *layerMaskCmd = new EditorCommand::setLayerMask(&layerMask, layer, state);
+    undoStack->push(layerMaskCmd);
+}

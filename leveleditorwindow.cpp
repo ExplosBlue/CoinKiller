@@ -80,8 +80,13 @@ LevelEditorWindow::LevelEditorWindow(LevelManager* lvlMgr, int initialArea) :
     ui->actionDeleteCurrentArea->setIcon(QIcon(basePath + "remove.png"));
     ui->actionSetBackgroundColor->setIcon(QIcon(basePath + "colors.png"));
     ui->actionResetBackgroundColor->setIcon(QIcon(basePath + "delete_colors.png"));
+
     ui->actionToggleLayer1->setIcon(QIcon(basePath + "layer1.png"));
+    connect(ui->actionToggleLayer1, SIGNAL(toggled(bool)), this, SLOT(toggleLayer(bool)));
+
     ui->actionToggleLayer2->setIcon(QIcon(basePath + "layer2.png"));
+    connect(ui->actionToggleLayer2, SIGNAL(toggled(bool)), this, SLOT(toggleLayer(bool)));
+
     ui->actionToggleSprites->setIcon(QIcon(basePath + "sprite.png"));
     ui->actionTogglePaths->setIcon(QIcon(basePath + "path.png"));
     ui->actionToggleLocations->setIcon(QIcon(basePath + "location.png"));
@@ -110,6 +115,7 @@ LevelEditorWindow::LevelEditorWindow(LevelManager* lvlMgr, int initialArea) :
 
     // Undo/Redo
     undoStack = new QUndoStack(this);
+    connect(undoStack, SIGNAL(indexChanged(int)), this, SLOT(historyStateChanged(int)));
 
     actionUndo = undoStack->createUndoAction(this, tr("&Undo"));
     actionUndo->setIcon(QIcon(basePath + "undo.png"));
@@ -128,14 +134,20 @@ LevelEditorWindow::LevelEditorWindow(LevelManager* lvlMgr, int initialArea) :
     ui->menuEdit->addAction(actionRedo);
 
     // Create undo view
-    QDockWidget *undoDockWidget = new QDockWidget(this);
-    undoDockWidget->setWindowTitle(tr("Command List"));
-    undoDockWidget->setWidget(new QUndoView(undoStack));
-    addDockWidget(Qt::RightDockWidgetArea, undoDockWidget);
+    undoView = new QUndoView(undoStack);
+    undoView->setEmptyLabel(tr("<Empty>"));
+
+    historyDock = new QDockWidget(this);
+    historyDock->setObjectName("historyDock");
+    historyDock->setWindowTitle(tr("History"));
+    historyDock->setWidget(undoView);
+    historyDock->setVisible(false);
+    addDockWidget(Qt::RightDockWidgetArea, historyDock);
 
     restoreState(settings->get("lvleditorState").toByteArray());
     updateDockedWidgetCheckboxes();
     connect(toolboxDock, SIGNAL(visibilityChanged(bool)), this, SLOT(updateDockedWidgetCheckboxes()));
+    connect(minimapDock, SIGNAL(visibilityChanged(bool)), this, SLOT(updateDockedWidgetCheckboxes()));
     connect(minimapDock, SIGNAL(visibilityChanged(bool)), this, SLOT(updateDockedWidgetCheckboxes()));
 
     loadArea(initialArea, false, true);
@@ -183,22 +195,54 @@ void LevelEditorWindow::changeEvent(QEvent* event)
     QMainWindow::changeEvent(event);
 }
 
-// Actions
-
-void LevelEditorWindow::on_actionToggleLayer1_toggled(bool toggle)
+void LevelEditorWindow::historyStateChanged(int index)
 {
-    if (toggle) layerMask |=  0x1;
-    else        layerMask &= ~0x1;
-    levelView->setLayerMask(layerMask);
+    Q_UNUSED(index);
+
+    if( undoStack->isClean())
+    {
+        return;
+    }
+
+    if (levelView != nullptr) {
+
+        // Update button states
+
+        ui->actionToggleLayer1->blockSignals(true);
+        ui->actionToggleLayer1->setChecked(levelView->editManagerPtr()->getLayerMask() & LAYER_MASK::LAYER_ONE);
+        ui->actionToggleLayer1->blockSignals(false);
+
+        ui->actionToggleLayer2->blockSignals(true);
+        ui->actionToggleLayer2->setChecked(levelView->editManagerPtr()->getLayerMask() & LAYER_MASK::LAYER_TWO);
+        ui->actionToggleLayer2->blockSignals(false);
+
+        levelView->update();
+    }
     update();
 }
 
-void LevelEditorWindow::on_actionToggleLayer2_toggled(bool toggle)
+// Actions
+
+void LevelEditorWindow::toggleLayer(bool toggle)
 {
-    if (toggle) layerMask |=  0x2;
-    else        layerMask &= ~0x2;
-    levelView->setLayerMask(layerMask);
-    update();
+    LAYER_MASK mask = LAYER_MASK::NONE;
+
+    QAction *action = qobject_cast<QAction*>(sender());
+    if (action == ui->actionToggleLayer1)
+    {
+        mask = LAYER_MASK::LAYER_ONE;
+    }
+    else if (action == ui->actionToggleLayer2)
+    {
+        mask = LAYER_MASK::LAYER_TWO;
+    }
+    else
+    {
+        qDebug() << "toggleLayer: Unknown Sender";
+        return;
+    }
+
+    levelView->editManagerPtr()->setLayerMask(mask, toggle);
 }
 
 void LevelEditorWindow::on_actionToggleSprites_toggled(bool toggle)
@@ -579,7 +623,7 @@ void LevelEditorWindow::loadArea(int id, bool closeLevel, bool init)
         delete levelView;
         delete miniMap;
 
-        undoStack->clear();
+//        undoStack->blockSignals(true);
     }
 
     level = lvlMgr->openArea(id);
@@ -589,7 +633,7 @@ void LevelEditorWindow::loadArea(int id, bool closeLevel, bool init)
     levelView->setMinimumSize(4096*20, 4096*20);
     levelView->setMaximumSize(4096*20, 4096*20);
 
-    layerMask = 0x7;
+    levelView->editManagerPtr()->setLayerMask(LAYER_MASK::ALL, true);
     ui->actionToggleLayer1->setChecked(true);
     ui->actionToggleLayer2->setChecked(true);
     ui->actionToggleSprites->setChecked(true);
@@ -599,7 +643,7 @@ void LevelEditorWindow::loadArea(int id, bool closeLevel, bool init)
     ui->actionToggle3DOverlay->setChecked(true);
     ui->actionToggleEntrances->setChecked(true);
     ui->actionSelectAfterPlacement->setChecked(settings->get("SelectAfterPlacement").toBool());
-    levelView->setLayerMask(layerMask);
+
     levelView->toggleGrid(ui->actionGrid->isChecked());
     levelView->toggleCheckerboard(ui->actionCheckerboard->isChecked());
     levelView->toggleRenderLiquids(ui->actionRenderLiquids->isChecked());
@@ -703,6 +747,11 @@ void LevelEditorWindow::loadArea(int id, bool closeLevel, bool init)
     update();
 
     toolboxTabs->blockSignals(false);
+
+    undoStack->clear();
+    actionUndo->setEnabled(undoStack->canUndo());
+    actionRedo->setEnabled(undoStack->canRedo());
+//    undoStack->blockSignals(false);
 }
 
 void LevelEditorWindow::updateAreaSelector(int index)
@@ -885,10 +934,16 @@ void LevelEditorWindow::on_actionShowMinimap_toggled(bool checked)
     minimapDock->setHidden(!checked);
 }
 
+void LevelEditorWindow::on_actionShowHistory_toggled(bool checked)
+{
+    historyDock->setHidden(!checked);
+}
+
 void LevelEditorWindow::updateDockedWidgetCheckboxes()
 {
     ui->actionShowToolbox->setChecked(!toolboxDock->isHidden());
     ui->actionShowMinimap->setChecked(!minimapDock->isHidden());
+    ui->actionShowHistory->setChecked(!historyDock->isHidden());
 }
 
 #ifdef USE_KDE_BLUR

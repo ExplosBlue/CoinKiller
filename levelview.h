@@ -35,7 +35,7 @@ public:
     explicit LevelView(QWidget *parent, Level *level, QUndoStack *undoStack);
     ~LevelView();
 
-    void setLayerMask(quint8 mask);
+//    void setLayerMask(quint8 mask);
     void setZoom(float zoom) { this->zoom = zoom; setMinimumSize(4096*20*zoom, 4096*20*zoom); setMaximumSize(4096*20*zoom, 4096*20*zoom); update(); }
     void toggleGrid(bool toggle) { grid = toggle; update(); }
     void toggleCheckerboard(bool toggle) { checkerboard = toggle; update(); }
@@ -107,7 +107,7 @@ private:
     bool render3DOverlay;
     bool renderEntrances;
 
-    quint8 layerMask;
+//    quint8 layerMask;
 
     // determines which tiles are already occupied
     TileGrid tileGrid;

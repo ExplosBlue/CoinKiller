@@ -38,6 +38,7 @@
 #include "eventeditorwidget.h"
 #include "settingsmanager.h"
 #include "windowbase.h"
+#include "layermask.h"
 
 namespace Ui {
 class LevelEditorWindow;
@@ -66,9 +67,7 @@ public slots:
     void handleEditMade();
 
 private slots:
-    void on_actionToggleLayer1_toggled(bool arg1);
-
-    void on_actionToggleLayer2_toggled(bool arg1);
+    void toggleLayer(bool toggle);
 
     void on_actionToggleSprites_toggled(bool arg1);
 
@@ -140,6 +139,8 @@ private slots:
 
     void on_actionShowToolbox_toggled(bool checked);
 
+    void on_actionShowHistory_toggled(bool checked);
+
     void updateDockedWidgetCheckboxes();
 
     void on_actionToggle3DOverlay_toggled(bool arg1);
@@ -147,6 +148,8 @@ private slots:
     void on_actionToggle2DTile_toggled(bool arg1);
 
     void on_actionToggleEntrances_toggled(bool arg1);
+
+    void historyStateChanged(int index);
 
 private:
     Ui::LevelEditorWindow *ui;
@@ -178,7 +181,7 @@ private:
 
     void updateAreaSelector(int index = -1);
 
-    quint8 layerMask;
+//    quint8 layerMask;
     float zoom;
 
     void loadArea(int id, bool closeLevel = true, bool init = false);
@@ -194,6 +197,7 @@ private:
     QTabWidget* toolboxTabs;
 
     QDockWidget* minimapDock;
+    QDockWidget* historyDock;
 
     QUndoStack* undoStack;
     QUndoView* undoView;

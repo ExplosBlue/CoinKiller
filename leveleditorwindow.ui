@@ -47,7 +47,7 @@
          <x>0</x>
          <y>0</y>
          <width>1278</width>
-         <height>634</height>
+         <height>629</height>
         </rect>
        </property>
       </widget>
@@ -61,7 +61,7 @@
      <x>0</x>
      <y>0</y>
      <width>1280</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -126,6 +126,7 @@
     </property>
     <addaction name="actionShowToolbox"/>
     <addaction name="actionShowMinimap"/>
+    <addaction name="actionShowHistory"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -577,6 +578,17 @@
    </property>
    <property name="toolTip">
     <string>Toggle Entrances</string>
+   </property>
+  </action>
+  <action name="actionShowHistory">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Show History</string>
+   </property>
+   <property name="toolTip">
+    <string>Show History</string>
    </property>
   </action>
  </widget>
