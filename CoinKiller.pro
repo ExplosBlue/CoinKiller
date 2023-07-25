@@ -49,6 +49,7 @@ isEmpty(CK_VERSION) {
 DEFINES += CK_VERSION=\\\"$$CK_VERSION\\\"
 
 SOURCES += main.cpp\
+    editmanager.cpp \
     eventeditorwidget.cpp \
     mainwindow.cpp \
     newleveldialog.cpp \
@@ -82,7 +83,6 @@ SOURCES += main.cpp\
     settingsmanager.cpp \
     filedownloader.cpp \
     levelminimap.cpp \
-    objectseditionmode.cpp \
     sarcexplorerwindow.cpp \
     newtilesetdialog.cpp \
     imagecache.cpp \
@@ -91,6 +91,7 @@ SOURCES += main.cpp\
 
 HEADERS  += mainwindow.h \
     crc32.h \
+    editmanager.h \
     eventeditorwidget.h \
     filesystembase.h \
     filebase.h \
@@ -126,7 +127,6 @@ HEADERS  += mainwindow.h \
     settingsmanager.h \
     filedownloader.h \
     levelminimap.h \
-    objectseditionmode.h \
     sarcexplorerwindow.h \
     newtilesetdialog.h \
     imagecache.h \

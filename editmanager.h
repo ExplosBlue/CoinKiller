@@ -1,5 +1,5 @@
-#ifndef OBJECTSEDITIONMODE_H
-#define OBJECTSEDITIONMODE_H
+#ifndef EDITMANAGER_H
+#define EDITMANAGER_H
 
 #include "level.h"
 
@@ -7,12 +7,12 @@
 #include <QKeyEvent>
 
 
-class ObjectsEditonMode : public QObject
+class EditManager : public QObject
 {
     Q_OBJECT
 public:
-    ObjectsEditonMode(Level *level);
-    ~ObjectsEditonMode() {}
+    EditManager(Level *level);
+    ~EditManager() {}
 
     void mouseDown(int x, int y, Qt::MouseButtons buttons, Qt::KeyboardModifiers modifiers, QRect drawrect);
     void mouseDrag(int x, int y, Qt::KeyboardModifiers modifieres, QRect drawrect);
@@ -148,4 +148,4 @@ private:
 
 };
 
-#endif // OBJECTSEDITIONMODE_H
+#endif // EDITMANAGER_H

@@ -1,4 +1,4 @@
-#include "objectseditionmode.h"
+#include "editmanager.h"
 #include "unitsconvert.h"
 #include "settingsmanager.h"
 #include "is.h"
@@ -8,14 +8,14 @@
 #include <QClipboard>
 #include <QDebug>
 
-ObjectsEditonMode::ObjectsEditonMode(Level *level)
+EditManager::EditManager(Level *level)
 {
     this->level = level;
     this->selectAfterPlacement = SettingsManager::getInstance()->get("SelectAfterPlacement").toBool();
 
     selectionMode = false;
 }
-void ObjectsEditonMode::mouseDown(int x, int y, Qt::MouseButtons buttons, Qt::KeyboardModifiers modifiers, QRect drawrect)
+void EditManager::mouseDown(int x, int y, Qt::MouseButtons buttons, Qt::KeyboardModifiers modifiers, QRect drawrect)
 {
     dx = x;
     dy = y;
@@ -199,7 +199,7 @@ void ObjectsEditonMode::mouseDown(int x, int y, Qt::MouseButtons buttons, Qt::Ke
     }
 }
 
-void ObjectsEditonMode::mouseDrag(int x, int y, Qt::KeyboardModifiers modifieres, QRect drawrect)
+void EditManager::mouseDrag(int x, int y, Qt::KeyboardModifiers modifieres, QRect drawrect)
 {
     if (creatNewObject)
     {
@@ -376,12 +376,12 @@ void ObjectsEditonMode::mouseDrag(int x, int y, Qt::KeyboardModifiers modifieres
     }
 }
 
-void ObjectsEditonMode::mouseMove(int x, int y)
+void EditManager::mouseMove(int x, int y)
 {
     actualCursor = getCursorAtPos(x, y);
 }
 
-void ObjectsEditonMode::mouseUp(int x, int y)
+void EditManager::mouseUp(int x, int y)
 {
     mouseAct = getActionAtPos(x, y);
     actualCursor = getCursorAtPos(x, y);
@@ -391,7 +391,7 @@ void ObjectsEditonMode::mouseUp(int x, int y)
     clone = false;
 }
 
-void ObjectsEditonMode::render(QPainter *painter)
+void EditManager::render(QPainter *painter)
 {
     foreach (Object* obj, selectedObjects)
     {
@@ -466,7 +466,7 @@ void ObjectsEditonMode::render(QPainter *painter)
     }
 }
 
-void ObjectsEditonMode::drawPlus(QPainter *painter, int x, int y)
+void EditManager::drawPlus(QPainter *painter, int x, int y)
 {
     QPainterPath path1;
     path1.addRoundedRect(x+9, y+4, 2, 12 , 2.0, 2.0);
@@ -476,12 +476,12 @@ void ObjectsEditonMode::drawPlus(QPainter *painter, int x, int y)
     painter->fillPath(path2, Qt::white);
 }
 
-void ObjectsEditonMode::drawResizeKnob(int x, int y, QPainter *painter)
+void EditManager::drawResizeKnob(int x, int y, QPainter *painter)
 {
     painter->fillRect(x-2, y-2, 4, 4, QBrush(Qt::white));
 }
 
-QList<Object*> ObjectsEditonMode::getObjectsAtPos(int x1, int y1, int x2, int y2, bool firstOnly, QRect drawrect)
+QList<Object*> EditManager::getObjectsAtPos(int x1, int y1, int x2, int y2, bool firstOnly, QRect drawrect)
 {
     QList<Object*> objects;
 
@@ -536,7 +536,7 @@ QList<Object*> ObjectsEditonMode::getObjectsAtPos(int x1, int y1, int x2, int y2
     return objects;
 }
 
-QList<Object*> ObjectsEditonMode::cloneObjects(QList<Object *> objects)
+QList<Object*> EditManager::cloneObjects(QList<Object *> objects)
 {
     QList<Object*> newObjects;
     foreach (Object* o, objects)
@@ -550,7 +550,7 @@ QList<Object*> ObjectsEditonMode::cloneObjects(QList<Object *> objects)
     return newObjects;
 }
 
-ObjectsEditonMode::mouseAction ObjectsEditonMode::getActionAtPos(int x, int y)
+EditManager::mouseAction EditManager::getActionAtPos(int x, int y)
 {
     mouseAction act;
 
@@ -698,7 +698,7 @@ ObjectsEditonMode::mouseAction ObjectsEditonMode::getActionAtPos(int x, int y)
     return act;
 }
 
-Qt::CursorShape ObjectsEditonMode::getCursorAtPos(int x, int y)
+Qt::CursorShape EditManager::getCursorAtPos(int x, int y)
 {
     mouseAction act = getActionAtPos(x, y);
 
@@ -715,7 +715,7 @@ Qt::CursorShape ObjectsEditonMode::getCursorAtPos(int x, int y)
     return Qt::ArrowCursor;
 }
 
-void ObjectsEditonMode::updateSelectionBounds()
+void EditManager::updateSelectionBounds()
 {
     minBoundX = 2147483647;
     minBoundY = 2147483647;
@@ -751,7 +751,7 @@ void ObjectsEditonMode::updateSelectionBounds()
     }
 }
 
-void ObjectsEditonMode::sortSelection()
+void EditManager::sortSelection()
 {
     QList<Object*> sortedObjects;
 
@@ -764,13 +764,13 @@ void ObjectsEditonMode::sortSelection()
     selectedObjects = sortedObjects;
 }
 
-void ObjectsEditonMode::select(Object *obj)
+void EditManager::select(Object *obj)
 {
     selectedObjects.clear();
     selectedObjects.append(obj);
 }
 
-void ObjectsEditonMode::selectAll()
+void EditManager::selectAll()
 {
     selectedObjects.clear();
 
@@ -783,7 +783,7 @@ void ObjectsEditonMode::selectAll()
     foreach (ProgressPath* path, level->progressPaths) foreach (ProgressPathNode* node, path->getNodes()) selectedObjects.append(node);
 }
 
-void ObjectsEditonMode::selectZoneContents(Zone* zone)
+void EditManager::selectZoneContents(Zone* zone)
 {
     selectAll();
 
@@ -798,7 +798,7 @@ void ObjectsEditonMode::selectZoneContents(Zone* zone)
     }
 }
 
-void ObjectsEditonMode::deleteSelection()
+void EditManager::deleteSelection()
 {
     level->remove(selectedObjects);
     selectedObjects.clear();
@@ -809,7 +809,7 @@ void ObjectsEditonMode::deleteSelection()
     updateEditors();
 }
 
-void ObjectsEditonMode::copy()
+void EditManager::copy()
 {
     if (selectedObjects.size() == 0)
         return;
@@ -930,13 +930,13 @@ void ObjectsEditonMode::copy()
     QApplication::clipboard()->setText(clipboardText);
 }
 
-void ObjectsEditonMode::cut()
+void EditManager::cut()
 {
     copy();
     deleteSelection();
 }
 
-void ObjectsEditonMode::paste(int currX, int currY, int currW, int currH)
+void EditManager::paste(int currX, int currY, int currW, int currH)
 {
     QStringList sections = QApplication::clipboard()->text().split('|');
 
@@ -1045,7 +1045,7 @@ void ObjectsEditonMode::paste(int currX, int currY, int currW, int currH)
     checkEmits();
 }
 
-void ObjectsEditonMode::raise()
+void EditManager::raise()
 {
     sortSelection();
     foreach (Object* obj, selectedObjects)
@@ -1054,7 +1054,7 @@ void ObjectsEditonMode::raise()
     }
 }
 
-void ObjectsEditonMode::lower()
+void EditManager::lower()
 {
     sortSelection();
     foreach (Object* obj, selectedObjects)
@@ -1063,7 +1063,7 @@ void ObjectsEditonMode::lower()
     }
 }
 
-void ObjectsEditonMode::raiseLayer()
+void EditManager::raiseLayer()
 {
     sortSelection();
     foreach (Object* obj, selectedObjects)
@@ -1072,7 +1072,7 @@ void ObjectsEditonMode::raiseLayer()
     }
 }
 
-void ObjectsEditonMode::lowerLayer()
+void EditManager::lowerLayer()
 {
     sortSelection();
     foreach (Object* obj, selectedObjects)
@@ -1081,7 +1081,7 @@ void ObjectsEditonMode::lowerLayer()
     }
 }
 
-void ObjectsEditonMode::checkEmits()
+void EditManager::checkEmits()
 {
     if (selectedObjects.size() != 1)
         emit deselected();
@@ -1089,7 +1089,7 @@ void ObjectsEditonMode::checkEmits()
         emit selectdObjectChanged(selectedObjects[0]);
 }
 
-void ObjectsEditonMode::setObject(int selObject, int selTileset)
+void EditManager::setObject(int selObject, int selTileset)
 {
     this->selObject = selObject;
     this->selTileset = selTileset;
@@ -1107,7 +1107,7 @@ void ObjectsEditonMode::setObject(int selObject, int selTileset)
     emit updateLevelView();
 }
 
-void ObjectsEditonMode::setSprite(int selSprite)
+void EditManager::setSprite(int selSprite)
 {
     this->selSprite = selSprite;
 

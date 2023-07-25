@@ -25,7 +25,7 @@
 #include "filesystem.h"
 #include "level.h"
 #include "tileset.h"
-#include "objectseditionmode.h"
+#include "editmanager.h"
 
 class LevelView : public QWidget
 {
@@ -58,7 +58,7 @@ public:
     void lowerLayer();
     void setBackgroundColor(QColor bgcolor) {backgroundColor = bgcolor; update(); }
 
-    ObjectsEditonMode* objEditionModePtr() { return objectEditionMode; }
+    EditManager* editManagerPtr() { return editManager; }
 
 signals:
     void scrollTo(int x, int y);
@@ -91,7 +91,7 @@ private:
     int dragX;
     int dragY;
 
-    ObjectsEditonMode* objectEditionMode;
+    EditManager* editManager;
 
     bool grid;
     bool checkerboard;

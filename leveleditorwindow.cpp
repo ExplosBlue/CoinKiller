@@ -368,13 +368,13 @@ void LevelEditorWindow::on_actionRenderCameraLimits_toggled(bool toggle)
 
 void LevelEditorWindow::setSelSprite(int spriteId)
 {
-    levelView->objEditionModePtr()->setDrawType(1);
-    levelView->objEditionModePtr()->setSprite(spriteId);
+    levelView->editManagerPtr()->setDrawType(1);
+    levelView->editManagerPtr()->setSprite(spriteId);
 }
 
 void LevelEditorWindow::on_actionSelectAfterPlacement_toggled(bool toggle)
 {
-    levelView->objEditionModePtr()->toggleSelectAfterPlacement(toggle);
+    levelView->editManagerPtr()->toggleSelectAfterPlacement(toggle);
     settings->set("SelectAfterPlacement", toggle);
 }
 
@@ -445,10 +445,10 @@ void LevelEditorWindow::updateEditors()
 void LevelEditorWindow::toolboxTabsCurrentChanged(int index)
 {
     if (index == 0)
-        levelView->objEditionModePtr()->setDrawType(-1);
+        levelView->editManagerPtr()->setDrawType(-1);
     else
     {
-        levelView->objEditionModePtr()->setDrawType(index-1);
+        levelView->editManagerPtr()->setDrawType(index-1);
     }
 }
 
@@ -598,7 +598,7 @@ void LevelEditorWindow::loadArea(int id, bool closeLevel, bool init)
     connect(areaEditor, SIGNAL(editMade()), this, SLOT(handleEditMade()));
 
     // Setup Tileset Picker
-    tilesetPalette = new TilesetPalette(level, levelView->objEditionModePtr(), lvlMgr->getGame());
+    tilesetPalette = new TilesetPalette(level, levelView->editManagerPtr(), lvlMgr->getGame());
     connect(tilesetPalette, SIGNAL(updateLevelView()), levelView, SLOT(update()));
     connect(tilesetPalette, SIGNAL(editMade()), this, SLOT(handleEditMade()));
 
@@ -643,10 +643,10 @@ void LevelEditorWindow::loadArea(int id, bool closeLevel, bool init)
     connect(progPathEditor, SIGNAL(editMade()), this, SLOT(handleEditMade()));
 
     connect(levelView, SIGNAL(scrollTo(int,int)), this, SLOT(scrollTo(int,int)));
-    connect(levelView->objEditionModePtr(), SIGNAL(selectdObjectChanged(Object*)), this, SLOT(setObjectEdition(Object*)));
-    connect(levelView->objEditionModePtr(), SIGNAL(deselected()), this, SLOT(deselect()));
-    connect(levelView->objEditionModePtr(), SIGNAL(updateEditors()), this, SLOT(updateEditors()));
-    connect(levelView->objEditionModePtr(), SIGNAL(editMade()), this, SLOT(handleEditMade()));
+    connect(levelView->editManagerPtr(), SIGNAL(selectdObjectChanged(Object*)), this, SLOT(setObjectEdition(Object*)));
+    connect(levelView->editManagerPtr(), SIGNAL(deselected()), this, SLOT(deselect()));
+    connect(levelView->editManagerPtr(), SIGNAL(updateEditors()), this, SLOT(updateEditors()));
+    connect(levelView->editManagerPtr(), SIGNAL(editMade()), this, SLOT(handleEditMade()));
 
     toolboxTabs->setUsesScrollButtons(true);
     toolboxTabs->addTab(areaEditor, QIcon(basePath + "settings.png"), "");

@@ -7,11 +7,11 @@
 #include <QStandardItemModel>
 #include <QSpacerItem>
 
-TilesetPalette::TilesetPalette(Level* level, ObjectsEditonMode* objEditionMode, Game* game)
+TilesetPalette::TilesetPalette(Level* level, EditManager* editManager, Game* game)
 {
     this->level = level;
     this->game = game;
-    this->objEditionMode = objEditionMode;
+    this->editManager = editManager;
 
     QVBoxLayout* layout = new QVBoxLayout();
     this->setLayout(layout);
@@ -157,29 +157,29 @@ void TilesetPalette::loadTileset(int tilesetNbr)
 void TilesetPalette::on_objectsListView0_clicked(const QModelIndex &index)
 {
     updatePalettes(0);
-    objEditionMode->setDrawType(0);
-    objEditionMode->setObject(index.row(), 0);
+    editManager->setDrawType(0);
+    editManager->setObject(index.row(), 0);
 }
 
 void TilesetPalette::on_objectsListView1_clicked(const QModelIndex &index)
 {
     updatePalettes(1);
-    objEditionMode->setDrawType(0);
-    objEditionMode->setObject(index.row(), 1);
+    editManager->setDrawType(0);
+    editManager->setObject(index.row(), 1);
 }
 
 void TilesetPalette::on_objectsListView2_clicked(const QModelIndex &index)
 {
     updatePalettes(2);
-    objEditionMode->setDrawType(0);
-    objEditionMode->setObject(index.row(), 2);
+    editManager->setDrawType(0);
+    editManager->setObject(index.row(), 2);
 }
 
 void TilesetPalette::on_objectsListView3_clicked(const QModelIndex &index)
 {
     updatePalettes(3);
-    objEditionMode->setDrawType(0);
-    objEditionMode->setObject(index.row(), 3);
+    editManager->setDrawType(0);
+    editManager->setObject(index.row(), 3);
 }
 
 void TilesetPalette::updatePalettes(int actualPal)
@@ -193,7 +193,7 @@ void TilesetPalette::updatePalettes(int actualPal)
 
 void TilesetPalette::on_layerRadioButton_toggled(bool checked)
 {
-    objEditionMode->setLayer(!checked);
+    editManager->setLayer(!checked);
 }
 
 void TilesetPalette::select(BgdatObject *obj)
@@ -203,8 +203,8 @@ void TilesetPalette::select(BgdatObject *obj)
     objectLists[tsid]->setCurrentIndex(objectLists[tsid]->model()->index(obj->getid()&0x0FFF, 0));
 
     updatePalettes(tsid);
-    objEditionMode->setDrawType(0);
-    objEditionMode->setObject(obj->getid()&0x0FFF, (obj->getid() >> 12) & 0x3);
+    editManager->setDrawType(0);
+    editManager->setObject(obj->getid()&0x0FFF, (obj->getid() >> 12) & 0x3);
 }
 
 void TilesetPalette::handleTilesetChange(int index)

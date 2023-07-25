@@ -3,7 +3,7 @@
 
 #include "level.h"
 #include "game.h"
-#include "objectseditionmode.h"
+#include "editmanager.h"
 
 #include <QWidget>
 #include <QListView>
@@ -14,7 +14,7 @@ class TilesetPalette : public QWidget
 {
     Q_OBJECT
 public:
-    explicit TilesetPalette(Level* level, ObjectsEditonMode *objEditionMode, Game *game);
+    explicit TilesetPalette(Level* level, EditManager *editManager, Game *game);
     void select(BgdatObject* obj);
 
 signals:
@@ -33,7 +33,7 @@ private slots:
 private:
     Level* level;
     Game* game;
-    ObjectsEditonMode* objEditionMode;
+    EditManager* editManager;
 
     QTabWidget* tabWidget;
     QListView* objectLists[4];
