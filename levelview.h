@@ -46,7 +46,7 @@ public:
 //    void toggleSprites(bool toggle);
 //    void togglePaths(bool toggle);
     void toggleLocations(bool toggle);
-    void toggleEntrances(bool toggle);
+//    void toggleEntrances(bool toggle);
     qint8 saveLevel();
     void copy();
     void paste();
@@ -105,7 +105,7 @@ private:
     bool renderLocations;
     bool render2DTile;
     bool render3DOverlay;
-    bool renderEntrances;
+//    bool renderEntrances;
 
 //    quint8 layerMask;
 

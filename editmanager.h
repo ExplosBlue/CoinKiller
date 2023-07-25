@@ -39,11 +39,13 @@ public:
     void setSpriteInteraction(bool state);
     const bool getSpriteInteraction() { return spriteInteraction; }
 
+    void setEntranceInteraction(bool state);
+    const bool getEntranceInteraction()  { return entranceInteraction; }
+
     void setPathInteraction(bool state);
     const bool getPathInteraction()  { return pathInteraction; }
 
-    void toggleLocations(bool toggle) { locationInteraction = toggle; }
-    void toggleEntrances(bool toggle) { entranceInteraction = toggle; }
+    void toggleLocations(bool toggle) { entranceInteraction = toggle; }
 
     void select(Object* obj);
     void selectAll();
@@ -148,9 +150,9 @@ private:
 
     quint8 layerMask;
     bool pathInteraction;
+    bool entranceInteraction;
     bool spriteInteraction;
     bool locationInteraction;
-    bool entranceInteraction;
 
     bool selectAfterPlacement;
 

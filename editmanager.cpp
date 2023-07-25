@@ -5,6 +5,7 @@
 
 #include "commands/setlayermask.h"
 #include "commands/setspriteinteraction.h"
+#include "commands/setentranceinteraction.h"
 #include "commands/setpathinteraction.h"
 
 #include <QApplication>
@@ -1147,4 +1148,10 @@ void EditManager::setPathInteraction(bool state)
 {
     QUndoCommand *pathInteractionCmd = new EditorCommand::setPathInteraction(&pathInteraction, state);
     undoStack->push(pathInteractionCmd);
+}
+
+void EditManager::setEntranceInteraction(bool state)
+{
+    QUndoCommand *entranceInteractionCmd = new EditorCommand::setEntranceInteraction(&entranceInteraction, state);
+    undoStack->push(entranceInteractionCmd);
 }

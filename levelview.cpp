@@ -53,7 +53,7 @@ LevelView::LevelView(QWidget *parent, Level *level, QUndoStack *undoStack) :
     renderLocations = true;
     render2DTile = true;
     render3DOverlay = true;
-    renderEntrances = true;
+//    renderEntrances = true;
 
 #ifdef USE_KDE_BLUR
     setBackgroundColor(QColor(0,0,0,0));
@@ -444,7 +444,7 @@ void LevelView::paint(QPainter& painter, QRect rect, float zoomLvl, bool selecti
     }
 
     // Render Entrances
-    if (renderEntrances)
+    if (editManager->getEntranceInteraction())
     {
         for (int i = 0; i < level->entrances.size(); i++)
         {
@@ -764,12 +764,12 @@ void LevelView::toggleLocations(bool toggle)
     update();
 }
 
-void LevelView::toggleEntrances(bool toggle)
-{
-    renderEntrances = toggle;
-    editManager->toggleEntrances(toggle);
-    update();
-}
+//void LevelView::toggleEntrances(bool toggle)
+//{
+//    renderEntrances = toggle;
+//    editManager->toggleEntrances(toggle);
+//    update();
+//}
 
 qint8 LevelView::saveLevel()
 {

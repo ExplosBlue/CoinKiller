@@ -71,6 +71,8 @@ private slots:
 
     void toggleSprites(bool toggle);
 
+    void toggleEntrances(bool toggle);
+
     void togglePaths(bool toggle);
 
     void on_actionToggleLocations_toggled(bool arg1);
@@ -146,8 +148,6 @@ private slots:
     void on_actionToggle3DOverlay_toggled(bool arg1);
 
     void on_actionToggle2DTile_toggled(bool arg1);
-
-    void on_actionToggleEntrances_toggled(bool arg1);
 
     void historyStateChanged(int index);
 

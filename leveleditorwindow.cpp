@@ -90,6 +90,9 @@ LevelEditorWindow::LevelEditorWindow(LevelManager* lvlMgr, int initialArea) :
     ui->actionToggleSprites->setIcon(QIcon(basePath + "sprite.png"));
     connect(ui->actionToggleSprites, SIGNAL(toggled(bool)), this, SLOT(toggleSprites(bool)));
 
+    ui->actionToggleEntrances->setIcon(QIcon(basePath + "entrance.png"));
+    connect(ui->actionToggleEntrances, SIGNAL(toggled(bool)), this, SLOT(toggleEntrances(bool)));
+
     ui->actionTogglePaths->setIcon(QIcon(basePath + "path.png"));
     connect(ui->actionTogglePaths, SIGNAL(toggled(bool)), this, SLOT(togglePaths(bool)));
 
@@ -97,7 +100,6 @@ LevelEditorWindow::LevelEditorWindow(LevelManager* lvlMgr, int initialArea) :
     ui->actionToggleLocations->setIcon(QIcon(basePath + "location.png"));
     ui->actionToggle3DOverlay->setIcon(QIcon(basePath + "3D.png"));
     ui->actionToggle2DTile->setIcon(QIcon(basePath + "2D.png"));
-    ui->actionToggleEntrances->setIcon(QIcon(basePath + "entrance.png"));
 
     // Set Shortcuts
     QList<QKeySequence> deleteShortcuts;
@@ -225,6 +227,10 @@ void LevelEditorWindow::historyStateChanged(int index)
     ui->actionToggleSprites->setChecked(levelView->editManagerPtr()->getSpriteInteraction());
     ui->actionToggleSprites->blockSignals(false);
 
+    ui->actionToggleEntrances->blockSignals(true);
+    ui->actionToggleEntrances->setChecked(levelView->editManagerPtr()->getEntranceInteraction());
+    ui->actionToggleEntrances->blockSignals(false);
+
     ui->actionTogglePaths->blockSignals(true);
     ui->actionTogglePaths->setChecked(levelView->editManagerPtr()->getPathInteraction());
     ui->actionTogglePaths->blockSignals(false);
@@ -262,6 +268,11 @@ void LevelEditorWindow::toggleSprites(bool toggle)
     levelView->editManagerPtr()->setSpriteInteraction(toggle);
 }
 
+void LevelEditorWindow::toggleEntrances(bool toggle)
+{
+    levelView->editManagerPtr()->setEntranceInteraction(toggle);
+}
+
 void LevelEditorWindow::togglePaths(bool toggle)
 {
     levelView->editManagerPtr()->setPathInteraction(toggle);
@@ -282,12 +293,6 @@ void LevelEditorWindow::on_actionToggle3DOverlay_toggled(bool toggle)
 void LevelEditorWindow::on_actionToggle2DTile_toggled(bool toggle)
 {
     levelView->toggle2DTile(toggle);
-    update();
-}
-
-void LevelEditorWindow::on_actionToggleEntrances_toggled(bool toggle)
-{
-    levelView->toggleEntrances(toggle);
     update();
 }
 
@@ -665,9 +670,9 @@ void LevelEditorWindow::loadArea(int id, bool closeLevel, bool init)
 #endif
 
     levelView->editManagerPtr()->setSpriteInteraction(ui->actionToggleSprites->isChecked());
+    levelView->editManagerPtr()->setEntranceInteraction(ui->actionToggleEntrances->isChecked());
     levelView->editManagerPtr()->setPathInteraction(ui->actionTogglePaths->isChecked());
     levelView->toggleLocations(ui->actionToggleLocations->isChecked());
-    levelView->toggleEntrances(ui->actionToggleEntrances->isChecked());
 
     zoom = 1.0;
 
