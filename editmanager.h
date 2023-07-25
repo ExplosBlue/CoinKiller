@@ -39,7 +39,9 @@ public:
     void setSpriteInteraction(bool state);
     const bool getSpriteInteraction() { return spriteInteraction; }
 
-    void togglePaths(bool toggle) { pathInteraction = toggle; }
+    void setPathInteraction(bool state);
+    const bool getPathInteraction()  { return pathInteraction; }
+
     void toggleLocations(bool toggle) { locationInteraction = toggle; }
     void toggleEntrances(bool toggle) { entranceInteraction = toggle; }
 

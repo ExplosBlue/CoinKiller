@@ -49,7 +49,7 @@ LevelView::LevelView(QWidget *parent, Level *level, QUndoStack *undoStack) :
     renderLiquids = false;
     renderCameraLimits = false;
 //    renderSprites = true;
-    renderPaths = true;
+//    renderPaths = true;
     renderLocations = true;
     render2DTile = true;
     render3DOverlay = true;
@@ -460,7 +460,7 @@ void LevelView::paint(QPainter& painter, QRect rect, float zoomLvl, bool selecti
         }
     }
     // Render Paths
-    if (renderPaths)
+    if (editManager->getPathInteraction())
     {
         for (int i = 0; i < level->paths.size(); i++)
         {
@@ -750,12 +750,12 @@ void LevelView::keyPressEvent(QKeyEvent* evt)
 //    update();
 //}
 
-void LevelView::togglePaths(bool toggle)
-{
-    renderPaths = toggle;
-    editManager->togglePaths(toggle);
-    update();
-}
+//void LevelView::togglePaths(bool toggle)
+//{
+//    renderPaths = toggle;
+//    editManager->togglePaths(toggle);
+//    update();
+//}
 
 void LevelView::toggleLocations(bool toggle)
 {

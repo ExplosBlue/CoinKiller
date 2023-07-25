@@ -5,6 +5,7 @@
 
 #include "commands/setlayermask.h"
 #include "commands/setspriteinteraction.h"
+#include "commands/setpathinteraction.h"
 
 #include <QApplication>
 #include <QPainterPath>
@@ -1140,4 +1141,10 @@ void EditManager::setSpriteInteraction(bool state)
 {
     QUndoCommand *spriteInteractionCmd = new EditorCommand::setSpriteInteraction(&spriteInteraction, state);
     undoStack->push(spriteInteractionCmd);
+}
+
+void EditManager::setPathInteraction(bool state)
+{
+    QUndoCommand *pathInteractionCmd = new EditorCommand::setPathInteraction(&pathInteraction, state);
+    undoStack->push(pathInteractionCmd);
 }

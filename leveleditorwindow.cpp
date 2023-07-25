@@ -91,6 +91,9 @@ LevelEditorWindow::LevelEditorWindow(LevelManager* lvlMgr, int initialArea) :
     connect(ui->actionToggleSprites, SIGNAL(toggled(bool)), this, SLOT(toggleSprites(bool)));
 
     ui->actionTogglePaths->setIcon(QIcon(basePath + "path.png"));
+    connect(ui->actionTogglePaths, SIGNAL(toggled(bool)), this, SLOT(togglePaths(bool)));
+
+
     ui->actionToggleLocations->setIcon(QIcon(basePath + "location.png"));
     ui->actionToggle3DOverlay->setIcon(QIcon(basePath + "3D.png"));
     ui->actionToggle2DTile->setIcon(QIcon(basePath + "2D.png"));
@@ -222,6 +225,9 @@ void LevelEditorWindow::historyStateChanged(int index)
     ui->actionToggleSprites->setChecked(levelView->editManagerPtr()->getSpriteInteraction());
     ui->actionToggleSprites->blockSignals(false);
 
+    ui->actionTogglePaths->blockSignals(true);
+    ui->actionTogglePaths->setChecked(levelView->editManagerPtr()->getPathInteraction());
+    ui->actionTogglePaths->blockSignals(false);
 
     levelView->update();
     update();
@@ -254,13 +260,11 @@ void LevelEditorWindow::toggleLayer(bool toggle)
 void LevelEditorWindow::toggleSprites(bool toggle)
 {
     levelView->editManagerPtr()->setSpriteInteraction(toggle);
-    update();
 }
 
-void LevelEditorWindow::on_actionTogglePaths_toggled(bool toggle)
+void LevelEditorWindow::togglePaths(bool toggle)
 {
-    levelView->togglePaths(toggle);
-    update();
+    levelView->editManagerPtr()->setPathInteraction(toggle);
 }
 
 void LevelEditorWindow::on_actionToggleLocations_toggled(bool toggle)
@@ -661,7 +665,7 @@ void LevelEditorWindow::loadArea(int id, bool closeLevel, bool init)
 #endif
 
     levelView->editManagerPtr()->setSpriteInteraction(ui->actionToggleSprites->isChecked());
-    levelView->togglePaths(ui->actionTogglePaths->isChecked());
+    levelView->editManagerPtr()->setPathInteraction(ui->actionTogglePaths->isChecked());
     levelView->toggleLocations(ui->actionToggleLocations->isChecked());
     levelView->toggleEntrances(ui->actionToggleEntrances->isChecked());
 

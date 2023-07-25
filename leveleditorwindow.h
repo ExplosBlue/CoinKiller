@@ -71,7 +71,7 @@ private slots:
 
     void toggleSprites(bool toggle);
 
-    void on_actionTogglePaths_toggled(bool arg1);
+    void togglePaths(bool toggle);
 
     void on_actionToggleLocations_toggled(bool arg1);
 

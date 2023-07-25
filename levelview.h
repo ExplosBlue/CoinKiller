@@ -44,7 +44,7 @@ public:
     void toggle3DOverlay(bool toggle) { render3DOverlay = toggle; update(); }
     void toggle2DTile(bool toggle) { render2DTile = toggle; update(); }
 //    void toggleSprites(bool toggle);
-    void togglePaths(bool toggle);
+//    void togglePaths(bool toggle);
     void toggleLocations(bool toggle);
     void toggleEntrances(bool toggle);
     qint8 saveLevel();
@@ -101,7 +101,7 @@ private:
     bool renderLiquids;
     bool renderCameraLimits;
 //    bool renderSprites;
-    bool renderPaths;
+//    bool renderPaths;
     bool renderLocations;
     bool render2DTile;
     bool render3DOverlay;
