@@ -49,6 +49,7 @@ isEmpty(CK_VERSION) {
 DEFINES += CK_VERSION=\\\"$$CK_VERSION\\\"
 
 SOURCES += main.cpp\
+    EditorCommands/lowerobject.cpp \
     EditorCommands/raiseobject.cpp \
     EditorCommands/setentranceinteraction.cpp \
     EditorCommands/setlayermask.cpp \
@@ -97,6 +98,7 @@ SOURCES += main.cpp\
 
 HEADERS  += mainwindow.h \
     EditorCommands/editorcommands.h \
+    EditorCommands/lowerobject.h \
     EditorCommands/raiseobject.h \
     EditorCommands/setentranceinteraction.h \
     EditorCommands/setlayermask.h \

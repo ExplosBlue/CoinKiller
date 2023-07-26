@@ -1066,10 +1066,13 @@ void EditManager::raise()
 void EditManager::lower()
 {
     sortSelection();
+    undoStack->beginMacro(tr("Lowered %1 Object(s)").arg(selectedObjects.count()));
     foreach (Object* obj, selectedObjects)
     {
-        level->lower(obj);
+        QUndoCommand *lowerObjectCmd = new EditorCommand::LowerObject(level, obj);
+        undoStack->push(lowerObjectCmd);
     }
+    undoStack->endMacro();
 }
 
 void EditManager::raiseLayer()

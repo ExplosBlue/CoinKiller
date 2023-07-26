@@ -7,5 +7,6 @@
 #include "EditorCommands/setpathinteraction.h"
 #include "EditorCommands/setlocationinteraction.h"
 #include "EditorCommands/raiseobject.h"
+#include "EditorCommands/lowerobject.h"
 
 #endif // EDITORCOMMANDS_H
