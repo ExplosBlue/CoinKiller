@@ -8,5 +8,6 @@
 #include "EditorCommands/setlocationinteraction.h"
 #include "EditorCommands/raiseobject.h"
 #include "EditorCommands/lowerobject.h"
+#include "EditorCommands/raiselayer.h"
 
 #endif // EDITORCOMMANDS_H

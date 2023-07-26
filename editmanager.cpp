@@ -1078,10 +1078,18 @@ void EditManager::lower()
 void EditManager::raiseLayer()
 {
     sortSelection();
+    // TODO: Count should show number of tiles raised NOT number of objects in selection
+    undoStack->beginMacro(tr("Raised Layer of %1 Object(s)").arg(selectedObjects.count()));
     foreach (Object* obj, selectedObjects)
     {
-        if (is<BgdatObject*>(obj)) level->raiseLayer(dynamic_cast<BgdatObject*>(obj));
+        if (!is<BgdatObject*>(obj)) {
+            continue;
+        }
+
+        QUndoCommand *raiseLayerCmd = new EditorCommand::RaiseLayer(level, obj);
+        undoStack->push(raiseLayerCmd);
     }
+    undoStack->endMacro();
 }
 
 void EditManager::lowerLayer()
