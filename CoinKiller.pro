@@ -49,6 +49,7 @@ isEmpty(CK_VERSION) {
 DEFINES += CK_VERSION=\\\"$$CK_VERSION\\\"
 
 SOURCES += main.cpp\
+    commands/raiseobject.cpp \
     commands/setentranceinteraction.cpp \
     commands/setlayermask.cpp \
     commands/setlocationinteraction.cpp \
@@ -95,6 +96,7 @@ SOURCES += main.cpp\
     clickablelabel.cpp
 
 HEADERS  += mainwindow.h \
+    commands/raiseobject.h \
     commands/setentranceinteraction.h \
     commands/setlayermask.h \
     commands/setlocationinteraction.h \

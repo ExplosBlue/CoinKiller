@@ -8,6 +8,7 @@
 #include "commands/setentranceinteraction.h"
 #include "commands/setpathinteraction.h"
 #include "commands/setlocationinteraction.h"
+#include "commands/raiseobject.h"
 
 #include <QApplication>
 #include <QPainterPath>
@@ -1058,10 +1059,13 @@ void EditManager::paste(int currX, int currY, int currW, int currH)
 void EditManager::raise()
 {
     sortSelection();
+    undoStack->beginMacro("Raise Objects");
     foreach (Object* obj, selectedObjects)
     {
-        level->raise(obj);
+        QUndoCommand *raiseObjectCmd = new EditorCommand::raiseObject(level, obj);
+        undoStack->push(raiseObjectCmd);
     }
+    undoStack->endMacro();
 }
 
 void EditManager::lower()
