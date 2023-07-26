@@ -806,7 +806,51 @@ void EditManager::selectZoneContents(Zone* zone)
 
 void EditManager::deleteSelection()
 {
-    level->remove(selectedObjects);
+    if (selectedObjects.isEmpty()) {
+        return;
+    }
+
+    undoStack->beginMacro(tr("Deleted %1 Object(s)").arg(selectedObjects.count()));
+    foreach (Object* obj, selectedObjects)
+    {
+        if (is<BgdatObject*>(obj))
+        {
+            QUndoCommand *deleteCmd = new EditorCommand::DeleteBgdatObject(level, dynamic_cast<BgdatObject*>(obj));
+            undoStack->push(deleteCmd);
+        }
+        else if (is<Sprite*>(obj))
+        {
+            QUndoCommand *deleteCmd = new EditorCommand::DeleteSprite(level, dynamic_cast<Sprite*>(obj));
+            undoStack->push(deleteCmd);
+        }
+        else if (is<Entrance*>(obj))
+        {
+            QUndoCommand *deleteCmd = new EditorCommand::DeleteEntrance(level, dynamic_cast<Entrance*>(obj));
+            undoStack->push(deleteCmd);
+        }
+        else if (is<Zone*>(obj))
+        {
+            QUndoCommand *deleteCmd = new EditorCommand::DeleteZone(level, dynamic_cast<Zone*>(obj));
+            undoStack->push(deleteCmd);
+        }
+        else if (is<Location*>(obj))
+        {
+            QUndoCommand *deleteCmd = new EditorCommand::DeleteLocation(level, dynamic_cast<Location*>(obj));
+            undoStack->push(deleteCmd);
+        }
+        else if (is<PathNode*>(obj))
+        {
+            QUndoCommand *deleteCmd = new EditorCommand::DeletePathNode(level, dynamic_cast<PathNode*>(obj));
+            undoStack->push(deleteCmd);
+        }
+        else if (is<ProgressPathNode*>(obj))
+        {
+            QUndoCommand *deleteCmd = new EditorCommand::DeleteProgressPathNode(level, dynamic_cast<ProgressPathNode*>(obj));
+            undoStack->push(deleteCmd);
+        }
+    }
+    undoStack->endMacro();
+
     selectedObjects.clear();
     actualCursor = Qt::ArrowCursor;
     mouseAction act;
@@ -1112,7 +1156,7 @@ void EditManager::lowerLayer()
 
     sortSelection();
     // TODO: Count should show number of tiles lowered NOT number of objects in selection
-    undoStack->beginMacro(tr("Lowered Layer of %1 Objects(s)").arg(selectedObjects.count()));
+    undoStack->beginMacro(tr("Lowered Layer of %1 Object(s)").arg(selectedObjects.count()));
     foreach (Object* obj, selectedObjects)
     {
         if (!is<BgdatObject*>(obj)) {

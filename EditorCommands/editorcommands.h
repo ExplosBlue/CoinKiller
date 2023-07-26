@@ -10,5 +10,12 @@
 #include "EditorCommands/lowerobject.h"
 #include "EditorCommands/raiselayer.h"
 #include "EditorCommands/lowerlayer.h"
+#include "EditorCommands/deletebgdatobject.h"
+#include "EditorCommands/deletesprite.h"
+#include "EditorCommands/deleteentrance.h"
+#include "EditorCommands/deletezone.h"
+#include "EditorCommands/deletelocation.h"
+#include "EditorCommands/deletepathnode.h"
+#include "EditorCommands/deleteprogresspathnode.h"
 
 #endif // EDITORCOMMANDS_H

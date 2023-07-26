@@ -62,8 +62,8 @@ public:
 
     void add(QList<Object*> objs);
     void add(Object *obj);
-    void remove(QList<Object*> objs);
-    void remove(Object *obj);
+//    void remove(QList<Object*> objs);
+//    void remove(Object *obj);
     void move(QList<Object*> objs, int deltax, int deltay);
     void raise(Object *obj);
     void lower(Object *obj);
@@ -82,10 +82,10 @@ public:
     // Camera Limits
     void sortCameraLimits(Sprite* spr);
 
-    QList<Sprite*> getLeftCamLimits() { return leftCamLimits; }
-    QList<Sprite*> getRightCamLimits() { return rightCamLimits; }
-    QList<Sprite*> getBottomCamLimits() { return bottomCamLimits; }
-    QList<Sprite*> getTopCamLimits() { return topCamLimits; }
+    QList<Sprite*> leftCamLimits;
+    QList<Sprite*> rightCamLimits;
+    QList<Sprite*> bottomCamLimits;
+    QList<Sprite*> topCamLimits;
 
 private:
     SarcFilesystem* archive;
@@ -93,11 +93,6 @@ private:
     int area;
 
     quint8 getNextZoneID(Object* obj);
-
-    QList<Sprite*> leftCamLimits;
-    QList<Sprite*> rightCamLimits;
-    QList<Sprite*> bottomCamLimits;
-    QList<Sprite*> topCamLimits;
 };
 
 #endif // LEVEL_H

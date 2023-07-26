@@ -334,10 +334,10 @@ void LevelView::paint(QPainter& painter, QRect rect, float zoomLvl, bool selecti
         // Render Camera Limit Boundries
         if (renderCameraLimits)
         {
-            QList<Sprite*> leftCamLimits = level->getLeftCamLimits();
-            QList<Sprite*> rightCamLimits = level->getRightCamLimits();
-            QList<Sprite*> topCamLimits = level->getTopCamLimits();
-            QList<Sprite*> bottomCamLimits = level->getBottomCamLimits();
+            QList<Sprite*> leftCamLimits = level->leftCamLimits;
+            QList<Sprite*> rightCamLimits = level->rightCamLimits;
+            QList<Sprite*> topCamLimits = level->topCamLimits;
+            QList<Sprite*> bottomCamLimits = level->bottomCamLimits;
 
             foreach (Sprite* left, leftCamLimits)
             {

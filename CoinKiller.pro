@@ -49,6 +49,13 @@ isEmpty(CK_VERSION) {
 DEFINES += CK_VERSION=\\\"$$CK_VERSION\\\"
 
 SOURCES += main.cpp\
+    EditorCommands/deletebgdatobject.cpp \
+    EditorCommands/deleteentrance.cpp \
+    EditorCommands/deletelocation.cpp \
+    EditorCommands/deletepathnode.cpp \
+    EditorCommands/deleteprogresspathnode.cpp \
+    EditorCommands/deletesprite.cpp \
+    EditorCommands/deletezone.cpp \
     EditorCommands/lowerlayer.cpp \
     EditorCommands/lowerobject.cpp \
     EditorCommands/raiselayer.cpp \
@@ -99,6 +106,13 @@ SOURCES += main.cpp\
     clickablelabel.cpp
 
 HEADERS  += mainwindow.h \
+    EditorCommands/deletebgdatobject.h \
+    EditorCommands/deleteentrance.h \
+    EditorCommands/deletelocation.h \
+    EditorCommands/deletepathnode.h \
+    EditorCommands/deleteprogresspathnode.h \
+    EditorCommands/deletesprite.h \
+    EditorCommands/deletezone.h \
     EditorCommands/editorcommands.h \
     EditorCommands/lowerlayer.h \
     EditorCommands/lowerobject.h \
