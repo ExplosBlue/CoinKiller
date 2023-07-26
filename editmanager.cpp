@@ -1053,6 +1053,10 @@ void EditManager::paste(int currX, int currY, int currW, int currH)
 
 void EditManager::raise()
 {
+    if (selectedObjects.isEmpty()) {
+        return;
+    }
+
     sortSelection();
     undoStack->beginMacro(tr("Raised %1 Object(s)").arg(selectedObjects.count()));
     foreach (Object* obj, selectedObjects)
@@ -1065,6 +1069,10 @@ void EditManager::raise()
 
 void EditManager::lower()
 {
+    if (selectedObjects.isEmpty()) {
+        return;
+    }
+
     sortSelection();
     undoStack->beginMacro(tr("Lowered %1 Object(s)").arg(selectedObjects.count()));
     foreach (Object* obj, selectedObjects)
@@ -1077,6 +1085,10 @@ void EditManager::lower()
 
 void EditManager::raiseLayer()
 {
+    if (selectedObjects.isEmpty()) {
+        return;
+    }
+
     sortSelection();
     // TODO: Count should show number of tiles raised NOT number of objects in selection
     undoStack->beginMacro(tr("Raised Layer of %1 Object(s)").arg(selectedObjects.count()));
@@ -1086,7 +1098,7 @@ void EditManager::raiseLayer()
             continue;
         }
 
-        QUndoCommand *raiseLayerCmd = new EditorCommand::RaiseLayer(level, obj);
+        QUndoCommand *raiseLayerCmd = new EditorCommand::RaiseLayer(level, dynamic_cast<BgdatObject*>(obj));
         undoStack->push(raiseLayerCmd);
     }
     undoStack->endMacro();
@@ -1094,11 +1106,23 @@ void EditManager::raiseLayer()
 
 void EditManager::lowerLayer()
 {
+    if (selectedObjects.isEmpty()) {
+        return;
+    }
+
     sortSelection();
+    // TODO: Count should show number of tiles lowered NOT number of objects in selection
+    undoStack->beginMacro(tr("Lowered Layer of %1 Objects(s)").arg(selectedObjects.count()));
     foreach (Object* obj, selectedObjects)
     {
-        if (is<BgdatObject*>(obj)) level->lowerLayer(dynamic_cast<BgdatObject*>(obj));
+        if (!is<BgdatObject*>(obj)) {
+            continue;
+        }
+
+        QUndoCommand *lowerLayerCmd = new EditorCommand::LowerLayer(level, dynamic_cast<BgdatObject*>(obj));
+        undoStack->push(lowerLayerCmd);
     }
+    undoStack->endMacro();
 }
 
 void EditManager::checkEmits()

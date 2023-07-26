@@ -9,5 +9,6 @@
 #include "EditorCommands/raiseobject.h"
 #include "EditorCommands/lowerobject.h"
 #include "EditorCommands/raiselayer.h"
+#include "EditorCommands/lowerlayer.h"
 
 #endif // EDITORCOMMANDS_H

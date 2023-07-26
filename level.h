@@ -61,14 +61,14 @@ public:
     }
 
     void add(QList<Object*> objs);
-    void add(Object* obj);
+    void add(Object *obj);
     void remove(QList<Object*> objs);
-    void remove(Object* obj);
+    void remove(Object *obj);
     void move(QList<Object*> objs, int deltax, int deltay);
     void raise(Object *obj);
-    void lower(Object* obj);
+    void lower(Object *obj);
     void raiseLayer(BgdatObject *obj);
-    void lowerLayer(BgdatObject* obj);
+    void lowerLayer(BgdatObject *obj);
 
     Entrance* newEntrance(int x, int y);
     Zone* newZone(int x, int y);

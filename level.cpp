@@ -28,7 +28,7 @@
 #include <algorithm>
 
 Level::Level(Game *game, SarcFilesystem* archive, int area, QString lvlName)
-{    
+{
     this->game = game;
 
     this->archive = archive;
@@ -71,7 +71,7 @@ Level::Level(Game *game, SarcFilesystem* archive, int area, QString lvlName)
             tilesets[t] = game->getTileset(tilesetname);
         }
         catch (const std::exception &e)
-        {   
+        {
             QMessageBox::warning(nullptr, "CoinKiller", QObject::tr("Tileset %1 could not be found!").arg(tilesetname));
             tilesets[t] = nullptr;
         }

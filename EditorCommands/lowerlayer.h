@@ -1,5 +1,5 @@
-#ifndef EDITORCOMMAND_RAISELAYER_H
-#define EDITORCOMMAND_RAISELAYER_H
+#ifndef EDITORCOMMAND_LOWERLAYER_H
+#define EDITORCOMMAND_LOWERLAYER_H
 
 #include <QUndoCommand>
 
@@ -7,11 +7,11 @@
 
 namespace EditorCommand {
 
-class RaiseLayer : public QUndoCommand
+class LowerLayer : public QUndoCommand
 {
 public:
-    RaiseLayer(Level *level, BgdatObject *obj);
-    ~RaiseLayer() {}
+    LowerLayer(Level *level, BgdatObject *obj);
+    ~LowerLayer() {}
 
     void undo() override;
     void redo() override;
@@ -23,7 +23,6 @@ private:
     quint32 newLayer;
     quint32 prevIndex;
 };
-
 } // namespace EditorCommand
 
-#endif // EDITORCOMMAND_RAISELAYER_H
+#endif // EDITORCOMMAND_LOWERLAYER_H

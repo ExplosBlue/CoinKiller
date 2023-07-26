@@ -49,6 +49,7 @@ isEmpty(CK_VERSION) {
 DEFINES += CK_VERSION=\\\"$$CK_VERSION\\\"
 
 SOURCES += main.cpp\
+    EditorCommands/lowerlayer.cpp \
     EditorCommands/lowerobject.cpp \
     EditorCommands/raiselayer.cpp \
     EditorCommands/raiseobject.cpp \
@@ -99,6 +100,7 @@ SOURCES += main.cpp\
 
 HEADERS  += mainwindow.h \
     EditorCommands/editorcommands.h \
+    EditorCommands/lowerlayer.h \
     EditorCommands/lowerobject.h \
     EditorCommands/raiselayer.h \
     EditorCommands/raiseobject.h \

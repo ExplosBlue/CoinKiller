@@ -1,25 +1,25 @@
-#include "raiselayer.h"
+#include "lowerlayer.h"
 
 namespace EditorCommand {
 
-RaiseLayer::RaiseLayer(Level *level, BgdatObject *obj) :
+LowerLayer::LowerLayer(Level *level, BgdatObject *obj) :
     level(level), obj(obj)
 {
     prevLayer = obj->getLayer();
     prevIndex = level->objects[prevLayer].indexOf(obj);
-    this->setText(QObject::tr("Raised Layer of Object"));
+    this->setText(QObject::tr("Lowered Layer of Object"));
 }
 
-void RaiseLayer::undo()
+void LowerLayer::undo()
 {
     level->objects[newLayer].removeOne(obj);
     level->objects[prevLayer].insert(prevIndex, obj);
     obj->setLayer(prevLayer);
 }
 
-void RaiseLayer::redo()
+void LowerLayer::redo()
 {
-    level->raiseLayer(obj);
+    level->lowerLayer(obj);
     newLayer = obj->getLayer();
 }
 
