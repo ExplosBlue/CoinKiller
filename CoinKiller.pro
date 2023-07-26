@@ -32,9 +32,9 @@ linux-g++ {
     ck_data.path = $$PREFIX/bin/coinkiller_data
     ck_data.files += coinkiller_data/*
     desktop.path = $$PREFIX/share/applications/
-    desktop.files += resource/coinkiller.desktop
+    desktop.files += resource/io.github.Arisotura.CoinKiller.desktop
     icon512.path = $$PREFIX/share/icons/hicolor/512x512/apps
-    icon512.files += resource/ck_icon.png
+    icon512.files += resource/io.github.Arisotura.CoinKiller.png
 
     INSTALLS += icon512
     INSTALLS += desktop
