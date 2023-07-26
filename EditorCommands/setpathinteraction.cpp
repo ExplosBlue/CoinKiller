@@ -2,19 +2,19 @@
 
 namespace EditorCommand {
 
-setPathInteraction::setPathInteraction(bool *pathInteraction, bool state) :
+SetPathInteraction::SetPathInteraction(bool *pathInteraction, bool state) :
     pathInteraction(pathInteraction), state(state)
 {
     QString enabledStr = (state) ? "Enabled" : "Disabled";
     this->setText(QObject::tr("%1 Paths").arg(enabledStr));
 }
 
-void setPathInteraction::undo()
+void SetPathInteraction::undo()
 {
     *pathInteraction = !state;
 }
 
-void setPathInteraction::redo()
+void SetPathInteraction::redo()
 {
     *pathInteraction = state;
 }

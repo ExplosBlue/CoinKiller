@@ -2,19 +2,19 @@
 
 namespace EditorCommand {
 
-setSpriteInteraction::setSpriteInteraction(bool *spriteInteraction, bool state) :
+SetSpriteInteraction::SetSpriteInteraction(bool *spriteInteraction, bool state) :
     spriteInteraction(spriteInteraction), state(state)
 {
     QString enabledStr = (state) ? "Enabled" : "Disabled";
     this->setText(QObject::tr("%1 Sprites").arg(enabledStr));
 }
 
-void setSpriteInteraction::undo()
+void SetSpriteInteraction::undo()
 {
     *spriteInteraction = !state;
 }
 
-void setSpriteInteraction::redo()
+void SetSpriteInteraction::redo()
 {
     *spriteInteraction = state;
 }

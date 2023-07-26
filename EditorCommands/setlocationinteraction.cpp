@@ -2,19 +2,19 @@
 
 namespace EditorCommand {
 
-setLocationInteraction::setLocationInteraction(bool *locationInteraction, bool state) :
+SetLocationInteraction::SetLocationInteraction(bool *locationInteraction, bool state) :
     locationInteraction(locationInteraction), state(state)
 {
     QString enabledStr = (state) ? "Enabled" : "Disabled";
     this->setText(QObject::tr("%1 Locations").arg(enabledStr));
 }
 
-void setLocationInteraction::undo()
+void SetLocationInteraction::undo()
 {
     *locationInteraction = !state;
 }
 
-void setLocationInteraction::redo()
+void SetLocationInteraction::redo()
 {
     *locationInteraction = state;
 }

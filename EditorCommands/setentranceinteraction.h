@@ -5,11 +5,11 @@
 
 namespace EditorCommand {
 
-class setEntranceInteraction : public QUndoCommand
+class SetEntranceInteraction : public QUndoCommand
 {
 public:
-    setEntranceInteraction(bool *entranceInteraction, bool state);
-    ~setEntranceInteraction() {};
+    SetEntranceInteraction(bool *entranceInteraction, bool state);
+    ~SetEntranceInteraction() {};
 
     void undo() override;
     void redo() override;

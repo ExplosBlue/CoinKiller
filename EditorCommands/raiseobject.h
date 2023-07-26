@@ -7,11 +7,11 @@
 
 namespace EditorCommand {
 
-class raiseObject : public QUndoCommand
+class RaiseObject : public QUndoCommand
 {
 public:
-    raiseObject(Level *level, Object *obj);
-    ~raiseObject() {}
+    RaiseObject(Level *level, Object *obj);
+    ~RaiseObject() {}
 
     void undo() override;
     void redo() override;

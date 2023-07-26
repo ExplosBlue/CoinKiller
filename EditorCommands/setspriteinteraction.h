@@ -5,11 +5,11 @@
 
 namespace EditorCommand {
 
-class setSpriteInteraction : public QUndoCommand
+class SetSpriteInteraction : public QUndoCommand
 {
 public:
-    setSpriteInteraction(bool *spriteInteraction, bool state);
-    ~setSpriteInteraction() {};
+    SetSpriteInteraction(bool *spriteInteraction, bool state);
+    ~SetSpriteInteraction() {};
 
     void undo() override;
     void redo() override;

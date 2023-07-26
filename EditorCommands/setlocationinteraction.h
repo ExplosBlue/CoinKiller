@@ -5,11 +5,11 @@
 
 namespace EditorCommand {
 
-class setLocationInteraction : public QUndoCommand
+class SetLocationInteraction : public QUndoCommand
 {
 public:
-    setLocationInteraction(bool *locationInteraction, bool state);
-    ~setLocationInteraction() {};
+    SetLocationInteraction(bool *locationInteraction, bool state);
+    ~SetLocationInteraction() {};
 
     void undo() override;
     void redo() override;

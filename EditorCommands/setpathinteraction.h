@@ -5,11 +5,11 @@
 
 namespace EditorCommand {
 
-class setPathInteraction : public QUndoCommand
+class SetPathInteraction : public QUndoCommand
 {
 public:
-    setPathInteraction(bool *pathInteraction, bool state);
-    ~setPathInteraction() {};
+    SetPathInteraction(bool *pathInteraction, bool state);
+    ~SetPathInteraction() {};
 
     void undo() override;
     void redo() override;

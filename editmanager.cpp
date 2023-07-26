@@ -3,12 +3,7 @@
 #include "settingsmanager.h"
 #include "is.h"
 
-#include "commands/setlayermask.h"
-#include "commands/setspriteinteraction.h"
-#include "commands/setentranceinteraction.h"
-#include "commands/setpathinteraction.h"
-#include "commands/setlocationinteraction.h"
-#include "commands/raiseobject.h"
+#include "EditorCommands/editorcommands.h"
 
 #include <QApplication>
 #include <QPainterPath>
@@ -1059,10 +1054,10 @@ void EditManager::paste(int currX, int currY, int currW, int currH)
 void EditManager::raise()
 {
     sortSelection();
-    undoStack->beginMacro("Raise Objects");
+    undoStack->beginMacro(tr("Raised %1 Object(s)").arg(selectedObjects.count()));
     foreach (Object* obj, selectedObjects)
     {
-        QUndoCommand *raiseObjectCmd = new EditorCommand::raiseObject(level, obj);
+        QUndoCommand *raiseObjectCmd = new EditorCommand::RaiseObject(level, obj);
         undoStack->push(raiseObjectCmd);
     }
     undoStack->endMacro();
@@ -1139,30 +1134,30 @@ void EditManager::setSprite(int selSprite)
 
 void EditManager::setLayerMask(LAYER_MASK layer, bool state)
 {
-    QUndoCommand *layerMaskCmd = new EditorCommand::setLayerMask(&layerMask, layer, state);
+    QUndoCommand *layerMaskCmd = new EditorCommand::SetLayerMask(&layerMask, layer, state);
     undoStack->push(layerMaskCmd);
 }
 
 void EditManager::enableSpriteInteraction(bool state)
 {
-    QUndoCommand *spriteInteractionCmd = new EditorCommand::setSpriteInteraction(&spriteInteraction, state);
+    QUndoCommand *spriteInteractionCmd = new EditorCommand::SetSpriteInteraction(&spriteInteraction, state);
     undoStack->push(spriteInteractionCmd);
 }
 
 void EditManager::enablePathInteraction(bool state)
 {
-    QUndoCommand *pathInteractionCmd = new EditorCommand::setPathInteraction(&pathInteraction, state);
+    QUndoCommand *pathInteractionCmd = new EditorCommand::SetPathInteraction(&pathInteraction, state);
     undoStack->push(pathInteractionCmd);
 }
 
 void EditManager::enableEntranceInteraction(bool state)
 {
-    QUndoCommand *entranceInteractionCmd = new EditorCommand::setEntranceInteraction(&entranceInteraction, state);
+    QUndoCommand *entranceInteractionCmd = new EditorCommand::SetEntranceInteraction(&entranceInteraction, state);
     undoStack->push(entranceInteractionCmd);
 }
 
 void EditManager::enableLocationInteraction(bool state)
 {
-    QUndoCommand *locationInteractionCmd = new EditorCommand::setLocationInteraction(&locationInteraction, state);
+    QUndoCommand *locationInteractionCmd = new EditorCommand::SetLocationInteraction(&locationInteraction, state);
     undoStack->push(locationInteractionCmd);
 }

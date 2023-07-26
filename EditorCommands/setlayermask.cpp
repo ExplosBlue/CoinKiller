@@ -2,7 +2,7 @@
 
 namespace EditorCommand {
 
-setLayerMask::setLayerMask(quint8 *layerMask, LAYER_MASK layer, bool state) :
+SetLayerMask::SetLayerMask(quint8 *layerMask, LAYER_MASK layer, bool state) :
     layerMask(layerMask), layer(layer), state(state)
 {
     QString enabledStr = (state) ? "Enabled" : "Disabled";
@@ -20,7 +20,7 @@ setLayerMask::setLayerMask(quint8 *layerMask, LAYER_MASK layer, bool state) :
     }
 }
 
-void setLayerMask::undo()
+void SetLayerMask::undo()
 {
     if (state) {
         *layerMask &= ~layer;
@@ -30,7 +30,7 @@ void setLayerMask::undo()
     }
 }
 
-void setLayerMask::redo()
+void SetLayerMask::redo()
 {
     if (state) {
         *layerMask |= layer;

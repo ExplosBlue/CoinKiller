@@ -2,18 +2,18 @@
 
 namespace EditorCommand {
 
-raiseObject::raiseObject(Level *level, Object *obj) :
+RaiseObject::RaiseObject(Level *level, Object *obj) :
     level(level), obj(obj)
 {
-    this->setText(QObject::tr("Raised object"));
+    this->setText(QObject::tr("Raised Object"));
 }
 
-void raiseObject::undo()
+void RaiseObject::undo()
 {
     level->lower(obj);
 }
 
-void raiseObject::redo()
+void RaiseObject::redo()
 {
     level->raise(obj);
 }

@@ -7,11 +7,11 @@
 
 namespace EditorCommand {
 
-class setLayerMask : public QUndoCommand
+class SetLayerMask : public QUndoCommand
 {
 public:
-    setLayerMask(quint8 *layerMask, LAYER_MASK layer, bool state);
-    ~setLayerMask() {};
+    SetLayerMask(quint8 *layerMask, LAYER_MASK layer, bool state);
+    ~SetLayerMask() {};
 
     void undo() override;
     void redo() override;

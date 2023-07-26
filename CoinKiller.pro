@@ -49,12 +49,12 @@ isEmpty(CK_VERSION) {
 DEFINES += CK_VERSION=\\\"$$CK_VERSION\\\"
 
 SOURCES += main.cpp\
-    commands/raiseobject.cpp \
-    commands/setentranceinteraction.cpp \
-    commands/setlayermask.cpp \
-    commands/setlocationinteraction.cpp \
-    commands/setpathinteraction.cpp \
-    commands/setspriteinteraction.cpp \
+    EditorCommands/raiseobject.cpp \
+    EditorCommands/setentranceinteraction.cpp \
+    EditorCommands/setlayermask.cpp \
+    EditorCommands/setlocationinteraction.cpp \
+    EditorCommands/setpathinteraction.cpp \
+    EditorCommands/setspriteinteraction.cpp \
     editmanager.cpp \
     eventeditorwidget.cpp \
     mainwindow.cpp \
@@ -96,12 +96,13 @@ SOURCES += main.cpp\
     clickablelabel.cpp
 
 HEADERS  += mainwindow.h \
-    commands/raiseobject.h \
-    commands/setentranceinteraction.h \
-    commands/setlayermask.h \
-    commands/setlocationinteraction.h \
-    commands/setpathinteraction.h \
-    commands/setspriteinteraction.h \
+    EditorCommands/editorcommands.h \
+    EditorCommands/raiseobject.h \
+    EditorCommands/setentranceinteraction.h \
+    EditorCommands/setlayermask.h \
+    EditorCommands/setlocationinteraction.h \
+    EditorCommands/setpathinteraction.h \
+    EditorCommands/setspriteinteraction.h \
     crc32.h \
     editmanager.h \
     eventeditorwidget.h \
