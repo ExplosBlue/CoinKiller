@@ -11,11 +11,12 @@ DeleteLocation::DeleteLocation(Level *level, Location *loc) :
 
 DeleteLocation::~DeleteLocation()
 {
-    if (loc == nullptr || level == nullptr) {
+    if (level == nullptr) {
         return;
     }
 
-    if (!level->locations.contains(loc)) {
+    if (deletable) {
+        qDebug() << "EditorCommand::DeleteLocation - Deleting Location";
         delete loc;
     }
 }
@@ -23,11 +24,13 @@ DeleteLocation::~DeleteLocation()
 void DeleteLocation::undo()
 {
     level->locations.insert(oldIndex, loc);
+    deletable = false;
 }
 
 void DeleteLocation::redo()
 {
     level->locations.removeOne(loc);
+    deletable = true;
 }
 
 } // namespace EditorCommand

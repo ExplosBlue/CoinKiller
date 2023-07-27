@@ -673,7 +673,7 @@ void LevelView::mouseMoveEvent(QMouseEvent* evt)
         emit scrollTo((visibleRegion().boundingRect().x() - x + dragX)/zoom, (visibleRegion().boundingRect().y() - y + dragY)/zoom);
     }
 
-    if (editManager != NULL)
+    if (editManager != nullptr)
     {
         int x = evt->position().x()/zoom;
         int y = evt->position().y()/zoom;
@@ -684,24 +684,11 @@ void LevelView::mouseMoveEvent(QMouseEvent* evt)
         }
         else
             editManager->mouseMove(x, y);
+
+        setCursor(QCursor(editManager->getActualCursor()));
     }
-    setCursor(QCursor(editManager->getActualCursor()));
+
     update();
-
-    /*QString ret;
-
-    foreach (Sprite* spr, level->sprites)
-    {
-        QRect spriteRect = QRect(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight());
-        QRect mouseRect = QRect(evt->x(), evt->y(), 20, 20);
-
-        ret = "(" + QString::number(evt->x()) + ", " + QString::number(evt->y()) + ")";
-
-        emit updateLevelLabel(ret);
-        //if (spriteRect.intersects(mouseRect))
-
-    }*/
-
     emit updateMinimapBounds();
 }
 

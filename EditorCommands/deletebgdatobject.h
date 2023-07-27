@@ -20,6 +20,7 @@ private:
     Level *level;
     BgdatObject *obj;
     quint32 oldIndex;
+    bool deletable = false;
 };
 
 } // namespace EditorCommand

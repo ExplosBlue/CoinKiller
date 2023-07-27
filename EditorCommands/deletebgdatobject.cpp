@@ -12,11 +12,12 @@ DeleteBgdatObject::DeleteBgdatObject(Level *level, BgdatObject *obj) :
 
 DeleteBgdatObject::~DeleteBgdatObject()
 {
-    if (obj == nullptr || level == nullptr) {
+    if (level == nullptr) {
         return;
     }
 
-    if (!level->objects[obj->getLayer()].contains(obj)) {
+    if (deletable) {
+        qDebug() << "EditorCommand::DeleteBgdatObject - Deleting bgdat";
         delete obj;
     }
 }
@@ -24,11 +25,13 @@ DeleteBgdatObject::~DeleteBgdatObject()
 void DeleteBgdatObject::undo()
 {
     level->objects[obj->getLayer()].insert(oldIndex, obj);
+    deletable = false;
 }
 
 void DeleteBgdatObject::redo()
 {
     level->objects[obj->getLayer()].removeOne(obj);
+    deletable = true;
 }
 
 } // namespace EditorCommand

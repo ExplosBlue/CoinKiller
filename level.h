@@ -80,7 +80,9 @@ public:
     void setAreaID(int id) { this->area = id; }
 
     // Camera Limits
-    void sortCameraLimits(Sprite* spr);
+    bool isCameraLimit(Sprite* spr);
+    void insertCameraLimit(Sprite* spr);
+    void removeCameraLimit(Sprite* spr);
 
     QList<Sprite*> leftCamLimits;
     QList<Sprite*> rightCamLimits;
@@ -93,6 +95,8 @@ private:
     int area;
 
     quint8 getNextZoneID(Object* obj);
+
+    void sortCameraLimits();
 };
 
 #endif // LEVEL_H

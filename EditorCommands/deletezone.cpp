@@ -11,11 +11,12 @@ DeleteZone::DeleteZone(Level *level, Zone *zone) :
 
 DeleteZone::~DeleteZone()
 {
-    if (zone == nullptr || level == nullptr) {
+    if (level == nullptr) {
         return;
     }
 
-    if (!level->zones.contains(zone)) {
+    if (deletable) {
+        qDebug() << "EditorCommand::DeleteZone - Deleting Zone";
         delete zone;
     }
 }
@@ -23,11 +24,13 @@ DeleteZone::~DeleteZone()
 void DeleteZone::undo()
 {
     level->zones.insert(oldIndex, zone);
+    deletable = false;
 }
 
 void DeleteZone::redo()
 {
     level->zones.removeOne(zone);
+    deletable = true;
 }
 
 } // namespace EditorCommand

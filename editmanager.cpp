@@ -28,87 +28,123 @@ void EditManager::mouseDown(int x, int y, Qt::MouseButtons buttons, Qt::Keyboard
     {
         selectedObjects.clear();
 
-        if (drawType == 0)
+        if (drawType == DrawType::BGDAT)
         {
-            if (selTileset == -1 || selObject == -1) return;
+            if (selTileset == -1 || selObject == -1) {
+                return;
+            }
+
             int id = selTileset << 12;
             id = (id & 0xF000) | selObject;
-            ObjectDef* obj = level->tilesets[selTileset]->getObjectDef(selObject);
-            BgdatObject* bgdatobj = new BgdatObject(toNext20(x-10), toNext20(y-10), obj->width*20, obj->height*20, id, selLayer);
-            level->objects[selLayer].append(bgdatobj);
-            newObject = bgdatobj;
+            ObjectDef *obj = level->tilesets[selTileset]->getObjectDef(selObject);
+            BgdatObject *bgdatObj = new BgdatObject(toNext20(x-10), toNext20(y-10), obj->width*20, obj->height*20, id, selLayer);
+
+            undoStack->push(new EditorCommand::InsertBgdatObj(level, bgdatObj));
+
+            newObject = bgdatObj;
             creatNewObject = true;
+
             if (selectAfterPlacement)
-                selectedObjects.append(bgdatobj);
+                selectedObjects.append(bgdatObj);
         }
-        else if (drawType == 1)
+        else if (drawType == DrawType::SPRITE)
         {
-            if (selSprite == -1) return;
-            Sprite* spr = new Sprite(0, 0, selSprite);
+            if (selSprite == -1) {
+                return;
+            }
+
+            Sprite *spr = new Sprite(0, 0, selSprite);
             spr->setRect();
-            int xpos = toNext10(dx-spr->getwidth()/2-spr->getOffsetX());
-            int ypos = toNext10(dy-spr->getheight()/2-spr->getOffsetY());
-            if (xpos < 0) xpos = 0;
-            if (ypos < 0) ypos = 0;
+            int xpos = qMax(0, toNext10(dx-spr->getwidth()/2-spr->getOffsetX()));
+            int ypos = qMax(0, toNext10(dy-spr->getheight()/2-spr->getOffsetY()));
+
             spr->setPosition(xpos, ypos);
-            level->sprites.append(spr);
-            level->sortCameraLimits(spr);
-            if (selectAfterPlacement)
+
+            undoStack->push(new EditorCommand::InsertSprite(level, spr));
+
+            if (selectAfterPlacement) {
                 selectedObjects.append(spr);
+            }
         }
-        else if (drawType == 2)
+        else if (drawType == DrawType::ENTRANCE)
         {
-            Entrance* entr = level->newEntrance(x-10, y-10);
+            Entrance *entr = level->newEntrance(x-10, y-10);
             entr->setRect();
-            level->entrances.append(entr);
-            if (selectAfterPlacement)
+
+            undoStack->push(new EditorCommand::InsertEntrance(level, entr));
+
+            if (selectAfterPlacement) {
                 selectedObjects.append(entr);
+            }
         }
-        else if (drawType == 3)
+        else if (drawType == DrawType::ZONE)
         {
             Zone* zone = level->newZone(x-200, y-120);
-            level->zones.append(zone);
 
-            if (level->backgrounds.isEmpty())
-                level->backgrounds.append(new ZoneBackground());
+            undoStack->beginMacro(tr("Inserted Zone at X: %1 Y: %2").arg(zone->getx()).arg(zone->gety()));
+            undoStack->push(new EditorCommand::InsertZone(level, zone));
 
-            if (level->boundings.isEmpty())
-                level->boundings.append(new ZoneBounding());
+            if (level->backgrounds.isEmpty()) {
+                undoStack->push(new EditorCommand::InsertZoneBackground(level, new ZoneBackground()));
+            }
 
-            if (selectAfterPlacement)
+            if (level->boundings.isEmpty()) {
+                undoStack->push(new EditorCommand::InsertZoneBounding(level, new ZoneBounding()));
+            }
+
+            undoStack->endMacro();
+
+            if (selectAfterPlacement) {
                 selectedObjects.append(zone);
+            }
         }
-        else if (drawType == 4)
+        else if (drawType == DrawType::LOCATION)
         {
-            Location* loc = level->newLocation(x, y);
-            level->locations.append(loc);
+            Location* loc = level->newLocation(toNext20(x-10), toNext20(y-10));
+
+            undoStack->push(new EditorCommand::InsertLocation(level, loc));
+
             newObject = loc;
             creatNewObject = true;
-            if (selectAfterPlacement)
+
+            if (selectAfterPlacement) {
                 selectedObjects.append(loc);
+            }
         }
-        else if (drawType == 5)
+        else if (drawType == DrawType::PATH)
         {
             Path* path = level->newPath();
-            level->paths.append(path);
             PathNode* node = new PathNode(qMax(toNext10(x), 0), qMax(toNext10(y), 0), 0, 0, 0, 0, 0, 0, path);
-            path->insertNode(node);
-            if (selectAfterPlacement)
+
+            undoStack->beginMacro(tr("Inserted Path %1 at X: %2 Y: %3").arg(path->getid()).arg(node->getx()).arg(node->gety()));
+            undoStack->push(new EditorCommand::InsertPath(level, path));
+            undoStack->push(new EditorCommand::InsertPathNode(path, node));
+            undoStack->endMacro();
+
+            if (selectAfterPlacement) {
                 selectedObjects.append(node);
+            }
         }
-        else if (drawType == 6)
+        else if (drawType == DrawType::PROGRESSPATH)
         {
             ProgressPath* path = level->newProgressPath();
-            level->progressPaths.append(path);
             ProgressPathNode* node = new ProgressPathNode(qMax(toNext10(x), 0), qMax(toNext10(y), 0), path);
-            path->insertNode(node);
-            if (selectAfterPlacement)
+
+            undoStack->beginMacro(tr("Inserted Progress Path %1 at X: %2 Y: %3").arg(path->getid()).arg(node->getx()).arg(node->gety()));
+            undoStack->push(new EditorCommand::InsertProgressPath(level, path));
+            undoStack->push(new EditorCommand::InsertProgressPathNode(path, node));
+            undoStack->endMacro();
+
+            if (selectAfterPlacement) {
                 selectedObjects.append(node);
+            }
         }
 
         checkEmits();
         emit updateEditors();
-        if (selectedObjects.size() == 1) emit selectdObjectChanged(selectedObjects[0]);
+        if (selectedObjects.size() == 1) {
+            emit selectdObjectChanged(selectedObjects[0]);
+        }
         emit editMade();
     }
 
@@ -126,10 +162,15 @@ void EditManager::mouseDown(int x, int y, Qt::MouseButtons buttons, Qt::Keyboard
                 PathNode* oldPNode = dynamic_cast<PathNode*>(oldNode);
                 Path* parentPath = oldPNode->getParentPath();
                 PathNode* newNode = new PathNode(toNext10(x), toNext10(y), 0, 0, 0, 0, 0, 0, parentPath);
-                if (mouseAct.pAdd == AddBefore)
-                    parentPath->insertNode(newNode, parentPath->getIndexOfNode(oldPNode));
-                else
-                    parentPath->insertNode(newNode, parentPath->getIndexOfNode(oldPNode)+1);
+                quint32 index = parentPath->getIndexOfNode(oldPNode);
+
+                if (mouseAct.pAdd == AddBefore) {
+                    undoStack->push(new EditorCommand::InsertPathNode(parentPath, newNode, index));
+                }
+                else {
+                    undoStack->push(new EditorCommand::InsertPathNode(parentPath, newNode, index + 1));
+                }
+
                 selectedObjects.append(newNode);
 
                 emit editMade();
@@ -138,18 +179,24 @@ void EditManager::mouseDown(int x, int y, Qt::MouseButtons buttons, Qt::Keyboard
             {
                 ProgressPathNode* oldPNode = dynamic_cast<ProgressPathNode*>(oldNode);
                 ProgressPath* parentPath = oldPNode->getParentPath();
-
                 ProgressPathNode* newNode = new ProgressPathNode(toNext10(x), toNext10(y), parentPath);
-                if (mouseAct.pAdd == AddBefore)
-                    parentPath->insertNode(newNode, parentPath->getIndexOfNode(oldPNode));
-                else
-                    parentPath->insertNode(newNode, parentPath->getIndexOfNode(oldPNode)+1);
+                quint32 index = parentPath->getIndexOfNode(oldPNode);
+
+                if (mouseAct.pAdd == AddBefore) {
+                    undoStack->push(new EditorCommand::InsertProgressPathNode(parentPath, newNode, index));
+                }
+                else {
+                    undoStack->push(new EditorCommand::InsertProgressPathNode(parentPath, newNode, index + 1));
+                }
+
                 selectedObjects.append(newNode);
 
                 emit editMade();
             }
 
-            if (selectedObjects.size() == 1) emit selectdObjectChanged(selectedObjects[0]);
+            if (selectedObjects.size() == 1) {
+                emit selectdObjectChanged(selectedObjects[0]);
+            }
         }
 
         else if (!mouseAct.drag || (mouseAct.hor == ResizeNone && mouseAct.vert == ResizeNone))
@@ -157,8 +204,9 @@ void EditManager::mouseDown(int x, int y, Qt::MouseButtons buttons, Qt::Keyboard
             QList<Object*> tempSelObjects = selectedObjects;
             bool shift = false;
 
-            if (modifiers != Qt::ShiftModifier)
+            if (modifiers != Qt::ShiftModifier) {
                 selectedObjects = getObjectsAtPos(dx, dy, dx, dy, true, drawrect);
+            }
             else if (modifiers != Qt::ControlModifier)
             {
                 shift = true;
@@ -201,7 +249,7 @@ void EditManager::mouseDown(int x, int y, Qt::MouseButtons buttons, Qt::Keyboard
     }
 }
 
-void EditManager::mouseDrag(int x, int y, Qt::KeyboardModifiers modifieres, QRect drawrect)
+void EditManager::mouseDrag(int x, int y, Qt::KeyboardModifiers modifiers, QRect drawrect)
 {
     if (creatNewObject)
     {
@@ -234,8 +282,8 @@ void EditManager::mouseDrag(int x, int y, Qt::KeyboardModifiers modifieres, QRec
             else h += 20;
         }
 
-        newObject->setPosition(qMin(xpos, mX), qMin(ypos, mY));
-        newObject->resize(w, h);
+        undoStack->push(new EditorCommand::MoveObject(newObject, qMin(xpos, mX), qMin(ypos, mY)));
+        undoStack->push(new EditorCommand::ResizeObject(newObject, w, h));
 
         emit updateEditors();
 
@@ -276,7 +324,7 @@ void EditManager::mouseDrag(int x, int y, Qt::KeyboardModifiers modifieres, QRec
                 yDelta = toNext20(yDelta);
                 snap = 20;
             }
-            else if (modifieres == Qt::AltModifier)
+            else if (modifiers == Qt::AltModifier)
             {
                 xDelta = toNext16Compatible(xDelta);
                 xDelta = toNext16Compatible(xDelta);
@@ -316,7 +364,7 @@ void EditManager::mouseDrag(int x, int y, Qt::KeyboardModifiers modifieres, QRec
                 minSize = 20;
                 snap = 0;
             }
-            else if (modifieres == Qt::AltModifier)
+            else if (modifiers == Qt::AltModifier)
             {
                 xDelta = toNext16Compatible(xDelta);
                 xDelta = toNext16Compatible(xDelta);
@@ -391,9 +439,16 @@ void EditManager::mouseUp(int x, int y)
 {
     mouseAct = getActionAtPos(x, y);
     actualCursor = getCursorAtPos(x, y);
-    if (selectionMode) checkEmits();
-    selectionMode = false;
-    creatNewObject = false;
+
+    if (selectionMode) {
+        checkEmits();
+        selectionMode = false;
+    }
+
+    if (creatNewObject) {
+        creatNewObject = false;
+    }
+
     clone = false;
 }
 
@@ -856,7 +911,7 @@ void EditManager::deleteSelection()
     mouseAction act;
     mouseAct = act;
     checkEmits();
-    updateEditors();
+    emit updateEditors();
 }
 
 void EditManager::copy()
@@ -1022,7 +1077,9 @@ void EditManager::paste(int currX, int currY, int currW, int currH)
             for (int i=0; i<12; i++) newSpr->setByte(i, params[i+5].toUInt());
             newSpr->setRect();
             level->sprites.append(newSpr);
-            level->sortCameraLimits(newSpr);
+            if (level->isCameraLimit(newSpr)) {
+                level->insertCameraLimit(newSpr);
+            }
             selectedObjects.append(newSpr);
             break;
         }

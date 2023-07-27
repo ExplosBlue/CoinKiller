@@ -23,6 +23,7 @@ private:
     bool wasLastNode = false;
     quint32 oldNodeIndex;
     quint32 oldPathIndex;
+    bool deletable = false;
 };
 
 } // namespace EditorCommand

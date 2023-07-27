@@ -176,7 +176,9 @@ Level::Level(Game *game, SarcFilesystem* archive, int area, QString lvlName)
 
         spr->setRect();
         sprites.append(spr);
-        sortCameraLimits(spr);
+        if (isCameraLimit(spr)) {
+            insertCameraLimit(spr);
+        }
     }
 
     // Block 8: Sprites Used List (no need to read this)
@@ -1065,25 +1067,66 @@ ProgressPath* Level::newProgressPath()
     return new ProgressPath(id, 0);
 }
 
-void Level::sortCameraLimits(Sprite *spr)
+bool Level::isCameraLimit(Sprite *spr)
 {
     int id = spr->getid();
 
     if (id != 156 && id != 157 && id != 160 && id != 161)
+        return false;
+
+    return true;
+}
+
+void Level::insertCameraLimit(Sprite *spr)
+{
+    if (!isCameraLimit(spr))
         return;
 
-    if (id == 156)
+    switch (spr->getid()) {
+    case 156:
         leftCamLimits.append(spr);
-
-    if (id == 157)
+        break;
+    case 157:
         rightCamLimits.append(spr);
-
-    if (id == 160)
+        break;
+    case 160:
         bottomCamLimits.append(spr);
-
-    if (id == 161)
+        break;
+    case 161:
         topCamLimits.append(spr);
+        break;
+    default:
+        break;
+    }
 
+    sortCameraLimits();
+}
+
+void Level::removeCameraLimit(Sprite *spr)
+{
+    if (!isCameraLimit(spr))
+        return;
+
+    switch (spr->getid()) {
+    case 156:
+        leftCamLimits.removeOne(spr);
+        break;
+    case 157:
+        rightCamLimits.removeOne(spr);
+        break;
+    case 160:
+        bottomCamLimits.removeOne(spr);
+        break;
+    case 161:
+        topCamLimits.removeOne(spr);
+        break;
+    default:
+        break;
+    }
+}
+
+void Level::sortCameraLimits()
+{
     // Sort right limits from smallest to largest xPos
     std::sort(rightCamLimits.begin(), rightCamLimits.end(), [](const Sprite* a, const Sprite* b) -> bool { return a->getx() < b->getx(); });
 

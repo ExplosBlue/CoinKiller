@@ -56,10 +56,23 @@ SOURCES += main.cpp\
     EditorCommands/deleteprogresspathnode.cpp \
     EditorCommands/deletesprite.cpp \
     EditorCommands/deletezone.cpp \
+    EditorCommands/insertbgdatobj.cpp \
+    EditorCommands/insertentrance.cpp \
+    EditorCommands/insertlocation.cpp \
+    EditorCommands/insertpath.cpp \
+    EditorCommands/insertpathnode.cpp \
+    EditorCommands/insertprogresspath.cpp \
+    EditorCommands/insertprogresspathnode.cpp \
+    EditorCommands/insertsprite.cpp \
+    EditorCommands/insertzone.cpp \
+    EditorCommands/insertzonebackground.cpp \
+    EditorCommands/insertzonebounding.cpp \
     EditorCommands/lowerlayer.cpp \
     EditorCommands/lowerobject.cpp \
+    EditorCommands/moveobject.cpp \
     EditorCommands/raiselayer.cpp \
     EditorCommands/raiseobject.cpp \
+    EditorCommands/resizeobject.cpp \
     EditorCommands/setentranceinteraction.cpp \
     EditorCommands/setlayermask.cpp \
     EditorCommands/setlocationinteraction.cpp \
@@ -106,6 +119,7 @@ SOURCES += main.cpp\
     clickablelabel.cpp
 
 HEADERS  += mainwindow.h \
+    EditorCommands/commandids.h \
     EditorCommands/deletebgdatobject.h \
     EditorCommands/deleteentrance.h \
     EditorCommands/deletelocation.h \
@@ -114,10 +128,23 @@ HEADERS  += mainwindow.h \
     EditorCommands/deletesprite.h \
     EditorCommands/deletezone.h \
     EditorCommands/editorcommands.h \
+    EditorCommands/insertbgdatobj.h \
+    EditorCommands/insertentrance.h \
+    EditorCommands/insertlocation.h \
+    EditorCommands/insertpath.h \
+    EditorCommands/insertpathnode.h \
+    EditorCommands/insertprogresspath.h \
+    EditorCommands/insertprogresspathnode.h \
+    EditorCommands/insertsprite.h \
+    EditorCommands/insertzone.h \
+    EditorCommands/insertzonebackground.h \
+    EditorCommands/insertzonebounding.h \
     EditorCommands/lowerlayer.h \
     EditorCommands/lowerobject.h \
+    EditorCommands/moveobject.h \
     EditorCommands/raiselayer.h \
     EditorCommands/raiseobject.h \
+    EditorCommands/resizeobject.h \
     EditorCommands/setentranceinteraction.h \
     EditorCommands/setlayermask.h \
     EditorCommands/setlocationinteraction.h \

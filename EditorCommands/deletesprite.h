@@ -20,8 +20,7 @@ private:
     Level *level;
     Sprite *spr;
     quint32 oldIndex;
-    quint32 oldCamLimitIndex;
-    QList<Sprite*>* camLimitListPtr = nullptr;
+    bool deletable;
 };
 
 } // namespace EditorCommand

@@ -8,6 +8,18 @@
 #include <QKeyEvent>
 #include <QUndoStack>
 
+enum DrawType
+{
+    INVALID,
+    BGDAT,
+    SPRITE,
+    ENTRANCE,
+    ZONE,
+    LOCATION,
+    PATH,
+    PROGRESSPATH
+};
+
 class EditManager : public QObject
 {
     Q_OBJECT
@@ -16,7 +28,7 @@ public:
     ~EditManager() {}
 
     void mouseDown(int x, int y, Qt::MouseButtons buttons, Qt::KeyboardModifiers modifiers, QRect drawrect);
-    void mouseDrag(int x, int y, Qt::KeyboardModifiers modifieres, QRect drawrect);
+    void mouseDrag(int x, int y, Qt::KeyboardModifiers modifiers, QRect drawrect);
     void mouseMove(int x, int y);
     void mouseUp(int x, int y);
 
@@ -53,7 +65,7 @@ public:
 
     void selectZoneContents(Zone* zone);
 
-    void setDrawType(int drawType) { this->drawType = drawType; }
+    void setDrawType(DrawType drawType) { this->drawType = drawType; }
     void setObject(int selObject, int selTileset);
     void setLayer(int selLayer) { this->selLayer = selLayer; }
     void setSprite(int selSprite);
@@ -115,14 +127,7 @@ private:
     // Only to prevent resizing when cloning
     bool clone = false;
 
-    int drawType = -1;
-    // -1: Invalid
-    //  0: BGDat
-    //  1: Sprite
-    //  2: Entrance
-    //  3: Zone
-    //  4: Location
-    //  etc
+    DrawType drawType = DrawType::INVALID;
 
     int selTileset = -1;
     int selObject = -1;

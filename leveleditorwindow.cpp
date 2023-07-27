@@ -456,7 +456,7 @@ void LevelEditorWindow::on_actionRenderCameraLimits_toggled(bool toggle)
 
 void LevelEditorWindow::setSelSprite(int spriteId)
 {
-    levelView->editManagerPtr()->setDrawType(1);
+    levelView->editManagerPtr()->setDrawType(DrawType::SPRITE);
     levelView->editManagerPtr()->setSprite(spriteId);
 }
 
@@ -466,7 +466,7 @@ void LevelEditorWindow::on_actionSelectAfterPlacement_toggled(bool toggle)
     settings->set("SelectAfterPlacement", toggle);
 }
 
-void LevelEditorWindow::setObjectEdition(Object* obj)
+void LevelEditorWindow::handleSelectionChanged(Object* obj)
 {
     deselect();
 
@@ -532,11 +532,33 @@ void LevelEditorWindow::updateEditors()
 
 void LevelEditorWindow::toolboxTabsCurrentChanged(int index)
 {
-    if (index == 0)
-        levelView->editManagerPtr()->setDrawType(-1);
-    else
-    {
-        levelView->editManagerPtr()->setDrawType(index-1);
+    switch (index) {
+    case 0:
+        levelView->editManagerPtr()->setDrawType(DrawType::INVALID);
+        break;
+    case 1:
+        levelView->editManagerPtr()->setDrawType(DrawType::BGDAT);
+        break;
+    case 2:
+        levelView->editManagerPtr()->setDrawType(DrawType::SPRITE);
+        break;
+    case 3:
+        levelView->editManagerPtr()->setDrawType(DrawType::ENTRANCE);
+        break;
+    case 4:
+        levelView->editManagerPtr()->setDrawType(DrawType::ZONE);
+        break;
+    case 5:
+        levelView->editManagerPtr()->setDrawType(DrawType::LOCATION);
+        break;
+    case 6:
+        levelView->editManagerPtr()->setDrawType(DrawType::PATH);
+        break;
+    case 7:
+        levelView->editManagerPtr()->setDrawType(DrawType::PROGRESSPATH);
+        break;
+    default:
+        break;
     }
 }
 
@@ -733,7 +755,7 @@ void LevelEditorWindow::loadArea(int id, bool closeLevel, bool init)
     connect(progPathEditor, SIGNAL(editMade()), this, SLOT(handleEditMade()));
 
     connect(levelView, SIGNAL(scrollTo(int,int)), this, SLOT(scrollTo(int,int)));
-    connect(levelView->editManagerPtr(), SIGNAL(selectdObjectChanged(Object*)), this, SLOT(setObjectEdition(Object*)));
+    connect(levelView->editManagerPtr(), SIGNAL(selectdObjectChanged(Object*)), this, SLOT(handleSelectionChanged(Object*)));
     connect(levelView->editManagerPtr(), SIGNAL(deselected()), this, SLOT(deselect()));
     connect(levelView->editManagerPtr(), SIGNAL(updateEditors()), this, SLOT(updateEditors()));
     connect(levelView->editManagerPtr(), SIGNAL(editMade()), this, SLOT(handleEditMade()));

@@ -1,5 +1,5 @@
-#ifndef EDITORCOMMAND_DELETEZONE_H
-#define EDITORCOMMAND_DELETEZONE_H
+#ifndef EDITORCOMMAND_INSERTZONE_H
+#define EDITORCOMMAND_INSERTZONE_H
 
 #include <QUndoCommand>
 
@@ -7,11 +7,11 @@
 
 namespace EditorCommand {
 
-class DeleteZone : public QUndoCommand
+class InsertZone : public QUndoCommand
 {
 public:
-    DeleteZone(Level *level, Zone *zone);
-    ~DeleteZone();
+    InsertZone(Level *level, Zone *zone);
+    ~InsertZone();
 
     void undo() override;
     void redo() override;
@@ -19,10 +19,9 @@ public:
 private:
     Level *level;
     Zone *zone;
-    quint32 oldIndex;
     bool deletable = false;
 };
 
 } // namespace EditorCommand
 
-#endif // EDITORCOMMAND_DELETEZONE_H
+#endif // EDITORCOMMAND_INSERTZONE_H

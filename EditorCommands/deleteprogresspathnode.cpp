@@ -18,17 +18,16 @@ DeleteProgressPathNode::DeleteProgressPathNode(Level *level, ProgressPathNode *n
 
 DeleteProgressPathNode::~DeleteProgressPathNode()
 {
-    if (node == nullptr || path == nullptr || level == nullptr) {
-        qDebug() << "Deleted Nothing";
+    if (level == nullptr) {
         return;
     }
 
-    if (!level->progressPaths.contains(path)) {
-        qDebug() << "Deleted ProgressPathNode";
+    if (deletable) {
+        qDebug() << "EditorCommand::DeleteProgressPathNode - Deleting ProgressPathNode";
         delete node;
 
-        if (path->getNumberOfNodes() <= 0) {
-            qDebug() << "Deleted ProgressPath";
+        if (wasLastNode) {
+            qDebug() << "EditorCommand::DeleteProgressPathNode - Deleting ProgressPath";
             delete path;
         }
     }
@@ -41,6 +40,7 @@ void DeleteProgressPathNode::undo()
     }
 
     path->insertNode(node, oldNodeIndex);
+    deletable = false;
 }
 
 void DeleteProgressPathNode::redo()
@@ -50,6 +50,7 @@ void DeleteProgressPathNode::redo()
     if (wasLastNode) {
         level->progressPaths.removeOne(path);
     }
+    deletable = true;
 }
 
 } // namespace EditorCommand

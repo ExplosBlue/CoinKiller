@@ -20,6 +20,7 @@ private:
     Level *level;
     Entrance *entr;
     quint32 oldIndex;
+    bool deletable = false;
 };
 
 } // namespace EditorCommand

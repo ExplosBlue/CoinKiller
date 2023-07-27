@@ -18,22 +18,16 @@ DeletePathNode::DeletePathNode(Level *level, PathNode *node) :
 
 DeletePathNode::~DeletePathNode()
 {
-    if (node == nullptr || level == nullptr) {
+    if (level == nullptr) {
         return;
     }
 
-    if (path == nullptr) {
-        qDebug() << "deleted path node";
-        delete node;
-        return;
-    }
-
-    if (!level->paths.contains(path)) {
-        qDebug() << "deleted path node";
+    if (deletable) {
+        qDebug() << "EditorCommand::DeletePathNode - Deleting PathNode";
         delete node;
 
         if (wasLastNode) {
-            qDebug() << "deleted path";
+            qDebug() << "EditorCommand::DeletePathNode - Deleting Path";
             delete path;
         }
     }
@@ -46,6 +40,7 @@ void DeletePathNode::undo()
     }
 
     path->insertNode(node, oldNodeIndex);
+    deletable = false;
 }
 
 void DeletePathNode::redo()
@@ -55,6 +50,7 @@ void DeletePathNode::redo()
     if (wasLastNode) {
         level->paths.removeOne(path);
     }
+    deletable = true;
 }
 
 } // namespace EditorCommand

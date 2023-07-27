@@ -11,11 +11,12 @@ DeleteEntrance::DeleteEntrance(Level *level, Entrance *entr) :
 
 DeleteEntrance::~DeleteEntrance()
 {
-    if (entr == nullptr || level == nullptr) {
+    if (level == nullptr) {
         return;
     }
 
-    if (!level->entrances.contains(entr)) {
+    if (deletable) {
+        qDebug() << "EditorCommand::DeleteEntrance - Deleting Entrance";
         delete entr;
     }
 }
@@ -23,11 +24,13 @@ DeleteEntrance::~DeleteEntrance()
 void DeleteEntrance::undo()
 {
     level->entrances.insert(oldIndex, entr);
+    deletable = false;
 }
 
 void DeleteEntrance::redo()
 {
     level->entrances.removeOne(entr);
+    deletable = true;
 }
 
 } // namespace EditorCommand

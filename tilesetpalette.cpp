@@ -157,28 +157,28 @@ void TilesetPalette::loadTileset(int tilesetNbr)
 void TilesetPalette::on_objectsListView0_clicked(const QModelIndex &index)
 {
     updatePalettes(0);
-    editManager->setDrawType(0);
+    editManager->setDrawType(DrawType::BGDAT);
     editManager->setObject(index.row(), 0);
 }
 
 void TilesetPalette::on_objectsListView1_clicked(const QModelIndex &index)
 {
     updatePalettes(1);
-    editManager->setDrawType(0);
+    editManager->setDrawType(DrawType::BGDAT);
     editManager->setObject(index.row(), 1);
 }
 
 void TilesetPalette::on_objectsListView2_clicked(const QModelIndex &index)
 {
     updatePalettes(2);
-    editManager->setDrawType(0);
+    editManager->setDrawType(DrawType::BGDAT);
     editManager->setObject(index.row(), 2);
 }
 
 void TilesetPalette::on_objectsListView3_clicked(const QModelIndex &index)
 {
     updatePalettes(3);
-    editManager->setDrawType(0);
+    editManager->setDrawType(DrawType::BGDAT);
     editManager->setObject(index.row(), 3);
 }
 
@@ -203,7 +203,7 @@ void TilesetPalette::select(BgdatObject *obj)
     objectLists[tsid]->setCurrentIndex(objectLists[tsid]->model()->index(obj->getid()&0x0FFF, 0));
 
     updatePalettes(tsid);
-    editManager->setDrawType(0);
+    editManager->setDrawType(DrawType::BGDAT);
     editManager->setObject(obj->getid()&0x0FFF, (obj->getid() >> 12) & 0x3);
 }
 

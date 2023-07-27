@@ -60,7 +60,7 @@ protected:
 #endif
 
 public slots:
-    void setObjectEdition(Object* obj);
+    void handleSelectionChanged(Object* obj);
     void deselect();
     void updateEditors();
     void scrollTo(int x, int y);
