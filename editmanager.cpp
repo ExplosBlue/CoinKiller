@@ -14,8 +14,6 @@ EditManager::EditManager(Level *level, QUndoStack *undoStack) :
     level(level), undoStack(undoStack)
 {
     this->selectAfterPlacement = SettingsManager::getInstance()->get("SelectAfterPlacement").toBool();
-
-    selectionMode = false;
 }
 void EditManager::mouseDown(int x, int y, Qt::MouseButtons buttons, Qt::KeyboardModifiers modifiers, QRect drawrect)
 {
@@ -28,7 +26,7 @@ void EditManager::mouseDown(int x, int y, Qt::MouseButtons buttons, Qt::Keyboard
     {
         selectedObjects.clear();
 
-        if (drawType == DrawType::BGDAT)
+        if (drawType == ObjectType::BGDATOBJECT)
         {
             if (selTileset == -1 || selObject == -1) {
                 return;
@@ -41,13 +39,14 @@ void EditManager::mouseDown(int x, int y, Qt::MouseButtons buttons, Qt::Keyboard
 
             undoStack->push(new EditorCommand::InsertBgdatObj(level, bgdatObj));
 
-            newObject = bgdatObj;
-            creatNewObject = true;
-
-            if (selectAfterPlacement)
+            if (selectAfterPlacement) {
+                newObject = bgdatObj;
+                interactMode = InteractionMode::Creation;
+                undoStack->beginMacro(tr("Object Resized"));
                 selectedObjects.append(bgdatObj);
+            }
         }
-        else if (drawType == DrawType::SPRITE)
+        else if (drawType == ObjectType::SPRITE)
         {
             if (selSprite == -1) {
                 return;
@@ -66,7 +65,7 @@ void EditManager::mouseDown(int x, int y, Qt::MouseButtons buttons, Qt::Keyboard
                 selectedObjects.append(spr);
             }
         }
-        else if (drawType == DrawType::ENTRANCE)
+        else if (drawType == ObjectType::ENTRANCE)
         {
             Entrance *entr = level->newEntrance(x-10, y-10);
             entr->setRect();
@@ -77,7 +76,7 @@ void EditManager::mouseDown(int x, int y, Qt::MouseButtons buttons, Qt::Keyboard
                 selectedObjects.append(entr);
             }
         }
-        else if (drawType == DrawType::ZONE)
+        else if (drawType == ObjectType::ZONE)
         {
             Zone* zone = level->newZone(x-200, y-120);
 
@@ -98,20 +97,20 @@ void EditManager::mouseDown(int x, int y, Qt::MouseButtons buttons, Qt::Keyboard
                 selectedObjects.append(zone);
             }
         }
-        else if (drawType == DrawType::LOCATION)
+        else if (drawType == ObjectType::LOCATION)
         {
             Location* loc = level->newLocation(toNext20(x-10), toNext20(y-10));
 
             undoStack->push(new EditorCommand::InsertLocation(level, loc));
 
-            newObject = loc;
-            creatNewObject = true;
-
             if (selectAfterPlacement) {
+                newObject = loc;
+                interactMode = InteractionMode::Creation;
+                undoStack->beginMacro(tr("Object Resized"));
                 selectedObjects.append(loc);
             }
         }
-        else if (drawType == DrawType::PATH)
+        else if (drawType == ObjectType::PATHNODE)
         {
             Path* path = level->newPath();
             PathNode* node = new PathNode(qMax(toNext10(x), 0), qMax(toNext10(y), 0), 0, 0, 0, 0, 0, 0, path);
@@ -125,7 +124,7 @@ void EditManager::mouseDown(int x, int y, Qt::MouseButtons buttons, Qt::Keyboard
                 selectedObjects.append(node);
             }
         }
-        else if (drawType == DrawType::PROGRESSPATH)
+        else if (drawType == ObjectType::PROGRESSPATHNODE)
         {
             ProgressPath* path = level->newProgressPath();
             ProgressPathNode* node = new ProgressPathNode(qMax(toNext10(x), 0), qMax(toNext10(y), 0), path);
@@ -227,13 +226,12 @@ void EditManager::mouseDown(int x, int y, Qt::MouseButtons buttons, Qt::Keyboard
 
             if (selectedObjects.size() == 0)
             {
-                selectionMode = true;
+                interactMode = InteractionMode::Selection;
             }
             else if (modifiers == Qt::ControlModifier)
             {
                 sortSelection();
-                selectedObjects = cloneObjects(selectedObjects);
-                level->add(selectedObjects);
+                cloneObjects(selectedObjects);
                 emit updateEditors();
                 emit editMade();
                 clone = true;
@@ -251,12 +249,8 @@ void EditManager::mouseDown(int x, int y, Qt::MouseButtons buttons, Qt::Keyboard
 
 void EditManager::mouseDrag(int x, int y, Qt::KeyboardModifiers modifiers, QRect drawrect)
 {
-    if (creatNewObject)
+    if (interactMode == InteractionMode::Creation)
     {
-        if (!selectAfterPlacement) {
-            return;
-        }
-
         lx = x;
         ly = y;
 
@@ -274,7 +268,7 @@ void EditManager::mouseDrag(int x, int y, Qt::KeyboardModifiers modifiers, QRect
         int w = qAbs(mX-xpos);
         int h = qAbs(mY-ypos);
 
-        if (newObject->getType() == 0)
+        if (newObject->getType() == ObjectType::BGDATOBJECT)
         {
             if (mX < 0) mX = 0;
             else w += 20;
@@ -290,7 +284,7 @@ void EditManager::mouseDrag(int x, int y, Qt::KeyboardModifiers modifiers, QRect
         return;
     }
 
-    if (selectionMode)
+    if (interactMode == InteractionMode::Selection)
     {
         lx = x;
         ly = y;
@@ -417,8 +411,11 @@ void EditManager::mouseDrag(int x, int y, Qt::KeyboardModifiers modifiers, QRect
 
             foreach (Object* obj, selectedObjects)
             {
-                obj->increasePosition(xMoveDelta, yMoveDelta);
-                if (obj->isResizable()) obj->increaseSize(xResizeDelta, yResizeDelta, snap);
+                undoStack->push(new EditorCommand::IncreaseObjectPosition(obj, xMoveDelta, yMoveDelta));
+
+                if (obj->isResizable()) {
+                    undoStack->push(new EditorCommand::IncreaseObjectSize(obj, xResizeDelta, yResizeDelta, snap));
+                }
             }
 
             lx += xDelta;
@@ -440,15 +437,13 @@ void EditManager::mouseUp(int x, int y)
     mouseAct = getActionAtPos(x, y);
     actualCursor = getCursorAtPos(x, y);
 
-    if (selectionMode) {
-        checkEmits();
-        selectionMode = false;
+    checkEmits();
+
+    if (interactMode == InteractionMode::Creation) {
+        undoStack->endMacro();
     }
 
-    if (creatNewObject) {
-        creatNewObject = false;
-    }
-
+    interactMode = InteractionMode::None;
     clone = false;
 }
 
@@ -518,7 +513,7 @@ void EditManager::render(QPainter *painter)
         }
     }
 
-    if (selectionMode)
+    if (interactMode == InteractionMode::Selection)
     {
         QRect selArea(qMin(dx, lx), qMin(dy, ly), qAbs(lx-dx), qAbs(ly-dy));
         painter->setPen(QPen(QColor(0,80,180), 0.5));
@@ -597,18 +592,41 @@ QList<Object*> EditManager::getObjectsAtPos(int x1, int y1, int x2, int y2, bool
     return objects;
 }
 
-QList<Object*> EditManager::cloneObjects(QList<Object *> objects)
+void EditManager::cloneObjects(QList<Object *> objects)
 {
-    QList<Object*> newObjects;
+    selectedObjects.clear();
+    undoStack->beginMacro("Cloned Objects");
+
     foreach (Object* o, objects)
     {
-        if (is<BgdatObject*>(o)) newObjects.append(new BgdatObject(dynamic_cast<BgdatObject*>(o)));
-        if (is<Sprite*>(o)) newObjects.append(new Sprite(dynamic_cast<Sprite*>(o)));
-        if (is<Entrance*>(o)) newObjects.append(new Entrance(dynamic_cast<Entrance*>(o)));
-        if (is<Location*>(o)) newObjects.append(new Location(dynamic_cast<Location*>(o)));
-        if (is<Zone*>(o)) newObjects.append(new Zone(dynamic_cast<Zone*>(o)));
+        if (is<BgdatObject*>(o)) {
+            BgdatObject *obj = new BgdatObject(dynamic_cast<BgdatObject*>(o));
+            undoStack->push(new EditorCommand::InsertBgdatObj(level, obj));
+            selectedObjects.append(obj);
+        }
+        if (is<Sprite*>(o)) {
+            Sprite *spr = new Sprite(dynamic_cast<Sprite*>(o));
+            undoStack->push(new EditorCommand::InsertSprite(level, spr));
+            selectedObjects.append(spr);
+        }
+        if (is<Entrance*>(o)) {
+            Entrance *entr = new Entrance(dynamic_cast<Entrance*>(o));
+            undoStack->push(new EditorCommand::InsertEntrance(level, entr));
+            selectedObjects.append(entr);
+        }
+        if (is<Location*>(o)) {
+            Location *loc = new Location(dynamic_cast<Location*>(o));
+            undoStack->push(new EditorCommand::InsertLocation(level, loc));
+            selectedObjects.append(loc);
+        }
+        if (is<Zone*>(o)) {
+            Zone *zone = new Zone(dynamic_cast<Zone*>(o));
+            undoStack->push(new EditorCommand::InsertZone(level, zone));
+            selectedObjects.append(zone);
+        }
     }
-    return newObjects;
+
+    undoStack->endMacro();
 }
 
 EditManager::mouseAction EditManager::getActionAtPos(int x, int y)
@@ -870,38 +888,31 @@ void EditManager::deleteSelection()
     {
         if (is<BgdatObject*>(obj))
         {
-            QUndoCommand *deleteCmd = new EditorCommand::DeleteBgdatObject(level, dynamic_cast<BgdatObject*>(obj));
-            undoStack->push(deleteCmd);
+            undoStack->push(new EditorCommand::DeleteBgdatObject(level, dynamic_cast<BgdatObject*>(obj)));
         }
         else if (is<Sprite*>(obj))
         {
-            QUndoCommand *deleteCmd = new EditorCommand::DeleteSprite(level, dynamic_cast<Sprite*>(obj));
-            undoStack->push(deleteCmd);
+            undoStack->push(new EditorCommand::DeleteSprite(level, dynamic_cast<Sprite*>(obj)));
         }
         else if (is<Entrance*>(obj))
         {
-            QUndoCommand *deleteCmd = new EditorCommand::DeleteEntrance(level, dynamic_cast<Entrance*>(obj));
-            undoStack->push(deleteCmd);
+            undoStack->push(new EditorCommand::DeleteEntrance(level, dynamic_cast<Entrance*>(obj)));
         }
         else if (is<Zone*>(obj))
         {
-            QUndoCommand *deleteCmd = new EditorCommand::DeleteZone(level, dynamic_cast<Zone*>(obj));
-            undoStack->push(deleteCmd);
+            undoStack->push(new EditorCommand::DeleteZone(level, dynamic_cast<Zone*>(obj)));
         }
         else if (is<Location*>(obj))
         {
-            QUndoCommand *deleteCmd = new EditorCommand::DeleteLocation(level, dynamic_cast<Location*>(obj));
-            undoStack->push(deleteCmd);
+            undoStack->push(new EditorCommand::DeleteLocation(level, dynamic_cast<Location*>(obj)));
         }
         else if (is<PathNode*>(obj))
         {
-            QUndoCommand *deleteCmd = new EditorCommand::DeletePathNode(level, dynamic_cast<PathNode*>(obj));
-            undoStack->push(deleteCmd);
+            undoStack->push(new EditorCommand::DeletePathNode(level, dynamic_cast<PathNode*>(obj)));
         }
         else if (is<ProgressPathNode*>(obj))
         {
-            QUndoCommand *deleteCmd = new EditorCommand::DeleteProgressPathNode(level, dynamic_cast<ProgressPathNode*>(obj));
-            undoStack->push(deleteCmd);
+            undoStack->push(new EditorCommand::DeleteProgressPathNode(level, dynamic_cast<ProgressPathNode*>(obj)));
         }
     }
     undoStack->endMacro();
@@ -928,7 +939,7 @@ void EditManager::copy()
 
     foreach (Object* obj, selectedObjects)
     {
-        if (obj->getType() == 0)
+        if (obj->getType() == ObjectType::BGDATOBJECT)
             hasBgDats = true;
 
         if (obj->getx()+obj->getOffsetX() < minX) minX = obj->getx()+obj->getOffsetX();
@@ -1057,6 +1068,8 @@ void EditManager::paste(int currX, int currY, int currW, int currH)
 
     selectedObjects.clear();
 
+    undoStack->beginMacro(tr("Pasted"));
+
     for (int i = 2; i < sections.size(); i++)
     {
         QStringList params = sections[i].split(':');
@@ -1066,7 +1079,7 @@ void EditManager::paste(int currX, int currY, int currW, int currH)
         case 0: // BG dat
         {
             BgdatObject* newObj = new BgdatObject(params[3].toInt()+pOffsetX, params[4].toInt()+pOffsetY, params[5].toInt(), params[6].toInt(), params[1].toInt(), params[2].toInt());
-            level->objects[newObj->getLayer()].append(newObj);
+            undoStack->push(new EditorCommand::InsertBgdatObj(level, newObj));
             selectedObjects.append(newObj);
             break;
         }
@@ -1074,12 +1087,11 @@ void EditManager::paste(int currX, int currY, int currW, int currH)
         {
             Sprite* newSpr = new Sprite(params[2].toInt()+pOffsetX, params[3].toInt()+pOffsetY, params[1].toInt());
             newSpr->setLayer(params[4].toInt());
-            for (int i=0; i<12; i++) newSpr->setByte(i, params[i+5].toUInt());
-            newSpr->setRect();
-            level->sprites.append(newSpr);
-            if (level->isCameraLimit(newSpr)) {
-                level->insertCameraLimit(newSpr);
+            for (int i = 0; i < 12; i++) {
+                newSpr->setByte(i, params[i+5].toUInt());
             }
+            newSpr->setRect();
+            undoStack->push(new EditorCommand::InsertSprite(level, newSpr));
             selectedObjects.append(newSpr);
             break;
         }
@@ -1087,40 +1099,37 @@ void EditManager::paste(int currX, int currY, int currW, int currH)
         {
             Entrance* newEntr = new Entrance(params[3].toInt()+pOffsetX, params[4].toInt()+pOffsetY, params[7].toInt(), params[8].toInt(), params[1].toInt(), params[5].toInt(), params[6].toInt(), params[2].toInt(), params[9].toInt(), params[10].toInt(), params[11].toInt());
             newEntr->setRect();
-            level->entrances.append(newEntr);
+            undoStack->push(new EditorCommand::InsertEntrance(level, newEntr));
             selectedObjects.append(newEntr);
             break;
         }
         case 3: // Zone
         {
             Zone* newZone = new Zone(params[1].toInt()+pOffsetX, params[2].toInt()+pOffsetY, params[3].toInt(), params[4].toInt(), params[5].toInt(), params[6].toInt(), params[7].toInt(), params[8].toInt(), params[9].toInt(), params[10].toInt(), params[11].toInt());
-
-            level->zones.append(newZone);
+            undoStack->push(new EditorCommand::InsertZone(level, newZone));
             selectedObjects.append(newZone);
             break;
         }
         case 4: // Location
         {
             Location* newLoc = new Location(params[2].toInt()+pOffsetX, params[3].toInt()+pOffsetY, params[4].toInt(), params[5].toInt(), params[1].toInt());
-            level->locations.append(newLoc);
+            undoStack->push(new EditorCommand::InsertLocation(level, newLoc));
             selectedObjects.append(newLoc);
             break;
         }
         case 5: // Path
         {
             Path* newPath = level->newPath();
-            level->paths.append(newPath);
-
             newPath->setId(params[1].toInt());
             newPath->setLoop(params[2].toInt());
+            undoStack->push(new EditorCommand::InsertPath(level, newPath));
 
             QStringList pathNodes = params[3].split(';');
             for (int i = 0; i < pathNodes.size(); i++)
             {
                 QStringList nodeData = pathNodes[i].split(',');
                 PathNode* newNode = new PathNode(nodeData[1].toInt()+pOffsetX, nodeData[2].toInt()+pOffsetY, nodeData[3].toFloat(), nodeData[4].toFloat(), nodeData[5].toInt(), nodeData[6].toInt(), nodeData[7].toInt(), nodeData[8].toInt(), newPath);
-                newPath->insertNode(newNode, nodeData[0].toInt());
-
+                undoStack->push(new EditorCommand::InsertPathNode(newPath, newNode, nodeData[0].toInt()));
                 selectedObjects.append(newPath->getNode(i));
             }
             break;
@@ -1128,18 +1137,16 @@ void EditManager::paste(int currX, int currY, int currW, int currH)
         case 6: // Progress Path
         {
             ProgressPath* newProgPath = level->newProgressPath();
-            level->progressPaths.append(newProgPath);
-
             newProgPath->setId(params[1].toInt());
             newProgPath->setAlternatePathFlag(params[2].toInt());
+            undoStack->push(new EditorCommand::InsertProgressPath(level, newProgPath));
 
             QStringList progPathNodes = params[3].split(';');
             for (int i = 0; i < progPathNodes.size(); i++)
             {
                 QStringList nodeData = progPathNodes[i].split(',');
                 ProgressPathNode* newProgPathNode = new ProgressPathNode(nodeData[1].toInt()+pOffsetX, nodeData[2].toInt()+pOffsetY, newProgPath);
-                newProgPath->insertNode(newProgPathNode, nodeData[0].toInt());
-
+                undoStack->push(new EditorCommand::InsertProgressPathNode(newProgPath, newProgPathNode, nodeData[0].toInt()));
                 selectedObjects.append(newProgPath->getNode(i));
             }
             break;
@@ -1147,6 +1154,7 @@ void EditManager::paste(int currX, int currY, int currW, int currH)
         default: { break; }
         }
     }
+    undoStack->endMacro();
 
     emit updateEditors();
     checkEmits();

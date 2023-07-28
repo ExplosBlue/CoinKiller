@@ -8,18 +8,6 @@
 #include <QKeyEvent>
 #include <QUndoStack>
 
-enum DrawType
-{
-    INVALID,
-    BGDAT,
-    SPRITE,
-    ENTRANCE,
-    ZONE,
-    LOCATION,
-    PATH,
-    PROGRESSPATH
-};
-
 class EditManager : public QObject
 {
     Q_OBJECT
@@ -65,7 +53,7 @@ public:
 
     void selectZoneContents(Zone* zone);
 
-    void setDrawType(DrawType drawType) { this->drawType = drawType; }
+    void setDrawType(ObjectType drawType) { this->drawType = drawType; }
     void setObject(int selObject, int selTileset);
     void setLayer(int selLayer) { this->selLayer = selLayer; }
     void setSprite(int selSprite);
@@ -114,20 +102,27 @@ private:
     int lx, ly;
     mouseAction mouseAct;
 
-    bool selectionMode;
     bool selectionHasBGDats;
 
     int minBoundX, minBoundY;
     int maxBoundX, maxBoundY;
     int minSizeX, minSizeY;
 
-    bool creatNewObject = false;
+    enum InteractionMode
+    {
+        None,
+        Creation,
+        Selection
+    };
+
+    InteractionMode interactMode = None;
+
     Object* newObject;
 
     // Only to prevent resizing when cloning
     bool clone = false;
 
-    DrawType drawType = DrawType::INVALID;
+    ObjectType drawType = ObjectType::INVALID;
 
     int selTileset = -1;
     int selObject = -1;
@@ -138,7 +133,7 @@ private:
     mouseAction getActionAtPos(int x, int y);
     Qt::CursorShape getCursorAtPos(int x, int y);
 
-    QList<Object*> cloneObjects(QList<Object*> objects);
+    void cloneObjects(QList<Object*> objects);
 
     void updateSelectionBounds();
 

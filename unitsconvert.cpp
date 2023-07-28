@@ -16,6 +16,7 @@
 */
 
 #include "unitsconvert.h"
+#include "objects.h"
 
 int sign(int nbr)
 {
@@ -31,7 +32,7 @@ int toNext16Compatible(int nbr) { return to20(to16(nbr)); }
 
 int typeRound(int nbr, int type)
 {
-    if (type == 0)
+    if (type == ObjectType::BGDATOBJECT)
         return toNext20(nbr-10);
     else
         return toNext16Compatible(nbr);

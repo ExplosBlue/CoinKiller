@@ -22,6 +22,18 @@
 #include <QPainter>
 #include <QList>
 
+enum ObjectType
+{
+    INVALID,
+    BGDATOBJECT,
+    SPRITE,
+    ENTRANCE,
+    ZONE,
+    LOCATION,
+    PATHNODE,
+    PROGRESSPATHNODE
+};
+
 // Obj Baseclass
 class Object
 {
@@ -32,7 +44,7 @@ public:
     void increasePosition(qint32 deltax, qint32 deltay, qint32 snap = 0);
     void resize(qint32 width, qint32 height);
     void increaseSize(qint32 deltax, qint32 deltay, qint32 snap = 0);
-    virtual qint32 getType() const { return -1; }
+    virtual ObjectType getType() const { return ObjectType::INVALID; }
     virtual bool isResizable() const { return false; }
     virtual bool doRender(QRect r) { return r.intersects(QRect(x + offsetx, y + offsety, width, height)); }
     qint32 getx() const { return x; }
@@ -45,15 +57,6 @@ public:
     bool clickDetection(QRect rect);
 
     virtual QString toString(qint32 xOffset, qint32 yOffset) const;
-    // First Number:
-    // -1: Invalid
-    // 0: BgdatObject
-    // 1: Sprite
-    // 2: Entrance
-    // 3: Zone
-    // 4: Location
-    // 5: Path
-    // 6: Progress Path
 
 protected:
     qint32 x, y;
@@ -70,7 +73,7 @@ public:
     BgdatObject() {}
     BgdatObject(BgdatObject* obj);
     BgdatObject(qint32 x, qint32 y, qint32 width, qint32 height, qint32 id, qint32 layer);
-    qint32 getType() const;
+    ObjectType getType() const { return ObjectType::BGDATOBJECT; }
     bool isResizable() const { return true; }
     qint32 getid() const;
     void setTsID(qint32 tsID);
@@ -91,7 +94,7 @@ public:
     Sprite() {}
     Sprite(Sprite* spr);
     Sprite(qint32 x, qint32 y, qint16 id);
-    qint32 getType() const;
+    ObjectType getType() const { return ObjectType::SPRITE; }
     bool isResizable() const { return false; }
     virtual bool doRender(QRect r) { return r.intersects(QRect(x + offsetx + renderOffsetX, y + offsety + renderOffsetY, width + renderOffsetW, height + renderOffsetH)); }
     qint16 getid() const;
@@ -135,7 +138,7 @@ public:
     Entrance() {}
     Entrance(Entrance* entr);
     Entrance(qint32 x, qint32 y, qint16 cameraX, qint16 cameraY, quint8 id, quint8 destArea, quint8 destEntr, quint8 entrType, quint16 settings, quint8 unk1, quint8 unk2);
-    qint32 getType() const { return 2; }
+    ObjectType getType() const { return ObjectType::ENTRANCE; }
     bool isResizable() const { return false; }
     QString toString(qint32 xOffset, qint32 yOffset) const;
     quint8 getid() const { return id; }
@@ -232,7 +235,7 @@ public:
     Zone(qint32 x, qint32 y, qint32 width, qint32 height, quint8 id, quint8 progPathId, quint8 musicId, quint8 multiplayerTracking, quint16 unk1, quint8 boundingId, quint8 backgroundId);
     bool clickDetection(qint32 xcheck, qint32 ycheck);
     bool clickDetection(QRect rect);
-    qint32 getType() const { return 3; }
+    ObjectType getType() const { return ObjectType::ZONE; }
     bool isResizable() const { return true; }
     QString toString(qint32 xOffset, qint32 yOffset) const;
     quint16 getUnk1() const { return unk1; }
@@ -268,7 +271,7 @@ public:
     Location() {}
     Location(Location* loc);
     Location(qint32 x, qint32 y, qint32 width, qint32 height, qint32 id);
-    qint32 getType() const;
+    ObjectType getType() const { return ObjectType::LOCATION; }
     bool isResizable() const { return true; }
     qint32 getid() const;
     void setId(quint8 id) { this->id = id; }
@@ -286,7 +289,7 @@ public:
     PathNode() {}
     PathNode(PathNode* node, Path* parentPath);
     PathNode(qint32 x, qint32 y, float speed, float accel, quint16 delay, qint16 rotation, quint8 variableField, quint8 nextPathID, Path *parentPath);
-    qint32 getType() const { return 5; }
+    ObjectType getType() const { return ObjectType::PATHNODE; }
     bool isResizable() const { return false; }
     float getSpeed() const { return speed; }
     float getAccel() const { return accel; }
@@ -350,7 +353,7 @@ public:
     ProgressPathNode() {}
     ProgressPathNode(ProgressPathNode* node, ProgressPath* parentPath);
     ProgressPathNode(qint32 x, qint32 y, ProgressPath* parentPath);
-    qint32 getType() const { return 6; }
+    ObjectType getType() const { return ObjectType::PROGRESSPATHNODE; }
     bool isResizable() const { return false; }
     ProgressPath* getParentPath() const { return parentPath; }
     QString toString(qint32 xOffset, qint32 yOffset) const;

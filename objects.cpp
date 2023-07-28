@@ -100,7 +100,6 @@ BgdatObject::BgdatObject(BgdatObject *obj)
     layer = obj->getLayer();
 }
 
-qint32 BgdatObject::getType() const { return 0; }
 qint32 BgdatObject::getid() const { return id; }
 qint32 BgdatObject::getLayer() const { return layer; }
 
@@ -2885,7 +2884,6 @@ void Sprite::setRect()
     }
 }
 
-qint32 Sprite::getType() const { return 1; }
 qint16 Sprite::getid() const { return id; }
 
 quint8 Sprite::getByte(qint32 id) const { return spriteData[id]; }
@@ -3144,7 +3142,6 @@ Location::Location(Location *loc)
     id = loc->getid();
 }
 
-qint32 Location::getType() const { return 4; }
 qint32 Location::getid() const { return id; }
 
 // Format: 4:ID:X:Y:Width:Height

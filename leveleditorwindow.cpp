@@ -456,7 +456,7 @@ void LevelEditorWindow::on_actionRenderCameraLimits_toggled(bool toggle)
 
 void LevelEditorWindow::setSelSprite(int spriteId)
 {
-    levelView->editManagerPtr()->setDrawType(DrawType::SPRITE);
+    levelView->editManagerPtr()->setDrawType(ObjectType::SPRITE);
     levelView->editManagerPtr()->setSprite(spriteId);
 }
 
@@ -534,28 +534,28 @@ void LevelEditorWindow::toolboxTabsCurrentChanged(int index)
 {
     switch (index) {
     case 0:
-        levelView->editManagerPtr()->setDrawType(DrawType::INVALID);
+        levelView->editManagerPtr()->setDrawType(ObjectType::INVALID);
         break;
     case 1:
-        levelView->editManagerPtr()->setDrawType(DrawType::BGDAT);
+        levelView->editManagerPtr()->setDrawType(ObjectType::BGDATOBJECT);
         break;
     case 2:
-        levelView->editManagerPtr()->setDrawType(DrawType::SPRITE);
+        levelView->editManagerPtr()->setDrawType(ObjectType::SPRITE);
         break;
     case 3:
-        levelView->editManagerPtr()->setDrawType(DrawType::ENTRANCE);
+        levelView->editManagerPtr()->setDrawType(ObjectType::ENTRANCE);
         break;
     case 4:
-        levelView->editManagerPtr()->setDrawType(DrawType::ZONE);
+        levelView->editManagerPtr()->setDrawType(ObjectType::ZONE);
         break;
     case 5:
-        levelView->editManagerPtr()->setDrawType(DrawType::LOCATION);
+        levelView->editManagerPtr()->setDrawType(ObjectType::LOCATION);
         break;
     case 6:
-        levelView->editManagerPtr()->setDrawType(DrawType::PATH);
+        levelView->editManagerPtr()->setDrawType(ObjectType::PATHNODE);
         break;
     case 7:
-        levelView->editManagerPtr()->setDrawType(DrawType::PROGRESSPATH);
+        levelView->editManagerPtr()->setDrawType(ObjectType::PROGRESSPATHNODE);
         break;
     default:
         break;

@@ -30,5 +30,7 @@
 #include "EditorCommands/insertprogresspathnode.h"
 #include "EditorCommands/moveobject.h"
 #include "EditorCommands/resizeobject.h"
+#include "EditorCommands/increaseobjectposition.h"
+#include "EditorCommands/increaseobjectsize.h"
 
 #endif // EDITORCOMMANDS_H
