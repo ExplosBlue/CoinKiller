@@ -11,30 +11,35 @@
 #include <QComboBox>
 #include <QMap>
 #include <QTreeView>
+#include <QUndoStack>
 
 class AreaEditorWidget : public QWidget
 {
     Q_OBJECT
 public:
-    AreaEditorWidget(Level* level, Game* game);
+    AreaEditorWidget(Level *level, Game *game, QUndoStack *undoStack);
+
+    void updateEditor();
 
 signals:
     void updateLevelView();
     void relaodTilesetPicker();
-    void editMade();
+
 private:
-    Level* level;
-    Game* game;
+    Level *level;
+    Game *game;
 
-    QSpinBox* timeLimit;
-    QSpinBox* coinRushtimeLimit;
-    QSpinBox* levelEntranceID;
-    QComboBox* specialLevelFlag1;
-    QComboBox* specialLevelFlag2;
-    QSpinBox* unk1Editor;
-    QSpinBox* unk2Editor;
+    QUndoStack *undoStack;
 
-    EventEditorWidget* eventEditor;
+    QSpinBox *timeLimit;
+    QSpinBox *coinRushtimeLimit;
+    QSpinBox *levelEntranceID;
+    QComboBox *specialLevelFlag1;
+    QComboBox *specialLevelFlag2;
+    QSpinBox *unk1Editor;
+    QSpinBox *unk2Editor;
+
+    EventEditorWidget *eventEditor;
 
     QMap<int, QString> specialLevelFlags1;
     QMap<int, QString> specialLevelFlags2;
@@ -45,15 +50,13 @@ private:
     class HorLine : public QFrame { public: HorLine() { setFrameStyle(QFrame::HLine | QFrame::Sunken); } };
 
 private slots:
-    void handleTimeLimitChange(int timeLimitVal);
-    void handleCoinRushTimeLimitChange(int timeLimitVal);
-    void handleSpecialLevelFlag1Change(QString text);
-    void handleSpecialLevelFlag2Change(QString text);
-    void handleUnk1Change(int unk);
-    void handleUnk2Change(int unk);
-    void handlelevelEntranceIDChanged(int id);
-    void passEditMade() { emit editMade(); }
-
+    void timeLimitChanged(quint16 timeLimitVal);
+    void coinRushTimeLimitChanged(quint16 timeLimitVal);
+    void specialLevelFlag1Changed(QString text);
+    void specialLevelFlag2Changed(QString text);
+    void levelEntranceIDChanged(quint8 id);
+    void unk1Changed(quint16 val);
+    void unk2Changed(quint8 val);
 };
 
 #endif // AREAEDITORWIDGET_H

@@ -8,10 +8,10 @@
 #include <QMessageBox>
 #include <QGroupBox>
 
-AreaEditorWidget::AreaEditorWidget(Level* level, Game *game)
-{
-    this->level = level;
-    this->game = game;
+#include "EditorCommands/setvalue.h"
+
+AreaEditorWidget::AreaEditorWidget(Level *level, Game *game, QUndoStack *undoStack) :
+    level(level), game(game), undoStack(undoStack) {
 
     specialLevelFlags1.insert(0, tr("Normal"));
     specialLevelFlags1.insert(2, tr("Powerup Toad House"));
@@ -25,81 +25,84 @@ AreaEditorWidget::AreaEditorWidget(Level* level, Game *game)
     specialLevelFlags2.insert(1, tr("Ghost House"));
     specialLevelFlags2.insert(7, tr("Reznor Battle"));
 
-    QVBoxLayout* layout = new QVBoxLayout();
+    QVBoxLayout *layout = new QVBoxLayout();
     setLayout(layout);
 
-    QGroupBox* areaSettingsBox = new QGroupBox();
+    QGroupBox *areaSettingsBox = new QGroupBox();
     areaSettingsBox->setTitle(tr("Area Settings"));
     layout->addWidget(areaSettingsBox);
 
-    QGridLayout* settingsLayout = new QGridLayout();
+    QGridLayout *settingsLayout = new QGridLayout();
     areaSettingsBox->setLayout(settingsLayout);
 
     settingsLayout->addWidget(new QLabel(tr("Time Limit:")), 0, 0, 1, 1, Qt::AlignRight);
     timeLimit = new QSpinBox();
     timeLimit->setRange(0, 999);
-    connect(timeLimit, SIGNAL(valueChanged(int)), this, SLOT(handleTimeLimitChange(int)));
-    timeLimit->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);  // All Controls at maximum possible width
+    connect(timeLimit, &QSpinBox::valueChanged, this, qOverload<quint16>(&AreaEditorWidget::timeLimitChanged));
+    timeLimit->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     settingsLayout->addWidget(timeLimit, 0, 1);
 
     settingsLayout->addWidget(new QLabel(tr("CoinRush Time Limit:")), 1, 0, 1, 1, Qt::AlignRight);
     coinRushtimeLimit = new QSpinBox();
     coinRushtimeLimit->setRange(0, 999);
-    connect(coinRushtimeLimit, SIGNAL(valueChanged(int)), this, SLOT(handleCoinRushTimeLimitChange(int)));
+    connect(coinRushtimeLimit, &QSpinBox::valueChanged, this, qOverload<quint16>(&AreaEditorWidget::coinRushTimeLimitChanged));
     coinRushtimeLimit->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     settingsLayout->addWidget(coinRushtimeLimit, 1, 1);
 
     settingsLayout->addWidget(new QLabel(tr("Level Setting 1:")), 2, 0, 1, 1, Qt::AlignRight);
     specialLevelFlag1 = new QComboBox();
     specialLevelFlag1->addItems(specialLevelFlags1.values());
-    connect(specialLevelFlag1, SIGNAL(currentTextChanged(QString)), this, SLOT(handleSpecialLevelFlag1Change(QString)));
+    connect(specialLevelFlag1, &QComboBox::currentTextChanged, this, &AreaEditorWidget::specialLevelFlag1Changed);
     specialLevelFlag1->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     settingsLayout->addWidget(specialLevelFlag1, 2, 1);
 
     settingsLayout->addWidget(new QLabel(tr("Level Setting 2:")), 3, 0, 1, 1, Qt::AlignRight);
     specialLevelFlag2 = new QComboBox();
     specialLevelFlag2->addItems(specialLevelFlags2.values());
-    connect(specialLevelFlag2, SIGNAL(currentTextChanged(QString)), this, SLOT(handleSpecialLevelFlag2Change(QString)));
+    connect(specialLevelFlag2, &QComboBox::currentTextChanged, this, &AreaEditorWidget::specialLevelFlag2Changed);
     specialLevelFlag2->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     settingsLayout->addWidget(specialLevelFlag2, 3, 1);
 
     settingsLayout->addWidget(new QLabel(tr("Unknown 1:")), 4, 0, 1, 1, Qt::AlignRight);
     unk1Editor = new QSpinBox();
     unk1Editor->setRange(0, 255);
-    connect(unk1Editor, SIGNAL(valueChanged(int)), this, SLOT(handleUnk1Change(int)));
+    connect(unk1Editor, &QSpinBox::valueChanged, this, &AreaEditorWidget::unk1Changed);
     unk1Editor->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     settingsLayout->addWidget(unk1Editor, 4, 1);
 
     settingsLayout->addWidget(new QLabel(tr("Unknown 2:")), 5, 0, 1, 1, Qt::AlignRight);
     unk2Editor = new QSpinBox();
     unk2Editor->setRange(0, 255);
-    connect(unk2Editor, SIGNAL(valueChanged(int)), this, SLOT(handleUnk2Change(int)));
+    connect(unk2Editor, &QSpinBox::valueChanged, this, &AreaEditorWidget::unk2Changed);
     unk2Editor->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     settingsLayout->addWidget(unk2Editor, 5, 1);
 
     settingsLayout->addWidget(new QLabel(tr("Level Entrance ID:")), 6, 0, 1, 1, Qt::AlignRight);
     levelEntranceID = new QSpinBox();
     levelEntranceID->setRange(0, 255);
-    connect(levelEntranceID, SIGNAL(valueChanged(int)), this, SLOT(handlelevelEntranceIDChanged(int)));
+    connect(levelEntranceID, &QSpinBox::valueChanged, this, &AreaEditorWidget::levelEntranceIDChanged);
     levelEntranceID->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     settingsLayout->addWidget(levelEntranceID, 6, 1, 1, 1);
 
-    QGroupBox* eventEditorBox = new QGroupBox();
+    QGroupBox *eventEditorBox = new QGroupBox();
     eventEditorBox->setTitle(tr("Initial Area Event States"));
     layout->addWidget(eventEditorBox);
 
-    QVBoxLayout* eventBoxLayout = new QVBoxLayout();
+    QVBoxLayout *eventBoxLayout = new QVBoxLayout();
     eventEditorBox->setLayout(eventBoxLayout);
 
-    eventEditor = new EventEditorWidget(level);
-    connect(eventEditor, SIGNAL(editMade()), this, SLOT(passEditMade()));
+    eventEditor = new EventEditorWidget(level, undoStack);
     eventBoxLayout->addWidget(eventEditor);
 
     updateInfo();
 }
 
-void AreaEditorWidget::updateInfo()
-{
+void AreaEditorWidget::updateEditor() {
+    this->updateInfo();
+    eventEditor->updateEditor();
+}
+
+void AreaEditorWidget::updateInfo() {
     handleChanges = false;
     timeLimit->setValue(level->timeLimit);
     coinRushtimeLimit->setValue(level->coinRushTimeLimit);
@@ -111,51 +114,37 @@ void AreaEditorWidget::updateInfo()
     handleChanges = true;
 }
 
-void AreaEditorWidget::handleTimeLimitChange(int timeLimitVal)
-{
+void AreaEditorWidget::timeLimitChanged(quint16 timeLimitVal) {
     if (!handleChanges) return;
-    level->timeLimit = timeLimitVal;
-    emit editMade();
+    undoStack->push(new EditorCommand::SetValue<quint16>(&level->timeLimit, timeLimitVal, tr("Changed Area Time Limit")));
 }
 
-void AreaEditorWidget::handleCoinRushTimeLimitChange(int timeLimitVal)
-{
+void AreaEditorWidget::coinRushTimeLimitChanged(quint16 timeLimitVal) {
     if (!handleChanges) return;
-    level->coinRushTimeLimit = timeLimitVal;
-    emit editMade();
+    undoStack->push(new EditorCommand::SetValue<quint16>(&level->coinRushTimeLimit, timeLimitVal, tr("Changed Area CoinRush Time Limit")));
 }
 
-void AreaEditorWidget::handleSpecialLevelFlag1Change(QString text)
-{
+void AreaEditorWidget::specialLevelFlag1Changed(QString text) {
     if (!handleChanges) return;
-    level->specialLevelFlag = specialLevelFlags1.key(text, 0);
-    emit editMade();
+    undoStack->push(new EditorCommand::SetValue<quint16>(&level->specialLevelFlag, specialLevelFlags1.key(text, 0), tr("Changed Area Special Flag 1")));
 }
 
-void AreaEditorWidget::handleSpecialLevelFlag2Change(QString text)
-{
+void AreaEditorWidget::specialLevelFlag2Changed(QString text) {
     if (!handleChanges) return;
-    level->specialLevelFlag2 = specialLevelFlags2.key(text, 0);
-    emit editMade();
+    undoStack->push(new EditorCommand::SetValue<quint16>(&level->specialLevelFlag2, specialLevelFlags2.key(text, 0), tr("Changed Area Special Flag 2")));
 }
 
-void AreaEditorWidget::handlelevelEntranceIDChanged(int id)
-{
+void AreaEditorWidget::levelEntranceIDChanged(quint8 id) {
     if (!handleChanges) return;
-    level->levelEntranceID = id;
-    emit editMade();
+    undoStack->push(new EditorCommand::SetValue<quint8>(&level->levelEntranceID, id, tr("Changed Area Entrance ID")));
 }
 
-void AreaEditorWidget::handleUnk1Change(int unk)
-{
+void AreaEditorWidget::unk1Changed(quint16 val) {
     if (!handleChanges) return;
-    level->unk1 = unk;
-    emit editMade();
+    undoStack->push(new EditorCommand::SetValue<quint16>(&level->unk1, val, tr("Changed Area Unknown 1")));
 }
 
-void AreaEditorWidget::handleUnk2Change(int unk)
-{
+void AreaEditorWidget::unk2Changed(quint8 val) {
     if (!handleChanges) return;
-    level->unk2 = unk;
-    emit editMade();
+    undoStack->push(new EditorCommand::SetValue<quint8>(&level->unk2, val, tr("Changed Area Unknown 2")));
 }

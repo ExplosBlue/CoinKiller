@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <QListWidget>
 #include <QComboBox>
+#include <QUndoStack>
 
 #include "level.h"
 
@@ -11,22 +12,25 @@ class EventEditorWidget : public QWidget
 {
     Q_OBJECT
 public:
-    EventEditorWidget(Level* level);
+    EventEditorWidget(Level *level, QUndoStack *undoStack);
 
-signals:
-    void editMade();
-
-public slots:
+    void updateEditor();
 
 private:
-    QListWidget* eventsList;
-    QComboBox* viewFilter;
+    void updateEventStates();
+    void updateFilter();
 
-    Level* level;
+    QListWidget *eventsList;
+    QComboBox *viewFilter;
+
+    Level *level;
+    QUndoStack *undoStack;
+
+    int filter = 0;
 
 private slots:
-    void handleEventListItemChanged(QListWidgetItem* item);
-    void handleFilterChanged(int filter);
+    void eventListItemChanged(QListWidgetItem *item);
+    void filterChanged(int filter);
 };
 
 #endif // EVENTEDITORWIDGET_H

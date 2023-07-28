@@ -16,7 +16,7 @@ public:
 
     void undo() override;
     void redo() override;
-    int id() const override { return CommandID::Move; }
+    int id() const override { return CommandID::Cmd_Move; }
     bool mergeWith(const QUndoCommand *otherCommand) override;
 
 private:

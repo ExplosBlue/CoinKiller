@@ -159,19 +159,19 @@ private:
 
     Level* level;
     Tileset* tileset;
-    LevelView* levelView;
+    LevelView* levelView = nullptr;
     LevelMiniMap* miniMap;
 
-    AreaEditorWidget* areaEditor;
-    TilesetPalette* tilesetPalette;
-    SpriteEditorWidget* spriteEditor;
-    EntranceEditorWidget* entranceEditor;
-    ZoneEditorWidget* zoneEditor;
-    LocationEditorWidget* locationEditor;
-    PathEditorWidget* pathEditor;
-    ProgressPathEditorWidget* progPathEditor;
-    SpriteIdWidget* spriteIds;
-    EventEditorWidget* eventEditor;
+    AreaEditorWidget* areaEditor = nullptr;
+    TilesetPalette* tilesetPalette = nullptr;
+    SpriteEditorWidget* spriteEditor = nullptr;
+    EntranceEditorWidget* entranceEditor = nullptr;
+    ZoneEditorWidget* zoneEditor = nullptr;
+    LocationEditorWidget* locationEditor = nullptr;
+    PathEditorWidget* pathEditor = nullptr;
+    ProgressPathEditorWidget* progPathEditor = nullptr;
+    SpriteIdWidget* spriteIds = nullptr;
+    EventEditorWidget* eventEditor = nullptr;
 
     QComboBox* areaSelector;
 
@@ -189,6 +189,8 @@ private:
 
     bool unsavedChanges = false;
 
+    bool editorsLoaded();
+
 #ifdef USE_KDE_BLUR
     void setBlurStylesheet();
 #endif
@@ -205,7 +207,7 @@ private:
     QAction* actionUndo;
     QAction* actionRedo;
 
-    int prevHistoryIndex = 0;
+    const int showSaveDialog();
 };
 
 #endif // LEVELEDITORWINDOW_H

@@ -94,8 +94,7 @@ PathEditorWidget::PathEditorWidget(QList<Path*> *paths)
     connect(nextPathID, SIGNAL(valueChanged(int)), this, SLOT(handleNextPathIDChanged(int)));
     connect(nodeID, SIGNAL(valueChanged(int)), this, SLOT(handleNodeIDChanged(int)));
 
-    updateList();
-    updateInfo();
+    updateEditor();
 }
 
 void PathEditorWidget::updateEditor()
@@ -247,6 +246,6 @@ void PathEditorWidget::handleNodeIDChanged(int nodeID)
 
     editPath->swapNodes(editPath->getIndexOfNode(editNode), nodeID);
     emit updateLevelView();
-    emit updateInfo();
+    updateInfo();
     emit editMade();
 }

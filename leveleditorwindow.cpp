@@ -34,8 +34,7 @@
 #endif
 
 LevelEditorWindow::LevelEditorWindow(LevelManager* lvlMgr, int initialArea) :
-    WindowBase(lvlMgr->getParent()),
-    ui(new Ui::LevelEditorWindow)
+    WindowBase(lvlMgr->getParent()), ui(new Ui::LevelEditorWindow)
 {
     this->lvlMgr = lvlMgr;
     this->settings = SettingsManager::getInstance();
@@ -52,7 +51,6 @@ LevelEditorWindow::LevelEditorWindow(LevelManager* lvlMgr, int initialArea) :
 
     editStatus = new QLabel(this);
     ui->statusbar->addWidget(editStatus);
-    //connect(editStatus, SIGNAL(updateLevelLabel(QString)), editStatus, SLOT(setText(QString)));
 
     // Load UI Icons
     QString basePath(settings->dataPath("icons/"));
@@ -123,7 +121,6 @@ LevelEditorWindow::LevelEditorWindow(LevelManager* lvlMgr, int initialArea) :
 
     // Undo/Redo
     undoStack = new QUndoStack(this);
-    undoStack->setActive(false);
     undoStack->setUndoLimit(50); // TODO: Make this a setting
     connect(undoStack, SIGNAL(indexChanged(int)), this, SLOT(historyStateChanged(int)));
 
@@ -207,14 +204,19 @@ void LevelEditorWindow::changeEvent(QEvent* event)
 
 void LevelEditorWindow::historyStateChanged(int index)
 {
+    Q_UNUSED(index);
+
     unsavedChanges = true;
 
     if (levelView == nullptr) {
         return;
     }
 
-    if (index < prevHistoryIndex) {
-        levelView->editManagerPtr()->clearSelection();
+    levelView->update();
+    updateEditors();
+
+    if (undoStack->index() == undoStack->count()) {
+        return;
     }
 
     // Update button states
@@ -243,10 +245,9 @@ void LevelEditorWindow::historyStateChanged(int index)
     ui->actionToggleLocations->setChecked(levelView->editManagerPtr()->locationInteractionEnabled());
     ui->actionToggleLocations->blockSignals(false);
 
+    levelView->editManagerPtr()->clearSelection();
+    deselect();
     levelView->update();
-    update();
-
-    prevHistoryIndex = index;
 }
 
 // Actions
@@ -515,6 +516,10 @@ void LevelEditorWindow::handleSelectionChanged(Object* obj)
 
 void LevelEditorWindow::deselect()
 {
+    if (!editorsLoaded()) {
+        return;
+    }
+
     spriteEditor->spriteDataEditorPtr()->deselect();
     entranceEditor->deselect();
     zoneEditor->deselect();
@@ -526,13 +531,27 @@ void LevelEditorWindow::deselect()
 
 void LevelEditorWindow::updateEditors()
 {
-    //spriteEditor->spriteDataEditorPtr()->updateEditor();
+    if (!editorsLoaded()) {
+        return;
+    }
+
+    areaEditor->updateEditor();
     entranceEditor->updateEditor();
     zoneEditor->updateEditor();
     locationEditor->updateEditor();
     pathEditor->updateEditor();
     progPathEditor->updateEditor();
     spriteEditor->spriteIdsPtr()->updateEditor();
+}
+
+bool LevelEditorWindow::editorsLoaded()
+{
+    return (entranceEditor != nullptr &&
+            zoneEditor != nullptr &&
+            locationEditor != nullptr &&
+            pathEditor != nullptr &&
+            progPathEditor != nullptr &&
+            spriteEditor != nullptr);
 }
 
 void LevelEditorWindow::toolboxTabsCurrentChanged(int index)
@@ -567,48 +586,52 @@ void LevelEditorWindow::toolboxTabsCurrentChanged(int index)
     }
 }
 
-void LevelEditorWindow::on_actionAddArea_triggered()
+const int LevelEditorWindow::showSaveDialog()
 {
-    bool ignore = false;
-    if (unsavedChanges)
+    QMessageBox message(this);
+    message.setWindowTitle(tr("Unsaved Changes"));
+    message.setText(tr("Do you want to save your changes?"));
+    message.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
+
+    QSpacerItem* spacer = new QSpacerItem(400, 0, QSizePolicy::Minimum, QSizePolicy::Expanding);
+    QGridLayout* layout = (QGridLayout*)message.layout();
+    layout->addItem(spacer, layout->rowCount(), 0, 1, layout->columnCount());
+
+    int exitCode = message.exec();
+
+    switch (exitCode)
     {
-        QMessageBox message(this);
-        message.setWindowTitle(tr("Unsaved Changes"));
-        message.setText(tr("Do you want to save your changes?"));
-        message.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
-
-        QSpacerItem* spacer = new QSpacerItem(400, 0, QSizePolicy::Minimum, QSizePolicy::Expanding);
-        QGridLayout* layout = (QGridLayout*)message.layout();
-        layout->addItem(spacer, layout->rowCount(), 0, 1, layout->columnCount());
-
-        switch (message.exec())
-        {
-        case QMessageBox::Save:
-            levelView->saveLevel();
-            unsavedChanges = false;
-            editStatus->setText(tr("Changes Saved"));
-            break;
-        case QMessageBox::Discard:
-            unsavedChanges = false;
-            editStatus->setText("");
-            break;
-        case QMessageBox::Cancel:
-            ignore = true;
-            break;
-        }
+    case QMessageBox::Save:
+        levelView->saveLevel();
+        unsavedChanges = false;
+        editStatus->setText(tr("Changes Saved"));
+        break;
+    case QMessageBox::Discard:
+        unsavedChanges = false;
+        editStatus->setText("");
+        break;
     }
 
-    if (!ignore)
-    {
-        if (lvlMgr->getAreaCount() >= 4)
-        {
-            QMessageBox::information(this, "CoinKiller", tr("Due to limitations there can only be a maximum of 4 areas in a level."), QMessageBox::Ok);
-            return;
-        }
+    return exitCode;
+}
 
-    int seekArea = lvlMgr->addArea(lvlMgr->getAreaCount());
-    loadArea(seekArea);
-    updateAreaSelector(seekArea);
+void LevelEditorWindow::on_actionAddArea_triggered()
+{
+    if (unsavedChanges) {
+        int exitCode = showSaveDialog();
+
+        if (exitCode != QMessageBox::Cancel)
+        {
+            if (lvlMgr->getAreaCount() >= 4)
+            {
+                QMessageBox::information(this, "CoinKiller", tr("Due to limitations there can only be a maximum of 4 areas in a level."), QMessageBox::Ok);
+                return;
+            }
+
+            int seekArea = lvlMgr->addArea(lvlMgr->getAreaCount());
+            loadArea(seekArea);
+            updateAreaSelector(seekArea);
+        }
     }
 }
 
@@ -622,7 +645,8 @@ void LevelEditorWindow::on_actionDeleteCurrentArea_triggered()
 
     QMessageBox warning;
     warning.setWindowTitle("CoinKiller");
-    warning.setText(tr("Are you sure you want to delete this area?\n\nThe level will automatically save afterwards and therefore the deletion of this area cannot be undone afterwards."));
+    warning.setText(tr("Are you sure you want to delete this area?\n\n"
+                       "The level will automatically save afterwards and therefore the deletion of this area cannot be undone afterwards."));
     warning.setStandardButtons(QMessageBox::Yes);
     warning.addButton(QMessageBox::No);
     warning.setDefaultButton(QMessageBox::No);
@@ -669,7 +693,7 @@ void LevelEditorWindow::loadArea(int id, bool closeLevel, bool init)
         delete levelView;
         delete miniMap;
 
-        undoStack->setActive(false);
+        undoStack->blockSignals(true);
     }
 
     level = lvlMgr->openArea(id);
@@ -710,9 +734,8 @@ void LevelEditorWindow::loadArea(int id, bool closeLevel, bool init)
     QString basePath(settings->dataPath("icons/"));
 
     // Setup Area Editor
-    areaEditor = new AreaEditorWidget(level, lvlMgr->getGame());
+    areaEditor = new AreaEditorWidget(level, lvlMgr->getGame(), undoStack);
     connect(areaEditor, SIGNAL(updateLevelView()), levelView, SLOT(update()));
-    connect(areaEditor, SIGNAL(editMade()), this, SLOT(handleEditMade()));
 
     // Setup Tileset Picker
     tilesetPalette = new TilesetPalette(level, levelView->editManagerPtr(), lvlMgr->getGame());
@@ -786,7 +809,6 @@ void LevelEditorWindow::loadArea(int id, bool closeLevel, bool init)
     connect(levelView, SIGNAL(updateMinimap(QRect)), miniMap, SLOT(update_(QRect)));
     connect(levelView, SIGNAL(updateMinimapBounds()), miniMap, SLOT(updateBounds()));
     connect(miniMap, SIGNAL(scrollTo(int,int)), this, SLOT(scrollTo(int,int)));
-    //ui->miniMap->setWidget(miniMap);
     minimapDock->setWidget(miniMap);
 
     update();
@@ -794,7 +816,7 @@ void LevelEditorWindow::loadArea(int id, bool closeLevel, bool init)
     toolboxTabs->blockSignals(false);
 
     undoStack->clear();
-    undoStack->setActive(true);
+    undoStack->blockSignals(false);
 }
 
 void LevelEditorWindow::updateAreaSelector(int index)
@@ -934,35 +956,17 @@ void LevelEditorWindow::on_actionHideStatusbar_toggled(bool hide)
 
 void LevelEditorWindow::closeEvent(QCloseEvent *event)
 {
-    if (unsavedChanges)
-    {
-        QMessageBox message(this);
-        message.setWindowTitle(tr("Unsaved Changes"));
-        message.setText(tr("Do you want to save your changes?"));
-        message.setStandardButtons(QMessageBox::Save | QMessageBox::Cancel | QMessageBox::Discard);
+    if (unsavedChanges) {
+        int exitCode = showSaveDialog();
 
-        QSpacerItem* spacer = new QSpacerItem(400, 0, QSizePolicy::Minimum, QSizePolicy::Expanding);
-        QGridLayout* layout = (QGridLayout*)message.layout();
-        layout->addItem(spacer, layout->rowCount(), 0, 1, layout->columnCount());
-
-        switch (message.exec())
-        {
-        case QMessageBox::Save:
-            levelView->saveLevel();
-            event->accept();
-            break;
-        case QMessageBox::Cancel:
+        if (exitCode == QMessageBox::Cancel) {
             event->ignore();
-            break;
-        case QMessageBox::Discard:
+        } else {
             event->accept();
-            break;
         }
     }
-    else event->accept();
 
-    if (event->isAccepted())
-    {
+    if (event->isAccepted()) {
         undoStack->clear();
         settings->set("lvleditorState", saveState());
     }

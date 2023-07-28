@@ -154,6 +154,7 @@ HEADERS  += mainwindow.h \
     EditorCommands/setlocationinteraction.h \
     EditorCommands/setpathinteraction.h \
     EditorCommands/setspriteinteraction.h \
+    EditorCommands/setvalue.h \
     crc32.h \
     editmanager.h \
     eventeditorwidget.h \

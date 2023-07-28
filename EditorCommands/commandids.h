@@ -4,9 +4,11 @@
 namespace EditorCommand {
 
 enum CommandID {
-    Move,
-    Resize,
-    IncreasePosition
+    // Level View
+    Cmd_Move,
+    Cmd_Resize,
+    Cmd_IncreasePosition,
+    Cmd_SetValue
 };
 
 }
