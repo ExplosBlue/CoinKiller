@@ -3227,6 +3227,22 @@ PathNode::PathNode(qint32 x, qint32 y, float speed, float accel, quint16 delay, 
     this->offsety = -10;
 }
 
+PathNode::PathNode(qint32 x, qint32 y, Path* parentPath)
+{
+    this->x = x;
+    this->y = y;
+    this->speed = 0;
+    this->accel = 0;
+    this->delay = 0;
+    this->rotation = 0;
+    this->variableField = 0;
+    this->nextPathID = 0;
+    this->parentPath = parentPath;
+
+    this->offsetx = -10;
+    this->offsety = -10;
+}
+
 PathNode::PathNode(PathNode *node, Path* parentPath)
 {
     x = node->getx();

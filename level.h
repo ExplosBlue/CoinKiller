@@ -62,8 +62,6 @@ public:
 
     void add(QList<Object*> objs);
     void add(Object *obj);
-//    void remove(QList<Object*> objs);
-//    void remove(Object *obj);
     void move(QList<Object*> objs, int deltax, int deltay);
     void raise(Object *obj);
     void lower(Object *obj);

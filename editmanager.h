@@ -60,6 +60,8 @@ public:
 
     void toggleSelectAfterPlacement(bool toggle) { this->selectAfterPlacement = toggle; }
 
+    void clearSelection() { this->selectedObjects.clear(); }
+
     Qt::CursorShape getActualCursor() { return actualCursor; }
 
 signals:
@@ -67,7 +69,6 @@ signals:
     void selectdObjectChanged(Object* obj);
     void updateEditors();
     void updateLevelView();
-    void editMade();
 
 private:
     Level *level;
@@ -115,7 +116,7 @@ private:
         Selection
     };
 
-    InteractionMode interactMode = None;
+    InteractionMode interactMode = InteractionMode::None;
 
     Object* newObject;
 
@@ -156,6 +157,10 @@ private:
     bool locationInteraction;
 
     bool selectAfterPlacement;
+
+    void CreateObject(quint32 x, quint32 y);
+    bool movingObjects = false;
+    bool resizingObjects = false;
 
 };
 

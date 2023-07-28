@@ -21,4 +21,20 @@ void IncreaseObjectPosition::redo()
     obj->increasePosition(deltaX, deltaY, snap);
 }
 
+bool IncreaseObjectPosition::mergeWith(const QUndoCommand *otherCommand)
+{
+    if (otherCommand->id() != this->id())
+        return false;
+
+    const IncreaseObjectPosition* otherIncrease = static_cast<const IncreaseObjectPosition*>(otherCommand);
+
+    if (otherIncrease->obj != this->obj) {
+        return false;
+    }
+
+    deltaX += otherIncrease->deltaX;
+    deltaY += otherIncrease->deltaY;
+    return true;
+}
+
 } // namespace EditorCommand

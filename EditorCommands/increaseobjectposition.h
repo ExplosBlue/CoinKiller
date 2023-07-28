@@ -4,6 +4,7 @@
 #include <QUndoCommand>
 
 #include "objects.h"
+#include "commandids.h"
 
 namespace EditorCommand {
 
@@ -15,6 +16,8 @@ public:
 
     void undo() override;
     void redo() override;
+    int id() const override { return CommandID::IncreasePosition; }
+    bool mergeWith(const QUndoCommand *otherCommand) override;
 
 private:
     Object *obj;

@@ -288,6 +288,7 @@ class PathNode: public Object
 public:
     PathNode() {}
     PathNode(PathNode* node, Path* parentPath);
+    PathNode(qint32 x, qint32 y, Path *parentPath);
     PathNode(qint32 x, qint32 y, float speed, float accel, quint16 delay, qint16 rotation, quint8 variableField, quint8 nextPathID, Path *parentPath);
     ObjectType getType() const { return ObjectType::PATHNODE; }
     bool isResizable() const { return false; }

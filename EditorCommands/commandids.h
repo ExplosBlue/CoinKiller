@@ -5,7 +5,8 @@ namespace EditorCommand {
 
 enum CommandID {
     Move,
-    Resize
+    Resize,
+    IncreasePosition
 };
 
 }

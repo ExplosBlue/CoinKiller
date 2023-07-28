@@ -205,6 +205,7 @@ private:
     QAction* actionUndo;
     QAction* actionRedo;
 
+    int prevHistoryIndex = 0;
 };
 
 #endif // LEVELEDITORWINDOW_H

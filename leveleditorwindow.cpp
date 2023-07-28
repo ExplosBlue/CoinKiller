@@ -207,11 +207,14 @@ void LevelEditorWindow::changeEvent(QEvent* event)
 
 void LevelEditorWindow::historyStateChanged(int index)
 {
-    Q_UNUSED(index);
+    unsavedChanges = true;
 
-    if (levelView == nullptr)
-    {
+    if (levelView == nullptr) {
         return;
+    }
+
+    if (index < prevHistoryIndex) {
+        levelView->editManagerPtr()->clearSelection();
     }
 
     // Update button states
@@ -242,6 +245,8 @@ void LevelEditorWindow::historyStateChanged(int index)
 
     levelView->update();
     update();
+
+    prevHistoryIndex = index;
 }
 
 // Actions
@@ -758,7 +763,6 @@ void LevelEditorWindow::loadArea(int id, bool closeLevel, bool init)
     connect(levelView->editManagerPtr(), SIGNAL(selectdObjectChanged(Object*)), this, SLOT(handleSelectionChanged(Object*)));
     connect(levelView->editManagerPtr(), SIGNAL(deselected()), this, SLOT(deselect()));
     connect(levelView->editManagerPtr(), SIGNAL(updateEditors()), this, SLOT(updateEditors()));
-    connect(levelView->editManagerPtr(), SIGNAL(editMade()), this, SLOT(handleEditMade()));
 
     toolboxTabs->setUsesScrollButtons(true);
     toolboxTabs->addTab(areaEditor, QIcon(basePath + "settings.png"), "");
