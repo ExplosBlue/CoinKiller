@@ -124,7 +124,7 @@ LevelEditorWindow::LevelEditorWindow(LevelManager* lvlMgr, int initialArea) :
     // Undo/Redo
     undoStack = new QUndoStack(this);
     undoStack->setActive(false);
-    undoStack->setUndoLimit(20); // TODO: Make this a setting
+    undoStack->setUndoLimit(50); // TODO: Make this a setting
     connect(undoStack, SIGNAL(indexChanged(int)), this, SLOT(historyStateChanged(int)));
 
     actionUndo = undoStack->createUndoAction(this, tr("&Undo"));
