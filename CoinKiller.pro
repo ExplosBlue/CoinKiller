@@ -49,6 +49,8 @@ isEmpty(CK_VERSION) {
 DEFINES += CK_VERSION=\\\"$$CK_VERSION\\\"
 
 SOURCES += main.cpp\
+    EditorCommands/changebgdatobject.cpp \
+    EditorCommands/changespriteid.cpp \
     EditorCommands/deletebgdatobject.cpp \
     EditorCommands/deleteentrance.cpp \
     EditorCommands/deletelocation.cpp \
@@ -121,6 +123,8 @@ SOURCES += main.cpp\
     clickablelabel.cpp
 
 HEADERS  += mainwindow.h \
+    EditorCommands/changebgdatobject.h \
+    EditorCommands/changespriteid.h \
     EditorCommands/commandids.h \
     EditorCommands/deletebgdatobject.h \
     EditorCommands/deleteentrance.h \

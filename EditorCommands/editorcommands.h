@@ -32,5 +32,7 @@
 #include "EditorCommands/resizeobject.h"
 #include "EditorCommands/increaseobjectposition.h"
 #include "EditorCommands/increaseobjectsize.h"
+#include "EditorCommands/changebgdatobject.h"
+#include "EditorCommands/changespriteid.h"
 
 #endif // EDITORCOMMANDS_H

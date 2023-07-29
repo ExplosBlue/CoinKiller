@@ -108,9 +108,19 @@ void BgdatObject::setTsID(qint32 tsID)
     id = (id & 0xFFF) | (tsID << 12);
 }
 
+qint32 BgdatObject::getTsID() const
+{
+    return (id >> 12) & 0x3;
+}
+
 void BgdatObject::setObjID(qint32 objID)
 {
     id = (id & 0xF000) | objID;
+}
+
+qint32 BgdatObject::getObjID() const
+{
+    return id & 0x0FFF;
 }
 
 // Format: 0:ID:Layer:X:Y:Width:Height

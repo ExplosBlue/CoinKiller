@@ -107,10 +107,11 @@ TilesetPalette::TilesetPalette(Level* level, EditManager* editManager, Game* gam
     connect(objectLists[1], SIGNAL(clicked(QModelIndex)), this, SLOT(on_objectsListView1_clicked(QModelIndex)));
     connect(objectLists[2], SIGNAL(clicked(QModelIndex)), this, SLOT(on_objectsListView2_clicked(QModelIndex)));
     connect(objectLists[3], SIGNAL(clicked(QModelIndex)), this, SLOT(on_objectsListView3_clicked(QModelIndex)));
-    connect(objectLists[0], SIGNAL(entered(QModelIndex)), this, SLOT(on_objectsListView0_clicked(QModelIndex)));
-    connect(objectLists[1], SIGNAL(entered(QModelIndex)), this, SLOT(on_objectsListView1_clicked(QModelIndex)));
-    connect(objectLists[2], SIGNAL(entered(QModelIndex)), this, SLOT(on_objectsListView2_clicked(QModelIndex)));
-    connect(objectLists[3], SIGNAL(entered(QModelIndex)), this, SLOT(on_objectsListView3_clicked(QModelIndex)));
+
+//    connect(objectLists[0], SIGNAL(entered(QModelIndex)), this, SLOT(on_objectsListView0_clicked(QModelIndex)));
+//    connect(objectLists[1], SIGNAL(entered(QModelIndex)), this, SLOT(on_objectsListView1_clicked(QModelIndex)));
+//    connect(objectLists[2], SIGNAL(entered(QModelIndex)), this, SLOT(on_objectsListView2_clicked(QModelIndex)));
+//    connect(objectLists[3], SIGNAL(entered(QModelIndex)), this, SLOT(on_objectsListView3_clicked(QModelIndex)));
     connect(layer1RadioBtn, SIGNAL(toggled(bool)), SLOT(on_layerRadioButton_toggled(bool)));
 }
 
@@ -198,13 +199,13 @@ void TilesetPalette::on_layerRadioButton_toggled(bool checked)
 
 void TilesetPalette::select(BgdatObject *obj)
 {
-    int tsid = (obj->getid() >> 12) & 0x3;
+    int tsid = obj->getTsID();
     tabWidget->setCurrentIndex(tsid);
-    objectLists[tsid]->setCurrentIndex(objectLists[tsid]->model()->index(obj->getid()&0x0FFF, 0));
+    objectLists[tsid]->setCurrentIndex(objectLists[tsid]->model()->index(obj->getObjID(), 0));
 
     updatePalettes(tsid);
     editManager->setDrawType(ObjectType::BGDATOBJECT);
-    editManager->setObject(obj->getid()&0x0FFF, (obj->getid() >> 12) & 0x3);
+    editManager->setObject(obj->getObjID(), obj->getTsID());
 }
 
 void TilesetPalette::handleTilesetChange(int index)

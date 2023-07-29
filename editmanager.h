@@ -162,6 +162,8 @@ private:
     bool movingObjects = false;
     bool resizingObjects = false;
 
+    void swapSelectedBgdatObjects();
+    void swapSelectedSprites();
 };
 
 #endif // EDITMANAGER_H

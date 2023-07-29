@@ -77,7 +77,9 @@ public:
     bool isResizable() const { return true; }
     qint32 getid() const;
     void setTsID(qint32 tsID);
+    qint32 getTsID() const;
     void setObjID(qint32 objID);
+    qint32 getObjID() const;
     qint32 getLayer() const;
     QString toString(qint32 xOffset, qint32 yOffset) const;
     void setLayer(qint32 layer) { this->layer = layer; }

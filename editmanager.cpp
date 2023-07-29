@@ -4,6 +4,7 @@
 #include "is.h"
 
 #include "EditorCommands/editorcommands.h"
+#include "EditorCommands/setvalue.h"
 
 #include <QApplication>
 #include <QPainterPath>
@@ -1187,8 +1188,7 @@ void EditManager::raise()
     undoStack->beginMacro(tr("Raised %1 Object(s)").arg(selectedObjects.count()));
     foreach (Object* obj, selectedObjects)
     {
-        QUndoCommand *raiseObjectCmd = new EditorCommand::RaiseObject(level, obj);
-        undoStack->push(raiseObjectCmd);
+        undoStack->push(new EditorCommand::RaiseObject(level, obj));
     }
     undoStack->endMacro();
 }
@@ -1203,8 +1203,7 @@ void EditManager::lower()
     undoStack->beginMacro(tr("Lowered %1 Object(s)").arg(selectedObjects.count()));
     foreach (Object* obj, selectedObjects)
     {
-        QUndoCommand *lowerObjectCmd = new EditorCommand::LowerObject(level, obj);
-        undoStack->push(lowerObjectCmd);
+        undoStack->push(new EditorCommand::LowerObject(level, obj));
     }
     undoStack->endMacro();
 }
@@ -1224,8 +1223,7 @@ void EditManager::raiseLayer()
             continue;
         }
 
-        QUndoCommand *raiseLayerCmd = new EditorCommand::RaiseLayer(level, dynamic_cast<BgdatObject*>(obj));
-        undoStack->push(raiseLayerCmd);
+        undoStack->push(new EditorCommand::RaiseLayer(level, dynamic_cast<BgdatObject*>(obj)));
     }
     undoStack->endMacro();
 }
@@ -1245,8 +1243,7 @@ void EditManager::lowerLayer()
             continue;
         }
 
-        QUndoCommand *lowerLayerCmd = new EditorCommand::LowerLayer(level, dynamic_cast<BgdatObject*>(obj));
-        undoStack->push(lowerLayerCmd);
+        undoStack->push(new EditorCommand::LowerLayer(level, dynamic_cast<BgdatObject*>(obj)));
     }
     undoStack->endMacro();
 }
@@ -1261,36 +1258,73 @@ void EditManager::checkEmits()
 
 void EditManager::setObject(int selObject, int selTileset)
 {
+    if (this->selObject == selObject && this->selTileset == selTileset) {
+        return;
+    }
+
     this->selObject = selObject;
     this->selTileset = selTileset;
 
-    foreach (Object* o, selectedObjects)
-    {
-        if(is<BgdatObject*>(o))
-        {
-            BgdatObject* obj = dynamic_cast<BgdatObject*>(o);
-            obj->setObjID(selObject);
-            obj->setTsID(selTileset);
-        }
-    }
+    swapSelectedBgdatObjects();
 
     emit updateLevelView();
 }
 
-void EditManager::setSprite(int selSprite)
+void EditManager::swapSelectedBgdatObjects()
 {
-    this->selSprite = selSprite;
+    QList<BgdatObject*> swappableObjects;
 
-    foreach (Object* o, selectedObjects)
-    {
-        if(is<Sprite*>(o))
-        {
-            Sprite* spr = dynamic_cast<Sprite*>(o);
-            spr->setid(selSprite);
+    foreach (Object* o, selectedObjects) {
+        if(is<BgdatObject*>(o)) {
+            BgdatObject* obj = dynamic_cast<BgdatObject*>(o);
+            if (obj->getObjID() != selObject || obj->getTsID() != selTileset) {
+                swappableObjects.append(obj);
+            }
         }
     }
 
+    if (!swappableObjects.empty()) {
+        undoStack->beginMacro(tr("Swapped Object(s)"));
+        foreach (BgdatObject* obj, swappableObjects) {
+            undoStack->push(new EditorCommand::ChangeBgdatObject(obj, selObject, selTileset));
+        }
+        undoStack->endMacro();
+    }
+}
+
+void EditManager::setSprite(int selSprite)
+{
+    if (this->selSprite == selSprite) {
+        return;
+    }
+
+    this->selSprite = selSprite;
+
+    swapSelectedSprites();
+
     emit updateLevelView();
+}
+
+void EditManager::swapSelectedSprites()
+{
+    QList<Sprite*> swappableSprites;
+
+    foreach (Object* o, selectedObjects) {
+        if(is<Sprite*>(o)) {
+            Sprite* spr = dynamic_cast<Sprite*>(o);
+            if (spr->getid() != selSprite) {
+                swappableSprites.append(spr);
+            }
+        }
+    }
+
+    if (!swappableSprites.isEmpty()) {
+        undoStack->beginMacro(tr("Swapped Sprites(s)"));
+        foreach (Sprite* spr, swappableSprites) {
+            undoStack->push(new EditorCommand::ChangeSpriteID(spr, selSprite));
+        }
+        undoStack->endMacro();
+    }
 }
 
 void EditManager::setLayerMask(LAYER_MASK layer, bool state)
