@@ -535,6 +535,7 @@ void LevelEditorWindow::updateEditors()
         return;
     }
 
+    tilesetPalette->updateEditor();
     areaEditor->updateEditor();
     entranceEditor->updateEditor();
     zoneEditor->updateEditor();
@@ -738,7 +739,7 @@ void LevelEditorWindow::loadArea(int id, bool closeLevel, bool init)
     connect(areaEditor, SIGNAL(updateLevelView()), levelView, SLOT(update()));
 
     // Setup Tileset Picker
-    tilesetPalette = new TilesetPalette(level, levelView->editManagerPtr(), lvlMgr->getGame());
+    tilesetPalette = new TilesetPalette(level, levelView->editManagerPtr(), lvlMgr->getGame(), undoStack);
     connect(tilesetPalette, SIGNAL(updateLevelView()), levelView, SLOT(update()));
     connect(tilesetPalette, SIGNAL(editMade()), this, SLOT(handleEditMade()));
 

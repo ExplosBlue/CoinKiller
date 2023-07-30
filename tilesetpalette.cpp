@@ -7,11 +7,10 @@
 #include <QStandardItemModel>
 #include <QSpacerItem>
 
-TilesetPalette::TilesetPalette(Level* level, EditManager* editManager, Game* game)
-{
-    this->level = level;
-    this->game = game;
-    this->editManager = editManager;
+#include "EditorCommands/settileset.h"
+
+TilesetPalette::TilesetPalette(Level* level, EditManager* editManager, Game* game, QUndoStack *undoStack, QWidget *parent) :
+    QWidget(parent), level(level), editManager(editManager), game(game), undoStack(undoStack) {
 
     QVBoxLayout* layout = new QVBoxLayout();
     this->setLayout(layout);
@@ -38,37 +37,36 @@ TilesetPalette::TilesetPalette(Level* level, EditManager* editManager, Game* gam
     layout->addWidget(tabWidget);
 
     // Setup Tileset Selector
-    for (int i = 0; i < 4; i++)
-    {
-        QComboBox* tsNameCombobox = new QComboBox();
-        QStandardItemModel* model = game->getTilesetModel(i, true);
+    for (int tsSlot = 0; tsSlot < 4; tsSlot++) {
+        QComboBox* tsPicker = new QComboBox();
+        tilesetPickers.insert(tsSlot, tsPicker);
+        QStandardItemModel* model = game->getTilesetModel(tsSlot, true);
 
         model->sort(0, Qt::AscendingOrder);
 
-        for (int j = 0; j < model->rowCount(); j++)
-        {
+        for (int pickerIndex = 0; pickerIndex < model->rowCount(); pickerIndex++) {
             // Tileset Name
-            QModelIndex tsNameIndex = model->index(j, 0);
+            QModelIndex tsNameIndex = model->index(pickerIndex, 0);
             QString tilesetName = tsNameIndex.data().toString();
 
-            tsNameCombobox->addItem(tilesetName);
+            tsPicker->addItem(tilesetName);
 
             // File Name
-            QModelIndex fileNameIndex = model->index(j, 1);
+            QModelIndex fileNameIndex = model->index(pickerIndex, 1);
             QString fileName = fileNameIndex.data().toString();
 
-            tsNameCombobox->setItemData(j, fileName, Qt::UserRole);
+            tsPicker->setItemData(pickerIndex, fileName, Qt::UserRole);
 
-            if (level->tilesets[i])
-            {
-                QString selectedTs = level->tilesets[i]->getName();
+            if (level->tilesets[tsSlot]) {
+                QString selectedTs = level->tilesets[tsSlot]->getName();
 
-                if (selectedTs == fileName)
-                    tsNameCombobox->setCurrentIndex(j);
+                if (selectedTs == fileName) {
+                    tsPicker->setCurrentIndex(pickerIndex);
+                }
             }
         }
 
-        connect(tsNameCombobox, SIGNAL(currentIndexChanged(int)), this, SLOT(handleTilesetChange(int)));
+        connect(tsPicker, &QComboBox::currentIndexChanged, this, &TilesetPalette::tilesetPickerChosen);
 
         QWidget* tabPage = new QWidget;
         QGridLayout* tabLayout = new QGridLayout;
@@ -77,42 +75,70 @@ TilesetPalette::TilesetPalette(Level* level, EditManager* editManager, Game* gam
         tilesetLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 
         tabLayout->addWidget(tilesetLabel, 0, 0, 1, 1);
-        tabLayout->addWidget(tsNameCombobox, 0, 1);
+        tabLayout->addWidget(tsPicker, 0, 1);
 
         tabPage->setLayout(tabLayout);
 
-        objectLists[i] = new QListView();
-        tabLayout->addWidget(objectLists[i], 1, 0, 1, 2);
+        objectLists.insert(tsSlot, new QListView());
+        tabLayout->addWidget(objectLists[tsSlot], 1, 0, 1, 2);
 
         QString title;
-        if (i == 0) title = tr("Standard");
-        else if (i == 1) title = tr("Stage");
-        else if (i == 2) title = tr("Background");
-        else if (i == 3) title = tr("Interactive");
+        if (tsSlot == 0) title = tr("Standard");
+        else if (tsSlot == 1) title = tr("Stage");
+        else if (tsSlot == 2) title = tr("Background");
+        else if (tsSlot == 3) title = tr("Interactive");
 
         tabWidget->addTab(tabPage, title);
 
-        objectLists[i]->setFlow(QListView::LeftToRight);
-        objectLists[i]->setLayoutMode(QListView::SinglePass);
-        objectLists[i]->setMovement(QListView::Static);
-        objectLists[i]->setResizeMode(QListView::Adjust);
-        objectLists[i]->setWrapping(true);
-        objectLists[i]->setIconSize(QSize(400,400));
-        objectLists[i]->setVerticalScrollMode(QListView::ScrollPerPixel);
-        objectLists[i]->setEditTriggers(QAbstractItemView::NoEditTriggers);
-        loadTileset(i);
+        objectLists[tsSlot]->setFlow(QListView::LeftToRight);
+        objectLists[tsSlot]->setLayoutMode(QListView::SinglePass);
+        objectLists[tsSlot]->setMovement(QListView::Static);
+        objectLists[tsSlot]->setResizeMode(QListView::Adjust);
+        objectLists[tsSlot]->setWrapping(true);
+        objectLists[tsSlot]->setIconSize(QSize(400, 400));
+        objectLists[tsSlot]->setVerticalScrollMode(QListView::ScrollPerPixel);
+        objectLists[tsSlot]->setEditTriggers(QAbstractItemView::NoEditTriggers);
+        loadTileset(tsSlot);
+
+        connect(objectLists[tsSlot], &QListView::clicked, this, &TilesetPalette::objectsListViewClicked);
+        connect(objectLists[tsSlot], &QListView::entered, this, &TilesetPalette::objectsListViewClicked);
     }
 
-    connect(objectLists[0], SIGNAL(clicked(QModelIndex)), this, SLOT(on_objectsListView0_clicked(QModelIndex)));
-    connect(objectLists[1], SIGNAL(clicked(QModelIndex)), this, SLOT(on_objectsListView1_clicked(QModelIndex)));
-    connect(objectLists[2], SIGNAL(clicked(QModelIndex)), this, SLOT(on_objectsListView2_clicked(QModelIndex)));
-    connect(objectLists[3], SIGNAL(clicked(QModelIndex)), this, SLOT(on_objectsListView3_clicked(QModelIndex)));
+    connect(layer1RadioBtn, &QRadioButton::toggled, this, &TilesetPalette::layerToggled);
 
-//    connect(objectLists[0], SIGNAL(entered(QModelIndex)), this, SLOT(on_objectsListView0_clicked(QModelIndex)));
-//    connect(objectLists[1], SIGNAL(entered(QModelIndex)), this, SLOT(on_objectsListView1_clicked(QModelIndex)));
-//    connect(objectLists[2], SIGNAL(entered(QModelIndex)), this, SLOT(on_objectsListView2_clicked(QModelIndex)));
-//    connect(objectLists[3], SIGNAL(entered(QModelIndex)), this, SLOT(on_objectsListView3_clicked(QModelIndex)));
-    connect(layer1RadioBtn, SIGNAL(toggled(bool)), SLOT(on_layerRadioButton_toggled(bool)));
+}
+
+void TilesetPalette::updateEditor()
+{
+    reloadTilesets();
+    updateTilesetPickerIndex();
+}
+
+void TilesetPalette::updateTilesetPickerIndex()
+{
+    for (int tsSlot = 0; tsSlot < 4; tsSlot++) {
+
+        QComboBox *tsPicker = tilesetPickers[tsSlot];
+        tsPicker->blockSignals(true);
+
+        if (!level->tilesets[tsSlot]) {
+            tsPicker->setCurrentIndex(0);
+            tsPicker->blockSignals(false);
+            continue;
+        }
+
+        QString selectedTs = level->tilesets[tsSlot]->getName();
+
+        for (int pickerIndex = 0; pickerIndex < tsPicker->model()->rowCount(); pickerIndex++) {
+            QString fileName = tsPicker->itemData(pickerIndex).toString();
+
+            if (selectedTs == fileName) {
+                tsPicker->setCurrentIndex(pickerIndex);
+                break;
+            }
+        }
+        tsPicker->blockSignals(false);
+    }
 }
 
 void TilesetPalette::reloadTilesets()
@@ -155,32 +181,14 @@ void TilesetPalette::loadTileset(int tilesetNbr)
     objectLists[tilesetNbr]->setModel(objectsModel);
 }
 
-void TilesetPalette::on_objectsListView0_clicked(const QModelIndex &index)
+void TilesetPalette::objectsListViewClicked(const QModelIndex &index)
 {
-    updatePalettes(0);
-    editManager->setDrawType(ObjectType::BGDATOBJECT);
-    editManager->setObject(index.row(), 0);
-}
+    QListView *listView  = qobject_cast<QListView*>(QObject::sender());
+    int tilsetId = objectLists.indexOf(listView);
 
-void TilesetPalette::on_objectsListView1_clicked(const QModelIndex &index)
-{
-    updatePalettes(1);
+    updatePalettes(tilsetId);
     editManager->setDrawType(ObjectType::BGDATOBJECT);
-    editManager->setObject(index.row(), 1);
-}
-
-void TilesetPalette::on_objectsListView2_clicked(const QModelIndex &index)
-{
-    updatePalettes(2);
-    editManager->setDrawType(ObjectType::BGDATOBJECT);
-    editManager->setObject(index.row(), 2);
-}
-
-void TilesetPalette::on_objectsListView3_clicked(const QModelIndex &index)
-{
-    updatePalettes(3);
-    editManager->setDrawType(ObjectType::BGDATOBJECT);
-    editManager->setObject(index.row(), 3);
+    editManager->setObject(index.row(), tilsetId);
 }
 
 void TilesetPalette::updatePalettes(int actualPal)
@@ -192,7 +200,7 @@ void TilesetPalette::updatePalettes(int actualPal)
     }
 }
 
-void TilesetPalette::on_layerRadioButton_toggled(bool checked)
+void TilesetPalette::layerToggled(bool checked)
 {
     editManager->setLayer(!checked);
 }
@@ -208,19 +216,14 @@ void TilesetPalette::select(BgdatObject *obj)
     editManager->setObject(obj->getObjID(), obj->getTsID());
 }
 
-void TilesetPalette::handleTilesetChange(int index)
+void TilesetPalette::tilesetPickerChosen(int index)
 {
     QComboBox* tsNameCombobox = qobject_cast<QComboBox*>(sender());
 
     QString tsName = tsNameCombobox->itemData(index).toString();
     int tsId = tabWidget->currentIndex();
 
-    delete level->tilesets[tsId];
-
-    if (tsName == "")
-        level->tilesets[tsId] = NULL;
-    else
-        level->tilesets[tsId] = game->getTileset(tsName);
+    undoStack->push(new EditorCommand::SetTileset(level->tilesets[tsId], game, tsName));
 
     emit updateLevelView();
     emit editMade();

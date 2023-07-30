@@ -82,6 +82,7 @@ SOURCES += main.cpp\
     EditorCommands/setlocationinteraction.cpp \
     EditorCommands/setpathinteraction.cpp \
     EditorCommands/setspriteinteraction.cpp \
+    EditorCommands/settileset.cpp \
     editmanager.cpp \
     eventeditorwidget.cpp \
     mainwindow.cpp \
@@ -158,6 +159,7 @@ HEADERS  += mainwindow.h \
     EditorCommands/setlocationinteraction.h \
     EditorCommands/setpathinteraction.h \
     EditorCommands/setspriteinteraction.h \
+    EditorCommands/settileset.h \
     EditorCommands/setvalue.h \
     crc32.h \
     editmanager.h \

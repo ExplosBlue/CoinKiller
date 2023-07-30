@@ -9,39 +9,41 @@
 #include <QListView>
 #include <QTabWidget>
 #include <QComboBox>
+#include <QUndoStack>
 
 class TilesetPalette : public QWidget
 {
     Q_OBJECT
 public:
-    explicit TilesetPalette(Level* level, EditManager *editManager, Game *game);
+    explicit TilesetPalette(Level* level, EditManager *editManager, Game *game, QUndoStack *undoStack, QWidget *parent = nullptr);
     void select(BgdatObject* obj);
+    void updateEditor();
 
 signals:
     void updateLevelView();
     void editMade();
 
 private slots:
-    void on_objectsListView0_clicked(const QModelIndex &index);
-    void on_objectsListView1_clicked(const QModelIndex &index);
-    void on_objectsListView2_clicked(const QModelIndex &index);
-    void on_objectsListView3_clicked(const QModelIndex &index);
-    void on_layerRadioButton_toggled(bool checked);
-
-    void handleTilesetChange(int index);
+    void objectsListViewClicked(const QModelIndex &index);
+    void layerToggled(bool state);
+    void tilesetPickerChosen(int index);
 
 private:
-    Level* level;
-    Game* game;
-    EditManager* editManager;
+    Level *level;
+    EditManager *editManager;
+    Game *game;
+    QUndoStack *undoStack;
 
-    QTabWidget* tabWidget;
-    QListView* objectLists[4];
+    QTabWidget *tabWidget;
+    QList<QComboBox*> tilesetPickers;
+    QList<QListView*> objectLists;
 
     void loadTileset(int tilesetNbr);
     void updatePalettes(int actualPal);
+    void updateTilesetPickerIndex();
 
     void reloadTilesets();
+
 };
 
 #endif // TILESETPALETTE_H
