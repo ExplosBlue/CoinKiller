@@ -41,6 +41,7 @@ TilesetPalette::TilesetPalette(Level* level, EditManager* editManager, Game* gam
         QComboBox* tsPicker = new QComboBox();
         tilesetPickers.insert(tsSlot, tsPicker);
         QStandardItemModel* model = game->getTilesetModel(tsSlot, true);
+        model->setParent(this);
 
         model->sort(0, Qt::AscendingOrder);
 
@@ -151,7 +152,7 @@ void TilesetPalette::loadTileset(int tilesetNbr)
     if (!level->tilesets[tilesetNbr])
     {
         objectLists[tilesetNbr]->setEnabled(false);
-        objectLists[tilesetNbr]->setModel(new QStandardItemModel());
+        objectLists[tilesetNbr]->setModel(new QStandardItemModel(this));
         return;
     }
     objectLists[tilesetNbr]->setEnabled(true);

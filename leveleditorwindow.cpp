@@ -834,7 +834,7 @@ void LevelEditorWindow::updateAreaSelector(int index)
     for (int i = 0; i < areaCount; i++)
        areaStrings << tr("Area %2").arg(i+1);
 
-    QStringListModel *model = new QStringListModel();
+    QStringListModel *model = new QStringListModel(this);
         model->setStringList(areaStrings);
 
     areaSelector->setModel(model);

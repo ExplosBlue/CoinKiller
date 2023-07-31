@@ -94,6 +94,7 @@ class Sprite: public Object
 {
 public:
     Sprite() {}
+    ~Sprite() { delete selectionRects; }
     Sprite(Sprite* spr);
     Sprite(qint32 x, qint32 y, qint16 id);
     ObjectType getType() const { return ObjectType::SPRITE; }
@@ -326,7 +327,7 @@ class Path
 public:
     Path() {}
     Path(Path* path);
-    ~Path() { foreach (PathNode* node, nodes) delete node; }
+    ~Path() { qDeleteAll(nodes); }
     Path(quint16 id, quint16 loop);
     void insertNode(PathNode* node, qint32 index = -1);
     void removeNode(PathNode* node);
@@ -371,7 +372,7 @@ class ProgressPath
 public:
     ProgressPath() {}
     ProgressPath(ProgressPath* path);
-    ~ProgressPath() { foreach (ProgressPathNode* node, nodes) delete node; }
+    ~ProgressPath() { qDeleteAll(nodes); }
     ProgressPath(quint16 id, quint8 alternatePathFlag);
     void insertNode(ProgressPathNode* node, qint32 index = -1);
     void removeNode(ProgressPathNode* node);

@@ -790,6 +790,7 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
 void SpriteRenderer::render(QPainter *painter, QRect *drawrect)
 {
     ret->render(painter, drawrect);
+    delete ret;
 }
 
 NormalImageRenderer::NormalImageRenderer(const Object *obj, QString filename)

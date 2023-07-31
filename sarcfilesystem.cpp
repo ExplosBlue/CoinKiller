@@ -70,6 +70,7 @@ SarcFilesystem::SarcFilesystem(FileBase* file)
 SarcFilesystem::~SarcFilesystem()
 {
     delete sarc;
+    qDeleteAll(files);
 }
 
 

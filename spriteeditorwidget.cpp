@@ -44,7 +44,7 @@ SpriteEditorWidget::SpriteEditorWidget(QList<Sprite*> *sprites, QUndoStack *undo
     tabs->addTab(addSpriteView, tr("Add"));
 
     QStringList viewNames = getViewNames();
-    viewComboBox->setModel(new QStringListModel(viewNames));
+    viewComboBox->setModel(new QStringListModel(viewNames, this));
 
     spriteIds = new SpriteIdWidget(sprites);
     tabs->addTab(spriteIds, tr("In Level"));

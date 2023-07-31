@@ -93,8 +93,10 @@ QStandardItemModel* Game::getCourseModel()
         {
             fs->directoryContents("/Course/", QDir::Files, courseList);
 
-            if (courseList.isEmpty())
+            delete dirItem;
+            if (courseList.isEmpty()) {
                 continue;
+            }
 
             dirItem = model->invisibleRootItem();
         }
@@ -102,8 +104,10 @@ QStandardItemModel* Game::getCourseModel()
         {
             fs->directoryContents("/Course/" + dir, QDir::Files, courseList);
 
-            if (courseList.isEmpty())
+            if (courseList.isEmpty()) {
+                delete dirItem;
                 continue;
+            }
 
             model->invisibleRootItem()->appendRow(dirItem);
         }
@@ -319,6 +323,8 @@ QStandardItemModel* Game::getTilesetModel(int id, bool includeNoneItem)
         {
             model->appendRow(items);
         }
+
+        qDeleteAll(items);
     }
 
     return model;

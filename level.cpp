@@ -334,14 +334,14 @@ Level::~Level()
             delete objects[l][o];
     }
 
-    for (int s = 0; s < sprites.size(); s++)
-        delete sprites[s];
-
-    for (int e = 0; e < entrances.size(); e++)
-        delete entrances[e];
-
-    for (int l = 0; l < locations.size(); l++)
-        delete locations[l];
+    qDeleteAll(sprites);
+    qDeleteAll(entrances);
+    qDeleteAll(locations);
+    qDeleteAll(zones);
+    qDeleteAll(paths);
+    qDeleteAll(progressPaths);
+    qDeleteAll(boundings);
+    qDeleteAll(backgrounds);
 }
 
 qint8 Level::save()

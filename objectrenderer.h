@@ -128,6 +128,7 @@ class WhompRenderer: public SpriteRenderer
 {
 public:
     WhompRenderer(const Sprite *spr);
+    ~WhompRenderer() { delete img; }
     void render(QPainter *painter, QRect *drawrect);
 protected:
     NormalImageRenderer *img;
@@ -213,6 +214,7 @@ class MovementSpriteRenderer: public SpriteRenderer
 {
 public:
     MovementSpriteRenderer(const Sprite *spr, QString fileName);
+    ~MovementSpriteRenderer() { delete img; }
     void render(QPainter *painter, QRect *drawrect);
 protected:
     NormalImageRenderer *img;
@@ -231,6 +233,7 @@ class FourBurnerRenderer: public SpriteRenderer
 {
 public:
     FourBurnerRenderer(const Sprite *spr);
+    ~FourBurnerRenderer() { delete up; delete down; delete left; delete right; delete center; }
     void render(QPainter *painter, QRect *drawrect);
 protected:
     NormalImageRenderer *up;
@@ -245,6 +248,7 @@ class FuzzyRenderer: public SpriteRenderer
 {
 public:
     FuzzyRenderer(const Sprite *spr);
+    ~FuzzyRenderer() { delete img; }
     void render(QPainter *painter, QRect *drawrect);
 protected:
     NormalImageRenderer *img;
@@ -255,6 +259,7 @@ class RotationSpriteRenderer: public SpriteRenderer
 {
 public:
     RotationSpriteRenderer(const Sprite *spr, QString fileName);
+    ~RotationSpriteRenderer() { delete img; }
     void render(QPainter *painter, QRect *drawrect);
 protected:
     NormalImageRenderer *img;
@@ -265,6 +270,7 @@ class RedCoinRenderer: public SpriteRenderer
 {
 public:
     RedCoinRenderer(const Sprite *spr, QString filename);
+    ~RedCoinRenderer() { delete img; }
     void render(QPainter *painter, QRect *drawrect);
 protected:
     QString filename;
@@ -286,6 +292,7 @@ class FireBarRenderer: public SpriteRenderer
 {
 public:
     FireBarRenderer(const Sprite *spr);
+    ~FireBarRenderer() { delete radius; }
     void render(QPainter *painter, QRect *drawrect);
 protected:
     CircleRenderer *radius;
@@ -296,6 +303,7 @@ class FlagRenderer: public SpriteRenderer
 {
 public:
     FlagRenderer(const Sprite *spr);
+    ~FlagRenderer() { delete rect; }
     void render(QPainter *painter, QRect *drawrect);
 private:
     RoundedRectRenderer *rect;
@@ -324,6 +332,7 @@ class BlooperRenderer: public SpriteRenderer
 {
 public:
     BlooperRenderer(const Sprite *spr);
+    ~BlooperRenderer() { delete img; }
     void render(QPainter *painter, QRect *drawrect);
 protected:
     NormalImageRenderer *img;
@@ -334,6 +343,7 @@ class GoalRenderer: public SpriteRenderer
 {
 public:
     GoalRenderer(const Sprite *spr);
+    ~GoalRenderer() { delete pole; delete fort; }
     void render(QPainter *painter, QRect *drawrect);
 protected:
     NormalImageRenderer *pole;
@@ -345,6 +355,7 @@ class PathContFenceRenderer: public SpriteRenderer
 {
 public:
     PathContFenceRenderer(const Sprite *spr);
+    ~PathContFenceRenderer() { delete rect; }
     void render(QPainter *painter, QRect *drawrect);
 protected:
     RoundedRectRenderer *rect;
@@ -355,6 +366,7 @@ class SignboardRenderer: public SpriteRenderer
 {
 public:
     SignboardRenderer(const Sprite *spr);
+    ~SignboardRenderer() { delete img; }
     void render(QPainter *painter, QRect *drawrect);
 protected:
     NormalImageRenderer *img;
@@ -365,6 +377,7 @@ class FloatingBoxRenderer: public SpriteRenderer
 {
 public:
     FloatingBoxRenderer(const Sprite *spr);
+    FloatingBoxRenderer() { delete img; }
     void render(QPainter *painter, QRect *drawrect);
 protected:
     NormalImageRenderer *img;
@@ -391,6 +404,7 @@ class BulletBillRenderer: public SpriteRenderer
 {
 public:
     BulletBillRenderer(const Sprite *spr);
+    ~BulletBillRenderer() { delete img; }
     void render(QPainter *painter, QRect *drawrect);
 protected:
     NormalImageRenderer *img;
@@ -401,6 +415,7 @@ class BanzaiBillRenderer: public SpriteRenderer
 {
 public:
     BanzaiBillRenderer(const Sprite *spr);
+    ~BanzaiBillRenderer() { delete img; }
     void render(QPainter *painter, QRect *drawrect);
 protected:
     NormalImageRenderer *img;
@@ -427,6 +442,7 @@ class BouncyMushroomRenderer: public SpriteRenderer
 {
 public:
     BouncyMushroomRenderer(const Sprite *spr);
+    ~BouncyMushroomRenderer() { delete img; }
     void render(QPainter* painter, QRect* drawrect);
 protected:
     NormalImageRenderer *img;
@@ -447,6 +463,7 @@ class BowserFlameRenderer: public SpriteRenderer
 {
 public:
     BowserFlameRenderer(const Sprite *spr);
+    ~BowserFlameRenderer() { delete img; }
     void render(QPainter *painter, QRect *drawrect);
 protected:
     NormalImageRenderer *img;
@@ -468,6 +485,7 @@ class RuinsRickRenderer: public SpriteRenderer
 {
 public:
     RuinsRickRenderer(const Sprite *spr);
+    ~RuinsRickRenderer() { delete img; }
     void render(QPainter *painter, QRect *drawrect);
 protected:
     NormalImageRenderer *img;
@@ -478,6 +496,7 @@ class GoombaRenderer: public SpriteRenderer
 {
 public:
     GoombaRenderer(const Sprite *spr);
+    ~GoombaRenderer() { delete img; }
     void render(QPainter *painter, QRect *drawrect);
 protected:
     NormalImageRenderer *img;
@@ -488,6 +507,7 @@ class BoneGoombaRenderer: public SpriteRenderer
 {
 public:
     BoneGoombaRenderer(const Sprite *spr);
+    ~BoneGoombaRenderer() { delete img; }
     void render(QPainter *painter, QRect *drawrect);
 protected:
     NormalImageRenderer *img;
@@ -498,6 +518,7 @@ class GoombaTowerRenderer: public SpriteRenderer
 {
 public:
     GoombaTowerRenderer(const Sprite *spr);
+    ~GoombaTowerRenderer() { delete top; qDeleteAll(middle); delete bottom; }
     void render(QPainter *painter, QRect *drawrect);
 protected:
     NormalImageRenderer *top;
@@ -526,6 +547,7 @@ class ThreePlatRickRenderer: public SpriteRenderer
 {
 public:
     ThreePlatRickRenderer(const Sprite *spr);
+    ~ThreePlatRickRenderer() { delete img; }
     void render(QPainter *painter, QRect *drawrect);
 protected:
     NormalImageRenderer *img;
@@ -552,6 +574,7 @@ class FourPlatRickRenderer: public SpriteRenderer
 {
 public:
     FourPlatRickRenderer(const Sprite *spr);
+    FourPlatRickRenderer() { delete img; }
     void render(QPainter *painter, QRect *drawrect);
 protected:
     NormalImageRenderer *img;
@@ -577,6 +600,7 @@ class BuzzyBeetleRenderer: public SpriteRenderer
 {
 public:
     BuzzyBeetleRenderer(const Sprite *spr);
+    ~BuzzyBeetleRenderer() { delete img; }
     void render(QPainter *painter, QRect *drawrect);
 protected:
     NormalImageRenderer* img;
@@ -587,6 +611,7 @@ class SpikeTopRenderer: public SpriteRenderer
 {
 public:
     SpikeTopRenderer(const Sprite *spr);
+    ~SpikeTopRenderer() { delete img; }
     void render(QPainter *painter, QRect *drawrect);
 protected:
     NormalImageRenderer *img;
@@ -612,6 +637,7 @@ class ClimbKoopaHorRenderer: public SpriteRenderer
 {
 public:
     ClimbKoopaHorRenderer(const Sprite *spr);
+    ~ClimbKoopaHorRenderer() { delete img; }
     void render(QPainter *painter, QRect *drawrect);
 protected:
     NormalImageRenderer *img;
@@ -622,6 +648,7 @@ class ClimbKoopaVertRenderer: public SpriteRenderer
 {
 public:
     ClimbKoopaVertRenderer(const Sprite *spr);
+    ~ClimbKoopaVertRenderer() { delete img; }
     void render(QPainter *painter, QRect *drawrect);
 protected:
     NormalImageRenderer *img;
@@ -632,6 +659,7 @@ class KoopaTroopaRenderer: public SpriteRenderer
 {
 public:
     KoopaTroopaRenderer(const Sprite *spr);
+    ~KoopaTroopaRenderer() { delete img; }
     void render(QPainter *painter, QRect *drawrect);
 protected:
     NormalImageRenderer *img;
@@ -642,6 +670,7 @@ class PlantRenderer: public SpriteRenderer
 {
 public:
     PlantRenderer(const Sprite *spr, QString filename);
+    ~PlantRenderer() { delete img; }
     void render(QPainter *painter, QRect *drawrect);
 protected:
     QString filename;
@@ -653,6 +682,7 @@ class KoopaParatroopaRenderer: public SpriteRenderer
 {
 public:
     KoopaParatroopaRenderer(const Sprite *spr);
+    ~KoopaParatroopaRenderer() { delete img; }
     void render(QPainter *painter, QRect *drawrect);
 protected:
     NormalImageRenderer *img;
@@ -684,6 +714,7 @@ class CheepCheepRenderer: public SpriteRenderer
 {
 public:
     CheepCheepRenderer(const Sprite *spr);
+    ~CheepCheepRenderer() { delete img; }
     void render(QPainter *painter, QRect *drawrect);
 protected:
     NormalImageRenderer *img;
@@ -694,6 +725,7 @@ class BigCheepRenderer: public SpriteRenderer
 {
 public:
     BigCheepRenderer(const Sprite *spr);
+    ~BigCheepRenderer() { delete img; }
     void render(QPainter *painter, QRect *drawrect);
 protected:
     NormalImageRenderer *img;
@@ -704,6 +736,7 @@ class JumpingCheepRenderer: public SpriteRenderer
 {
 public:
     JumpingCheepRenderer(const Sprite *spr);
+    ~JumpingCheepRenderer() { delete img; }
     void render(QPainter *painter, QRect *drawrect);
 protected:
     NormalImageRenderer *img;
@@ -714,6 +747,7 @@ class SpinyCheepRenderer: public SpriteRenderer
 {
 public:
     SpinyCheepRenderer(const Sprite *spr);
+    ~SpinyCheepRenderer() { delete img; }
     void render(QPainter *painter, QRect *drawrect);
 protected:
     NormalImageRenderer *img;
@@ -766,6 +800,7 @@ class SwitchRenderer: public SpriteRenderer
 {
 public:
     SwitchRenderer(const Sprite *spr, QString filename);
+    ~SwitchRenderer() { delete img; }
     void render(QPainter *painter, QRect *drawrect);
 protected:
     QString filename;
@@ -788,6 +823,7 @@ class BigBooRenderer: public SpriteRenderer
 {
 public:
     BigBooRenderer(const Sprite *spr);
+    ~BigBooRenderer() { delete img; }
     void render(QPainter *painter, QRect *drawrect);
 protected:
     NormalImageRenderer *img;
@@ -798,6 +834,7 @@ class CoinCircleRenderer: public SpriteRenderer
 {
 public:
     CoinCircleRenderer(const Sprite *spr, Tileset* tileset);
+    ~CoinCircleRenderer() { delete circle; }
     void render(QPainter *painter, QRect *drawrect);
 protected:
     CircleRenderer *circle;
@@ -809,6 +846,7 @@ class BoohemothRenderer: public SpriteRenderer
 {
 public:
     BoohemothRenderer(const Sprite *spr);
+    ~BoohemothRenderer() { delete img; }
     void render(QPainter *painter, QRect *drawrect);
 protected:
     NormalImageRenderer* img;
@@ -819,6 +857,7 @@ class SpinyRenderer: public SpriteRenderer
 {
 public:
     SpinyRenderer(const Sprite *spr);
+    ~SpinyRenderer() { delete img; }
     void render(QPainter *painter, QRect *drawrect);
 protected:
     NormalImageRenderer* img;
@@ -829,6 +868,7 @@ class CeilingSpinyRenderer: public SpriteRenderer
 {
 public:
     CeilingSpinyRenderer(const Sprite *spr);
+    ~CeilingSpinyRenderer() { delete img; }
     void render(QPainter *painter, QRect *drawrect);
 protected:
     NormalImageRenderer* img;
@@ -839,6 +879,7 @@ class SwingingVineRenderer: public SpriteRenderer
 {
 public:
     SwingingVineRenderer(const Sprite *spr);
+    ~SwingingVineRenderer() { delete img; }
     void render(QPainter *painter, QRect *drawrect);
 protected:
     NormalImageRenderer* img;
@@ -849,6 +890,7 @@ class UrchinRenderer: public SpriteRenderer
 {
 public:
     UrchinRenderer(const Sprite *spr);
+    ~UrchinRenderer() { delete img; }
     void render(QPainter *painter, QRect *drawrect);
 protected:
     NormalImageRenderer* img;
@@ -859,6 +901,7 @@ class RotatingUrchinRenderer: public SpriteRenderer
 {
 public:
     RotatingUrchinRenderer(const Sprite *spr);
+    ~RotatingUrchinRenderer() { delete img; }
     void render(QPainter *painter, QRect *drawrect);
 protected:
     NormalImageRenderer* img;
@@ -869,6 +912,7 @@ class GhostWallRenderer: public SpriteRenderer
 {
 public:
     GhostWallRenderer(const Sprite *spr);
+    ~GhostWallRenderer() { delete img; }
     void render(QPainter *painter, QRect *drawrect);
 protected:
     NormalImageRenderer* img;
@@ -879,6 +923,7 @@ class ChainChompRenderer: public SpriteRenderer
 {
 public:
     ChainChompRenderer(const Sprite *spr);
+    ~ChainChompRenderer() { delete img; }
     void render(QPainter *painter, QRect *drawrect);
 protected:
     NormalImageRenderer* img;
@@ -996,6 +1041,7 @@ class EventRecLiftRenderer: public SpriteRenderer
 {
 public:
     EventRecLiftRenderer(const Sprite *spr, QString path);
+    ~EventRecLiftRenderer() { delete img; }
     void render(QPainter *painter, QRect *drawrect);
 protected:
     NormalImageRenderer *img;
@@ -1014,6 +1060,7 @@ class BounceMushCastleRenderer: public SpriteRenderer
 {
 public:
     BounceMushCastleRenderer(const Sprite *spr);
+    ~BounceMushCastleRenderer() { delete img; }
     void render(QPainter *painter, QRect *drawrect);
 protected:
     NormalImageRenderer *img;
@@ -1024,6 +1071,7 @@ class IceLiftRenderer: public SpriteRenderer
 {
 public:
     IceLiftRenderer(const Sprite *spr);
+    ~IceLiftRenderer() { delete img; }
     void render(QPainter *painter, QRect *drawrect);
 protected:
     NormalImageRenderer* img;
@@ -1034,6 +1082,7 @@ class CoinMeteorRenderer: public SpriteRenderer
 {
 public:
     CoinMeteorRenderer(const Sprite *spr);
+    ~CoinMeteorRenderer() { delete img; }
     void render(QPainter *painter, QRect *drawrect);
 protected:
     NormalImageRenderer *img;
@@ -1044,6 +1093,7 @@ class UnderwaterRecLiftRenderer: public SpriteRenderer
 {
 public:
     UnderwaterRecLiftRenderer(const Sprite *spr);
+    ~UnderwaterRecLiftRenderer() { delete img; }
     void render(QPainter *painter, QRect *drawrect);
 protected:
     NormalImageRenderer *img;
@@ -1061,6 +1111,7 @@ class EntranceRenderer : public ObjectRenderer
 {
 public:
     EntranceRenderer(const Entrance *entrance);
+    ~EntranceRenderer() { delete rect; }
     void render(QPainter *painter, QRect *drawrect);
 private:
     RoundedRectRenderer *rect;

@@ -90,6 +90,7 @@ Ctpk::Ctpk(FileBase* file)
 Ctpk::~Ctpk()
 {
     delete file;
+    qDeleteAll(entries);
 }
 
 Ctpk::CtpkEntry* Ctpk::getEntryByFilename(QString filename)
