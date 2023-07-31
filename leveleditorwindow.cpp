@@ -543,6 +543,7 @@ void LevelEditorWindow::updateEditors()
     pathEditor->updateEditor();
     progPathEditor->updateEditor();
     spriteEditor->spriteIdsPtr()->updateEditor();
+//    spriteEditor->spriteDataEditorPtr()->updateEditor();
 }
 
 bool LevelEditorWindow::editorsLoaded()
@@ -744,12 +745,11 @@ void LevelEditorWindow::loadArea(int id, bool closeLevel, bool init)
     connect(tilesetPalette, SIGNAL(editMade()), this, SLOT(handleEditMade()));
 
     // Setup Sprite Picker
-    spriteEditor = new SpriteEditorWidget(&level->sprites);
+    spriteEditor = new SpriteEditorWidget(&level->sprites, undoStack);
     connect(spriteEditor->spriteDataEditorPtr(), SIGNAL(updateLevelView()), levelView, SLOT(update()));
     connect(spriteEditor, SIGNAL(currentSpriteChanged(int)), this, SLOT(setSelSprite(int)));
     connect(spriteEditor, SIGNAL(selectedSpriteChanged(Object*)), levelView, SLOT(selectObj(Object*)));
     connect(spriteEditor, SIGNAL(updateLevelView()), levelView, SLOT(update()));
-    connect(spriteEditor, SIGNAL(editMade()), this, SLOT(handleEditMade()));
 
     // Setup Entrance Editor
     entranceEditor = new EntranceEditorWidget(&level->entrances);

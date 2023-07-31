@@ -1,5 +1,4 @@
 #include "spriteeditorwidget.h"
-#include "unitsconvert.h"
 #include "settingsmanager.h"
 
 #include <QGridLayout>
@@ -8,7 +7,10 @@
 #include <QMessageBox>
 #include <QRegularExpression>
 
-SpriteEditorWidget::SpriteEditorWidget(QList<Sprite*> *sprites)
+#include "EditorCommands/spritecommands.h"
+
+SpriteEditorWidget::SpriteEditorWidget(QList<Sprite*> *sprites, QUndoStack *undoStack, QWidget *parent) :
+    QSplitter(parent)
 {
     QWidget* addSpriteView = new QWidget;
     QTabWidget* tabs = new QTabWidget;
@@ -16,12 +18,12 @@ SpriteEditorWidget::SpriteEditorWidget(QList<Sprite*> *sprites)
     QLabel* viewLabel = new QLabel(tr("View:"));
     viewLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     viewComboBox = new QComboBox();
-    connect(viewComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(setView(int)));
+    connect(viewComboBox, &QComboBox::currentIndexChanged, this, &SpriteEditorWidget::setView);
 
     QLabel* searchLabel = new QLabel(tr("Search:"));
     searchLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     searchEdit = new QLineEdit();
-    connect(searchEdit, SIGNAL(textEdited(QString)), this, SLOT(search(QString)));
+    connect(searchEdit, &QLineEdit::textEdited, this, &SpriteEditorWidget::search);
 
     spriteTree = new QTreeWidget();
     spriteTree->setColumnCount(1);
@@ -47,7 +49,7 @@ SpriteEditorWidget::SpriteEditorWidget(QList<Sprite*> *sprites)
     spriteIds = new SpriteIdWidget(sprites);
     tabs->addTab(spriteIds, tr("In Level"));
 
-    editor = new SpriteDataEditorWidget(&spriteData);
+    editor = new SpriteDataEditorWidget(&spriteData, undoStack);
 
     this->addWidget(tabs);
     this->addWidget(editor);
@@ -56,11 +58,10 @@ SpriteEditorWidget::SpriteEditorWidget(QList<Sprite*> *sprites)
     this->setCollapsible(1, false);
     this->restoreState(SettingsManager::getInstance()->get("SpriteEditorSplitter").toByteArray());
 
-    connect(spriteTree, SIGNAL(currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)), this, SLOT(handleIndexChange(QTreeWidgetItem*)));
-    connect(editor, SIGNAL(editMade()), this, SLOT(handleEditDetected()));
-    connect(spriteIds, SIGNAL(selectedSpriteChanged(Object*)), this, SLOT(handleSelectedSpriteChanged(Object*)));
-    connect(spriteIds, SIGNAL(updateLevelView()), this, SLOT(handleUpdateLevelView()));
-    connect(this, SIGNAL(splitterMoved(int,int)), this, SLOT(handleSplitterMoved()));
+    connect(spriteTree, &QTreeWidget::currentItemChanged, this, &SpriteEditorWidget::handleIndexChange);
+    connect(spriteIds, &SpriteIdWidget::selectedSpriteChanged, this, &SpriteEditorWidget::handleSelectedSpriteChanged);
+    connect(spriteIds, &SpriteIdWidget::updateLevelView, this, &SpriteEditorWidget::handleUpdateLevelView);
+    connect(this, &SpriteEditorWidget::splitterMoved, this, &SpriteEditorWidget::handleSplitterMoved);
 }
 
 void SpriteEditorWidget::handleSplitterMoved()
@@ -125,7 +126,7 @@ void SpriteEditorWidget::changeEvent(QEvent* event)
         viewComboBox->setCurrentIndex(currentView);
     }
 
-    QWidget::changeEvent(event);
+    QSplitter::changeEvent(event);
 }
 
 void SpriteEditorWidget::setView(int view)
@@ -168,19 +169,13 @@ void SpriteEditorWidget::handleIndexChange(QTreeWidgetItem *item)
 {
     int data = item->data(0, Qt::UserRole).toInt();
 
-    emit(currentSpriteChanged(data));
+    emit currentSpriteChanged(data);
     editor->updateEditor();
-    emit editMade();
 }
 
 void SpriteEditorWidget::select(Sprite *sprite)
 {
-    emit(currentSpriteChanged(sprite->getid()));
-}
-
-void SpriteEditorWidget::handleEditDetected()
-{
-    emit editMade();
+    emit currentSpriteChanged(sprite->getid());
 }
 
 void SpriteEditorWidget::handleSelectedSpriteChanged(Object* obj)
@@ -198,10 +193,9 @@ void SpriteEditorWidget::handleUpdateLevelView()
     emit updateLevelView();
 }
 
-SpriteDataEditorWidget::SpriteDataEditorWidget(SpriteData *spriteData)
+SpriteDataEditorWidget::SpriteDataEditorWidget(SpriteData *spriteData, QUndoStack *undoStack, QWidget *parent) :
+    QScrollArea(parent), spriteData(spriteData), undoStack(undoStack)
 {
-    this->spriteData = spriteData;
-
     layout = new QGridLayout();
 
     this->setWidgetResizable(true);
@@ -221,13 +215,13 @@ SpriteDataEditorWidget::SpriteDataEditorWidget(SpriteData *spriteData)
     spriteNotesButton->setMaximumHeight(20);
     spriteNotesButton->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Maximum);
     layout->addWidget(spriteNotesButton, 0, 1, 1, 1, Qt::AlignRight);
-    connect(spriteNotesButton, SIGNAL (pressed()),this, SLOT (handleShowNotes()));
+    connect(spriteNotesButton, &QAbstractButton::pressed, this, &SpriteDataEditorWidget::handleShowNotes);
 
     rawSpriteData = new QLineEdit();
     rawSpriteData->setInputMask("HHHH HHHH HHHH HHHH HHHH HHHH");
     layout->addWidget(new QLabel(tr("Raw Sprite Data:")), 1, 0, 1, 1, Qt::AlignRight);
     layout->addWidget(rawSpriteData, 1, 1);
-    connect(rawSpriteData, SIGNAL(textEdited(QString)), this, SLOT(handleRawSpriteDataChange(QString)));
+    connect(rawSpriteData, &QLineEdit::textEdited, this, &SpriteDataEditorWidget::handleRawSpriteDataChange);
 
     splitterLine = new HorLine();
 
@@ -236,7 +230,7 @@ SpriteDataEditorWidget::SpriteDataEditorWidget(SpriteData *spriteData)
     QStringList layerNames;
     layerNames << tr("Layer 1") << tr("Layer 2");
     layerComboBox->addItems(layerNames);
-    connect(layerComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(handleLayerChanged(int)));
+    connect(layerComboBox, &QComboBox::currentIndexChanged, this, &SpriteDataEditorWidget::handleLayerChanged);
 
     setHidden(true);
 }
@@ -273,39 +267,35 @@ void SpriteDataEditorWidget::select(Sprite *sprite)
 
         if (field->type == Field::List)
         {
-            SpriteListFieldWidget* fieldWidget = new SpriteListFieldWidget(sprite, field);
+            SpriteListFieldWidget* fieldWidget = new SpriteListFieldWidget(sprite, field, undoStack);
             layout->addWidget(fieldWidget, i+2, 1);
             listFieldWidgets.append(fieldWidget);
-            connect(fieldWidget, SIGNAL(updateHex()), this, SLOT(updateRawSpriteData()));
-            connect(fieldWidget, SIGNAL(updateFields()), this, SLOT(updateFields()));
-            connect(fieldWidget, SIGNAL (editMade()), this, SLOT(handleEditDetected()));
+            connect(fieldWidget, &SpriteListFieldWidget::updateHex, this, &SpriteDataEditorWidget::updateRawSpriteData);
+            connect(fieldWidget, &SpriteListFieldWidget::updateFields, this, &SpriteDataEditorWidget::updateFields);
         }
         else if (field->type == Field::Checkbox)
         {
-            SpriteCheckboxFieldWidget* fieldWidget = new SpriteCheckboxFieldWidget(sprite, field);
+            SpriteCheckboxFieldWidget* fieldWidget = new SpriteCheckboxFieldWidget(sprite, field, undoStack);
             layout->addWidget(fieldWidget, i+2, 1);
             checkboxFieldWidgets.append(fieldWidget);
-            connect(fieldWidget, SIGNAL(updateHex()), this, SLOT(updateRawSpriteData()));
-            connect(fieldWidget, SIGNAL(updateFields()), this, SLOT(updateFields()));
-            connect(fieldWidget, SIGNAL (editMade()), this, SLOT(handleEditDetected()));
+            connect(fieldWidget, &SpriteCheckboxFieldWidget::updateHex, this, &SpriteDataEditorWidget::updateRawSpriteData);
+            connect(fieldWidget, &SpriteCheckboxFieldWidget::updateFields, this, &SpriteDataEditorWidget::updateFields);
         }
         else if (field->type == Field::Value)
         {
-            SpriteValueFieldWidget* fieldWidget = new SpriteValueFieldWidget(sprite, field);
+            SpriteValueFieldWidget* fieldWidget = new SpriteValueFieldWidget(sprite, field, undoStack);
             layout->addWidget(fieldWidget, i+2, 1);
             valueFieldWidgets.append(fieldWidget);
-            connect(fieldWidget, SIGNAL(updateHex()), this, SLOT(updateRawSpriteData()));
-            connect(fieldWidget, SIGNAL(updateFields()), this, SLOT(updateFields()));
-            connect(fieldWidget, SIGNAL (editMade()), this, SLOT(handleEditDetected()));
+            connect(fieldWidget, &SpriteValueFieldWidget::updateHex, this, &SpriteDataEditorWidget::updateRawSpriteData);
+            connect(fieldWidget, &SpriteValueFieldWidget::updateFields, this, &SpriteDataEditorWidget::updateFields);
         }
         else if (field->type == Field::Bitfield)
         {
-            SpriteBitFieldWidget* fieldWidget = new SpriteBitFieldWidget(sprite, field);
+            SpriteBitFieldWidget* fieldWidget = new SpriteBitFieldWidget(sprite, field, undoStack);
             layout->addWidget(fieldWidget, i+2, 1);
             bitFieldWidgets.append(fieldWidget);
-            connect(fieldWidget, SIGNAL(updateHex()), this, SLOT(updateRawSpriteData()));
-            connect(fieldWidget, SIGNAL(updateFields()), this, SLOT(updateFields()));
-            connect(fieldWidget, SIGNAL (editMade()), this, SLOT(handleEditDetected()));
+            connect(fieldWidget, &SpriteBitFieldWidget::updateHex, this, &SpriteDataEditorWidget::updateRawSpriteData);
+            connect(fieldWidget, &SpriteBitFieldWidget::updateFields, this, &SpriteDataEditorWidget::updateFields);
         }
     }
 
@@ -354,26 +344,21 @@ void SpriteDataEditorWidget::handleRawSpriteDataChange(QString text)
 {
     QString bytes = text.remove(" ");
 
-    for (int i = 0; i < 12; i++)
-        editSprite->setByte(i, (quint8)bytes.mid(i*2, 2).toUInt(0, 16));
-
-    editSprite->setRect();
+    undoStack->beginMacro("Edit Raw Spritedata");
+    for (int i = 0; i < 12; i++) {
+        undoStack->push(new Commands::SpriteCmd::SetByte(editSprite, i, (quint8)bytes.mid(i*2, 2).toUInt(nullptr, 16)));
+    }
+    undoStack->endMacro();
 
     updateFields();
-
     emit updateLevelView();
-    emit editMade();
-}
-
-void SpriteDataEditorWidget::handleEditDetected()
-{
-    emit editMade();
 }
 
 void SpriteDataEditorWidget::handleShowNotes()
 {
     QString name = spriteName->text();
-    name.remove(QRegularExpression("<[^>]*>"));
+    QRegularExpression re("<[^>]*>");
+    name.remove(re);
 
     QMessageBox notes;
     notes.setWindowTitle(name);
@@ -395,7 +380,7 @@ void SpriteDataEditorWidget::handleShowNotes()
 
 void SpriteDataEditorWidget::handleLayerChanged(int layer)
 {
-    editSprite->setLayer(layer);
+    undoStack->push(new Commands::SpriteCmd::SetLayer(editSprite, layer));
 }
 
 void SpriteDataEditorWidget::updateEditor()
@@ -418,25 +403,26 @@ void SpriteDataEditorWidget::reloadFields()
     layout->removeWidget(splitterLine);
     layout->removeWidget(layerComboBox);
     layout->removeWidget(layerLabel);
-
     select(editSprite);
 }
 
 // Field Widgets
 
-SpriteValueFieldWidget::SpriteValueFieldWidget(Sprite *sprite, Field *field)
-{
-    this->sprite = sprite;
-    this->field = field;
+SpriteValueFieldWidget::SpriteValueFieldWidget(Sprite *sprite, Field *field, QUndoStack *undoStack, QWidget *parent) :
+    QSpinBox(parent),
+    sprite(sprite),
+    field(field),
+    undoStack(undoStack) {
     this->setToolTip(field->comment);
 
-    if (field->posType == Field::Bits)
+    if (field->posType == Field::Bits) {
         setRange(0, (1 << (field->endPos - field->startPos + 1)) - 1);
-    else
+    } else {
         setRange(0, (1 << ((field->endPos - field->startPos + 1) * 4)) - 1);
+    }
 
     updateValue();
-    connect(this, SIGNAL(valueChanged(int)), this, SLOT(handleValueChange(int)));
+    connect(this, &QSpinBox::valueChanged, this, &SpriteValueFieldWidget::handleValueChange);
 }
 
 void SpriteValueFieldWidget::updateValue()
@@ -455,27 +441,25 @@ void SpriteValueFieldWidget::handleValueChange(int value)
 {
     if (!handleValueChanges) return;
 
-    if (field->posType == Field::Bits)
-        sprite->setBits(value, field->startPos, field->endPos);
-    else
-        sprite->setNybbleData(value, field->startPos, field->endPos);
+    if (field->posType == Field::Bits) {
+        undoStack->push(new Commands::SpriteCmd::SetBits(sprite, value, field->startPos, field->endPos));
+    } else {
+        undoStack->push(new Commands::SpriteCmd::SetNybbleData(sprite, value, field->startPos, field->endPos));
+    }
 
-    sprite->setRect();
     emit updateHex();
     emit updateFields();
-    emit editMade();
 }
 
 
-SpriteCheckboxFieldWidget::SpriteCheckboxFieldWidget(Sprite *sprite, Field *field)
+SpriteCheckboxFieldWidget::SpriteCheckboxFieldWidget(Sprite *sprite, Field *field, QUndoStack *undoStack, QWidget *parent) :
+    QCheckBox(parent), sprite(sprite), field(field), undoStack(undoStack)
 {
-    this->sprite = sprite;
-    this->field = field;
     this->setToolTip(field->comment);
     setText(field->title);
 
     updateValue();
-    connect(this, SIGNAL(toggled(bool)), this, SLOT(handleValueChange(bool)));
+    connect(this, &QAbstractButton::toggled, this, &SpriteCheckboxFieldWidget::handleValueChange);
 }
 
 void SpriteCheckboxFieldWidget::updateValue()
@@ -492,30 +476,31 @@ void SpriteCheckboxFieldWidget::updateValue()
 
 void SpriteCheckboxFieldWidget::handleValueChange(bool checked)
 {
-    if (!handleValueChanges) return;
-
-    if (field->posType == Field::Bits)
-    {
-        sprite->setBits(checked, field->startPos, field->endPos);
+    if (!handleValueChanges) {
+        return;
     }
-    else
-    {
+
+    if (field->posType == Field::Bits) {
+        undoStack->push(new Commands::SpriteCmd::SetBits(sprite, checked, field->startPos, field->endPos));
+    } else {
         quint8 newData = sprite->getNybbleData(field->startPos, field->endPos) & (~field->mask);
-        if (checked) newData |= field->mask;
-        sprite->setNybbleData((int)newData, field->startPos, field->endPos);
+        if (checked) {
+            newData |= field->mask;
+        }
+        undoStack->push(new Commands::SpriteCmd::SetNybbleData(sprite, newData, field->startPos, field->endPos));
     }
 
-    sprite->setRect();
     emit updateHex();
     emit updateFields();
-    emit editMade();
 }
 
 
-SpriteListFieldWidget::SpriteListFieldWidget(Sprite *sprite, Field *field)
-{
-    this->sprite = sprite;
-    this->field = field;
+SpriteListFieldWidget::SpriteListFieldWidget(Sprite *sprite, Field *field, QUndoStack *undoStack, QWidget *parent) :
+    QComboBox(parent),
+    sprite(sprite),
+    field(field),
+    undoStack(undoStack) {
+
     this->setToolTip(field->comment);
 
     for (int i = 0; i < field->listEntries.count(); i++)
@@ -525,7 +510,7 @@ SpriteListFieldWidget::SpriteListFieldWidget(Sprite *sprite, Field *field)
     }
 
     updateValue();
-    connect(this, SIGNAL(currentIndexChanged(int)), this, SLOT(handleIndexChange(int)));
+    connect(this, &QComboBox::currentIndexChanged, this, &SpriteListFieldWidget::handleIndexChange);
 }
 
 void SpriteListFieldWidget::updateValue()
@@ -556,24 +541,27 @@ void SpriteListFieldWidget::updateValue()
 
 void SpriteListFieldWidget::handleIndexChange(int index)
 {
-    if (!handleValueChanges) return;
+    if (!handleValueChanges) {
+        return;
+    }
 
-    if (field->posType == Field::Bits)
-        sprite->setBits(itemData(index).toInt(), field->startPos, field->endPos);
-    else
-        sprite->setNybbleData(itemData(index).toInt(), field->startPos, field->endPos);
+    if (field->posType == Field::Bits) {
+        undoStack->push(new Commands::SpriteCmd::SetBits(sprite, itemData(index).toInt(), field->startPos, field->endPos));
+    } else {
+        undoStack->push(new Commands::SpriteCmd::SetNybbleData(sprite, itemData(index).toInt(), field->startPos, field->endPos));
+    }
 
-    sprite->setRect();
     emit updateHex();
     emit updateFields();
-    emit editMade();
 }
 
 
-SpriteBitFieldWidget::SpriteBitFieldWidget(Sprite *sprite, Field *field)
-{
-    this->sprite = sprite;
-    this->field = field;
+SpriteBitFieldWidget::SpriteBitFieldWidget(Sprite *sprite, Field *field, QUndoStack *undoStack, QWidget *parent) :
+    QFrame(parent),
+    sprite(sprite),
+    field(field),
+    undoStack(undoStack) {
+
     this->setToolTip(field->comment);
 
     this->setFrameShape(QFrame::StyledPanel);
@@ -597,7 +585,7 @@ SpriteBitFieldWidget::SpriteBitFieldWidget(Sprite *sprite, Field *field)
             QCheckBox* checkbox = new QCheckBox();
             layout->addWidget(checkbox, length - i/4, 4 - j);
             checkboxWidgets.append(checkbox);
-            connect(checkbox, SIGNAL(toggled(bool)), this, SLOT(handleValueChange()));
+            connect(checkbox, &QAbstractButton::toggled, this, &SpriteBitFieldWidget::handleValueChange);
             i++;
         }
     }
@@ -629,27 +617,27 @@ void SpriteBitFieldWidget::updateValue()
 
 void SpriteBitFieldWidget::handleValueChange()
 {
-    if (!handleValueChanges) return;
+    if (!handleValueChanges) {
+        return;
+    }
 
     QCheckBox* checkbox = qobject_cast<QCheckBox*>(sender());
     int bit = checkboxWidgets.indexOf(checkbox);
 
-    if (field->posType == Field::Bits)
-    {
+    if (bit < 0) {
+        return;
+    }
+
+    if (field->posType == Field::Bits) {
         int value = sprite->getBits(field->startPos, field->endPos);
         value ^= 1 << bit;
-        sprite->setBits(value, field->startPos, field->endPos);
-
-    }
-    else
-    {
+        undoStack->push(new Commands::SpriteCmd::SetBits(sprite, value, field->startPos, field->endPos));
+    } else {
         int value = sprite->getNybbleData(field->startPos, field->endPos);
         value ^= 1 << bit;
-        sprite->setNybbleData(value, field->startPos, field->endPos);
+        undoStack->push(new Commands::SpriteCmd::SetNybbleData(sprite, value, field->startPos, field->endPos));
     }
 
-    sprite->setRect();
     emit updateHex();
     emit updateFields();
-    emit editMade();
 }

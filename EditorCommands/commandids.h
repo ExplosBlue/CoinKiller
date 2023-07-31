@@ -8,7 +8,10 @@ enum CommandID {
     Cmd_Move,
     Cmd_Resize,
     Cmd_IncreasePosition,
-    Cmd_SetValue
+    Cmd_SetValue,
+
+    // Sprites
+    Cmd_SetSpriteByte
 };
 
 }

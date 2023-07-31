@@ -2,7 +2,7 @@
 #define SPRITESEDITOR_H
 
 #include "spritedata.h"
-#include "level.h"
+#include "objects.h"
 #include "spriteidswidget.h"
 
 #include <QWidget>
@@ -17,23 +17,26 @@
 #include <QPushButton>
 #include <QSplitter>
 #include <QScrollArea>
+#include <QUndoStack>
 
 class SpriteValueFieldWidget : public QSpinBox
 {
     Q_OBJECT
 public:
-    SpriteValueFieldWidget(Sprite* sprite, Field* field);
+    SpriteValueFieldWidget(Sprite *sprite, Field *field, QUndoStack *undoStack, QWidget *parent = nullptr);
     void updateValue();
+
 private slots:
     void handleValueChange(int value);
+
 signals:
     void updateHex();
     void updateFields();
-    void editMade();
 
 private:
     Sprite* sprite;
     Field* field;
+    QUndoStack *undoStack;
     bool handleValueChanges;
 };
 
@@ -41,18 +44,18 @@ class SpriteCheckboxFieldWidget : public QCheckBox
 {
     Q_OBJECT
 public:
-    SpriteCheckboxFieldWidget(Sprite* sprite, Field* field);
+    SpriteCheckboxFieldWidget(Sprite *sprite, Field *field, QUndoStack *undoStack, QWidget *parent = nullptr);
     void updateValue();
 private slots:
     void handleValueChange(bool checked);
 signals:
     void updateHex();
     void updateFields();
-    void editMade();
 
 private:
-    Sprite* sprite;
-    Field* field;
+    Sprite *sprite;
+    Field *field;
+    QUndoStack *undoStack;
     bool handleValueChanges;
 };
 
@@ -60,18 +63,18 @@ class SpriteListFieldWidget : public QComboBox
 {
     Q_OBJECT
 public:
-    SpriteListFieldWidget(Sprite* sprite, Field* field);
+    SpriteListFieldWidget(Sprite *sprite, Field *field, QUndoStack *undoStack, QWidget *parent = nullptr);
     void updateValue();
 private slots:
     void handleIndexChange(int index);
 signals:
     void updateHex();
     void updateFields();
-    void editMade();
 
 private:
-    Sprite* sprite;
-    Field* field;
+    Sprite *sprite;
+    Field *field;
+    QUndoStack *undoStack;
     bool handleValueChanges;
 };
 
@@ -79,31 +82,29 @@ class SpriteBitFieldWidget : public QFrame
 {
     Q_OBJECT
 public:
-    SpriteBitFieldWidget(Sprite* sprite, Field* field);
+    SpriteBitFieldWidget(Sprite *sprite, Field *field, QUndoStack *undoStack, QWidget *parent = nullptr);
     void updateValue();
 private slots:
     void handleValueChange();
 signals:
     void updateHex();
     void updateFields();
-    void editMade();
 
 private:
-    QGridLayout* layout;
-
-    Sprite* sprite;
-    Field* field;
-    bool handleValueChanges;
-
+    QGridLayout *layout;
     QList<QCheckBox*> checkboxWidgets;
 
+    Sprite *sprite;
+    Field *field;
+    QUndoStack *undoStack;
+    bool handleValueChanges;
 };
 
 class SpriteDataEditorWidget : public QScrollArea
 {
     Q_OBJECT
 public:
-    SpriteDataEditorWidget(SpriteData* spriteData);
+    SpriteDataEditorWidget(SpriteData* spriteData, QUndoStack *undoStack, QWidget *parent = nullptr);
     void select(Sprite* sprite);
     void deselect();
     void updateEditor();
@@ -112,13 +113,11 @@ private slots:
     void handleRawSpriteDataChange(QString text);
     void updateRawSpriteData();
     void updateFields();
-    void handleEditDetected();
     void handleShowNotes();
     void handleLayerChanged(int);
 
 signals:
     void updateLevelView();
-    void editMade();
 
 private:
     QGridLayout* layout;
@@ -146,13 +145,15 @@ private:
 
     void addField(Field* field, int pos);
     void reloadFields();
+
+    QUndoStack *undoStack;
 };
 
 class SpriteEditorWidget : public QSplitter
 {
     Q_OBJECT
 public:
-    SpriteEditorWidget(QList<Sprite*> *sprites);
+    SpriteEditorWidget(QList<Sprite*> *sprites, QUndoStack *undoStack, QWidget *parent = nullptr);
     void select(Sprite* sprite);
     SpriteDataEditorWidget* spriteDataEditorPtr() { return editor; }
     SpriteIdWidget* spriteIdsPtr() { return spriteIds; }
@@ -160,7 +161,6 @@ public:
 signals:
     void currentSpriteChanged(int);
     void selectedSpriteChanged(Object*);
-    void editMade();
     void updateLevelView();
 
 public slots:
@@ -171,7 +171,6 @@ public slots:
 
 private slots:
     void handleIndexChange(QTreeWidgetItem *item);
-    void handleEditDetected();
     void handleSplitterMoved();
 
 private:
@@ -183,7 +182,7 @@ private:
 
     SpriteDataEditorWidget* editor;
 
-    void changeEvent(QEvent* event);
+    void changeEvent(QEvent* event) override;
 
     QStringList getViewNames();
 };
