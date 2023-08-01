@@ -300,7 +300,9 @@ void SpriteDataEditorWidget::select(Sprite *sprite)
     }
 
     // TODO: Only show layer combo box for sprites that use the layer setting
+    layerComboBox->blockSignals(true);
     layerComboBox->setCurrentIndex(editSprite->getLayer());
+    layerComboBox->blockSignals(false);
 
     int fieldCount = def.getFieldCount();
     layout->addWidget(splitterLine, fieldCount+2, 0, 1, 2);

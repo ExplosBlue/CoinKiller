@@ -38,7 +38,7 @@ void SetBits::redo() {
 }
 
 
-SetByte::SetByte(Sprite *spr, qint32 byteIndex, qint8 value) :
+SetByte::SetByte(Sprite *spr, qint32 byteIndex, quint8 value) :
     spr(spr),
     byteIndex(byteIndex),
     newValue(value),
@@ -55,22 +55,6 @@ void SetByte::redo() {
     this->spr->setByte(byteIndex, newValue);
     this->spr->setRect();
 }
-
-//bool SetByte::mergeWith(const QUndoCommand *otherCommand) {
-//    if (otherCommand->id() != this->id()) {
-//        return false;
-//    }
-
-//    const SetSpriteByte *otherSetByte = static_cast<const SetSpriteByte*>(otherCommand);
-
-//    if (otherSetByte->spr != this->spr && otherSetByte->byteIndex != this->byteIndex) {
-//        return false;
-//    }
-
-//    //    newValue = otherSetByte->newValue;
-//    //    return true;
-//    return false;
-//}
 
 
 SetNybbleData::SetNybbleData(Sprite *spr, qint32 data, qint32 start, qint32 end) :

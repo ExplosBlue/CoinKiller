@@ -19,10 +19,6 @@ public:
     void select(BgdatObject* obj);
     void updateEditor();
 
-signals:
-    void updateLevelView();
-    void editMade();
-
 private slots:
     void objectsListViewClicked(const QModelIndex &index);
     void layerToggled(bool state);

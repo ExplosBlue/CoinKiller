@@ -22,7 +22,6 @@ public:
     void updateEditor();
 
 signals:
-    void updateLevelView();
     void relaodTilesetPicker();
 
 private:

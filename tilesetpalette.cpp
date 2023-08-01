@@ -10,7 +10,11 @@
 #include "EditorCommands/settileset.h"
 
 TilesetPalette::TilesetPalette(Level* level, EditManager* editManager, Game* game, QUndoStack *undoStack, QWidget *parent) :
-    QWidget(parent), level(level), editManager(editManager), game(game), undoStack(undoStack) {
+    QWidget(parent),
+    level(level),
+    editManager(editManager),
+    game(game),
+    undoStack(undoStack) {
 
     QVBoxLayout* layout = new QVBoxLayout();
     this->setLayout(layout);
@@ -226,7 +230,5 @@ void TilesetPalette::tilesetPickerChosen(int index)
 
     undoStack->push(new EditorCommand::SetTileset(level->tilesets[tsId], game, tsName));
 
-    emit updateLevelView();
-    emit editMade();
     reloadTilesets();
 }

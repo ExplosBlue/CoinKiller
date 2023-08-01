@@ -21,6 +21,7 @@ private:
     const quint8 oldLayer;
 };
 
+
 class SetBits : public QUndoCommand
 {
 public:
@@ -37,22 +38,22 @@ private:
     const qint32 end;
 };
 
+
 class SetByte : public QUndoCommand
 {
 public:
-    SetByte(Sprite *spr, qint32 byteIndex, qint8 value);
+    SetByte(Sprite *spr, qint32 byteIndex, quint8 value);
 
     void undo() override;
     void redo() override;
-//    int id() const override { return CommandID::Cmd_SetSpriteByte; }
-//    bool mergeWith(const QUndoCommand *otherCommand) override;
 
 private:
     Sprite *const spr;
     const qint32 byteIndex;
-    const qint8 newValue;
-    const qint8 oldValue;
+    const quint8 newValue;
+    const quint8 oldValue;
 };
+
 
 class SetNybbleData : public QUndoCommand
 {

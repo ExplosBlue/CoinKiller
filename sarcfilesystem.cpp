@@ -95,7 +95,7 @@ bool SarcFilesystem::directoryExists(QString path)
 
 void SarcFilesystem::directoryContents(QString path, QDir::Filter filter, QList<QString>& out)
 {
-    if (path[0] == '/')
+    if (path.startsWith('/'))
         path.remove(0,1);
 
     if (path != "" && !path.endsWith("/"))

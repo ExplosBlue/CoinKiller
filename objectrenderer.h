@@ -823,10 +823,8 @@ class BigBooRenderer: public SpriteRenderer
 {
 public:
     BigBooRenderer(const Sprite *spr);
-    ~BigBooRenderer() { delete img; }
+    ~BigBooRenderer() {}
     void render(QPainter *painter, QRect *drawrect);
-protected:
-    NormalImageRenderer *img;
 };
 
 // Sprite 186/199/230: Paratroopa/CheepCheep/Peepa Circle
@@ -879,10 +877,7 @@ class SwingingVineRenderer: public SpriteRenderer
 {
 public:
     SwingingVineRenderer(const Sprite *spr);
-    ~SwingingVineRenderer() { delete img; }
     void render(QPainter *painter, QRect *drawrect);
-protected:
-    NormalImageRenderer* img;
 };
 
 // Sprite 240: Urchin
