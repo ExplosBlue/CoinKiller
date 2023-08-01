@@ -8,34 +8,33 @@
 #include <QSpinBox>
 #include <QCheckBox>
 #include <QListWidget>
+#include <QUndoStack>
 
 class EntranceEditorWidget : public QWidget
 {
     Q_OBJECT
 public:
-    EntranceEditorWidget(QList<Entrance*> *entrances);
+    EntranceEditorWidget(QList<Entrance*> *entrances, QUndoStack *undoStack, QWidget *parent = nullptr);
     void deselect();
     void select(Entrance* entr);
     void updateEditor();
 
 signals:
-    void updateLevelView();
     void selectedEntrChanged(Object* entr);
-    void editMade();
 
 private:
-    QListWidget* entrancesList;
-    QWidget* edits;
-    QComboBox* type;
-    QSpinBox* id;
-    QSpinBox* destId;
-    QSpinBox* destArea;
-    QSpinBox* camXOffset;
-    QSpinBox* camYOffset;
-    QSpinBox* unk1;
-    QSpinBox* unk2;
-    QCheckBox* enterable;
-    QCheckBox* returnToWM;
+    QListWidget *entrancesList;
+    QWidget *edits;
+    QComboBox *type;
+    QSpinBox *id;
+    QSpinBox *destId;
+    QSpinBox *destArea;
+    QSpinBox *camXOffset;
+    QSpinBox *camYOffset;
+    QSpinBox *unk1;
+    QSpinBox *unk2;
+    QCheckBox *enterable;
+    QCheckBox *returnToWM;
 
     QList<Entrance*> *entrances;
     Entrance* editEntrance;
@@ -51,6 +50,8 @@ private:
 
     bool editingAnEntrance = false;
     bool handleChanges = true;
+
+    QUndoStack *undoStack;
 
 private slots:
     void handleEntranceListIndexChanged(QListWidgetItem* item);

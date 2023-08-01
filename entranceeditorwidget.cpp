@@ -6,52 +6,55 @@
 #include <QGridLayout>
 #include <QLabel>
 
-EntranceEditorWidget::EntranceEditorWidget(QList<Entrance*> *entrances)
-{
-    this->entrances = entrances;
+#include "EditorCommands/entrancecommands.h"
+
+EntranceEditorWidget::EntranceEditorWidget(QList<Entrance*> *entrances, QUndoStack *undoStack, QWidget *parent) :
+    QWidget(parent),
+    entrances(entrances),
+    undoStack(undoStack) {
     loadEntranceTypes();
 
     id = new QSpinBox();
     id->setRange(0, 255);
-    connect(id, SIGNAL(valueChanged(int)), this, SLOT(handleIDChanged(int)));
+    connect(id, &QSpinBox::valueChanged, this, &EntranceEditorWidget::handleIDChanged);
 
     type = new QComboBox();
     type->setSizeAdjustPolicy(QComboBox::SizeAdjustPolicy::AdjustToMinimumContentsLengthWithIcon);
     type->addItems(entranceTypes);
-    connect(type, SIGNAL(currentIndexChanged(int)), this, SLOT(handleTypeChanged(int)));
+    connect(type, &QComboBox::currentIndexChanged, this, &EntranceEditorWidget::handleTypeChanged);
 
     destId = new QSpinBox();
     destId->setRange(0, 255);
-    connect(destId, SIGNAL(valueChanged(int)), this, SLOT(handleDestEntrChange(int)));
+    connect(destId, &QSpinBox::valueChanged, this, &EntranceEditorWidget::handleDestEntrChange);
 
     destArea = new QSpinBox();
     destArea->setRange(0, 4);
-    connect(destArea, SIGNAL(valueChanged(int)), this, SLOT(handleDestAreaChange(int)));
+    connect(destArea, &QSpinBox::valueChanged, this, &EntranceEditorWidget::handleDestAreaChange);
 
     camXOffset = new QSpinBox();
     camXOffset->setRange(-32768, 32767);
-    connect(camXOffset, SIGNAL(valueChanged(int)), this, SLOT(handleCamXChange(int)));
+    connect(camXOffset, &QSpinBox::valueChanged, this, &EntranceEditorWidget::handleCamXChange);
 
     camYOffset = new QSpinBox();
     camYOffset->setRange(-32768, 32767);
-    connect(camYOffset, SIGNAL(valueChanged(int)), this, SLOT(handleCamYChange(int)));
+    connect(camYOffset, &QSpinBox::valueChanged, this, &EntranceEditorWidget::handleCamYChange);
 
     unk1 = new QSpinBox();
     unk1->setRange(0, 255);
-    connect(unk1, SIGNAL(valueChanged(int)), this, SLOT(handleUnk1Change(int)));
+    connect(unk1, &QSpinBox::valueChanged, this, &EntranceEditorWidget::handleUnk1Change);
 
     unk2 = new QSpinBox();
     unk2->setRange(0, 255);
-    connect(unk2, SIGNAL(valueChanged(int)), this, SLOT(handleUnk2Change(int)));
+    connect(unk2, &QSpinBox::valueChanged, this, &EntranceEditorWidget::handleUnk2Change);
 
     enterable = new QCheckBox(tr("Enterable"));
-    connect(enterable, SIGNAL(toggled(bool)), this, SLOT(handleEnterableChange(bool)));
+    connect(enterable, &QAbstractButton::toggled, this, &EntranceEditorWidget::handleEnterableChange);
 
     returnToWM = new QCheckBox(tr("Return to Worldmap"));
-    connect(returnToWM, SIGNAL(toggled(bool)), this, SLOT(handleReturnToWMChange(bool)));
+    connect(returnToWM, &QAbstractButton::toggled, this, &EntranceEditorWidget::handleReturnToWMChange);
 
     entrancesList = new QListWidget();
-    connect(entrancesList, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(handleEntranceListIndexChanged(QListWidgetItem*)));
+    connect(entrancesList, &QListWidget::itemClicked, this, &EntranceEditorWidget::handleEntranceListIndexChanged);
 
     QVBoxLayout* layout = new QVBoxLayout();
     setLayout(layout);
@@ -212,77 +215,64 @@ void EntranceEditorWidget::handleEntranceListIndexChanged(QListWidgetItem *item)
     emit selectedEntrChanged(editEntrance);
 }
 
-void EntranceEditorWidget::handleTypeChanged(int typeVal)
+void EntranceEditorWidget::handleTypeChanged(int type)
 {
     if (!handleChanges) return;
-    editEntrance->setEntrType(typeVal);
-    editEntrance->setRect();
+    undoStack->push(new Commands::EntranceCmd::SetType(editEntrance, type));
     updateList();
-    emit updateLevelView();
-    emit editMade();
 }
 
-void EntranceEditorWidget::handleIDChanged(int idVal)
+void EntranceEditorWidget::handleIDChanged(int id)
 {
     if (!handleChanges) return;
-    editEntrance->setId(idVal);
+    undoStack->push(new Commands::EntranceCmd::SetId(editEntrance, id));
     updateList();
-    emit updateLevelView();
-    emit editMade();
 }
 
-void EntranceEditorWidget::handleDestEntrChange(int destEntrVal)
+void EntranceEditorWidget::handleDestEntrChange(int destEntrId)
 {
     if (!handleChanges) return;
-    editEntrance->setDestEntr(destEntrVal);
-    emit editMade();
+    undoStack->push(new Commands::EntranceCmd::SetDestEntr(editEntrance, destEntrId));
 }
 
-void EntranceEditorWidget::handleDestAreaChange(int destAreaVal)
+void EntranceEditorWidget::handleDestAreaChange(int destAreaId)
 {
     if (!handleChanges) return;
-    editEntrance->setDestArea(destAreaVal);
-    emit editMade();
+    undoStack->push(new Commands::EntranceCmd::SetDestArea(editEntrance, destAreaId));
 }
 
-void EntranceEditorWidget::handleCamXChange(int camXVal)
+void EntranceEditorWidget::handleCamXChange(int xOffset)
 {
     if (!handleChanges) return;
-    editEntrance->setCameraX(camXVal);
-    emit editMade();
+    undoStack->push(new Commands::EntranceCmd::SetCamXOffset(editEntrance, static_cast<qint16>(xOffset)));
 }
 
-void EntranceEditorWidget::handleCamYChange(int camYVal)
+void EntranceEditorWidget::handleCamYChange(int yOffset)
 {
     if (!handleChanges) return;
-    editEntrance->setCameraY(camYVal);
-    emit editMade();
+    undoStack->push(new Commands::EntranceCmd::SetCamYOffset(editEntrance, static_cast<qint16>(yOffset)));
 }
 
-void EntranceEditorWidget::handleUnk1Change(int unk1Val)
+void EntranceEditorWidget::handleUnk1Change(int unk1)
 {
     if (!handleChanges) return;
-    editEntrance->setUnk1(unk1Val);
-    emit editMade();
+    undoStack->push(new Commands::EntranceCmd::SetUnk1(editEntrance, unk1));
 }
 
-void EntranceEditorWidget::handleUnk2Change(int unk2Val)
+void EntranceEditorWidget::handleUnk2Change(int unk2)
 {
     if (!handleChanges) return;
-    editEntrance->setUnk2(unk2Val);
-    emit editMade();
+    undoStack->push(new Commands::EntranceCmd::SetUnk2(editEntrance, unk2));
 }
 
-void EntranceEditorWidget::handleEnterableChange(bool enterableVal)
+void EntranceEditorWidget::handleEnterableChange(bool enterable)
 {
     if (!handleChanges) return;
-    editEntrance->setSettingsBit(!enterableVal, 7);
-    emit editMade();
+    undoStack->push(new Commands::EntranceCmd::SetSettingsBit(editEntrance, !enterable, 7));
 }
 
-void EntranceEditorWidget::handleReturnToWMChange(bool returnToWMVal)
+void EntranceEditorWidget::handleReturnToWMChange(bool returnToWM)
 {
     if (!handleChanges) return;
-    editEntrance->setSettingsBit(returnToWMVal, 4);
-    emit editMade();
+    undoStack->push(new Commands::EntranceCmd::SetSettingsBit(editEntrance, returnToWM, 4));
 }

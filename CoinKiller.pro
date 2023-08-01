@@ -58,6 +58,7 @@ SOURCES += main.cpp\
     EditorCommands/deleteprogresspathnode.cpp \
     EditorCommands/deletesprite.cpp \
     EditorCommands/deletezone.cpp \
+    EditorCommands/entrancecommands.cpp \
     EditorCommands/increaseobjectposition.cpp \
     EditorCommands/increaseobjectsize.cpp \
     EditorCommands/insertbgdatobj.cpp \
@@ -136,6 +137,7 @@ HEADERS  += mainwindow.h \
     EditorCommands/deletesprite.h \
     EditorCommands/deletezone.h \
     EditorCommands/editorcommands.h \
+    EditorCommands/entrancecommands.h \
     EditorCommands/increaseobjectposition.h \
     EditorCommands/increaseobjectsize.h \
     EditorCommands/insertbgdatobj.h \

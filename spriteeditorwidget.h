@@ -116,9 +116,6 @@ private slots:
     void handleShowNotes();
     void handleLayerChanged(int);
 
-signals:
-    void updateLevelView();
-
 private:
     QGridLayout* layout;
     QLineEdit* rawSpriteData;
@@ -161,13 +158,11 @@ public:
 signals:
     void currentSpriteChanged(int);
     void selectedSpriteChanged(Object*);
-    void updateLevelView();
 
 public slots:
     void setView(int view);
     void search(QString text);
     void handleSelectedSpriteChanged(Object* obj);
-    void handleUpdateLevelView();
 
 private slots:
     void handleIndexChange(QTreeWidgetItem *item);

@@ -60,7 +60,6 @@ SpriteEditorWidget::SpriteEditorWidget(QList<Sprite*> *sprites, QUndoStack *undo
 
     connect(spriteTree, &QTreeWidget::currentItemChanged, this, &SpriteEditorWidget::handleIndexChange);
     connect(spriteIds, &SpriteIdWidget::selectedSpriteChanged, this, &SpriteEditorWidget::handleSelectedSpriteChanged);
-    connect(spriteIds, &SpriteIdWidget::updateLevelView, this, &SpriteEditorWidget::handleUpdateLevelView);
     connect(this, &SpriteEditorWidget::splitterMoved, this, &SpriteEditorWidget::handleSplitterMoved);
 }
 
@@ -188,10 +187,6 @@ void SpriteEditorWidget::handleSelectedSpriteChanged(Object* obj)
     }
 }
 
-void SpriteEditorWidget::handleUpdateLevelView()
-{
-    emit updateLevelView();
-}
 
 SpriteDataEditorWidget::SpriteDataEditorWidget(SpriteData *spriteData, QUndoStack *undoStack, QWidget *parent) :
     QScrollArea(parent), spriteData(spriteData), undoStack(undoStack)
@@ -339,7 +334,6 @@ void SpriteDataEditorWidget::updateRawSpriteData()
     QString rawSpriteDataStr;
     for (int i = 0; i < 12; i++) rawSpriteDataStr.append(QString("%1").arg(editSprite->getByte(i), 2, 16, QChar('0')));
     rawSpriteData->setText(rawSpriteDataStr);
-    emit updateLevelView();
 }
 
 void SpriteDataEditorWidget::handleRawSpriteDataChange(QString text)
@@ -353,7 +347,6 @@ void SpriteDataEditorWidget::handleRawSpriteDataChange(QString text)
     undoStack->endMacro();
 
     updateFields();
-    emit updateLevelView();
 }
 
 void SpriteDataEditorWidget::handleShowNotes()

@@ -1,5 +1,5 @@
-#ifndef EDITORCOMMAND_SPRITE_SETLAYER_H
-#define EDITORCOMMAND_SPRITE_SETLAYER_H
+#ifndef COMMANDS_SPRITECMD_H
+#define COMMANDS_SPRITECMD_H
 
 #include <QUndoCommand>
 
@@ -73,4 +73,4 @@ private:
 
 } // namespace Commands::SpriteCmd
 
-#endif // EDITORCOMMAND_SPRITE_SETLAYER_H
+#endif // COMMANDS_SPRITECMD_H

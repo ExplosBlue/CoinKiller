@@ -47,7 +47,7 @@ LevelEditorWindow::LevelEditorWindow(LevelManager* lvlMgr, int initialArea) :
 
     areaSelector = new QComboBox(this);
     ui->toolBar->insertWidget(ui->actionAddArea, areaSelector);
-    connect(areaSelector, SIGNAL(currentIndexChanged(int)), this, SLOT(handleAreaIndexChange(int)));
+    connect(areaSelector, &QComboBox::currentIndexChanged, this, &LevelEditorWindow::handleAreaIndexChange);
 
     editStatus = new QLabel(this);
     ui->statusbar->addWidget(editStatus);
@@ -80,22 +80,22 @@ LevelEditorWindow::LevelEditorWindow(LevelManager* lvlMgr, int initialArea) :
     ui->actionResetBackgroundColor->setIcon(QIcon(basePath + "delete_colors.png"));
 
     ui->actionToggleLayer1->setIcon(QIcon(basePath + "layer1.png"));
-    connect(ui->actionToggleLayer1, SIGNAL(toggled(bool)), this, SLOT(toggleLayer(bool)));
+    connect(ui->actionToggleLayer1, &QAction::toggled, this, &LevelEditorWindow::toggleLayer);
 
     ui->actionToggleLayer2->setIcon(QIcon(basePath + "layer2.png"));
-    connect(ui->actionToggleLayer2, SIGNAL(toggled(bool)), this, SLOT(toggleLayer(bool)));
+    connect(ui->actionToggleLayer2, &QAction::toggled, this, &LevelEditorWindow::toggleLayer);
 
     ui->actionToggleSprites->setIcon(QIcon(basePath + "sprite.png"));
-    connect(ui->actionToggleSprites, SIGNAL(toggled(bool)), this, SLOT(toggleSprites(bool)));
+    connect(ui->actionToggleSprites, &QAction::toggled, this, &LevelEditorWindow::toggleSprites);
 
     ui->actionToggleEntrances->setIcon(QIcon(basePath + "entrance.png"));
-    connect(ui->actionToggleEntrances, SIGNAL(toggled(bool)), this, SLOT(toggleEntrances(bool)));
+    connect(ui->actionToggleEntrances, &QAction::toggled, this, &LevelEditorWindow::toggleEntrances);
 
     ui->actionTogglePaths->setIcon(QIcon(basePath + "path.png"));
-    connect(ui->actionTogglePaths, SIGNAL(toggled(bool)), this, SLOT(togglePaths(bool)));
+    connect(ui->actionTogglePaths, &QAction::toggled, this, &LevelEditorWindow::togglePaths);
 
     ui->actionToggleLocations->setIcon(QIcon(basePath + "location.png"));
-    connect(ui->actionToggleLocations, SIGNAL(toggled(bool)), this, SLOT(toggleLocations(bool)));
+    connect(ui->actionToggleLocations, &QAction::toggled, this, &LevelEditorWindow::toggleLocations);
 
     ui->actionToggle3DOverlay->setIcon(QIcon(basePath + "3D.png"));
     ui->actionToggle2DTile->setIcon(QIcon(basePath + "2D.png"));
@@ -109,7 +109,7 @@ LevelEditorWindow::LevelEditorWindow(LevelManager* lvlMgr, int initialArea) :
     toolboxDock->setObjectName("toolboxDock");
     toolboxDock->setWindowTitle(tr("Toolbox"));
     toolboxTabs = new QTabWidget(this);
-    connect(toolboxTabs, SIGNAL(currentChanged(int)), this, SLOT(toolboxTabsCurrentChanged(int)));
+    connect(toolboxTabs, &QTabWidget::currentChanged, this, &LevelEditorWindow::toolboxTabsCurrentChanged);
     toolboxDock->setWidget(toolboxTabs);
 
     minimapDock = new QDockWidget(this);
@@ -122,7 +122,7 @@ LevelEditorWindow::LevelEditorWindow(LevelManager* lvlMgr, int initialArea) :
     // Undo/Redo
     undoStack = new QUndoStack(this);
     undoStack->setUndoLimit(50); // TODO: Make this a setting
-    connect(undoStack, SIGNAL(indexChanged(int)), this, SLOT(historyStateChanged(int)));
+    connect(undoStack, &QUndoStack::indexChanged, this, &LevelEditorWindow::historyStateChanged);
 
     actionUndo = undoStack->createUndoAction(this, tr("&Undo"));
     actionUndo->setIcon(QIcon(basePath + "undo.png"));
@@ -153,9 +153,9 @@ LevelEditorWindow::LevelEditorWindow(LevelManager* lvlMgr, int initialArea) :
 
     restoreState(settings->get("lvleditorState").toByteArray());
     updateDockedWidgetCheckboxes();
-    connect(toolboxDock, SIGNAL(visibilityChanged(bool)), this, SLOT(updateDockedWidgetCheckboxes()));
-    connect(minimapDock, SIGNAL(visibilityChanged(bool)), this, SLOT(updateDockedWidgetCheckboxes()));
-    connect(minimapDock, SIGNAL(visibilityChanged(bool)), this, SLOT(updateDockedWidgetCheckboxes()));
+    connect(toolboxDock, &QDockWidget::visibilityChanged, this, &LevelEditorWindow::updateDockedWidgetCheckboxes);
+    connect(minimapDock, &QDockWidget::visibilityChanged, this, &LevelEditorWindow::updateDockedWidgetCheckboxes);
+    connect(minimapDock, &QDockWidget::visibilityChanged, this, &LevelEditorWindow::updateDockedWidgetCheckboxes);
 
     loadArea(initialArea, false, true);
 
@@ -743,16 +743,12 @@ void LevelEditorWindow::loadArea(int id, bool closeLevel, bool init)
 
     // Setup Sprite Picker
     spriteEditor = new SpriteEditorWidget(&level->sprites, undoStack);
-    connect(spriteEditor->spriteDataEditorPtr(), SIGNAL(updateLevelView()), levelView, SLOT(update()));
-    connect(spriteEditor, SIGNAL(currentSpriteChanged(int)), this, SLOT(setSelSprite(int)));
-    connect(spriteEditor, SIGNAL(selectedSpriteChanged(Object*)), levelView, SLOT(selectObj(Object*)));
-    connect(spriteEditor, SIGNAL(updateLevelView()), levelView, SLOT(update()));
+    connect(spriteEditor, &SpriteEditorWidget::currentSpriteChanged, this, &LevelEditorWindow::setSelSprite);
+    connect(spriteEditor, &SpriteEditorWidget::selectedSpriteChanged, levelView, &LevelView::selectObj);
 
     // Setup Entrance Editor
-    entranceEditor = new EntranceEditorWidget(&level->entrances);
-    connect(entranceEditor, SIGNAL(updateLevelView()), levelView, SLOT(update()));
-    connect(entranceEditor, SIGNAL(selectedEntrChanged(Object*)), levelView, SLOT(selectObj(Object*)));
-    connect(entranceEditor, SIGNAL(editMade()), this, SLOT(handleEditMade()));
+    entranceEditor = new EntranceEditorWidget(&level->entrances, undoStack);
+    connect(entranceEditor, &EntranceEditorWidget::selectedEntrChanged, levelView, &LevelView::selectObj);
 
     // Setup Zone Editor
     zoneEditor = new ZoneEditorWidget(&level->zones, &level->backgrounds, &level->boundings);
