@@ -85,6 +85,9 @@ SOURCES += main.cpp\
     EditorCommands/setspriteinteraction.cpp \
     EditorCommands/settileset.cpp \
     EditorCommands/spritecommands.cpp \
+    EditorCommands/zonebgcommands.cpp \
+    EditorCommands/zoneboundingcommands.cpp \
+    EditorCommands/zonecommands.cpp \
     editmanager.cpp \
     eventeditorwidget.cpp \
     mainwindow.cpp \
@@ -165,6 +168,9 @@ HEADERS  += mainwindow.h \
     EditorCommands/settileset.h \
     EditorCommands/setvalue.h \
     EditorCommands/spritecommands.h \
+    EditorCommands/zonebgcommands.h \
+    EditorCommands/zoneboundingcommands.h \
+    EditorCommands/zonecommands.h \
     crc32.h \
     editmanager.h \
     eventeditorwidget.h \

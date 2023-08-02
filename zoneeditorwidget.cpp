@@ -1,5 +1,6 @@
 #include "zoneeditorwidget.h"
 #include "unitsconvert.h"
+#include "settingsmanager.h"
 
 #include <QVBoxLayout>
 #include <QGridLayout>
@@ -10,26 +11,40 @@
 #include <QSpacerItem>
 #include <QMessageBox>
 
-ZoneEditorWidget::ZoneEditorWidget(QList<Zone*> *zones, QList<ZoneBackground*> *bgs, QList<ZoneBounding*> *bounds)
-{
-    this->zones = zones;
-    this->zoneBoundings = bounds;
-    this->zoneBgs = bgs;
+#include "EditorCommands/zonecommands.h"
+#include "EditorCommands/zonebgcommands.h"
+#include "EditorCommands/zoneboundingcommands.h"
+#include "EditorCommands/insertzonebackground.h"
+#include "EditorCommands/insertzonebounding.h"
 
-    multiplayerTrackings.insert(0, tr("Horizontal"));
-    multiplayerTrackings.insert(6, tr("Vertical"));
+ZoneEditorWidget::ZoneEditorWidget(QList<Zone*> *zones, QList<ZoneBackground*> *bgs, QList<ZoneBounding*> *bounds, QUndoStack *undoStack, Level *level, QWidget *parent) :
+    QWidget(parent),
+    zones(zones),
+    zoneBoundings(bounds),
+    zoneBgs(bgs),
+    undoStack(undoStack),
+    level(level) {
 
+    multiplayerTrackings.insert(0, tr("Right and Down"));
+    multiplayerTrackings.insert(1, tr("Right and Up"));
+    multiplayerTrackings.insert(2, tr("Left and Down"));
+    multiplayerTrackings.insert(3, tr("Left and Up"));
+    multiplayerTrackings.insert(4, tr("Down and Right"));
+    multiplayerTrackings.insert(5, tr("Down and Left"));
+    multiplayerTrackings.insert(6, tr("Up and Right"));
+    multiplayerTrackings.insert(7, tr("Up and Left"));
+    multiplayerTrackings.insert(8, tr("Right and Right"));
     loadMusicIDs();
 
     zoneList = new QListWidget();
     zoneList->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    connect(zoneList, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(handleZoneListIndexChange(QListWidgetItem*)));
+    connect(zoneList, &QListWidget::itemClicked, this, &ZoneEditorWidget::handleZoneListIndexChange);
 
     selectContentsBtn = new QPushButton(tr("Select Contents"), this);
-    connect(selectContentsBtn, SIGNAL(clicked(bool)), this, SLOT(handleSelectContentsClicked()));
+    connect(selectContentsBtn, &QAbstractButton::clicked, this, &ZoneEditorWidget::handleSelectContentsClicked);
 
     screenshotBtn = new QPushButton(tr("Screenshot Zone"), this);
-    connect(screenshotBtn, SIGNAL(clicked(bool)), this, SLOT(handleScreenshotClicked()));
+    connect(screenshotBtn, &QAbstractButton::clicked, this, &ZoneEditorWidget::handleScreenshotClicked);
 
     settingsGroup = new QGroupBox();
     QSizePolicy policy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
@@ -38,24 +53,27 @@ ZoneEditorWidget::ZoneEditorWidget(QList<Zone*> *zones, QList<ZoneBackground*> *
 
     id = new QSpinBox();
     id->setRange(0, 255);
-    connect(id, SIGNAL(valueChanged(int)), this, SLOT(handleIDChange(int)));
+    connect(id, &QSpinBox::valueChanged, this, &ZoneEditorWidget::handleIDChange);
 
     multiplayerTracking = new QComboBox();
     multiplayerTracking->addItems(multiplayerTrackings.values());
-    connect(multiplayerTracking, SIGNAL(currentTextChanged(QString)), this, SLOT(handleMultiPlayerTrackingChange(QString)));
+    connect(multiplayerTracking, &QComboBox::currentTextChanged, this, &ZoneEditorWidget::handleMultiPlayerTrackingChange);
 
     progPathId = new QSpinBox();
     progPathId->setRange(0, 255);
-    connect(progPathId, SIGNAL(valueChanged(int)), this, SLOT(handleProgPathIDChange(int)));
+    connect(progPathId, &QSpinBox::valueChanged, this, &ZoneEditorWidget::handleProgPathIDChange);
 
     musicId = new QComboBox();
-    for (QPair<int, QString> i : musicIds.values()) musicId->addItem(i.second);
+    for (auto iter = musicIds.begin(), end = musicIds.end(); iter != end; iter++) {
+        musicId->addItem(iter->second);
+    }
+
     musicId->setSizeAdjustPolicy(QComboBox::SizeAdjustPolicy::AdjustToMinimumContentsLengthWithIcon);
-    connect(musicId, SIGNAL(currentTextChanged(QString)), this, SLOT(handleMusicIDChange(QString)));
+    connect(musicId, &QComboBox::currentTextChanged, this, &ZoneEditorWidget::handleMusicIDChange);
 
     unk1 = new QSpinBox();
     unk1->setRange(0, 255);
-    connect(unk1, SIGNAL(valueChanged(int)), this, SLOT(handleUnk1Change(int)));
+    connect(unk1, &QSpinBox::valueChanged, this, &ZoneEditorWidget::handleUnk1Change);
 
     boundingId = new QSpinBox();
     boundingId->setRange(0, 255);
@@ -68,18 +86,16 @@ ZoneEditorWidget::ZoneEditorWidget(QList<Zone*> *zones, QList<ZoneBackground*> *
     backgroundId->setEnabled(false);
 
     editBounding = new QPushButton(tr("Open Bounding Editor"), this);
-    connect(editBounding, SIGNAL(clicked(bool)), this, SLOT(handleEditBoundingClicked()));
+    connect(editBounding, &QPushButton::clicked, this, &ZoneEditorWidget::handleEditBoundingClicked);
 
     editBackground = new QPushButton(tr("Open Background Editor"), this);
-    connect(editBackground, SIGNAL(clicked(bool)), this, SLOT(handleEditBackgroundClicked()));
+    connect(editBackground, &QAbstractButton::clicked, this, &ZoneEditorWidget::handleEditBackgroundClicked);
 
-    boundingWidget = new ZoneBoundingWidget(bounds);
-    connect(boundingWidget, SIGNAL(editMade()), this, SLOT(handleEditMade()));
-    connect(boundingWidget, SIGNAL(selectedBoundingChanged(int)), this, SLOT(handleBoundingIDChange(int)));
+    boundingWidget = new ZoneBoundingWidget(bounds, undoStack, level);
+    connect(boundingWidget, &ZoneBoundingWidget::selectedBoundingChanged, this, &ZoneEditorWidget::handleBoundingIDChange);
 
-    backgroundWidget = new ZoneBackgroundWidget(bgs);
-    connect(backgroundWidget, SIGNAL(editMade()), this, SLOT(handleEditMade()));
-    connect(backgroundWidget, SIGNAL(selectedBackgroundChanged(int)), this, SLOT(handleBackgroundIDChange(int)));
+    backgroundWidget = new ZoneBackgroundWidget(bgs, undoStack, level);
+    connect(backgroundWidget, &ZoneBackgroundWidget::selectedBackgroundChanged, this, &ZoneEditorWidget::handleBackgroundIDChange);
 
     QVBoxLayout* layout = new QVBoxLayout();
     setLayout(layout);
@@ -141,7 +157,9 @@ void ZoneEditorWidget::changeEvent(QEvent* event)
     if (event->type() == QEvent::LanguageChange)
     {
         loadMusicIDs();
-        for (QPair<int, QString> i : musicIds.values()) musicId->addItem(i.second);
+        for (auto iter = musicIds.begin(), end = musicIds.end(); iter != end; iter++) {
+            musicId->addItem(iter->second);
+        }
         updateEditor();
     }
 
@@ -160,7 +178,7 @@ void ZoneEditorWidget::select(Zone *zone)
     editZone = zone;
     editingAZone = true;
     updateInfo();
-    zoneList->setCurrentRow(zones->indexOf(zone));
+    zoneList->setCurrentRow(static_cast<qint32>(zones->indexOf(zone)));
 }
 
 void ZoneEditorWidget::updateEditor()
@@ -192,8 +210,8 @@ void ZoneEditorWidget::loadMusicIDs()
     file.close();
 }
 
-BgPreview::BgPreview()
-{
+BgPreview::BgPreview(QWidget *parent) :
+    QLabel(parent) {
     bg = QPixmap(400,240);
     bg.fill(Qt::black);
     setMinimumWidth(100);
@@ -240,9 +258,11 @@ void ZoneEditorWidget::updateInfo()
     handleChanges = false;
 
     id->setValue(editZone->getid());
-    for (QPair<int, QString> i : musicIds.values())
-        if (i.first == editZone->getMusicId())
-            musicId->setCurrentText((i.second));
+    for (auto iter = musicIds.begin(), end = musicIds.end(); iter != end; iter++) {
+        if (iter->first == editZone->getMusicId()) {
+            musicId->setCurrentText((iter->second));
+        }
+    }
 
     multiplayerTracking->setCurrentText(multiplayerTrackings.value(editZone->getMultiplayerTracking()));
     progPathId->setValue(editZone->getProgPathId());
@@ -262,46 +282,44 @@ void ZoneEditorWidget::handleZoneListIndexChange(QListWidgetItem *item)
     emit selectedZoneChanged(editZone);
 }
 
-void ZoneEditorWidget::handleIDChange(int idVal)
+void ZoneEditorWidget::handleIDChange(int id)
 {
     if (!handleChanges) return;
-    editZone->setID(idVal);
+    undoStack->push(new Commands::ZoneCmd::SetId(editZone, id));
     updateList();
-    emit updateLevelView();
-    emit editMade();
 }
 
-void ZoneEditorWidget::handleProgPathIDChange(int ppIDVal)
+void ZoneEditorWidget::handleProgPathIDChange(int progPathId)
 {
     if (!handleChanges) return;
-    editZone->setProgPathId(ppIDVal);
-    emit editMade();
+    undoStack->push(new Commands::ZoneCmd::SetProgPathId(editZone, progPathId));
 }
 
 void ZoneEditorWidget::handleMusicIDChange(QString text)
 {
     if (!handleChanges) return;
-    int m_id = 0;
 
-    for (QPair<int, QString> i : musicIds.values())
-        if (i.second == text) m_id = i.first;
+    int musicId = 0;
+    for (auto iter = musicIds.begin(), end = musicIds.end(); iter != end; iter++) {
+        if (iter->second == text) {
+            musicId = iter->first;
+            break;
+        }
+    }
 
-    editZone->setMusicID(quint8(m_id));
-    emit editMade();
+    undoStack->push(new Commands::ZoneCmd::SetMusicId(editZone, musicId));
 }
 
 void ZoneEditorWidget::handleMultiPlayerTrackingChange(QString text)
 {
     if (!handleChanges) return;
-    editZone->setMultiplayerTracking(multiplayerTrackings.key(text, 0));
-    emit editMade();
+    undoStack->push(new Commands::ZoneCmd::SetMultiplayerTracking(editZone, multiplayerTrackings.key(text, 0)));
 }
 
 void ZoneEditorWidget::handleUnk1Change(int unk1)
 {
     if (!handleChanges) return;
-    editZone->setUnk1(unk1);
-    emit editMade();
+    undoStack->push(new Commands::ZoneCmd::SetUnk1(editZone, unk1));
 }
 
 void ZoneEditorWidget::handleSelectContentsClicked()
@@ -319,25 +337,14 @@ void ZoneEditorWidget::handleScreenshotClicked()
 void ZoneEditorWidget::handleBoundingIDChange(int val)
 {
     if (!handleChanges) return;
-
-
-    editZone->setBoundingId(val);
-    emit updateLevelView();
-    emit editMade();
-
-    boundingId->setValue(val);
+    undoStack->push(new Commands::ZoneCmd::SetBoundingId(editZone, val));
 }
 
 void ZoneEditorWidget::handleBackgroundIDChange(int val)
 {
     if (!handleChanges) return;
-
-    editZone->setBackgroundId(val);
+    undoStack->push(new Commands::ZoneCmd::SetBackgroundId(editZone, val));
     updateList();
-    emit updateLevelView();
-    emit editMade();
-
-    backgroundId->setValue(val);
 }
 
 void ZoneEditorWidget::handleEditBoundingClicked()
@@ -356,39 +363,36 @@ void ZoneEditorWidget::handleEditBackgroundClicked()
     backgroundWidget->exec();
 }
 
-void ZoneEditorWidget::handleEditMade()
-{
-    emit editMade();
-}
 
 // Zone Background Widget
-
-ZoneBackgroundWidget::ZoneBackgroundWidget(QList<ZoneBackground*> *backgrounds)
-{
-    this->zoneBgs = backgrounds;
+ZoneBackgroundWidget::ZoneBackgroundWidget(QList<ZoneBackground*> *backgrounds, QUndoStack *undoStack, Level *level, QWidget *parent) :
+    QDialog(parent),
+    zoneBgs(backgrounds),
+    undoStack(undoStack),
+    level(level) {
 
     backgroundList = new QListWidget();
     backgroundList->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    connect(backgroundList, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(handleBackgroundListIndexChange(QListWidgetItem*)));
-    connect(backgroundList, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(handleBackgroundListDoubleClick(QListWidgetItem*)));
+    connect(backgroundList, &QListWidget::itemClicked, this, &ZoneBackgroundWidget::handleBackgroundListIndexChange);
+    connect(backgroundList, &QListWidget::itemDoubleClicked, this, &ZoneBackgroundWidget::handleBackgroundListDoubleClick);
 
     addBackgroundBtn = new QPushButton(tr("Add Background"), this);
-    connect(addBackgroundBtn, SIGNAL(clicked(bool)), this, SLOT(handleAddBackgroundClicked()));
+    connect(addBackgroundBtn, &QAbstractButton::clicked, this, &ZoneBackgroundWidget::handleAddBackgroundClicked);
 
     removeBackgroundBtn = new QPushButton(tr("Remove Background"), this);
-    connect(removeBackgroundBtn, SIGNAL(clicked(bool)), this, SLOT(handleRemoveBackgroundClicked()));
+    connect(removeBackgroundBtn, &QAbstractButton::clicked, this, &ZoneBackgroundWidget::handleRemoveBackgroundClicked);
 
     backgroundId = new QSpinBox();
     backgroundId->setRange(0, 255);
-    connect(backgroundId, SIGNAL(valueChanged(int)), this, SLOT(handleBackgroundIDChanged(int)));
+    connect(backgroundId, &QSpinBox::valueChanged, this, &ZoneBackgroundWidget::handleBackgroundIDChanged);
 
     xPos = new QSpinBox();
     xPos->setRange(-32768, 32767);
-    connect(xPos, SIGNAL(valueChanged(int)), this, SLOT(handleXPosChanged(int)));
+    connect(xPos, &QSpinBox::valueChanged, this, &ZoneBackgroundWidget::handleXPosChanged);
 
     yPos = new QSpinBox();
     yPos->setRange(-32768, 32767);
-    connect(yPos, SIGNAL(valueChanged(int)), this, SLOT(handleYPosChanged(int)));
+    connect(yPos, &QSpinBox::valueChanged, this, &ZoneBackgroundWidget::handleYPosChanged);
 
     parallaxMode = new QComboBox();
     parallaxMode->addItem(tr("Y Offset Off, All Parallax On"));
@@ -396,12 +400,12 @@ ZoneBackgroundWidget::ZoneBackgroundWidget(QList<ZoneBackground*> *backgrounds)
     parallaxMode->addItem(tr("Y Offset On, All Parallax Off"));
     parallaxMode->addItem(tr("Y Offset On, Y Parallax Off"));
     parallaxMode->addItem(tr("Y Offset On, X Parallax Off"));
-    connect(parallaxMode, SIGNAL(currentIndexChanged(int)), this, SLOT(handleParallaxModeChange(int)));
+    connect(parallaxMode, &QComboBox::currentIndexChanged, this, &ZoneBackgroundWidget::handleParallaxModeChange);
 
     background = new QComboBox();
     background->setSizeAdjustPolicy(QComboBox::SizeAdjustPolicy::AdjustToMinimumContentsLengthWithIcon);
     loadBackgrounds();
-    connect(background, SIGNAL(currentTextChanged(QString)), this, SLOT(handleBackgroundChange(QString)));
+    connect(background, &QComboBox::currentTextChanged, this, &ZoneBackgroundWidget::handleBackgroundChange);
 
     backgroundPreview = new BgPreview();
 
@@ -526,39 +530,34 @@ void ZoneBackgroundWidget::updateBgPreview()
 void ZoneBackgroundWidget::handleParallaxModeChange(int val)
 {
     if (!handleChanges) return;
-    editBg->setParallaxMode(val);
-    emit editMade();
+    undoStack->push(new Commands::ZoneBgCmd::SetParallaxMode(editBg, val));
 }
 
 void ZoneBackgroundWidget::handleXPosChanged(int val)
 {
     if (!handleChanges) return;
-    editBg->setXPos(val);
-    emit editMade();
+    undoStack->push(new Commands::ZoneBgCmd::SetXPos(editBg, static_cast<qint16>(val)));
 }
 
 void ZoneBackgroundWidget::handleYPosChanged(int val)
 {
     if (!handleChanges) return;
-    editBg->setYPos(val);
-    emit editMade();
+    undoStack->push(new Commands::ZoneBgCmd::SetYPos(editBg, static_cast<qint16>(val)));
 }
 
 void ZoneBackgroundWidget::handleBackgroundIDChanged(int val)
 {
     if (!handleChanges) return;
-    editBg->setId(val);
+    undoStack->push(new Commands::ZoneBgCmd::SetId(editBg, val));
     updateList();
     updateInfo();
-    emit editMade();
 }
 
 void ZoneBackgroundWidget::handleBackgroundChange(QString text)
 {
     if (!handleChanges) return;
-    editBg->setName(backgrounds.key(text, "Nohara"));
+    undoStack->push(new Commands::ZoneBgCmd::SetName(editBg, backgrounds.key(text, "Nohara")));
     updateBgPreview();
-    emit editMade();
 }
 
 void ZoneBackgroundWidget::handleAddBackgroundClicked()
@@ -577,11 +576,9 @@ void ZoneBackgroundWidget::handleAddBackgroundClicked()
     }
 
     ZoneBackground* bg = new ZoneBackground(id, 0, 0, "Nohara", 0);
+    undoStack->push(new EditorCommand::InsertZoneBackground(level, bg));
 
-    zoneBgs->append(bg);
     updateList();
-
-    emit editMade();
 }
 
 void ZoneBackgroundWidget::handleRemoveBackgroundClicked()
@@ -591,15 +588,12 @@ void ZoneBackgroundWidget::handleRemoveBackgroundClicked()
 
     if (!handleChanges) return;
 
-    zoneBgs->removeOne(editBg);
+    undoStack->push(new EditorCommand::RemoveZoneBackground(level, editBg));
 
     editingABg = false;
     settingsGroup->setDisabled(true);
 
-    delete editBg;
-
     updateList();
-    emit editMade();
 }
 
 void ZoneBackgroundWidget::handleBackgroundListDoubleClick(QListWidgetItem *item)
@@ -616,46 +610,44 @@ void ZoneBackgroundWidget::setSelectedIndex(int index)
 
     if (items.isEmpty())
         return;
-    else
-    {
-        backgroundList->setCurrentIndex(backgroundList->indexFromItem(items.at(0)));
-        backgroundList->setFocus();
-        editBg = zoneBgs->at(backgroundList->row(items.at(0)));
-        editingABg = true;
-        updateInfo();
-        settingsGroup->setEnabled(true);
-    }
 
+    backgroundList->setCurrentIndex(backgroundList->indexFromItem(items.at(0)));
+    backgroundList->setFocus();
+    editBg = zoneBgs->at(backgroundList->row(items.at(0)));
+    editingABg = true;
+    updateInfo();
+    settingsGroup->setEnabled(true);
 }
 
 
 // Zone Bounding Widget
-
-ZoneBoundingWidget::ZoneBoundingWidget(QList<ZoneBounding*> *boundings)
-{
-    this->zoneBoundings = boundings;
+ZoneBoundingWidget::ZoneBoundingWidget(QList<ZoneBounding*> *boundings, QUndoStack *undoStack, Level *level, QWidget *parent) :
+    QDialog(parent),
+    zoneBoundings(boundings),
+    undoStack(undoStack),
+    level(level) {
 
     boundingList = new QListWidget();
     boundingList->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    connect(boundingList, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(handleBoundingListIndexChange(QListWidgetItem*)));
-    connect(boundingList, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(handleBoundingListDoubleClick(QListWidgetItem*)));
+    connect(boundingList, &QListWidget::itemClicked, this, &ZoneBoundingWidget::handleBoundingListIndexChange);
+    connect(boundingList, &QListWidget::itemDoubleClicked, this, &ZoneBoundingWidget::handleBoundingListDoubleClick);
 
     addBoundingBtn = new QPushButton(tr("Add Bounding"), this);
-    connect(addBoundingBtn, SIGNAL(clicked(bool)), this, SLOT(handleAddBoundingClicked()));
+    connect(addBoundingBtn, &QAbstractButton::clicked, this, &ZoneBoundingWidget::handleAddBoundingClicked);
 
     removeBoundingBtn = new QPushButton(tr("Remove Bounding"), this);
-    connect(removeBoundingBtn, SIGNAL(clicked(bool)), this, SLOT(handleRemoveBoundingClicked()));
+    connect(removeBoundingBtn, &QAbstractButton::clicked, this, &ZoneBoundingWidget::handleRemoveBoundingClicked);
 
     unlimitedScrolling = new QCheckBox(tr("Unlimited"));
-    connect(unlimitedScrolling, SIGNAL(toggled(bool)), this, SLOT(handleUnlimitedScrollingChange(bool)));
+    connect(unlimitedScrolling, &QAbstractButton::toggled, this, &ZoneBoundingWidget::handleUnlimitedScrollingChange);
 
     boundingId = new QSpinBox();
     boundingId->setRange(0, 255);
-    connect(boundingId, SIGNAL(valueChanged(int)), this, SLOT(handleBoundingIdChange(int)));
+    connect(boundingId, &QSpinBox::valueChanged, this, &ZoneBoundingWidget::handleBoundingIdChange);
 
     vertScrollingDistance = new QSpinBox();
     vertScrollingDistance->setRange(0, 65535);
-    connect(vertScrollingDistance, SIGNAL(valueChanged(int)), this, SLOT(handleVertScrollingDistanceChange(int)));
+    connect(vertScrollingDistance, &QSpinBox::valueChanged, this, &ZoneBoundingWidget::handleVertScrollingDistanceChange);
 
     primaryUpperBound = new QSpinBox();
     primaryUpperBound->setRange(-2147483648, 2147483647);
@@ -663,7 +655,7 @@ ZoneBoundingWidget::ZoneBoundingWidget(QList<ZoneBounding*> *boundings)
                            "This is used to determine how close the player has to be to the top of the screen before the camera scrolls up.\n"
                            "Negative values require the player to be closer to the top of the screen, positive values require the player to be further away.\n"
                            "A value of 0 requires the player to be >5 tiles away from the top before the camera will move."));
-    connect(primaryUpperBound, SIGNAL(valueChanged(int)), this, SLOT(handlePrimaryUpperBoundChange(int)));
+    connect(primaryUpperBound, &QSpinBox::valueChanged, this, &ZoneBoundingWidget::handlePrimaryUpperBoundChange);
 
     primaryLowerBound = new QSpinBox();
     primaryLowerBound->setRange(-2147483648, 2147483647);
@@ -671,7 +663,7 @@ ZoneBoundingWidget::ZoneBoundingWidget(QList<ZoneBounding*> *boundings)
                                     "This is used to determine how close the player has to be to the bottom of the screen before the camera scrolls down.\n"
                                     "Positive values require the player to be closer to the bottom of the screen, negative values require the player to be further away.\n"
                                     "A value of 0 requires the player to be >5 tiles away from the bottom before the camera will move."));
-    connect(primaryLowerBound, SIGNAL(valueChanged(int)), this, SLOT(handlePrimaryLowerBoundChange(int)));
+    connect(primaryLowerBound, &QSpinBox::valueChanged, this, &ZoneBoundingWidget::handlePrimaryLowerBoundChange);
 
     secondaryUpperBound = new QSpinBox();
     secondaryUpperBound->setRange(-2147483648, 2147483647);
@@ -679,7 +671,7 @@ ZoneBoundingWidget::ZoneBoundingWidget(QList<ZoneBounding*> *boundings)
                                     "This is used to determine how close the player has to be to the top of the screen before the camera scrolls up.\n"
                                     "Negative values require the player to be closer to the top of the screen, positive values require the player to be further away.\n"
                                     "A value of 0 requires the player to be >5 tiles away from the top before the camera will move."));
-    connect(secondaryUpperBound, SIGNAL(valueChanged(int)), this, SLOT(handleSecondaryUpperBoundChange(int)));
+    connect(secondaryUpperBound, &QSpinBox::valueChanged, this, &ZoneBoundingWidget::handleSecondaryUpperBoundChange);
 
     secondaryLowerBound = new QSpinBox();
     secondaryLowerBound->setRange(-2147483648, 2147483647);
@@ -687,7 +679,7 @@ ZoneBoundingWidget::ZoneBoundingWidget(QList<ZoneBounding*> *boundings)
                                     "This is used to determine how close the player has to be to the bottom of the screen before the camera scrolls down.\n"
                                     "Positive values require the player to be closer to the bottom of the screen, negative values require the player to be further away.\n"
                                     "A value of 0 requires the player to be >5 tiles away from the bottom before the camera will move."));
-    connect(secondaryLowerBound, SIGNAL(valueChanged(int)), this, SLOT(handleSecondaryLowerBoundChange(int)));
+    connect(secondaryLowerBound, &QSpinBox::valueChanged, this, &ZoneBoundingWidget::handleSecondaryLowerBoundChange);
 
     QVBoxLayout* layout = new QVBoxLayout();
     setLayout(layout);
@@ -797,58 +789,51 @@ void ZoneBoundingWidget::handleBoundingListDoubleClick(QListWidgetItem *item)
 void ZoneBoundingWidget::handleUnlimitedScrollingChange(bool val)
 {
     if (!handleChanges) return;
-    editBounding->setUpScrolling(val? 0x0F : 0x00);
+    undoStack->push(new Commands::ZoneBoundingCmd::SetUpScrolling(editBounding, val? 0x0F : 0x00));
 
     if (val)
         vertScrollingDistance->setEnabled(false);
     else
         vertScrollingDistance->setEnabled(true);
-
-    emit editMade();
 }
 
 void ZoneBoundingWidget::handleVertScrollingDistanceChange(int val)
 {
     if (!handleChanges) return;
-    editBounding->setUpScrolling(val);
-    emit editMade();
+    undoStack->push(new Commands::ZoneBoundingCmd::SetUpScrolling(editBounding, val));
 }
 
 void ZoneBoundingWidget::handlePrimaryUpperBoundChange(int val)
 {
     if (!handleChanges) return;
-    editBounding->setPrimaryUpperBound(val);
-    emit editMade();
+    undoStack->push(new Commands::ZoneBoundingCmd::SetPrimaryUpperBound(editBounding, val));
+
 }
 
 void ZoneBoundingWidget::handlePrimaryLowerBoundChange(int val)
 {
     if (!handleChanges) return;
-    editBounding->setPrimaryLowerBound(val);
-    emit editMade();
+    undoStack->push(new Commands::ZoneBoundingCmd::SetPrimaryLowerBound(editBounding, val));
 }
 
 void ZoneBoundingWidget::handleSecondaryUpperBoundChange(int val)
 {
     if (!handleChanges) return;
-    editBounding->setSecondaryUpperBound(val);
-    emit editMade();
+    undoStack->push(new Commands::ZoneBoundingCmd::SetSecondaryUpperBound(editBounding, val));
 }
 
 void ZoneBoundingWidget::handleSecondaryLowerBoundChange(int val)
 {
     if (!handleChanges) return;
-    editBounding->setSecondaryLowerBound(val);
-    emit editMade();
+    undoStack->push(new Commands::ZoneBoundingCmd::SetSecondaryLowerBound(editBounding, val));
 }
 
 void ZoneBoundingWidget::handleBoundingIdChange(int val)
 {
     if (!handleChanges) return;
-    editBounding->setId(val);
+    undoStack->push(new Commands::ZoneBoundingCmd::SetId(editBounding, val));
     updateList();
     updateInfo();
-    emit editMade();
 }
 
 void ZoneBoundingWidget::handleAddBoundingClicked()
@@ -867,11 +852,8 @@ void ZoneBoundingWidget::handleAddBoundingClicked()
     }
 
     ZoneBounding* bounding = new ZoneBounding(id, 0, 0, 0, 0, 0);
-
-    zoneBoundings->append(bounding);
+    undoStack->push(new EditorCommand::InsertZoneBounding(level, bounding));
     updateList();
-
-    emit editMade();
 }
 
 void ZoneBoundingWidget::handleRemoveBoundingClicked()
@@ -881,15 +863,12 @@ void ZoneBoundingWidget::handleRemoveBoundingClicked()
 
     if (!handleChanges) return;
 
-    zoneBoundings->removeOne(editBounding);
+    undoStack->push(new EditorCommand::RemoveZoneBounding(level, editBounding));
 
     editingABounding = false;
     settingsGroup->setDisabled(true);
 
-    delete editBounding;
-
     updateList();
-    emit editMade();
 }
 
 void ZoneBoundingWidget::setSelectedIndex(int index)

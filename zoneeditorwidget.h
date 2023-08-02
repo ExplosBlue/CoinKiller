@@ -2,7 +2,7 @@
 #define ZONEEDITORWIDGET_H
 
 #include "objects.h"
-#include "settingsmanager.h"
+#include "level.h"
 
 #include <QWidget>
 #include <QListWidget>
@@ -16,13 +16,14 @@
 #include <QPushButton>
 #include <QDialog>
 #include <QGroupBox>
+#include <QUndoStack>
 
 class BgPreview : public QLabel
 {
     Q_OBJECT
 public:
-    BgPreview();
-    void resizeEvent(QResizeEvent *) Q_DECL_OVERRIDE;
+    BgPreview(QWidget *parent = nullptr);
+    void resizeEvent(QResizeEvent *) override;
     void setBg(QPixmap bg);
 private:
     QPixmap bg;
@@ -32,12 +33,11 @@ class ZoneBackgroundWidget : public QDialog
 {
     Q_OBJECT
 public:
-    ZoneBackgroundWidget(QList<ZoneBackground*> *backgrounds);
+    ZoneBackgroundWidget(QList<ZoneBackground*> *backgrounds, QUndoStack *undoStack, Level *level, QWidget *parent = nullptr);
     void updateWidget();
     void setSelectedIndex(int index);
 
 signals:
-    void editMade();
     void selectedBackgroundChanged(int val);
 
 private:
@@ -68,6 +68,9 @@ private:
     bool editingABg = false;
     bool handleChanges = true;
 
+    QUndoStack *undoStack;
+    Level *level;
+
 private slots:
     void handleBackgroundListIndexChange(QListWidgetItem* item);
     void handleBackgroundListDoubleClick(QListWidgetItem* item);
@@ -84,12 +87,11 @@ class ZoneBoundingWidget : public QDialog
 {
     Q_OBJECT
 public:
-    ZoneBoundingWidget(QList<ZoneBounding*> *boundings);
+    ZoneBoundingWidget(QList<ZoneBounding*> *boundings, QUndoStack *undoStack, Level *level, QWidget *parent = nullptr);
     void updateWidget();
     void setSelectedIndex(int index);
 
 signals:
-    void editMade();
     void selectedBoundingChanged(int val);
 
 private:
@@ -116,6 +118,9 @@ private:
     bool editingABounding = false;
     bool handleChanges = true;
 
+    QUndoStack *undoStack;
+    Level *level;
+
 private slots:
     void handleBoundingListIndexChange(QListWidgetItem* item);
     void handleBoundingListDoubleClick(QListWidgetItem* item);
@@ -134,17 +139,15 @@ class ZoneEditorWidget : public QWidget
 {
     Q_OBJECT
 public:
-    ZoneEditorWidget(QList<Zone*> *zones, QList<ZoneBackground*> *bgs, QList<ZoneBounding*> *bounds);
-    ~ZoneEditorWidget();
+    ZoneEditorWidget(QList<Zone*> *zones, QList<ZoneBackground*> *bgs, QList<ZoneBounding*> *bounds, QUndoStack *undoStack, Level *level, QWidget *parent = nullptr);
+    ~ZoneEditorWidget() override;
     void deselect();
     void select(Zone* zone);
     void updateEditor();
 
 signals:
-    void updateLevelView();
     void selectedZoneChanged(Object* zone);
     void selectZoneContents(Zone* zone);
-    void editMade();
     void screenshot(QRect);
 
 private:
@@ -176,7 +179,7 @@ private:
     QList<ZoneBackground*> *zoneBgs;
     Zone* editZone;
 
-    void changeEvent(QEvent* event);
+    void changeEvent(QEvent* event) override;
 
     void loadMusicIDs();
 
@@ -185,6 +188,9 @@ private:
 
     bool editingAZone = false;
     bool handleChanges = true;
+
+    QUndoStack *undoStack;
+    Level *level;
 
 private slots:
     void handleZoneListIndexChange(QListWidgetItem* item);
@@ -199,7 +205,6 @@ private slots:
     void handleBackgroundIDChange(int val);
     void handleEditBoundingClicked();
     void handleEditBackgroundClicked();
-    void handleEditMade();
 };
 
 #endif // ZONEEDITORWIDGET_H

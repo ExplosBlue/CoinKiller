@@ -3,33 +3,56 @@
 namespace EditorCommand {
 
 InsertZoneBackground::InsertZoneBackground(Level *level, ZoneBackground *background) :
-    level(level), background(background)
-{
-    this->setText(QObject::tr("Inserted ZoneBackground"));
+    level(level),
+    background(background) {
+    this->setText(QObject::tr("Inserted Zone Background"));
 }
 
-InsertZoneBackground::~InsertZoneBackground()
-{
+InsertZoneBackground::~InsertZoneBackground() {
     if (level == nullptr) {
         return;
     }
 
     if (deletable) {
-        qDebug() << "EditorCommand::InsertZoneBackground - Deleting ZoneBackground";
         delete background;
     }
 }
 
-void InsertZoneBackground::undo()
-{
+void InsertZoneBackground::undo() {
     level->backgrounds.removeOne(background);
     deletable = true;
 }
 
-void InsertZoneBackground::redo()
-{
+void InsertZoneBackground::redo() {
     level->backgrounds.append(background);
     deletable = false;
+}
+
+
+RemoveZoneBackground::RemoveZoneBackground(Level *level, ZoneBackground *background) :
+    level(level),
+    background(background) {
+    this->setText(QObject::tr("Removed Zone Background"));
+}
+
+RemoveZoneBackground::~RemoveZoneBackground() {
+    if (level == nullptr) {
+        return;
+    }
+
+    if (deletable) {
+        delete background;
+    }
+}
+
+void RemoveZoneBackground::undo() {
+    level->backgrounds.append(background);
+    deletable = false;
+}
+
+void RemoveZoneBackground::redo() {
+    level->backgrounds.removeOne(background);
+    deletable = true;
 }
 
 } // namespace EditorCommand

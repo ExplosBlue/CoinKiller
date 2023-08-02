@@ -220,14 +220,14 @@ public:
     void setYPos(qint16 yPos) { this->yPos = yPos; }
     void setXPos(qint16 xPos) { this->xPos = xPos; }
     void setName(QString name) { this->name = name; }
-    void setParallaxMode(qint8 parallaxMode) { this->parallaxMode = parallaxMode; }
+    void setParallaxMode(quint8 parallaxMode) { this->parallaxMode = parallaxMode; }
 
 protected:
     quint16 id = 0;
     qint16 yPos = 0;
     qint16 xPos = 0;
     QString name = "Nohara";
-    qint8 parallaxMode = 0;
+    quint8 parallaxMode = 0;
 };
 
 class Zone: public Object
