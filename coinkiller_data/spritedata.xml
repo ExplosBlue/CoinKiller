@@ -25,11 +25,12 @@
   <sprite id="1" name="Pipe Bubbles" notes="Actor: 0x056&#13;&#10;Description: Bubbles that come out of a pipe.&#13;&#10;Event Triggerable: Yes&#13;&#10;Affected by Gold Ring: No&#13;&#10;Requirements: N/A">
     <value pos="0-1" pos_type="nybbles" title="Triggering Event ID" comment="Turns off while the specified Event ID is activated."/>
     <checkbox pos="4" pos_type="nybbles" title="Just Bubbles" comment="When checked only the bubbles will be shown. (Nothing will be visible if placed outside water.)"/>
-    <list pos="10" pos_type="nybbles" title="Strength" comment="Controls the strength of the flow.">
-      <entry value="0">Strongest</entry>
-      <entry value="1">Strong</entry>
-      <entry value="2">Weak</entry>
-      <entry value="3">Weakest</entry>
+    <list pos="10" pos_type="nybbles" title="Strength" comment="Controls the strength of the flow. 8 is unused.">
+      <entry value="0">Strongest (7 Blocks)</entry>
+      <entry value="1">Strong (6 Blocks)</entry>
+      <entry value="2">Weak (5 Blocks)</entry>
+      <entry value="3">Weakest (4 Blocks)</entry>
+      <entry value="8">Large Bubbles (4 Blocks)</entry>
     </list>
     <list pos="11" pos_type="nybbles" title="Orientation" comment="Which way the pipe its placed on is facing.">
       <entry value="0">Pipe Up</entry>
@@ -84,7 +85,7 @@
       <entry value="1">Flies when directly under</entry>
     </list>
   </sprite>
-  <sprite id="9" name="Whomp" notes="Actor: 0x0C5&#13;&#10;Description: An enemy that will try to crush the player.&#13;&#10;Event Triggerable: No&#13;&#10;Affected by Gold Ring: No &#13;&#10;Requirements: N/A">
+  <sprite id="9" name="Whomp" notes="Actor: 0x0C5&#13;&#10;Description: An enemy that will try to crush the player.&#13;&#10;Event Triggerable: No&#13;&#10;Affected by Gold Ring: No &#13;&#10;Requirements: Resources Loader - Whomp">
     <list pos="5" pos_type="nybbles" title="Star/Moon Coin Number" comment="Determines what star coin to spawn.">
       <entry value="0">One</entry>
       <entry value="1">Two</entry>
@@ -132,85 +133,78 @@
     </list>
   </sprite>
   <sprite id="12" name="Lava" notes="Actor: 0x040&#13;&#10;Description: Lava that kills the player once in contact.&#13;&#10;Event Triggerable: Yes&#13;&#10;Affected by Gold Ring: No&#13;&#10;Requirements: N/A">
-    <value pos="0-1" pos_type="nybbles" title="Triggering Event ID" comment="If this Event ID is 0, and speed/direction is not said to No Movement, the sprite will endlessly move. Uses switch timer."/>
+    <value pos="0-1" pos_type="nybbles" title="Triggering Event ID" comment="If this Event ID is 0, and speed/direction is not set to No Movement, the sprite will endlessly move. Uses switch timer."/>
     <list pos="4" pos_type="nybbles" title="Speed/Direction" comment="The speed and direction of liquid movement.">
       <entry value="0">No Movement</entry>
-      <entry value="1">Up Normal</entry>
-      <entry value="2">Up Fast</entry>
-      <entry value="3">Up Faster</entry>
-      <entry value="4">Up Slow</entry>
-      <entry value="5">Up Slowest</entry>
-      <entry value="6">Up Slower</entry>
-      <entry value="7">Up Normal</entry>
+      <entry value="1">Up - Normal</entry>
+      <entry value="2">Up - Fast</entry>
+      <entry value="3">Up - Faster</entry>
+      <entry value="4">Up - Slow</entry>
+      <entry value="5">Up - Slowest</entry>
+      <entry value="6">Up - Slower</entry>
+      <entry value="7">Up - Normal</entry>
       <entry value="8">No Movement</entry>
-      <entry value="9">Down Normal</entry>
-      <entry value="10">Down Fast</entry>
-      <entry value="11">Down Faster</entry>
-      <entry value="12">Down Slow</entry>
-      <entry value="13">Down Slowest</entry>
-      <entry value="14">Down Slower</entry>
-      <entry value="15">Down Normal</entry>
+      <entry value="9">Down - Normal</entry>
+      <entry value="10">Down - Fast</entry>
+      <entry value="11">Down - Faster</entry>
+      <entry value="12">Down - Slow</entry>
+      <entry value="13">Down - Slowest</entry>
+      <entry value="14">Down - Slower</entry>
+      <entry value="15">Down - Normal</entry>
     </list>
     <value pos="5" pos_type="nybbles" title="Lowering Delay" comment="Time it takes before the liquid lowers."/>
     <value pos="6" pos_type="nybbles" title="Rising Delay" comment="Time it takes before the liquid rises."/>
     <value pos="7-8" pos_type="nybbles" title="Movement Distance" comment="The base movement distance, in tiles."/>
-    <list pos="9" pos_type="nybbles" title="Liquid Behavior" comment="The liquid's behavior.">
-      <entry value="0">Normal</entry>
-      <entry value="1">Rises and Lowers</entry>
-      <entry value="4">Unknown 4</entry>
-      <entry value="5">Unknown 5</entry>
-      <entry value="8">Topless Liquid</entry>
-    </list>
+    <checkbox pos="9" pos_type="nybbles" title="Rising Lava" comment="Makes the lava rise/lower when checked."/>
+    <checkbox pos="9" pos_type="nybbles" title="Unknown 9" mask="4" comment="Unused. See 0x00217620"/>
+    <checkbox pos="9" pos_type="nybbles" title="Topless" mask="8" comment="Removes the top."/>
   </sprite>
   <sprite id="13" name="Poison" notes="Actor: 0x041&#13;&#10;Description: Poison water that kills the player on contact.&#13;&#10;Event Triggerable: Yes&#13;&#10;Affected by Gold Ring: No &#13;&#10;Requirements: N/A">
-    <value pos="0-1" pos_type="nybbles" title="Triggering Event ID" comment="If this Event ID is 0, and speed/direction is not said to No Movement, the sprite will endlessly move. Uses switch timer."/>
+    <value pos="0-1" pos_type="nybbles" title="Triggering Event ID" comment="If this Event ID is 0, and speed/direction is not set to No Movement, the sprite will endlessly move. Uses switch timer."/>
     <list pos="4" pos_type="nybbles" title="Speed/Direction" comment="The speed and direction of liquid movement.">
       <entry value="0">No Movement</entry>
-      <entry value="1">Up Normal</entry>
-      <entry value="2">Up Fast</entry>
-      <entry value="3">Up Faster</entry>
-      <entry value="4">Up Slow</entry>
-      <entry value="5">Up Slowest</entry>
-      <entry value="6">Up Slower</entry>
-      <entry value="7">Up Normal</entry>
+      <entry value="1">Up - Normal</entry>
+      <entry value="2">Up - Fast</entry>
+      <entry value="3">Up - Faster</entry>
+      <entry value="4">Up - Slow</entry>
+      <entry value="5">Up - Slowest</entry>
+      <entry value="6">Up - Slower</entry>
+      <entry value="7">Up - Normal</entry>
       <entry value="8">No Movement</entry>
-      <entry value="9">Down Normal</entry>
-      <entry value="10">Down Fast</entry>
-      <entry value="11">Down Faster</entry>
-      <entry value="12">Down Slow</entry>
-      <entry value="13">Down Slowest</entry>
-      <entry value="14">Down Slower</entry>
-      <entry value="15">Down Normal</entry>
+      <entry value="9">Down - Normal</entry>
+      <entry value="10">Down - Fast</entry>
+      <entry value="11">Down - Faster</entry>
+      <entry value="12">Down - Slow</entry>
+      <entry value="13">Down - Slowest</entry>
+      <entry value="14">Down - Slower</entry>
+      <entry value="15">Down - Normal</entry>
     </list>
     <value pos="5" pos_type="nybbles" title="Lowering Delay" comment="Time it takes before the liquid lowers."/>
     <value pos="6" pos_type="nybbles" title="Rising Delay" comment="Time it takes before the liquid rises."/>
     <value pos="7-8" pos_type="nybbles" title="Movement Distance" comment="The base movement distance, in tiles."/>
-    <list pos="9" pos_type="nybbles" title="Liquid Behavior" comment="The liquid's behavior.">
-      <entry value="0">Normal</entry>
-      <entry value="1">Rises and Lowers</entry>
-      <entry value="8">Topless Liquid</entry>
-    </list>
+    <checkbox pos="9" pos_type="nybbles" title="Rising Poison" comment="Makes the poison rise/lower when checked."/>
+    <checkbox pos="9" pos_type="nybbles" title="Topless" mask="8" comment="Removes the top."/>
   </sprite>
   <sprite id="14" name="Cloud FG Effect" notes="Actor: 0x042&#13;&#10;Description: A horizontal line of clouds.&#13;&#10;Event Triggerable: No&#13;&#10;Affected by Gold Ring: No &#13;&#10;Requirements: N/A"/>
   <sprite id="15" name="Water" notes="Actor: 0x03F&#13;&#10;Description: Water that the player can swim in.&#13;&#10;Event Triggerable: Yes&#13;&#10;Affected by Gold Ring: No &#13;&#10;Requirements: N/A">
-    <value pos="0-1" pos_type="nybbles" title="Triggering Event ID" comment="If this Event ID is 0, and speed/direction is not said to No Movement, the sprite will endlessly move. Uses switch timer."/>
+    <value pos="0-1" pos_type="nybbles" title="Triggering Event ID" comment="If this Event ID is 0, and speed/direction is not set to No Movement, the sprite will endlessly move. Uses switch timer."/>
     <list pos="4" pos_type="nybbles" title="Speed/Direction" comment="The speed and direction of liquid movement.">
       <entry value="0">No Movement</entry>
-      <entry value="1">Up Normal</entry>
-      <entry value="2">Up Fast</entry>
-      <entry value="3">Up Faster</entry>
-      <entry value="4">Up Slow</entry>
-      <entry value="5">Up Slowest</entry>
-      <entry value="6">Up Slower</entry>
-      <entry value="7">Up Normal</entry>
+      <entry value="1">Up - Normal</entry>
+      <entry value="2">Up - Fast</entry>
+      <entry value="3">Up - Faster</entry>
+      <entry value="4">Up - Slow</entry>
+      <entry value="5">Up - Slowest</entry>
+      <entry value="6">Up - Slower</entry>
+      <entry value="7">Up - Normal</entry>
       <entry value="8">No Movement</entry>
-      <entry value="9">Down Normal</entry>
-      <entry value="10">Down Fast</entry>
-      <entry value="11">Down Faster</entry>
-      <entry value="12">Down Slow</entry>
-      <entry value="13">Down Slowest</entry>
-      <entry value="14">Down Slower</entry>
-      <entry value="15">Down Normal</entry>
+      <entry value="9">Down - Normal</entry>
+      <entry value="10">Down - Fast</entry>
+      <entry value="11">Down - Faster</entry>
+      <entry value="12">Down - Slow</entry>
+      <entry value="13">Down - Slowest</entry>
+      <entry value="14">Down - Slower</entry>
+      <entry value="15">Down - Normal</entry>
     </list>
     <value pos="5" pos_type="nybbles" title="Lowering Delay" comment="Time it takes before the liquid lowers."/>
     <value pos="6" pos_type="nybbles" title="Rising Delay" comment="Time it takes before the liquid rises."/>
@@ -219,7 +213,9 @@
     <checkbox pos="9" pos_type="nybbles" title="Underwater Lighting" mask="8" comment="Uses alternate texture for underwater lighting."/>
   </sprite>
   <sprite id="16" name="Amp" notes="Actor: 0x131&#13;&#10;Description: An electric orb that will hurt the player on contact.&#13;&#10;Event Triggerable: No&#13;&#10;Affected by Gold Ring: No &#13;&#10;Requirements: N/A">
-    <checkbox pos="10" pos_type="nybbles" title="Shift 1/2 Block Right" comment="Useless."/>
+    <checkbox pos="10" pos_type="nybbles" title="Shift 1/2 Block Right"/>
+    <checkbox pos="10" pos_type="nybbles" title="Shift 1/2 Block Down" mask="2"/>
+    <checkbox pos="11" pos_type="nybbles" title="Behind Layer 1" comment="Appear behind layer 1. Unchecked: 1500.0, Checked: -2500.0"/>
   </sprite>
   <sprite id="17" name="Amp Circle" notes="Actor: 0x133&#13;&#10;Description: A rotating circle of Amps.&#13;&#10;Event Triggerable: No&#13;&#10;Affected by Gold Ring: No &#13;&#10;Requirements: N/A">
     <value pos="0-1" pos_type="nybbles" title="Triggering Event ID" comment="When triggered the coins will spawn."/>
@@ -299,7 +295,7 @@
       <entry value="1">Coin</entry>
       <entry value="2">Fire Flower</entry>
       <entry value="3">None 2</entry>
-      <entry value="4">Tanooki Leaf</entry>
+      <entry value="4">Super Leaf</entry>
       <entry value="5">Gold Flower</entry>
       <entry value="6">Mini Mushroom</entry>
       <entry value="7">Star</entry>
@@ -315,7 +311,7 @@
   </sprite>
   <sprite id="22" name="Special Exit Controller (Warp Entrance)" notes="Actor: 0x1B0&#13;&#10;Description: A sprite that will warp the player to an entrance on contact.&#13;&#10;Event Triggerable: No&#13;&#10;Affected by Gold Ring: No&#13;&#10;Requirements: Must have an entrance ID set.">
     <value pos="0-1" pos_type="nybbles" title="Triggering Event ID 1" comment="Broken; Mario gets stuck if after touching warp area if this is set to &gt;0, even if flag is/gets activated."/>
-    <value pos="2-3" pos_type="nybbles" title="Triggering Event ID 2"/>
+    <value pos="2-3" pos_type="nybbles" title="Triggering Event ID 2" comment="Same as Triggering Event ID 1"/>
     <list pos="4" pos_type="nybbles" title="Trigger Point" comment="Determines the part of the warp that will trigger the exit.">
       <entry value="0">On contact with edge</entry>
       <entry value="1">On contact with center</entry>
@@ -337,11 +333,17 @@
     <value pos="10" pos_type="nybbles" title="Height" comment=" "/>
     <value pos="11" pos_type="nybbles" title="Entrance ID" comment="The actor warps Mario to the destination of this entrance."/>
   </sprite>
-  <sprite id="23" name="Respawnable Hidden Block" notes="Actor: 0x1B1&#13;&#10;Description: An invisible block that will respawn if destroyed.&#13;&#10;Event Triggerable: No&#13;&#10;Affected by Gold Ring: No &#13;&#10;Requirements: N/A">
-    <value pos="7" pos_type="nybbles" title="Unknown Value 10"/>
-    <value pos="8" pos_type="nybbles" title="Unknown Value 7" comment="When set to 2,6,8,10 or 14 No block spawns."/>
-    <value pos="9" pos_type="nybbles" title="Unknown Value 8"/>
-    <value pos="10" pos_type="nybbles" title="Unknown Value 5" comment="When set to 13 No block spawns."/>
+  <sprite id="23" name="Respawnable Hidden Block" notes="This sprite checks for a tile at the given relative position.&#13;&#10;If no tile is found at the given position, the sprite will act as a hidden block, otherwise it will act as air.">
+    <list pos="7" pos_type="nybbles" title="Horizontal Direction To Tile" comment="Determines the horizontal direction to check for a tile.">
+      <entry value="0">Left</entry>
+      <entry value="1">Right</entry>
+    </list>
+    <value pos="8" pos_type="nybbles" title="Horizontal Distance To Tile" comment="Determines the horizontal offset to the tile."/>
+    <list pos="9" pos_type="nybbles" title="Vertical Direction To Tile" comment="Determines the vertical direction to check for a tile.">
+      <entry value="0">Up</entry>
+      <entry value="1">Down</entry>
+    </list>
+    <value pos="10" pos_type="nybbles" title="Vertical Distance To Tile" comment="Determines the vertical offset to the tile."/>
   </sprite>
   <sprite id="24" name="Flying ? Block" notes="Actor: 0x0AF&#13;&#10;Description: A ? block with wings.&#13;&#10;Event Triggerable: No&#13;&#10;Affected by Gold Ring: No &#13;&#10;Requirements: N/A">
     <checkbox pos="7" pos_type="nybbles" title="Move Left" comment="Ignores the behavior nybble, and if checked, will move left instead of right."/>
@@ -360,17 +362,17 @@
     <list pos="19" pos_type="nybbles" title="Contents" comment="10=&quot;Wings fall off&quot; effect plays every time block is hit.">
       <entry value="0">Nothing</entry>
       <entry value="1">Coin</entry>
-      <entry value="2">Super Mushroom if small and Fire Flower if big</entry>
-      <entry value="4">Super Mushroom if small and Super Leaf if big</entry>
+      <entry value="2">Fire Flower</entry>
+      <entry value="4">Super Leaf</entry>
       <entry value="5">Gold Flower</entry>
       <entry value="6">Mini Mushroom</entry>
       <entry value="7">Super Star</entry>
-      <entry value="8">Coin if not invincible and Super Star if invincible</entry>
+      <entry value="8">Super Star/Coin</entry>
       <entry value="9">Mega Mushroom</entry>
       <entry value="10">Ten Coins</entry>
       <entry value="11">1-Up Mushroom</entry>
       <entry value="13">Trampoline</entry>
-      <entry value="14">Super Mushroom if small and coin if big</entry>
+      <entry value="14">Super Mushroom/Coin</entry>
     </list>
   </sprite>
   <sprite id="25" name="Fly Away ? Block (contains 1-Up)" notes="Actor: 0x0B4&#13;&#10;Description: A ? Block that flies away once hit once. It will contain a 1-UP.&#13;&#10;Event Triggerable: No&#13;&#10;Affected by Gold Ring: No &#13;&#10;Requirements: N/A">
@@ -464,14 +466,29 @@
     <value pos="10" pos_type="nybbles" title="Unknown Value 5"/>
     <value pos="11" pos_type="nybbles" title="Time Between Jumps" comment="In seconds"/>
   </sprite>
-  <sprite id="36" name="Arch-movement Lava Bubble" notes="Actor: 0x07E&#13;&#10;Description: A single lava bubble that comes out of the lava and makes an arc.&#13;&#10;Event Triggerable: Yes&#13;&#10;Affected by Gold Ring: No &#13;&#10;Requirements: Must have a triggering ID set.">
+  <sprite id="36" name="Arch-movement Lava Bubble" notes="Actor: 0x07E&#13;&#10;Description: Lava bubbles that come out of the lava and make an arc.&#13;&#10;Event Triggerable: Yes&#13;&#10;Affected by Gold Ring: No &#13;&#10;Requirements: Must have a triggering ID set.">
     <value pos="0-1" pos_type="nybbles" title="Triggering Event ID"/>
     <list pos="7" pos_type="nybbles" title="Direction">
       <entry value="0">Left</entry>
       <entry value="1">Right</entry>
     </list>
-    <value pos="8" pos_type="nybbles" title="Delay" comment="Delay between fire balls."/>
-    <value pos="11" pos_type="nybbles" title="Arc Speed" comment="The speed of the actual lava bubble."/>
+    <value pos="8" pos_type="nybbles" title="Lava Bubble Count" comment="Delay between lava bubbles.."/>
+    <list pos="11" pos_type="nybbles" title="Movement" comment="Movement and distance for the lava bubbbles.">
+      <entry value="0">12 Blocks Horizontal - 6 Vertical</entry>
+      <entry value="1">10 Blocks Horizontal - 8 Vertical</entry>
+      <entry value="2">18 Blocks Horizontal - 6 Vertical</entry>
+      <entry value="3">18 Blocks Horizontal - 7 Vertical (Fast)</entry>
+      <entry value="4">9 Blocks Horizontal - 7 Vertical (Fast)</entry>
+      <entry value="5">6 Blocks Horizontal - 9 Vertical</entry>
+      <entry value="6">16 Blocks Horizontal - 9 Vertical</entry>
+      <entry value="7">Up (Permanent)</entry>
+      <entry value="8">Nothing?</entry>
+      <entry value="9">Up (Permanent and Fast)</entry>
+      <entry value="10">Up and opposite direction (Permanent)</entry>
+      <entry value="11">Static and Facing Drection</entry>
+      <entry value="12">Static and Facing Drection</entry>
+      <entry value="13">Up (Permanent)</entry>
+    </list>
   </sprite>
   <sprite id="37" name="Reznor Cutscene Controller - Roy (Unused)" notes="Unused boss controller, causes the Roy cutscene to play"/>
   <sprite id="38" name="Reznor Wheel" notes="Actor: 0x18F&#13;&#10;Description: The Reznor boss used in towers.&#13;&#10;Event Triggerable: No&#13;&#10;Affected by Gold Ring: No&#13;&#10;Requirements: Must have an ammount greater than 0 set.">
@@ -507,18 +524,19 @@
     <value pos="11" pos_type="nybbles" title="Unknown Value 11"/>
     <checkbox pos="19" pos_type="nybbles" title="Has No Collision" comment="When checked, the burner will have no collision. [Unused]"/>
   </sprite>
-  <sprite id="44" name="Track-controlled Burner - Four Directions" notes="Actor: 0x068&#13;&#10;Description: A flamethrower that follows a track, can face up, down left and right.&#13;&#10;Event Triggerable: No&#13;&#10;Affected by Gold Ring: No &#13;&#10;Requirements: None">
+  <sprite id="44" name="Rail-controlled Burner - Four Directions" notes="Actor: 0x068&#13;&#10;Description: A flamethrower that follows a track, can face up, down left and right.&#13;&#10;Event Triggerable: No&#13;&#10;Affected by Gold Ring: No &#13;&#10;Requirements: None">
     <checkbox pos="4" pos_type="nybbles" title="Pauses" comment="When checked, the flame will pause every 5 seconds."/>
     <value pos="5" pos_type="nybbles" title="Pause Time" comment="Increases how long the burner pauses for. (Requires Nybble 4 to have a value of 1))"/>
     <bitfield pos="6" pos_type="nybbles" title="Flame Direction" comment="Determines which sides the flames will come from."/>
-    <list pos="8" pos_type="nybbles" title="Speed" comment="All Values After 6 are repeated.">
-      <entry value="0">Normal</entry>
-      <entry value="1">Fast</entry>
-      <entry value="2">Faster</entry>
-      <entry value="3">Fastest</entry>
+    <list pos="8" pos_type="nybbles" title="Speed" comment="From slowest to fastest: 4, 5, 6, 0, 1, 2, 7, 3">
       <entry value="4">Slowest</entry>
       <entry value="5">Slower</entry>
       <entry value="6">Slow</entry>
+      <entry value="0">Medium Slow</entry>
+      <entry value="1">Medium Fast</entry>
+      <entry value="2">Fast</entry>
+      <entry value="7">Faster</entry>
+      <entry value="3">Fastest</entry>
     </list>
     <list pos="9" pos_type="nybbles" title="Initial Direction" comment="Determines the initial direction of the burner.">
       <entry value="0">Up/Right</entry>
@@ -526,20 +544,21 @@
     </list>
     <checkbox pos="10" pos_type="nybbles" title="Longer Flame" comment="When checked the flame will be longer."/>
     <checkbox pos="11" pos_type="nybbles" title="Not On A Track" comment="Check this if the burner isn't placed on a track."/>
-    <value pos="12-13" pos_type="nybbles" title="Location ID"/>
+    <value pos="12-13" pos_type="nybbles" title="Location ID" comment="Won't despawn off-screen if the location is on-screen."/>
     <checkbox pos="19" pos_type="nybbles" title="Has No Collision" comment="When checked, the burner will have no collision. [Unused]"/>
   </sprite>
-  <sprite id="45" name="Track-controlled Burner - Right" notes="Actor: 0x060&#13;&#10;Description: A flamethrower that follows a track, faces right.&#13;&#10;Event Triggerable: No&#13;&#10;Affected by Gold Ring: No &#13;&#10;Requirements: Must be placed on a track.">
+  <sprite id="45" name="Rail-controlled Burner - Right" notes="Actor: 0x060&#13;&#10;Description: A flamethrower that follows a track, faces right.&#13;&#10;Event Triggerable: No&#13;&#10;Affected by Gold Ring: No &#13;&#10;Requirements: Must be placed on a track.">
     <checkbox pos="4" pos_type="nybbles" title="Pauses" comment="When this is checked, the burner will stop emitting a flame for a constant amount of time."/>
     <value pos="5" pos_type="nybbles" title="Pause Time" comment="Increases how long the burner pauses for. (Requires Nybble 4 to have a value of 1))"/>
-    <list pos="8" pos_type="nybbles" title="Speed" comment="All Values After 6 are repeated.">
-      <entry value="0">Normal</entry>
-      <entry value="1">Fast</entry>
-      <entry value="2">Faster</entry>
-      <entry value="3">Fastest</entry>
+    <list pos="8" pos_type="nybbles" title="Speed" comment="From slowest to fastest: 4, 5, 6, 0, 1, 2, 7, 3">
       <entry value="4">Slowest</entry>
       <entry value="5">Slower</entry>
       <entry value="6">Slow</entry>
+      <entry value="0">Medium Slow</entry>
+      <entry value="1">Medium Fast</entry>
+      <entry value="2">Fast</entry>
+      <entry value="7">Faster</entry>
+      <entry value="3">Fastest</entry>
     </list>
     <list pos="9" pos_type="nybbles" title="Initial Direction" comment="Determines the initial direction of the burner.">
       <entry value="0">Up/Right</entry>
@@ -547,20 +566,21 @@
     </list>
     <checkbox pos="10" pos_type="nybbles" title="Long Flame" comment="Has a longer flame when checked."/>
     <checkbox pos="11" pos_type="nybbles" title="Not On A Track" comment="Check this if the burner isn't placed on a track."/>
-    <value pos="12-13" pos_type="nybbles" title="Location ID"/>
+    <value pos="12-13" pos_type="nybbles" title="Location ID" comment="Won't despawn off-screen if the location is on-screen."/>
     <checkbox pos="19" pos_type="nybbles" title="Has No Collison" comment="When checked, the burner will have no collision. [Unused]"/>
   </sprite>
-  <sprite id="46" name="Track-controlled Burner - Down" notes="Actor: 0x063&#13;&#10;Description: A flamethrower that follows a track, faces down.&#13;&#10;Event Triggerable: No&#13;&#10;Affected by Gold Ring: No &#13;&#10;Requirements: Must be placed on a track.">
+  <sprite id="46" name="Rail-controlled Burner - Down" notes="Actor: 0x063&#13;&#10;Description: A flamethrower that follows a track, faces down.&#13;&#10;Event Triggerable: No&#13;&#10;Affected by Gold Ring: No &#13;&#10;Requirements: Must be placed on a track.">
     <checkbox pos="4" pos_type="nybbles" title="Pauses" comment="When this is checked, the burner will stop emitting a flame for a constant amount of time."/>
     <value pos="5" pos_type="nybbles" title="Pause Time" comment="Increases how long the burner pauses for. (Requires Nybble 4 to have a value of 1))"/>
-    <list pos="8" pos_type="nybbles" title="Speed" comment="All Values After 6 are repeated.">
-      <entry value="0">Normal</entry>
-      <entry value="1">Fast</entry>
-      <entry value="2">Faster</entry>
-      <entry value="3">Fastest</entry>
+    <list pos="8" pos_type="nybbles" title="Speed" comment="From slowest to fastest: 4, 5, 6, 0, 1, 2, 7, 3">
       <entry value="4">Slowest</entry>
       <entry value="5">Slower</entry>
       <entry value="6">Slow</entry>
+      <entry value="0">Medium Slow</entry>
+      <entry value="1">Medium Fast</entry>
+      <entry value="2">Fast</entry>
+      <entry value="7">Faster</entry>
+      <entry value="3">Fastest</entry>
     </list>
     <list pos="9" pos_type="nybbles" title="Initial Direction" comment="Determines the initial direction of the burner.">
       <entry value="0">Up/Right</entry>
@@ -568,20 +588,21 @@
     </list>
     <checkbox pos="10" pos_type="nybbles" title="Long Flame" comment="Has a longer flame when checked."/>
     <checkbox pos="11" pos_type="nybbles" title="Not On A Track" comment="Check this if the burner isn't placed on a track."/>
-    <value pos="12-13" pos_type="nybbles" title="Location ID"/>
+    <value pos="12-13" pos_type="nybbles" title="Location ID" comment="Won't despawn off-screen if the location is on-screen."/>
     <checkbox pos="19" pos_type="nybbles" title="Has No Collision" comment="When checked, the burner will have no collision. [Unused]"/>
   </sprite>
-  <sprite id="47" name="Track-controlled Burner - Left" notes="Actor: 0x061&#13;&#10;Description: A flamethrower that follows a track, faces left.&#13;&#10;Event Triggerable: No&#13;&#10;Affected by Gold Ring: No &#13;&#10;Requirements: Must be placed on a track.">
+  <sprite id="47" name="Rail-controlled Burner - Left" notes="Actor: 0x061&#13;&#10;Description: A flamethrower that follows a track, faces left.&#13;&#10;Event Triggerable: No&#13;&#10;Affected by Gold Ring: No &#13;&#10;Requirements: Must be placed on a track.">
     <checkbox pos="4" pos_type="nybbles" title="Pauses" comment="When this is checked, the burner will stop emitting a flame for a constant amount of time."/>
     <value pos="5" pos_type="nybbles" title="Pause Time" comment="Increases how long the burner pauses for. (Requires Nybble 4 to have a value of 1))"/>
-    <list pos="8" pos_type="nybbles" title="Speed" comment="All Values After 6 are repeated.">
-      <entry value="0">Normal</entry>
-      <entry value="1">Fast</entry>
-      <entry value="2">Faster</entry>
-      <entry value="3">Fastest</entry>
+    <list pos="8" pos_type="nybbles" title="Speed" comment="From slowest to fastest: 4, 5, 6, 0, 1, 2, 7, 3">
       <entry value="4">Slowest</entry>
       <entry value="5">Slower</entry>
       <entry value="6">Slow</entry>
+      <entry value="0">Medium Slow</entry>
+      <entry value="1">Medium Fast</entry>
+      <entry value="2">Fast</entry>
+      <entry value="7">Faster</entry>
+      <entry value="3">Fastest</entry>
     </list>
     <list pos="9" pos_type="nybbles" title="Initial Direction" comment="Determines the initial direction of the burner.">
       <entry value="0">Up/Right</entry>
@@ -589,20 +610,21 @@
     </list>
     <checkbox pos="10" pos_type="nybbles" title="Long Flame" comment="Has a longer flame when checked."/>
     <checkbox pos="11" pos_type="nybbles" title="Not On A Track" comment="Check this if the burner isn't placed on a track."/>
-    <value pos="12-13" pos_type="nybbles" title="Location ID"/>
+    <value pos="12-13" pos_type="nybbles" title="Location ID" comment="Won't despawn off-screen if the location is on-screen."/>
     <checkbox pos="19" pos_type="nybbles" title="Has No Collision" comment="When checked, the burner will have no collision. [Unused]"/>
   </sprite>
-  <sprite id="48" name="Track-controlled Burner - Up" notes="Actor: 0x062&#13;&#10;Description: A flamethrower that follows a track, faces up.&#13;&#10;Event Triggerable: No&#13;&#10;Affected by Gold Ring: No &#13;&#10;Requirements: Must be placed on a track.">
+  <sprite id="48" name="Rail-controlled Burner - Up" notes="Actor: 0x062&#13;&#10;Description: A flamethrower that follows a track, faces up.&#13;&#10;Event Triggerable: No&#13;&#10;Affected by Gold Ring: No &#13;&#10;Requirements: Must be placed on a track.">
     <checkbox pos="4" pos_type="nybbles" title="Pauses" comment="When this is checked, the burner will stop emitting a flame for a constant amount of time."/>
     <value pos="5" pos_type="nybbles" title="Pause Time" comment="Increases how long the burner pauses for. (Requires Nybble 4 to have a value of 1))"/>
-    <list pos="8" pos_type="nybbles" title="Speed" comment="All Values After 6 are repeated.">
-      <entry value="0">Normal</entry>
-      <entry value="1">Fast</entry>
-      <entry value="2">Faster</entry>
-      <entry value="3">Fastest</entry>
+    <list pos="8" pos_type="nybbles" title="Speed" comment="From slowest to fastest: 4, 5, 6, 0, 1, 2, 7, 3">
       <entry value="4">Slowest</entry>
       <entry value="5">Slower</entry>
       <entry value="6">Slow</entry>
+      <entry value="0">Medium Slow</entry>
+      <entry value="1">Medium Fast</entry>
+      <entry value="2">Fast</entry>
+      <entry value="7">Faster</entry>
+      <entry value="3">Fastest</entry>
     </list>
     <list pos="9" pos_type="nybbles" title="Initial Direction" comment="Determines the initial direction of the burner.">
       <entry value="0">Up/Right</entry>
@@ -610,7 +632,7 @@
     </list>
     <checkbox pos="10" pos_type="nybbles" title="Long Flame" comment="Has a longer flame when checked."/>
     <checkbox pos="11" pos_type="nybbles" title="Not On A Track" comment="Check this if the burner isn't placed on a track."/>
-    <value pos="12-13" pos_type="nybbles" title="Location ID"/>
+    <value pos="12-13" pos_type="nybbles" title="Location ID" comment="Won't despawn off-screen if the location is on-screen."/>
     <checkbox pos="19" pos_type="nybbles" title="Has No Collision" comment="When checked, the burner will have no collision. [Unused]"/>
   </sprite>
   <sprite id="49" name="Ludwig von Koopa Battle - Chain" notes="Actor: 0x06C&#13;&#10;Description: A chain that Ludwig climbs during his battle.&#13;&#10;Event Triggerable: No&#13;&#10;Affected by Gold Ring: No &#13;&#10;Requirements: N/A">
@@ -627,10 +649,20 @@
   </sprite>
   <sprite id="50" name="Ludgwig Battle Chain Controller" notes="Actor: 0x06B&#13;&#10;Description: The battle chain controller for Ludwig's castle battle.&#13;&#10;Event Triggerable: No&#13;&#10;Affected by Gold Ring: No &#13;&#10;Requirements: N/A"/>
   <sprite id="51" name="Fuzzy" notes="Actor: 0x149&#13;&#10;Description: An enemy that moves along tracks.&#13;&#10;Event Triggerable: No&#13;&#10;Affected by Gold Ring: No &#13;&#10;Requirements: Must be placed on a track.">
+    <value pos="0-1" pos_type="nybbles" title="Triggering Event ID" comment="Spawned when this event is activated."/>
     <checkbox pos="9" pos_type="nybbles" title="Big" comment="Makes the fuzzy bigger."/>
-    <value pos="10" pos_type="nybbles" title="Speed"/>
-    <checkbox pos="11" pos_type="nybbles" title="Move Clockwise" comment="Makes the fuzzy move clockwise."/>
-    <value pos="12-13" pos_type="nybbles" title="Location ID"/>
+    <list pos="10" pos_type="nybbles" title="Speed">
+      <entry value="4">Slowest</entry>
+      <entry value="5">Slower</entry>
+      <entry value="6">Slow</entry>
+      <entry value="0">Medium Slow</entry>
+      <entry value="1">Medium Fast</entry>
+      <entry value="2">Fast</entry>
+      <entry value="7">Faster</entry>
+      <entry value="3">Fastest</entry>
+    </list>
+    <checkbox pos="11" pos_type="nybbles" title="Move Left/Down" comment="Makes the fuzzy move leftward or downward."/>
+    <value pos="12-13" pos_type="nybbles" title="Location ID" comment="Won't despawn off-screen if the location is on-screen."/>
   </sprite>
   <sprite id="52" name="Checkpoint Flag" notes="Actor: 0x18A&#13;&#10;Description: A Checkpoint, When hit the player will respawn at the specified entrance.&#13;&#10;Event Triggerable: No&#13;&#10;Affected by Gold Ring: No &#13;&#10;Requirements: Must have an entrance ID set.">
     <value pos="6-7" pos_type="nybbles" title="Entrance ID" comment="The entrance the player will respawn at."/>
@@ -786,7 +818,12 @@
     <value pos="6" pos_type="nybbles" title="Unknown Value 9"/>
     <checkbox pos="7" pos_type="nybbles" title="Coins Go Through Tiles" comment="When checked coins will pass through tiles."/>
     <value pos="8" pos_type="nybbles" title="Time Active" comment="0 is the same as 3. Higher values last longer."/>
-    <value pos="10" pos_type="nybbles" title="Unknown Value 5"/>
+    <list pos="10" pos_type="nybbles" title="Eruption Spread" comment="Determines how high and how wide the eruption is.">
+      <entry value="0">Small Height / Medium Width</entry>
+      <entry value="1">Small Height / Small Width</entry>
+      <entry value="2">Medium Height / Medium Width</entry>
+      <entry value="3">Large Height / Small Width</entry>
+    </list>
     <list pos="11" pos_type="nybbles" title="Direction" comment="Determines the direction to spawn the coins. Values &gt; 3 repeat.">
       <entry value="0">Up</entry>
       <entry value="1">Down</entry>
@@ -817,7 +854,7 @@
       <entry value="4">Coin Faces Controller</entry>
     </list>
     <checkbox pos="19" pos_type="bits" title="Use Rotation Controller Starting Rotation Offset" comment="If enabled, the Coin Will use the start offset specified in the rotation controller."/>
-    <value pos="0-1" pos_type="nybbles" title="Target Event ID"/>
+    <value pos="0-1" pos_type="nybbles" title="Triggering Event ID" comment="If not set to 0, appears without &quot;flourish&quot; when this is triggered."/>
     <value pos="15" pos_type="nybbles" title="Unknown 18"/>
     <value pos="18" pos_type="nybbles" title="Unknown 13"/>
     <value pos="20-21" pos_type="nybbles" title="Rotation ID"/>
@@ -843,10 +880,10 @@
   </sprite>
   <sprite id="62" name="Rotation-controlled Red Coin" notes="Actor: 0x0D7&#13;&#10;Description: A Red Coin that is appears when a red coin ring triggers it.&#13;&#10;Event Triggerable: Yes&#13;&#10;Affected by Gold Ring: No &#13;&#10;Requirements: Must have a triggering ID and a Rotation ID set.">
     <list pos="16-18" pos_type="bits" title="Rotation Mode" comment="The behavior of this rotating red coin.">
-      <entry value="0">Normal (Default)</entry>
-      <entry value="2">Gimbal Rotation</entry>
-      <entry value=" 3">Upside Down Gimbal Rotation</entry>
-      <entry value="4">Normal</entry>
+      <entry value="0">Normal</entry>
+      <entry value="1">Coin Starts Upside Down</entry>
+      <entry value="2">Coin Faces Screen</entry>
+      <entry value="4">Coin Faces Controller</entry>
     </list>
     <checkbox pos="19" pos_type="bits" title="Use Rotation Controller Starting Rotation Offset" comment="If enabled, the Star Coin Will use the start offset specified in the rotation controller."/>
     <value pos="0-1" pos_type="nybbles" title="Triggering Event ID"/>
@@ -854,28 +891,48 @@
     <value pos="20-21" pos_type="nybbles" title="Rotation ID"/>
   </sprite>
   <sprite id="63" name="Skewer - Left" notes="Actor: 0x19A&#13;&#10;Description: A Skewer that moves left.&#13;&#10;Event Triggerable: No&#13;&#10;Affected by Gold Ring: No &#13;&#10;Requirements: N/A">
-    <value pos="4-5" pos_type="nybbles" title="Movement Speed" comment="Controls both back and forth movement speed."/>
-    <list pos="6" pos_type="nybbles" title="Distance" comment="Controls distance.">
+    <list pos="4" pos_type="nybbles" title="Movement Speed" comment="Controls movement speed. ">
+      <entry value="0">Fast</entry>
+      <entry value="1">Faster, but return time is as fast</entry>
+      <entry value="2">Medium</entry>
+      <entry value="3">Slow</entry>
+    </list>
+    <list pos="5" pos_type="nybbles" title="Timing Offset">
+      <entry value="0">No Offset</entry>
+      <entry value="8">Launch delayed</entry>
+      <entry value="10">Spawn launched</entry>
+    </list>
+    <list pos="6" pos_type="nybbles" title="Distance" comment="Controls launch distance.">
       <entry value="0">16 Tiles</entry>
       <entry value="1">7 Tiles</entry>
       <entry value="2">14 Tiles</entry>
       <entry value="3">10 Tiles</entry>
     </list>
-    <value pos="7" pos_type="nybbles" title="Unknown 10"/>
-    <value pos="8-9" pos_type="nybbles" title="Launch Delay" comment="The time it takes to launch."/>
-    <value pos="10-11" pos_type="nybbles" title="Return Delay" comment="The time it takes to come back."/>
+    <checkbox pos="7" pos_type="nybbles" title="Z-Order Change" comment="When checked, the skewer will appear behind certain sprites."/>
+    <value pos="8-9" pos_type="nybbles" title="Launch Delay" comment="The time it stays before launching."/>
+    <value pos="10-11" pos_type="nybbles" title="Return Delay" comment="The time it stays launched."/>
   </sprite>
   <sprite id="64" name="Skewer - Right" notes="Actor: 0x19B&#13;&#10;Description: A Skewer that moves right.&#13;&#10;Event Triggerable: No&#13;&#10;Affected by Gold Ring: No &#13;&#10;Requirements: N/A">
-    <value pos="4-5" pos_type="nybbles" title="Movement Speed" comment="Controls both back and forth movement speed."/>
-    <list pos="6" pos_type="nybbles" title="Distance" comment="Controls distance.">
+    <list pos="4" pos_type="nybbles" title="Movement Speed" comment="Controls movement speed. ">
+      <entry value="0">Fast</entry>
+      <entry value="1">Faster, but return time is as fast</entry>
+      <entry value="2">Medium</entry>
+      <entry value="3">Slow</entry>
+    </list>
+    <list pos="5" pos_type="nybbles" title="Timing Offset">
+      <entry value="0">No Offset</entry>
+      <entry value="8">Launch delayed</entry>
+      <entry value="10">Spawn launched</entry>
+    </list>
+    <list pos="6" pos_type="nybbles" title="Distance" comment="Controls launch distance.">
       <entry value="0">16 Tiles</entry>
       <entry value="1">7 Tiles</entry>
       <entry value="2">14 Tiles</entry>
       <entry value="3">10 Tiles</entry>
     </list>
-    <value pos="7" pos_type="nybbles" title="Unknown 10"/>
-    <value pos="8-9" pos_type="nybbles" title="Launch Delay" comment="The time it takes to launch."/>
-    <value pos="10-11" pos_type="nybbles" title="Return Delay" comment="The time it takes to come back."/>
+    <checkbox pos="7" pos_type="nybbles" title="Z-Order Change" comment="When checked, the skewer will appear behind certain sprites."/>
+    <value pos="8-9" pos_type="nybbles" title="Launch Delay" comment="The time it stays before launching."/>
+    <value pos="10-11" pos_type="nybbles" title="Return Delay" comment="The time it stays launched."/>
   </sprite>
   <sprite id="65" name="Morton Koopa Jr. - Respawn Pipe" notes="Actor: 0x093 &#13;&#10;Description: The respawning pipe that is used in Morton's Castle battle.&#13;&#10;Event Triggerable: No&#13;&#10;Affected by Gold Ring: No &#13;&#10;Requirements: N/A"/>
   <sprite id="66" name="Pipe Cannon">
@@ -890,10 +947,15 @@
     </list>
   </sprite>
   <sprite id="67" name="Pipe Cannon - Ludwig von Koopa Battle">
-    <checkbox pos="11" pos_type="nybbles" title="Non-Battle Cannon" comment="Check this if the cannon is unrelated to the battle with Ludwig."/>
+    <checkbox pos="11" pos_type="nybbles" title="Don't Wait For Second Player" comment="If checked, the pipe cannon will not wait for the other player to enter. Only one player can enter at a time."/>
   </sprite>
   <sprite id="68" name="Enemy Generator for Pipe">
-    <value pos="7" pos_type="nybbles" title="Speed" comment="Controls how quickly enemys will be spawened. Value of 3 is unused."/>
+    <list pos="7" pos_type="nybbles" title="Spawn Delay" comment="The amount of time between spawns. Does not affect Bob-ombs. Value of 3 is unused.">
+      <entry value="0">Short</entry>
+      <entry value="1">Medium</entry>
+      <entry value="2">Long</entry>
+      <entry value="3">Spawn once</entry>
+    </list>
     <value pos="9" pos_type="nybbles" title="Unknown 8"/>
     <list pos="10" pos_type="nybbles" title="Enemy" comment="Determines the enemy type to spawn.">
       <entry value="0">Goomba</entry>
@@ -906,7 +968,7 @@
       <entry value="2">Left</entry>
       <entry value="3">Right</entry>
     </list>
-    <value pos="13" pos_type="nybbles" title="Unknown 20"/>
+    <checkbox pos="13" pos_type="nybbles" title="Faster Spawning" comment="Causes the enemies to be spawned marginally faster. Does not affect Bob-ombs."/>
   </sprite>
   <sprite id="69" name="Door - Normal" notes="A normal door that can be used for entering."/>
   <sprite id="70" name="Door - Castle Boss" notes="A boss door designed for a castle boss."/>
@@ -962,14 +1024,32 @@
   <sprite id="79" name="Fireball Pipe - Spawner">
     <value pos="0-1" pos_type="nybbles" title="Triggering Event ID"/>
     <value pos="2-3" pos_type="nybbles" title="Target Event ID"/>
-    <list pos="7" pos_type="nybbles" title="Reward" comment="0 is unused.">
+    <list pos="7" pos_type="nybbles" title="Reward" comment="0 and 5 are unused.">
       <entry value="0">Nothing</entry>
       <entry value="1">Three 1-Ups</entry>
       <entry value="2">Mega Mushroom</entry>
       <entry value="3">Star</entry>
+      <entry value="5">1-Up</entry>
     </list>
-    <value pos="9" pos_type="nybbles" title="No. Of Fireballs Required" comment="Higher values increase the ammount of fireballs required for the reward."/>
-    <value pos="10" pos_type="nybbles" title="Unknown Value 5"/>
+    <list pos="9" pos_type="nybbles" title="Fireball count (+10)" comment="Increases the number of fireballs required by n*10. If both this and &quot;Fireball Count +1&quot; is set to 0, count defaults to 10.">
+      <entry value="0">0</entry>
+      <entry value="1">10</entry>
+      <entry value="2">20</entry>
+      <entry value="3">30</entry>
+      <entry value="4">40</entry>
+      <entry value="5">50</entry>
+      <entry value="6">60</entry>
+      <entry value="7">70</entry>
+      <entry value="8">80</entry>
+      <entry value="9">90</entry>
+      <entry value="10">100</entry>
+      <entry value="11">110</entry>
+      <entry value="12">120</entry>
+      <entry value="13">130</entry>
+      <entry value="14">140</entry>
+      <entry value="15">150</entry>
+    </list>
+    <value pos="10" pos_type="nybbles" title="Fireball count (+1)" comment="Increases the number of fireballs required by n. If both this and &quot;Fireball Count +10&quot; is set to 0, count defaults to 10."/>
     <list pos="11" pos_type="nybbles" title="Direction">
       <entry value="0">Up</entry>
       <entry value="1">Down</entry>
@@ -984,11 +1064,28 @@
       <entry value="0">Left</entry>
       <entry value="1">Right</entry>
     </list>
-    <value pos="10" pos_type="nybbles" title="Unknown Value 5"/>
-    <value pos="11" pos_type="nybbles" title="Unknown Value 6"/>
+    <value pos="10" pos_type="nybbles" title="Collider Height" comment="The height of the collider in tiles. A value of 0 defaults to two tiles high."/>
+    <list pos="11" pos_type="nybbles" title="Collider Width" comment="The width of the collider in tiles. Increments by a factor of 1.75 tiles.">
+      <entry value="0">2 Tiles</entry>
+      <entry value="1">2 Tiles</entry>
+      <entry value="2">3.25 Tiles</entry>
+      <entry value="3">5 Tiles</entry>
+      <entry value="4">6.5 Tiles</entry>
+      <entry value="5">8.25 Tiles</entry>
+      <entry value="6">10 Tiles</entry>
+      <entry value="7">11.75 Tiles</entry>
+      <entry value="8">13.5 Tiles</entry>
+      <entry value="9">15.25 Tiles</entry>
+      <entry value="10">17 Tiles</entry>
+      <entry value="11">18.75 Tiles</entry>
+      <entry value="12">20.5 Tiles</entry>
+      <entry value="13">22.25 Tiles</entry>
+      <entry value="14">24 Tiles</entry>
+      <entry value="15">25.75 Tiles</entry>
+    </list>
   </sprite>
   <sprite id="81" name="Fireball Pipe - ! Junction" notes="The ! junction to the fireball pipe.">
-    <value pos="0-1" pos_type="nybbles" title="Triggering Event ID" comment="Causes the ! icon to flash when triggered."/>
+    <value pos="0-1" pos_type="nybbles" title="Triggering Event ID" comment="Causes the ! icon to flash while triggered."/>
     <value pos="2-3" pos_type="nybbles" title="Disabling Event ID" comment="When triggered the ! icon will grey out."/>
   </sprite>
   <sprite id="82" name="Fire Snake" notes="A snake of fire, that jumps around.">
@@ -1003,7 +1100,7 @@
     </list>
     <value pos="11" pos_type="nybbles" title="Swim Distance" comment="Increases the distance the fish bone swims before changing direction."/>
   </sprite>
-  <sprite id="84" name="Event Controller - Chainer (If X, do Y)">
+  <sprite id="84" name="Event Controller - Chainer" notes="Triggers a target Event ID after the triggering Event ID was modified per the activation mode. (If X, do Y)">
     <value pos="0-1" pos_type="nybbles" title="Target Event ID"/>
     <value pos="2-3" pos_type="nybbles" title="Triggering Event ID"/>
     <value pos="4-5" pos_type="nybbles" title="Delay" comment="The delay between the trigger. One delay unit = 10 frames."/>
@@ -1036,16 +1133,16 @@
       <entry value="2">Super</entry>
       <entry value="3">Fire</entry>
       <entry value="4">Mini</entry>
-      <entry value="5">Tanooki</entry>
+      <entry value="5">Super Leaf</entry>
       <entry value="6">Unknown 6</entry>
-      <entry value="7">Unknown 7</entry>
+      <entry value="7">Mega Mario</entry>
       <entry value="15">Star</entry>
     </list>
     <list pos="9" pos_type="nybbles" title="Required Player Movement" comment="5=You need to actually ground-pound a surface - not just do the &quot;spin upside-down&quot; bit">
       <entry value="0">No Requirement</entry>
       <entry value="1">Standing</entry>
       <entry value="2">In the air</entry>
-      <entry value="3">On vine</entry>
+      <entry value="3">Climbing</entry>
       <entry value="5">Ground-pound</entry>
       <entry value="7">On Horizontal Rope</entry>
       <entry value="8">On Swinging Rope/Vine</entry>
@@ -1070,7 +1167,7 @@
       <entry value="1">Disables Event</entry>
     </list>
   </sprite>
-  <sprite id="87" name="Event Controller - Multi-Chainer (If X, do Y THROUGH Z)">
+  <sprite id="87" name="Event Controller - Multi-chainer" notes="Triggers Event IDs in a chain beginning from the triggering ID to the target ID. (If X, do Y through Z).">
     <value pos="0-1" pos_type="nybbles" title="End Event ID (Target)" comment="The activator will trigger all Flags from the start Flag ID to this Flag ID (including this one). The Value entered here must be larger than the Value entered for Start Flag ID"/>
     <value pos="2-3" pos_type="nybbles" title="Start Event ID (Triggering)" comment="The activator will start running when this Flag ID is triggered."/>
     <value pos="4-5" pos_type="nybbles" title="Delay" comment="The delay between triggers. One delay unit = 10 frames."/>
@@ -1083,7 +1180,7 @@
       <entry value="1">Disables Event</entry>
     </list>
   </sprite>
-  <sprite id="88" name="Event Controller - On Screen" notes="It activates when it enters the screen.">
+  <sprite id="88" name="Event Controller - On-screen" notes="It activates when it enters the screen.">
     <value pos="0-1" pos_type="nybbles" title="Target Event ID"/>
     <value pos="4-5" pos_type="nybbles" title="Delay" comment="Adds a delay before triggering the event. Higher values result in a longer delay."/>
     <value pos="8" pos_type="nybbles" title="Unknown Value 7"/>
@@ -1104,22 +1201,31 @@
     <value pos="10-11" pos_type="nybbles" title="Location ID" comment="When Mario is in this location, the porcupuffers will spawn."/>
   </sprite>
   <sprite id="91" name="Coin Coffer">
-    <value pos="0-1" pos_type="nybbles" title="Triggering Event ID"/>
+    <value pos="0-1" pos_type="nybbles" title="Triggering Event ID" comment="Makes the Coin Coffer appear. If set to 0, the Coin Coffer will appear on its own, without red coins."/>
+    <value pos="2-3" pos_type="nybbles" title="Triggering Event ID (Red Coins)" comment="If set to anything other than 0, the Coin Coffer will not spawn red coins until this Event ID is triggered. Unused."/>
   </sprite>
   <sprite id="92" name="Grinder" notes="A saw-like object that runs on rails that moves at certain speeds and directions.">
-    <value pos="0-1" pos_type="nybbles" title="Triggering Event ID" comment="Spawned if on."/>
-    <value pos="10" pos_type="nybbles" title="Speed"/>
-    <list pos="11" pos_type="nybbles" title="Start Direction">
-      <entry value="0">Left/Up</entry>
-      <entry value="1">Right/Down</entry>
+    <value pos="0-1" pos_type="nybbles" title="Triggering Event ID" comment="Spawned when this event is activated."/>
+    <list pos="10" pos_type="nybbles" title="Speed">
+      <entry value="4">Slowest</entry>
+      <entry value="5">Slower</entry>
+      <entry value="6">Slow</entry>
+      <entry value="0">Medium Slow</entry>
+      <entry value="1">Medium Fast</entry>
+      <entry value="2">Fast</entry>
+      <entry value="7">Faster</entry>
+      <entry value="3">Fastest</entry>
     </list>
-    <value pos="13" pos_type="nybbles" title="Location ID" comment="Purpose unknown."/>
+    <checkbox pos="11" pos_type="nybbles" title="Move Left/Down"/>
+    <value pos="13" pos_type="nybbles" title="Location ID" comment="Won't despawn off-screen if the location is on-screen."/>
   </sprite>
-  <sprite id="93" name="Scuttlebug" notes="Perhaps has unused values to make it walk around like in NSMBDS?">
-    <value pos="10" pos_type="nybbles" title="Unknown Value 5"/>
-    <list pos="11" pos_type="nybbles" title="Movement">
-      <entry value="0">Moves down slowly,then goes back up slowly</entry>
-      <entry value="1">Falls down,then goes back up slowly</entry>
+  <sprite id="93" name="Scuttlebug">
+    <value pos="0-1" pos_type="nybbles" title="Triggering Event ID (Falling)" comment="The Scuttlebug will fall when event is activated if behaviour is set to 'Falling' and will retract when the event is disabled [Unused]"/>
+    <value pos="2-3" pos_type="nybbles" title="Triggering Event ID 2" comment="The Scuttlebug will not spawn while event is active [Unused]"/>
+    <value pos="10" pos_type="nybbles" title="Unknown Value 10"/>
+    <list pos="11" pos_type="nybbles" title="Spawn Behaviour" comment="Determines the spawn behaviour of the Scuttlebug. If set to &quot;Falls&quot; the Scuttlebug will fall and then proceed to start climbing.">
+      <entry value="0">Already Climbing</entry>
+      <entry value="1">Falls</entry>
     </list>
   </sprite>
   <sprite id="94" name="Flipper Gate">
@@ -1209,7 +1315,7 @@
     </list>
     <list pos="11" pos_type="nybbles" title="Start Direction" comment="The direction the blooper swims in.">
       <entry value="0">Towards Player</entry>
-      <entry value="1">Right</entry>
+      <entry value="1">Moves towards the Direction Mario faces</entry>
     </list>
   </sprite>
   <sprite id="96" name="Blooper Nanny" notes="A blooper with a few smaller bloopers following it.">
@@ -1286,7 +1392,7 @@
     </list>
     <list pos="11" pos_type="nybbles" title="Start Direction" comment="The direction the blooper swims in.">
       <entry value="0">Towards Player</entry>
-      <entry value="1">Right</entry>
+      <entry value="1">Moves towards the Direction Mario faces</entry>
     </list>
   </sprite>
   <sprite id="97" name="Goal Pole and Fort" notes="This sprite is sometimes used on the top block of a 1x10 invisible solid. This might to be a leftover from when this was necessary, or it was just for visualization.">
@@ -1311,7 +1417,7 @@
       <entry value="0">Nothing</entry>
       <entry value="1">Coin</entry>
       <entry value="2">Fire Flower</entry>
-      <entry value="4">Tanooki Leaf</entry>
+      <entry value="4">Super Leaf</entry>
       <entry value="5">Gold Flower</entry>
       <entry value="6">Mini Mushroom</entry>
       <entry value="7">Star</entry>
@@ -1328,7 +1434,7 @@
       <entry value="0">Empty</entry>
       <entry value="1">Coin</entry>
       <entry value="2">Fire Flower</entry>
-      <entry value="4">Tanooki Leaf</entry>
+      <entry value="4">Super Leaf</entry>
       <entry value="5">Gold Flower</entry>
       <entry value="6">Mini Mushroom</entry>
       <entry value="7">Star</entry>
@@ -1431,19 +1537,24 @@
     <checkbox pos="11" pos_type="nybbles" title="Big"/>
   </sprite>
   <sprite id="115" name="Bill Blaster (Bullet Bill Cannon)">
-    <checkbox pos="4" pos_type="nybbles" title="Upside Down"/>
-    <value pos="5" pos_type="nybbles" title="Unknown Value 12"/>
-    <list pos="8" pos_type="nybbles" title="Bull's-Eye Bill behaviour">
+    <list pos="4" pos_type="nybbles" title="Mode " comment="Determines the mode of the Bill Blaster. Option 2 is unused. ">
       <entry value="0">Normal</entry>
-      <entry value="1">Explode after a while</entry>
+      <entry value="1">Upside Down</entry>
+      <entry value="2">Shifted Up A Tile</entry>
     </list>
-    <list pos="9" pos_type="nybbles" title="Firing Direction">
-      <entry value="0">Both</entry>
+    <value pos="5" pos_type="nybbles" title="Unknown Value 5"/>
+    <value pos="7" pos_type="nybbles" title="Z-Order" comment="Adjusts the Z-order of this Bill Blaster. Higher values = lower Z-Order"/>
+    <list pos="8" pos_type="nybbles" title="Bull's-Eye Bill behaviour" comment="Determines how Bull's Eye Bills will act when shot from this Bill Blaster. Does nothing for regular Bullet Bills.">
+      <entry value="0">Chase</entry>
+      <entry value="1">Chase &amp; Explode</entry>
+    </list>
+    <list pos="9" pos_type="nybbles" title="Firing Direction" comment="Determines the firing direction for this Bill Blaster.">
+      <entry value="0">Towards Player</entry>
       <entry value="1">Left</entry>
       <entry value="2">Right</entry>
     </list>
-    <value pos="10" pos_type="nybbles" title="Height" comment="Value + 2"/>
-    <list pos="11" pos_type="nybbles" title="Bullet Bill Type" comment="Doesn't seem to exist for the Banzai Bill Blaster">
+    <value pos="10" pos_type="nybbles" title="Height" comment="Determines the height of the Bill Blaster. Value + 2"/>
+    <list pos="11" pos_type="nybbles" title="Bullet Bill Type" comment="Determines the type of Bullet Bill to fire.">
       <entry value="0">Normal</entry>
       <entry value="1">Bull's-Eye</entry>
     </list>
@@ -1455,16 +1566,27 @@
   </sprite>
   <sprite id="117" name="Banzai Bill Blaster (Banzai Bill Launcher)">
     <value pos="4-5" pos_type="nybbles" title="Delay Between Shots" comment="The higher the value the higher the delay between shots will be."/>
-    <value pos="7" pos_type="nybbles" title="Unknown Value 10"/>
-    <list pos="9" pos_type="nybbles" title="Firing Direction">
-      <entry value="0">Both</entry>
+    <value pos="7" pos_type="nybbles" title="Z-Order" comment="Adjusts the Z-order of this Bill Blaster. Higher values = lower Z-Order"/>
+    <list pos="9" pos_type="nybbles" title="Firing Direction" comment="Determines the firing direction for this Bill Blaster.">
+      <entry value="0">Towards Player</entry>
       <entry value="1">Left</entry>
       <entry value="2">Right</entry>
     </list>
+    <checkbox pos="11" pos_type="nybbles" title="Faster Start" comment="Causes the Banzai Bills to start firing marginally faster. [Unused]"/>
   </sprite>
   <sprite id="118" name="Bullet Bill" notes="A simple bullet bill that spawns at the location it is placed, and goes in the direction specified.">
-    <value pos="0-1" pos_type="nybbles" title="Triggering Event ID" comment="Appears when triggered."/>
-    <checkbox pos="10" pos_type="nybbles" title="Ununsed Checkbox 5"/>
+    <list pos="16" pos_type="bits" title="Event Behaviour">
+      <entry value="0">Show</entry>
+      <entry value="1">Hide</entry>
+    </list>
+    <value pos="0-1" pos_type="nybbles" title="Triggering Event ID"/>
+    <checkbox pos="6" pos_type="nybbles" title="Track Camera X" comment="Adds the current horizontal camera speed to the actual speed"/>
+    <checkbox pos="6" pos_type="nybbles" title="Track Camera Y Inverse" mask="2" comment="Subtracts the current vertical camera speed to the actual speed"/>
+    <value pos="9" pos_type="nybbles" title="Z Offset" comment="2500.0 - (16.0 * value). See 0x003D5DA8."/>
+    <list pos="10" pos_type="nybbles" title="Blaster Direction" comment="Used when direction = 10">
+      <entry value="0">Right</entry>
+      <entry value="1">Left</entry>
+    </list>
     <list pos="11" pos_type="nybbles" title="Direction" comment="Other values make it face to the screen in a glitchy way.">
       <entry value="0">Right</entry>
       <entry value="1">Left</entry>
@@ -1474,14 +1596,27 @@
       <entry value="5">Down-Right</entry>
       <entry value="6">Up-Right</entry>
       <entry value="7">Up-Left</entry>
+      <entry value="10">Use Blaster Direction</entry>
     </list>
   </sprite>
   <sprite id="119" name="Banzai Bill">
-    <value pos="0-1" pos_type="nybbles" title="Triggering Event ID" comment="The event that will spawn the Banzai Bill. A value of 0 will spawn normally."/>
+    <list pos="16" pos_type="bits" title="Event Behaviour">
+      <entry value="0">Show</entry>
+      <entry value="1">Hide</entry>
+    </list>
+    <value pos="0-1" pos_type="nybbles" title="Triggering Event ID"/>
     <value pos="4" pos_type="nybbles" title="Scale" comment="Scales the Banzai Bill by n. Hitbox doesn't get scaled.  [Unused]"/>
+    <checkbox pos="6" pos_type="nybbles" title="Track Camera X" comment="Adds the current horizontal camera speed to the actual speed"/>
+    <checkbox pos="6" pos_type="nybbles" title="Track Camera Y Inverse" mask="2"/>
+    <value pos="9" pos_type="nybbles" title="Z Offset"/>
+    <list pos="10" pos_type="nybbles" title="Blaster Direction" comment="Used when direction = 10">
+      <entry value="0">Right</entry>
+      <entry value="1">Left</entry>
+    </list>
     <list pos="11" pos_type="nybbles" title="Direction" comment="Determines the direction of the Banzai Bill.">
       <entry value="0">Right</entry>
       <entry value="1">Left</entry>
+      <entry value="10">Use Blaster Direction</entry>
     </list>
     <checkbox pos="19" pos_type="nybbles" title="No Respawn" comment="If checked the Banzai Bill won't respawn if you go off screen."/>
   </sprite>
@@ -1593,7 +1728,12 @@
       <entry value="0">Normal</entry>
       <entry value="1">Blue</entry>
     </list>
-    <value pos="18" pos_type="nybbles" title="Unknown 13"/>
+    <list pos="18" pos_type="nybbles" title="Spawn Direction" comment="Determines the direction to spawn. Spawn Behavior From Pipe is required.">
+      <entry value="0">Up</entry>
+      <entry value="1">Down</entry>
+      <entry value="2">Left</entry>
+      <entry value="3">Right</entry>
+    </list>
   </sprite>
   <sprite id="136" name="Bone Goomba" notes="Gold Ring behaviour; uses gold Goomba model">
     <value pos="4" pos_type="nybbles" title="Unknown Value 11" comment="Checkbox?"/>
@@ -1613,7 +1753,7 @@
     <checkbox pos="16" pos_type="nybbles" title="Crash" comment="Check this to crash the game."/>
   </sprite>
   <sprite id="139" name="Goomba Tower">
-    <checkbox pos="10" pos_type="nybbles" title="Wider Hitbox"/>
+    <checkbox pos="10" pos_type="nybbles" title="Smaller bottom sensor" comment="Causes sprite to fall faster from ledges."/>
     <list pos="11" pos_type="nybbles" title="Number of Goombas">
       <entry value="0">Two (Default)</entry>
       <entry value="1">One</entry>
@@ -1663,7 +1803,10 @@
     <value pos="9" pos_type="nybbles" title="Distance" comment="The number of tiles the platform will move."/>
     <value pos="11" pos_type="nybbles" title="Width" comment="Determines the width of the platform. Value +1."/>
   </sprite>
-  <sprite id="146" name="Track-controlled Lift">
+  <sprite id="146" name="Rail-controlled Lift">
+    <value pos="0-1" pos_type="nybbles" title="Triggering Event ID 1"/>
+    <value pos="2-3" pos_type="nybbles" title="Triggering Event ID 2"/>
+    <checkbox pos="4" pos_type="nybbles" title="Activated by Event"/>
     <checkbox pos="6" pos_type="nybbles" title="Move Only Once Stepped On"/>
     <list pos="7" pos_type="nybbles" title="Starting Direction">
       <entry value="0">Right/Up</entry>
@@ -1674,13 +1817,14 @@
       <entry value="1">Stone</entry>
     </list>
     <checkbox pos="9" pos_type="nybbles" title="Round Top Edges" comment="Makes edges rounder, and makes the platform 1 pixel taller."/>
-    <list pos="15" pos_type="nybbles" title="Speed" comment="Speed of the lift.">
-      <entry value="0">Slowest</entry>
-      <entry value="1">Slower</entry>
-      <entry value="2">Slow</entry>
-      <entry value="3">Fast</entry>
-      <entry value="4">Faster</entry>
-      <entry value="5">Fastest</entry>
+    <checkbox pos="10" pos_type="nybbles" title="Slippery"/>
+    <list pos="15" pos_type="nybbles" title="Speed" comment="Speed of the lift,6-11 repeat but go left.">
+      <entry value="4">Slowest</entry>
+      <entry value="5">Slower</entry>
+      <entry value="0">Slow</entry>
+      <entry value="1">Fast</entry>
+      <entry value="2">Faster</entry>
+      <entry value="3">Fastest</entry>
     </list>
     <value pos="17" pos_type="nybbles" title="Width (0 is 4 blocks)" comment="The width of the platform. Setting it to 0 makes the platform 4 blocks. No other value adds 4 blocks to the width."/>
   </sprite>
@@ -1818,8 +1962,13 @@
       <entry value="0">Camera Stays Above</entry>
       <entry value="1">Camera Stays Below</entry>
     </list>
-    <value pos="5" pos_type="nybbles" title="Unknown 12"/>
-    <value pos="7" pos_type="nybbles" title="Unknown Value 10"/>
+    <list pos="5" pos_type="nybbles" title="Multiplayer Settings" comment="Controls how the camera limit behaves in multiplayer.">
+      <entry value="0">Always Limit</entry>
+      <entry value="1">Limit in Solo Play</entry>
+      <entry value="2">Limit in Co-op Play</entry>
+      <entry value="3">Unknown Value 3</entry>
+    </list>
+    <value pos="7" pos_type="nybbles" title="Unknown Value 8"/>
     <checkbox pos="8" pos_type="nybbles" title="Permeable Camera Limit" comment="When Set to 1, the camera will scroll past the border if the player passes it."/>
     <value pos="9" pos_type="nybbles" title="Priority ID" comment="15 is lowest priority, 1 is highest. Each pair must have the same Priority ID."/>
     <value pos="10-11" pos_type="nybbles" title="Camera Y Offset" comment="Offsets the camera by N number of pixels."/>
@@ -1830,8 +1979,13 @@
       <entry value="0">Camera Stays Above</entry>
       <entry value="1">Camera Stays Below</entry>
     </list>
-    <value pos="5" pos_type="nybbles" title="Unknown 12"/>
-    <value pos="7" pos_type="nybbles" title="Unknown Value 10"/>
+    <list pos="5" pos_type="nybbles" title="Multiplayer Settings" comment="Controls how the camera limit behaves in multiplayer.">
+      <entry value="0">Always Limit</entry>
+      <entry value="1">Limit in Solo Play</entry>
+      <entry value="2">Limit in Co-op Play</entry>
+      <entry value="3">Unknown Value 3</entry>
+    </list>
+    <value pos="7" pos_type="nybbles" title="Unknown Value 8"/>
     <checkbox pos="8" pos_type="nybbles" title="Permeable Camera Limit" comment="When Set to 1, the camera will scroll past the border if the player passes it."/>
     <value pos="9" pos_type="nybbles" title="Priority ID" comment="15 is lowest priority, 1 is highest. Each pair must have the same Priority ID."/>
     <value pos="10-11" pos_type="nybbles" title="Camera Y Offset" comment="Offsets the camera by N number of pixels."/>
@@ -1867,6 +2021,12 @@
       <entry value="0">Camera Stays to The Left</entry>
       <entry value="1">Camera Stays to the Right</entry>
     </list>
+    <list pos="5" pos_type="nybbles" title="Multiplayer Settings" comment="Controls how the camera limit behaves in multiplayer. Value 2 limits until both players cross the line given by the offset">
+      <entry value="0">Always Limit</entry>
+      <entry value="1">Limit in Solo Play</entry>
+      <entry value="2">Limit Until Both Players Cross</entry>
+      <entry value="3">Unknown Value 3</entry>
+    </list>
     <checkbox pos="8" pos_type="nybbles" title="Permeable Camera Limit" comment="Allows the camera to scroll past the limiter. Allows the player to walk through the limiter if an X Offset is set."/>
     <value pos="9" pos_type="nybbles" title="Priority ID" comment="15 is lowest priority, 1 is highest. Each pair must have the same Priority ID."/>
     <value pos="10-11" pos_type="nybbles" title="Camera X Offset" comment="Offsets the camera by N number of pixels."/>
@@ -1876,6 +2036,12 @@
       <entry value="0">Camera Stays to The Left</entry>
       <entry value="1">Camera Stays to the Right</entry>
     </list>
+    <list pos="5" pos_type="nybbles" title="Multiplayer Settings" comment="Controls how the camera limit behaves in multiplayer. Value 2 limits until both players cross the line given by the offset">
+      <entry value="0">Always Limit</entry>
+      <entry value="1">Limit in Solo Play</entry>
+      <entry value="2">Limit Until Both Players Cross</entry>
+      <entry value="3">Unknown Value 3</entry>
+    </list>
     <checkbox pos="8" pos_type="nybbles" title="Permeable Camera Limit" comment="Allows the camera to scroll past the limiter. Allows the player to walk through the limiter if an X Offset is set."/>
     <value pos="9" pos_type="nybbles" title="Priority ID" comment="15 is lowest priority, 1 is highest. Each pair must have the same Priority ID."/>
     <value pos="10-11" pos_type="nybbles" title="Camera X Offset" comment="Offsets the camera by N number of pixels."/>
@@ -1883,7 +2049,7 @@
   <sprite id="162" name="Morton Koopa Jr." notes="The boss of World 4."/>
   <sprite id="163" name="Climbing Koopa - Horizontal" notes="A koopa that climbs on a fence, horizontally. (left to right, or right to left.)">
     <checkbox pos="9" pos_type="nybbles" title="Is on moving fence" comment="Check this if the koopa is on a moving fence to prevent weird collision. Using this on a normal fence causes koopa to be invisible"/>
-    <checkbox pos="10" pos_type="nybbles" title="Start moving left" comment="If unchecked, Starts moving right"/>
+    <checkbox pos="10" pos_type="nybbles" title="Start moving away from player" comment="If unchecked, moves towards the player."/>
     <list pos="11" pos_type="nybbles" title="Color" comment="Unused.">
       <entry value="0">Green</entry>
       <entry value="1">Red</entry>
@@ -1898,19 +2064,19 @@
   </sprite>
   <sprite id="165" name="Koopa Troopa" notes="Can be bounced by Trampoline Mushroom Platforms and Invisible Trampoline Block unless in shell. Gold Ring behaviour; turns gold, kicked/thrown shell leaves trail of coins.">
     <value pos="0-1" pos_type="nybbles" title="Triggering Event ID (Broken)" comment="Defunct Triggering Event that was presumably required for Gold Ring functionality at one point."/>
-    <checkbox pos="6" pos_type="nybbles" title="Enable 1up Trick" comment="Makes it possible to use the infinite 1up trick with this koopa."/>
+    <checkbox pos="6" pos_type="nybbles" title="Enable 1-up Trick" comment="Makes it possible to use the infinite 1-up trick with this Koopa."/>
     <list pos="7" pos_type="nybbles" title="Z-Order" comment="Determines the Z position of the Koopa.">
       <entry value="0">Above layer 1 Tiles</entry>
       <entry value="1">Below Layer 1 Tiles</entry>
     </list>
-    <list pos="9" pos_type="nybbles" title="Behaviour" comment="Determines the behaviour of the koopa.">
+    <list pos="9" pos_type="nybbles" title="Collider Type" comment="Determines the collider type for this Koopa. &quot;No Collider&quot; disables interaction with the player. &quot;Smaller Bottom Sensor&quot; causes the Koopa to fall and turn slightly faster. Does not affect Koopas that spawn as empty shell.">
       <entry value="0">Normal</entry>
-      <entry value="1">Ignore Collision</entry>
-      <entry value="2">Unk</entry>
-      <entry value="3">Unk2</entry>
+      <entry value="1">No Collider</entry>
+      <entry value="2">Smaller Bottom Sensor</entry>
+      <entry value="3">Smaller Bottom Sensor (Until Hit)</entry>
     </list>
-    <checkbox pos="10" pos_type="nybbles" title="Empty Shell" comment="If checked, only a koopa shell will spawn."/>
-    <list pos="11" pos_type="nybbles" title="Color" comment="Determines the type of koopa. Green koopas can fall off ledges, Red koopas stay on ledges.">
+    <checkbox pos="10" pos_type="nybbles" title="Empty Shell" comment="If checked, only a Koopa shell will spawn."/>
+    <list pos="11" pos_type="nybbles" title="Color" comment="Determines the type of Koopa. Green Koopas can fall off ledges, Red Koopas stay on ledges.">
       <entry value="0">Green</entry>
       <entry value="1">Red</entry>
     </list>
@@ -1926,7 +2092,13 @@
     <value pos="12" pos_type="nybbles" title="Start Delay"/>
     <value pos="13" pos_type="nybbles" title="End Delay"/>
     <value pos="14" pos_type="nybbles" title="Tiles to Move"/>
-    <value pos="15" pos_type="nybbles" title="Movement Speed"/>
+    <list pos="15" pos_type="nybbles" title="Movement Speed" comment="&#xB4;">
+      <entry value="0">No Movement</entry>
+      <entry value="4">Slowest</entry>
+      <entry value="1">Slow</entry>
+      <entry value="2">Medium</entry>
+      <entry value="3">Fast</entry>
+    </list>
     <value pos="20-21" pos_type="nybbles" title="Movement ID"/>
   </sprite>
   <sprite id="167" name="Pipe Piranha Plant - Down" notes="Used without data"/>
@@ -2020,6 +2192,8 @@
       <entry value="0">Jump</entry>
       <entry value="1">Fly Horizontally</entry>
       <entry value="2">Fly Vertically</entry>
+      <entry value="3">Jump (Lower)</entry>
+      <entry value="4">Jump (Faster)</entry>
     </list>
     <list pos="11" pos_type="nybbles" title="Color">
       <entry value="0">Green</entry>
@@ -2368,7 +2542,7 @@
       <entry value="2">Right</entry>
     </list>
     <checkbox pos="5" pos_type="nybbles" title="Huge Cheep Cheep" comment="Makes the cheep cheep huge. Unused."/>
-    <list pos="8" pos_type="nybbles" title="Slower Swim Speed" comment="Determines the speed of the cheep cheep. All other values are repeats of 4. Values greater than 1 are unused.">
+    <list pos="8" pos_type="nybbles" title="Swim Speed" comment="Determines the speed of the cheep cheep. All other values are repeats of 4. Values greater than 1 are unused.">
       <entry value="0">Fastest</entry>
       <entry value="1">Slow</entry>
       <entry value="2">Fast</entry>
@@ -2475,7 +2649,7 @@
       <entry value="0">Nothing</entry>
       <entry value="1">Coin</entry>
       <entry value="2">Fire Flower</entry>
-      <entry value="4">Tanooki Leaf</entry>
+      <entry value="4">Super Leaf</entry>
       <entry value="5">Gold Flower</entry>
       <entry value="6">Mini Mushroom</entry>
       <entry value="7">Star</entry>
@@ -2492,7 +2666,7 @@
       <entry value="0">Nothing</entry>
       <entry value="1">Coin</entry>
       <entry value="2">Fire Flower</entry>
-      <entry value="4">Tanooki Leaf</entry>
+      <entry value="4">Super Leaf</entry>
       <entry value="5">Gold Flower</entry>
       <entry value="6">Mini Mushroom</entry>
       <entry value="7">Star</entry>
@@ -2562,7 +2736,7 @@
   </sprite>
   <sprite id="209" name="Swinging Rope">
     <value pos="0-1" pos_type="nybbles" title="Triggering Event ID" comment="When triggered, the rope will spawn. [Unused]"/>
-    <value pos="4" pos_type="nybbles" title="Unknown Value 11" comment="Checkbox? (used in vine)"/>
+    <checkbox pos="4" pos_type="nybbles" title="No swing syncing" comment="Checkbox? (used in vine)"/>
     <value pos="8" pos_type="nybbles" title="Speed" comment="The speed of the rope."/>
     <value pos="9" pos_type="nybbles" title="Start Position" comment="Determines the start position of the rope."/>
     <value pos="10" pos_type="nybbles" title="Swinging Distance" comment="The distance of the swing arc."/>
@@ -2596,7 +2770,7 @@
       <entry value="12">13 Tiles</entry>
       <entry value="13">14 Tiles</entry>
       <entry value="14">15 Tiles</entry>
-      <entry value="15">16 Tiles </entry>
+      <entry value="15">16 Tiles</entry>
     </list>
     <list pos="5" pos_type="nybbles" title="Height" comment="Determines the height and direction of the rope.">
       <entry value="0">Flat</entry>
@@ -2616,20 +2790,16 @@
       <entry value="14">Down Two Tiles</entry>
       <entry value="15">Down One Tiles</entry>
     </list>
-    <list pos="11" pos_type="nybbles" title="Joint Visibility" comment="Toggles the visibility for the end joints. [Unused]">
-      <entry value="0">Both Joints Visible</entry>
-      <entry value="1">Right Joint Only</entry>
-      <entry value="2">Left Joint Only</entry>
-      <entry value="3">No Joints</entry>
-    </list>
+    <checkbox pos="11" pos_type="nybbles" title="Hide left joint"/>
+    <checkbox pos="11" pos_type="nybbles" title="Hide right joint" mask="2"/>
   </sprite>
   <sprite id="211" name="Roy Koopa" notes="Requires a castle boss controller to function correctly."/>
   <sprite id="212" name="Roy Battle Walls">
     <checkbox pos="11" pos_type="nybbles" title="Left Side" comment="Check this if this is the wall on the left."/>
   </sprite>
   <sprite id="213" name="Pokey" notes="Gold Ring Effect: None&#13;&#10;Actor: 0x135">
-    <value pos="4" pos_type="nybbles" title="Unknown Value 11" comment="Checkbox?"/>
-    <value pos="5" pos_type="nybbles" title="Unknown Value 12" comment="Checkbox?"/>
+    <value pos="4" pos_type="nybbles" title="Unknown Value 4" comment="Checkbox?"/>
+    <checkbox pos="5" pos_type="nybbles" title="Full Height Collider" comment="When enabled the pokey's collider will match it's height, preventing it from passing through blocks. When disabled only the bottom segment has a collider."/>
     <list pos="11" pos_type="nybbles" title="Height" comment="Includes head. Value + 3">
       <entry value="0">3</entry>
       <entry value="1">4</entry>
@@ -2706,7 +2876,7 @@
       <entry value="14">17 Blocks</entry>
       <entry value="15">18 Blocks</entry>
     </list>
-    <list pos="12" pos_type="nybbles" title="Ending Behavior" comment="Sets how the snakeblock should act when reaching the final path node. Values of 6 or greater crash the game.">
+    <list pos="12" pos_type="nybbles" title="Ending Behavior" comment="Sets how the snakeblock should act when reaching the final path node. If set to Falls Down, the blocks stop being solid when falling. Values of 6 or greater crash the game.">
       <entry value="0">Stops</entry>
       <entry value="1">Jumps Right</entry>
       <entry value="2">Falls Down</entry>
@@ -2774,9 +2944,9 @@
   <sprite id="220" name="Rotation-controlled Star Coin">
     <list pos="16-18" pos_type="bits" title="Rotation Mode" comment="The behavior of this star coin.">
       <entry value="0">Normal</entry>
-      <entry value="1">Upside Down Coin</entry>
-      <entry value="2">Gimbal Rotation</entry>
-      <entry value="4">Upside Down Coin</entry>
+      <entry value="1">Coin Starts Upside Down</entry>
+      <entry value="2">Coin Faces Screen</entry>
+      <entry value="4">Coin Faces Controller</entry>
     </list>
     <checkbox pos="19" pos_type="bits" title="Use Rotation Controller Starting Rotation Offset" comment="If enabled, the Star Coin Will use the start offset specified in the rotation controller."/>
     <value pos="0-1" pos_type="nybbles" title="Target Event ID"/>
@@ -2800,7 +2970,7 @@
     <checkbox pos="4" pos_type="nybbles" title="Gravity Affected" comment="When checked the switch will be affected by gravity."/>
     <value pos="5" pos_type="nybbles" title="Location ID"/>
     <checkbox pos="6" pos_type="nybbles" title="Not Timed" comment="Disables the timer on the switch."/>
-    <checkbox pos="7" pos_type="nybbles" title="Shift Up a Tile" comment="When checked the switch will appear a tile higher."/>
+    <checkbox pos="7" pos_type="nybbles" title="Shift Up a Tile" comment="When checked the switch will appear a tile higher. When checking Upside Down, the switch will appear a tile lower."/>
     <list pos="8" pos_type="nybbles" title="Activation Mode" comment="This determines if the switch will activate or deactivate the event.">
       <entry value="0">Activates Event</entry>
       <entry value="1">Deactivates Event</entry>
@@ -2868,13 +3038,13 @@
     <checkbox pos="10" pos_type="nybbles" title="Shift Half a Tile Right" comment="Shifts the switch half a tile to the right."/>
     <checkbox pos="11" pos_type="nybbles" title="Upside Down" comment="Makes the switch upside down."/>
   </sprite>
-  <sprite id="225" name="P Switch">
+  <sprite id="225" name="P-Switch">
     <value pos="0-1" pos_type="nybbles" title="Target Event ID"/>
     <checkbox pos="4" pos_type="nybbles" title="No Music" mask="8" comment="When checked the switch won't cause timer music to play."/>
     <checkbox pos="4" pos_type="nybbles" title="Gravity Affected" comment="When checked the switch will be affected by gravity."/>
-    <value pos="5" pos_type="nybbles" title="Location ID"/>
+    <value pos="5" pos_type="nybbles" title="Location ID" comment="When the blue coins in this location are collected, an applause sound effect will play."/>
     <checkbox pos="6" pos_type="nybbles" title="Not Timed" comment="Disables the timer on the switch."/>
-    <checkbox pos="7" pos_type="nybbles" title="Shift Up a Tile" comment="When checked the switch will appear a tile higher."/>
+    <checkbox pos="7" pos_type="nybbles" title="Shift Up a Tile" comment="When checked the switch will appear a tile higher. When checking Upside Down, the switch will appear a tile lower."/>
     <list pos="8" pos_type="nybbles" title="Activation Mode" comment="This determines if the switch will activate or deactivate the event.">
       <entry value="0">Activates Event</entry>
       <entry value="1">Deactivates Event</entry>
@@ -2887,11 +3057,11 @@
     <checkbox pos="10" pos_type="nybbles" title="Shift Half a Tile Right" comment="Shifts the switch half a tile to the right."/>
     <checkbox pos="11" pos_type="nybbles" title="Upside Down" comment="Makes the switch upside down."/>
   </sprite>
-  <sprite id="226" name="Brick Block containing P Switch" notes="See ? Switch for settings">
+  <sprite id="226" name="Brick Block containing P-Switch" notes="See ? Switch for settings">
     <value pos="0-1" pos_type="nybbles" title="Target Event ID"/>
     <checkbox pos="4" pos_type="nybbles" title="No Music" mask="8" comment="When checked the switch won't cause timer music to play."/>
     <checkbox pos="4" pos_type="nybbles" title="Gravity Affected" comment="When checked the switch will be affected by gravity."/>
-    <value pos="5" pos_type="nybbles" title="Location ID"/>
+    <value pos="5" pos_type="nybbles" title="Location ID" comment="When the blue coins in this location are collected, an applause sound effect will play."/>
     <checkbox pos="6" pos_type="nybbles" title="Not Timed" comment="Disables the timer on the switch."/>
     <list pos="8" pos_type="nybbles" title="Activation Mode" comment="This determines if the switch will activate or deactivate the event.">
       <entry value="0">Activates Event</entry>
@@ -2913,7 +3083,7 @@
     <checkbox pos="9" pos_type="nybbles" title="No Black Glow" comment="When checked, only the blue glow will be present."/>
     <checkbox pos="11" pos_type="nybbles" title="Faster Movement" comment="Causes the boo to move faster. All values produce the same result. [Unused]"/>
   </sprite>
-  <sprite id="230" name="Peepa Circle" notes="Possible unused settings:&#13;&#10;* Made up of Boos&#13;&#10;Actor: 0x142">
+  <sprite id="230" name="Peepa Circle">
     <value pos="5" pos_type="nybbles" title="Unknown 5"/>
     <value pos="6" pos_type="nybbles" title="Circle Radius" comment="Value +1.5"/>
     <value pos="7" pos_type="nybbles" title="Number Of Peepas" comment="The number of Peepas in the circle. Value +1"/>
@@ -2949,7 +3119,7 @@
   </sprite>
   <sprite id="232" name="Spiny">
     <checkbox pos="6" pos_type="nybbles" title="Enable 1up Trick" comment="Makes it possible to use the infinite 1up trick with this spiny's shell."/>
-    <value pos="8" pos_type="nybbles" title="Unknown Value 7" comment="Checkbox?"/>
+    <checkbox pos="8" pos_type="nybbles" title="Smaller bottom sensor" comment="Causes sprite to fall faster from ledges."/>
     <list pos="11" pos_type="nybbles" title="State" comment="Determines the state the spiny will spawn in. Unused.">
       <entry value="0">Normal</entry>
       <entry value="1">Spiny Egg</entry>
@@ -2958,6 +3128,7 @@
     </list>
   </sprite>
   <sprite id="233" name="Ceiling Spiny" notes="A spiny that is already upside-down on a ceiling.">
+    <checkbox pos="6" pos_type="nybbles" title="Enable 1up Trick" comment="Makes it possible to use the infinite 1up trick with this spiny's shell."/>
     <list pos="8" pos_type="nybbles" title="State" comment="Determines the initial state of the spiny.">
       <entry value="0">Hanging</entry>
       <entry value="1">Already Falling</entry>
@@ -2968,6 +3139,7 @@
     <list pos="10" pos_type="nybbles" title="Direction" comment="Sets the starting direction.">
       <entry value="0">Left</entry>
       <entry value="1">Right</entry>
+      <entry value="2">Facing Player</entry>
     </list>
     <list pos="11" pos_type="nybbles" title="Speed">
       <entry value="0">Only Moves on Slope</entry>
@@ -2977,7 +3149,7 @@
       <entry value="4">Super Fast</entry>
     </list>
     <checkbox pos="16" pos_type="nybbles" title="Don't Keep Last Position" comment="If checked the spiked ball will return to it's initial position when the player gets too far away from it."/>
-    <value pos="17" pos_type="nybbles" title="Unknown 16"/>
+    <value pos="17" pos_type="nybbles" title="Unknown 17"/>
     <list pos="19" pos_type="nybbles" title="Behaviour" comment="Behaviours loop after value 3">
       <entry value="0">Normal</entry>
       <entry value="1">Stationary</entry>
@@ -2990,6 +3162,7 @@
     <list pos="10" pos_type="nybbles" title="Direction" comment="Sets the starting direction.">
       <entry value="0">Left</entry>
       <entry value="1">Right</entry>
+      <entry value="2">Facing Player</entry>
     </list>
     <list pos="11" pos_type="nybbles" title="Speed">
       <entry value="0">Only Moves on Slope</entry>
@@ -2999,8 +3172,8 @@
       <entry value="4">Super Fast</entry>
     </list>
     <checkbox pos="16" pos_type="nybbles" title="Don't Keep Last Position" comment="If checked the spiked ball will return to it's initial position when the player gets too far away from it."/>
-    <value pos="17" pos_type="nybbles" title="Unknown 16"/>
-    <list pos="19" pos_type="nybbles" title="Behaviour" comment="Behaviours loop after value 3">
+    <value pos="17" pos_type="nybbles" title="Unknown 17"/>
+    <list pos="19" pos_type="nybbles" title="Behaviour">
       <entry value="0">Normal</entry>
       <entry value="1">Stationary</entry>
       <entry value="2">Pass Through Walls</entry>
@@ -3010,9 +3183,10 @@
   <sprite id="236" name="Mega Spiked Ball">
     <checkbox pos="5" pos_type="nybbles" title="Speed Up When Offscreen" comment="If checked the Spiked Balls speed will increase when it is off screen."/>
     <checkbox pos="8" pos_type="nybbles" title="Maintain Momentum" comment="Spiked Ball keeps it's momentum when it hits other objects."/>
-    <list pos="10" pos_type="nybbles" title="Direction" comment="Sets the starting direction.">
+    <list pos="10" pos_type="nybbles" title="Direction">
       <entry value="0">Left</entry>
       <entry value="1">Right</entry>
+      <entry value="2">Facing Player</entry>
     </list>
     <list pos="11" pos_type="nybbles" title="Speed" comment="Determines the speed of the spiked ball. Some values ignore the direction nybble and go right regardless.">
       <entry value="0">Slow</entry>
@@ -3023,8 +3197,8 @@
       <entry value="5">Only Moves on Slope</entry>
     </list>
     <checkbox pos="16" pos_type="nybbles" title="Don't Keep Last Position" comment="If checked the spiked ball will return to it's initial position when the player gets too far away from it."/>
-    <value pos="17" pos_type="nybbles" title="Unknown 16"/>
-    <list pos="19" pos_type="nybbles" title="Behaviour" comment="Determines how the spiked ball will act. Behaviours loop after value 3">
+    <value pos="17" pos_type="nybbles" title="Unknown 17"/>
+    <list pos="19" pos_type="nybbles" title="Behaviour">
       <entry value="0">Normal</entry>
       <entry value="1">Stationary</entry>
       <entry value="2">Pass Through Walls</entry>
@@ -3045,25 +3219,7 @@
       <entry value="2">Towards Player</entry>
     </list>
     <value pos="9" pos_type="nybbles" title="Ball Limit" comment="If the number of spiked balls on screen is greater than or equal to this value, spiked balls will not spawn. A value of 0 limits to 3 balls."/>
-    <value pos="12-13" pos_type="nybbles" title="Respawn Delay (n * 16)" comment="The time between each spiked ball in 16 frames. 0 is 180 Frames, all other values are n*16"/>
-    <list pos="14" pos_type="nybbles" title="Respawn Delay" comment="The time between each spiked ball in frames.">
-      <entry value="0">2 Frames</entry>
-      <entry value="1">3 Frames</entry>
-      <entry value="2">4 Frames</entry>
-      <entry value="3">5 Frames</entry>
-      <entry value="4">6 Frames</entry>
-      <entry value="5">7 Frames</entry>
-      <entry value="6">8 Frames</entry>
-      <entry value="7">9 Frames</entry>
-      <entry value="8">10 Frames</entry>
-      <entry value="9">11 Frames</entry>
-      <entry value="10">12 Frames</entry>
-      <entry value="11">13 Frames</entry>
-      <entry value="12">14 Frames</entry>
-      <entry value="13">15 Frames</entry>
-      <entry value="14">16 Frames</entry>
-      <entry value="15">17 Frames</entry>
-    </list>
+    <value pos="12-14" pos_type="nybbles" title="Respawn Delay" comment="The time between each spiked ball in frames. 0 is 180 Frames."/>
     <list pos="16" pos_type="nybbles" title="Snakeblock Detection Mode" comment="Determines how many tiles have to be covered by a snakeblock to cause the spikeball to spawn. (Only used when mode is 1)">
       <entry value="0">Both Tiles</entry>
       <entry value="1">Single Tile</entry>
@@ -3080,7 +3236,7 @@
       <entry value="3">Remain at One Height</entry>
     </list>
   </sprite>
-  <sprite id="238" name="Synchronized Spiked Ball Spawner (Uses GroupID)" notes="A Spawner that can spawn spiked balls. Synchronized via group ID.">
+  <sprite id="238" name="Synchronized Spiked Ball Spawner" notes="A Spawner that can spawn spiked balls. Synchronized via group ID.">
     <value pos="5" pos_type="nybbles" title="Group ID" comment="Use this ID to link it to a GroupID (98)"/>
     <list pos="7" pos_type="nybbles" title="Spiked Ball Movement Speed">
       <entry value="0">Only Moves on Slope</entry>
@@ -3095,25 +3251,7 @@
       <entry value="2">Towards Player</entry>
     </list>
     <value pos="9" pos_type="nybbles" title="Ball Limit" comment="If the number of spiked balls on screen is greater than or equal to this value, spiked balls will not spawn. A value of 0 limits to 3 balls."/>
-    <value pos="12-13" pos_type="nybbles" title="Respawn Delay (n * 16)" comment="The time between each spiked ball in 16 frames. 0 is 180 Frames, all other values are n*16"/>
-    <list pos="14" pos_type="nybbles" title="Respawn Delay" comment="The time between each spiked ball in frames.">
-      <entry value="0">2 Frames</entry>
-      <entry value="1">3 Frames</entry>
-      <entry value="2">4 Frames</entry>
-      <entry value="3">5 Frames</entry>
-      <entry value="4">6 Frames</entry>
-      <entry value="5">7 Frames</entry>
-      <entry value="6">8 Frames</entry>
-      <entry value="7">9 Frames</entry>
-      <entry value="8">10 Frames</entry>
-      <entry value="9">11 Frames</entry>
-      <entry value="10">12 Frames</entry>
-      <entry value="11">13 Frames</entry>
-      <entry value="12">14 Frames</entry>
-      <entry value="13">15 Frames</entry>
-      <entry value="14">16 Frames</entry>
-      <entry value="15">17 Frames</entry>
-    </list>
+    <value pos="12-14" pos_type="nybbles" title="Respawn Delay" comment="The time between each spiked ball in frames. 0 is 180 Frames."/>
     <list pos="16" pos_type="nybbles" title="Snakeblock Detection Mode" comment="Determines how many tiles have to be covered by a snakeblock to cause the spikeball to spawn. (Only used when mode is 1)">
       <entry value="0">Both Tiles</entry>
       <entry value="1">Single Tile</entry>
@@ -3132,7 +3270,7 @@
   </sprite>
   <sprite id="239" name="Swinging Vine">
     <value pos="0-1" pos_type="nybbles" title="Triggering Event ID" comment="When triggered, the vine will spawn. [Unused]"/>
-    <value pos="4" pos_type="nybbles" title="Unknown Value 11" comment="Checkbox?"/>
+    <checkbox pos="4" pos_type="nybbles" title="No swing syncing" comment="Checkbox?"/>
     <value pos="8" pos_type="nybbles" title="Speed" comment="The speed of the vines."/>
     <value pos="9" pos_type="nybbles" title="Start Position" comment="Determines the start position of the vine."/>
     <value pos="10" pos_type="nybbles" title="Swing Distance" comment="The distance of the swing arc."/>
@@ -3167,9 +3305,13 @@
     <checkbox pos="11" pos_type="nybbles" title="Large" comment="When checked the Urchin will appear as a large Urchin."/>
   </sprite>
   <sprite id="241" name="Rotating Urchin">
-    <list pos="7" pos_type="nybbles" title="Movement Direction" comment="Determines the direction the urchin will move.">
-      <entry value="0">Down-left</entry>
-      <entry value="1">Up-left</entry>
+    <list pos="6" pos_type="nybbles" title="Hortizontal Direction ">
+      <entry value="0">Left</entry>
+      <entry value="1">Right</entry>
+    </list>
+    <list pos="7" pos_type="nybbles" title="Vertical Direction" comment="Determines the direction the urchin will move.">
+      <entry value="0">Down</entry>
+      <entry value="1">Up</entry>
     </list>
     <value pos="8" pos_type="nybbles" title="Unknown Value 7"/>
     <checkbox pos="9" pos_type="nybbles" title="Large" comment="When checked the urchin will be a large urchin."/>
@@ -3317,7 +3459,7 @@
     <value pos="4" pos_type="nybbles" title="Unknown Value 11" comment="Checkbox?"/>
     <value pos="10-11" pos_type="nybbles" title="Width" comment="Sets the width of the invisible ceiling."/>
   </sprite>
-  <sprite id="257" name="Movement Controlled Bone Platform">
+  <sprite id="257" name="Movement-controlled Bone Platform">
     <value pos="0-1" pos_type="nybbles" title="Target Event ID (Step On)" comment="Activated upon being stepped on."/>
     <value pos="2-3" pos_type="nybbles" title="Target Event ID (Ground Pound)" comment="Activated on ground-pound."/>
     <value pos="5" pos_type="nybbles" title="Unknown Value 12"/>
@@ -3372,7 +3514,7 @@
       <entry value=" 0">Empty</entry>
       <entry value="1">Coin</entry>
       <entry value="2">Fire Flower</entry>
-      <entry value="4">Tanooki Leaf</entry>
+      <entry value="4">Super Leaf</entry>
       <entry value="5">Gold Flower</entry>
       <entry value="6">Mini Mushroom</entry>
       <entry value="7">Star</entry>
@@ -3424,14 +3566,16 @@
       <entry value="1">Tall and Skinny</entry>
     </list>
   </sprite>
-  <sprite id="269" name="Gold Ship" notes="Existing In-Game Sprite Data:&#13;&#10;Incomplete">
+  <sprite id="269" name="Gold Ship">
     <value pos="5" pos_type="nybbles" title="Unknown 12"/>
     <value pos="21" pos_type="nybbles" title="Movement ID" comment="Link with 188"/>
   </sprite>
   <sprite id="270" name="Icy Spiked Ball" notes="Icy version of a regular Spike Ball">
+    <checkbox pos="8" pos_type="nybbles" title="Maintain Momentum" comment="Spiked Ball keeps it's momentum when it hits other objects."/>
     <list pos="10" pos_type="nybbles" title="Direction" comment="Sets the starting direction.">
       <entry value="0">Left</entry>
       <entry value="1">Right</entry>
+      <entry value="2">Facing Player</entry>
     </list>
     <list pos="11" pos_type="nybbles" title="Speed">
       <entry value="0">Only Moves on Slope</entry>
@@ -3440,6 +3584,8 @@
       <entry value="3">Fast</entry>
       <entry value="4">Super Fast</entry>
     </list>
+    <checkbox pos="16" pos_type="nybbles" title="Don't Keep Last Position" comment="If checked the spiked ball will return to it's initial position when the player gets too far away from it."/>
+    <value pos="17" pos_type="nybbles" title="Unknown 17"/>
     <list pos="19" pos_type="nybbles" title="Behaviour" comment="Behaviours loop after value 3">
       <entry value="0">Normal</entry>
       <entry value="1">Stationary</entry>
@@ -3448,9 +3594,11 @@
     </list>
   </sprite>
   <sprite id="271" name="Big Icy Spiked Ball" notes="A big icy spiked ball, that rolls in the direction specified.">
+    <checkbox pos="8" pos_type="nybbles" title="Maintain Momentum" comment="Spiked Ball keeps it's momentum when it hits other objects."/>
     <list pos="10" pos_type="nybbles" title="Direction" comment="Sets the starting direction.">
       <entry value="0">Left</entry>
       <entry value="1">Right</entry>
+      <entry value="2">Facing Player</entry>
     </list>
     <list pos="11" pos_type="nybbles" title="Speed">
       <entry value="0">Only Moves on Slope</entry>
@@ -3459,6 +3607,8 @@
       <entry value="3">Fast</entry>
       <entry value="4">Super Fast</entry>
     </list>
+    <checkbox pos="16" pos_type="nybbles" title="Don't Keep Last Position" comment="If checked the spiked ball will return to it's initial position when the player gets too far away from it."/>
+    <value pos="17" pos_type="nybbles" title="Unknown 17"/>
     <list pos="19" pos_type="nybbles" title="Behaviour" comment="Behaviours loop after value 3">
       <entry value="0">Normal</entry>
       <entry value="1">Stationary</entry>
@@ -3499,7 +3649,7 @@
       <entry value=" 0">Empty</entry>
       <entry value="1">Coin</entry>
       <entry value="2">Fire Flower</entry>
-      <entry value="4">Tanooki Leaf</entry>
+      <entry value="4">Super Leaf</entry>
       <entry value="5">Gold Flower</entry>
       <entry value="6">Mini Mushroom</entry>
       <entry value="7">Star</entry>
@@ -3510,12 +3660,12 @@
       <entry value="14">Mushroom/Coin</entry>
     </list>
   </sprite>
-  <sprite id="276" name="Long ? Block - lava" notes="A long ? block shaded for the look of lava, holds 2 coins on the sides with the item specified in the middle.">
+  <sprite id="276" name="Long ? Block - Lava" notes="A long ? block shaded for the look of lava, holds 2 coins on the sides with the item specified in the middle.">
     <list pos="19" pos_type="nybbles" title="Contents" comment="Always contains two coins plus whatever is selected here. Only 1 and 4 are used.">
       <entry value=" 0">Empty</entry>
       <entry value="1">Coin</entry>
       <entry value="2">Fire Flower</entry>
-      <entry value="4">Tanooki Leaf</entry>
+      <entry value="4">Super Leaf</entry>
       <entry value="5">Gold Flower</entry>
       <entry value="6">Mini Mushroom</entry>
       <entry value="7">Star</entry>
@@ -3529,7 +3679,7 @@
   <sprite id="277" name="Switchable Conveyor Belt" notes="Goes left by default.">
     <value pos="0-1" pos_type="nybbles" title="Triggering Event ID" comment="Moves in reverse while this event is on."/>
     <checkbox pos="10" pos_type="nybbles" title="Reversed" comment="Unused. When checked the conveyor will move in the oposite direction, however the graphics will not correctly reflect this."/>
-    <checkbox pos="11" pos_type="nybbles" title="Crash The Game" comment="Unused. Check this to crash the game."/>
+    <checkbox pos="11" pos_type="nybbles" title="Bigger Conveyor (Crash)" comment="Unused. Attempts to load larger conveyor belt from non existent file &quot;boss_lemmy_beltconveyor.bcres&quot;"/>
   </sprite>
   <sprite id="278" name="Assist Block">
     <list pos="10" pos_type="nybbles" title="Checkpoint Number" comment="Determines what checkpoint to spawn at.">
@@ -3539,7 +3689,6 @@
     <checkbox pos="11" pos_type="nybbles" title="Appears At Checkpoint" comment="Only spawns if Mario spawned from a Checkpoint."/>
   </sprite>
   <sprite id="279" name="Lemmy Ball - Non-boss">
-    <checkbox pos="10" pos_type="nybbles" title="Useless Checkbox 5" comment="Useless."/>
     <checkbox pos="11" pos_type="nybbles" title="Bounces Higher" comment="Makes the ball bounce higher. [Unused]"/>
   </sprite>
   <sprite id="280" name="+ Clock" notes="Actor: 0x192&#13;&#10;Notes: Only spawns in Coin Rush.&#13;&#10;Todo: check for unused nybbles and values.">
@@ -3548,7 +3697,7 @@
       <entry value="1">10 Mario Seconds (Blue)</entry>
     </list>
   </sprite>
-  <sprite id="281" name="Movement-Controlled Rectangular Ice Lift" notes="Despite appearing to be 3 tiles tall, the collision for this platform extends down an additional 3 tiles.">
+  <sprite id="281" name="Movement-controlled Rectangular Ice Lift" notes="Despite appearing to be 3 tiles tall, the collision for this platform extends down an additional 3 tiles.">
     <value pos="20-21" pos_type="nybbles" title="Movement ID" comment="Used to pair with a path Movement Controller (188)"/>
   </sprite>
   <sprite id="282" name="Rectangle Lift - Ghost House" notes="See Rectangle Lift - Normal/Tower (Actor 0x45).">
@@ -3684,27 +3833,22 @@
   <sprite id="296" name="Toad">
     <value pos="0-1" pos_type="nybbles" title="Target Event ID"/>
   </sprite>
-  <sprite id="297" name="Horizontal Rail-controlled Switchable Fence" notes="Painted red. Switches when hit. The actor is WireLineSlide.">
+  <sprite id="297" name="Rail-controlled Switchable Fence" notes="A red moving fence that switches sides of the rail when hit, to be used with horizontal rails. The actor is WireLineSlide.">
     <checkbox pos="6" pos_type="nybbles" title="Move when Touched" mask="2" comment="Nybble with mask 2. Makes the fence so Mario has to activate it before it starts moving."/>
-    <list pos="7" pos_type="nybbles" title="Direction" comment="The direction the fence starts moving in.">
-      <entry value="0">Right</entry>
-      <entry value="1">Left</entry>
-      <entry value="2">Right</entry>
-      <entry value="3">Left</entry>
-    </list>
-    <list pos="9" pos_type="nybbles" title="Behaviour" comment="Determines how the fence acts. Side of the rail that the fence starts on.">
-      <entry value="0">No Flip</entry>
+    <checkbox pos="7" pos_type="nybbles" title="Move Left" comment="Makes the fence start moving to the left."/>
+    <list pos="9" pos_type="nybbles" title="Behaviour" comment="Determines how the fence acts, and the side of the rail that the fence starts on.">
+      <entry value="0">No Switching</entry>
       <entry value="1">Fall When Hit</entry>
       <entry value="2">Start on Bottom</entry>
       <entry value="3">Start on Top</entry>
     </list>
-    <list pos="10" pos_type="nybbles" title="Speed" comment="Determines the speed of movement for the fence.">
-      <entry value="0">Fastest</entry>
-      <entry value="1">Fast</entry>
-      <entry value="2">Medium Fast</entry>
-      <entry value="3">Medium Slow</entry>
-      <entry value="4">Slow</entry>
-      <entry value="5">Slowest</entry>
+    <list pos="10" pos_type="nybbles" title="Speed" comment="Determines the speed of movement for the fence. Values 6+ appear to switch the direction when the fence is set to move to the right.">
+      <entry value="4">Slowest</entry>
+      <entry value="5">Slower</entry>
+      <entry value="0">Slow</entry>
+      <entry value="1">Medium</entry>
+      <entry value="2">Fast</entry>
+      <entry value="3">Fastest</entry>
     </list>
     <list pos="11" pos_type="nybbles" title="Size" comment="The size of the fence. A value of 3 produces a broken unused fence with the collision of a 6x6 fence but the model of a 3x3 fence.">
       <entry value="0">3x3</entry>
@@ -3768,7 +3912,7 @@
   <sprite id="304" name="Big Bowser Flame" notes="Spawned by another actor.&#13;&#10;&#13;&#10;This is the flame spawned when Big Bowser/Big Dry Bowser breaths fire.&#13;&#10;&#13;&#10;The Y-Position for the flame is hardcoded.">
     <checkbox pos="7" pos_type="nybbles" title="Is Blue" comment="When checked the flame will be blue."/>
   </sprite>
-  <sprite id="305" name="Movement-Controlled Ice Lift">
+  <sprite id="305" name="Movement-controlled Ice Lift">
     <value pos="0-1" pos_type="nybbles" title="Target Event ID" comment="This event ID is triggered once the player steps onto the platform."/>
     <value pos="4" pos_type="nybbles" title="Unknown 11"/>
     <value pos="10" pos_type="nybbles" title="Unknown 5"/>
@@ -3975,7 +4119,7 @@
     </list>
   </sprite>
   <sprite id="319" name="Staff Credits - Koopa Clown Car" notes="The Koopa Clown Car actor used for the staff credits."/>
-  <sprite id="320" name="Move-once-on Path-controlled Lift" notes="Uses the Path Node &quot;Variable Use&quot; field to determine how rotation acts, a value of 0 will cause the platform to wobble, a value of 1 will cause the platform to be at a fixed rotation.">
+  <sprite id="320" name="Path-controlled Lift" notes="Uses the Path Node &quot;Variable Use&quot; field to determine how rotation acts, a value of 0 will cause the platform to wobble, a value of 1 will cause the platform to be at a fixed rotation.">
     <value pos="7-8" pos_type="nybbles" title="Starting Path Node" comment="The ID of the path node the platform will start at."/>
     <value pos="9-10" pos_type="nybbles" title="Path ID" comment="The ID of the path the platform will follow."/>
     <value pos="11" pos_type="nybbles" title="Platform Length" comment="Length of the platform."/>
@@ -4023,10 +4167,19 @@
     <value pos="10-11" pos_type="nybbles" title="Tilt Speed" comment="Value Modulo 64. Speed increases for values 1-32, then decreases for values 33-63."/>
   </sprite>
   <sprite id="322" name="Big Grinder" notes="Actor: 0x148">
-    <value pos="1" pos_type="nybbles" title="Triggering Event ID" comment="Spawned if on with no &quot;flourish&quot;."/>
-    <value pos="10" pos_type="nybbles" title="Speed"/>
-    <value pos="11" pos_type="nybbles" title="Unknown Value 6" comment="Used in 3-16 as 0 or 1"/>
-    <value pos="13" pos_type="nybbles" title="Location ID" comment="Purpose unknown."/>
+    <value pos="0-1" pos_type="nybbles" title="Triggering Event ID" comment="Spawned when this event is activated."/>
+    <list pos="10" pos_type="nybbles" title="Speed">
+      <entry value="4">Slowest</entry>
+      <entry value="5">Slower</entry>
+      <entry value="6">Slow</entry>
+      <entry value="0">Medium Slow</entry>
+      <entry value="1">Medium Fast</entry>
+      <entry value="2">Fast</entry>
+      <entry value="7">Faster</entry>
+      <entry value="3">Fastest</entry>
+    </list>
+    <checkbox pos="11" pos_type="nybbles" title="Move Left/Down"/>
+    <value pos="13" pos_type="nybbles" title="Location ID" comment="Won't despawn off-screen if the location is on-screen."/>
   </sprite>
   <sprite id="323" name="Ending Birds" notes="Birds that are used for the ending."/>
   <sprite id="324" name="Invisible Tile Collider" notes="An invisible tile collider.&#13;&#10;&#13;&#10;This only exists so that you can't grab the bottom of the flagpole in 2-A."/>

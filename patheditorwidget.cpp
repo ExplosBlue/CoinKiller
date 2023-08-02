@@ -3,9 +3,13 @@
 #include <QVBoxLayout>
 #include <QGridLayout>
 
-PathEditorWidget::PathEditorWidget(QList<Path*> *paths)
-{
-    this->paths = paths;
+#include "EditorCommands/pathcommands.h"
+#include "EditorCommands/pathnodecommands.h"
+
+PathEditorWidget::PathEditorWidget(QList<Path*> *paths, QUndoStack *undoStack, QWidget *parent) :
+    QWidget(parent),
+    paths(paths),
+    undoStack(undoStack) {
 
     QVBoxLayout* layout = new QVBoxLayout();
 
@@ -82,17 +86,17 @@ PathEditorWidget::PathEditorWidget(QList<Path*> *paths)
     layout->addWidget(edits);
     setLayout(layout);
 
-    connect(pathList, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(handlePathListIndexChanged(QListWidgetItem*)));
-    connect(id, SIGNAL(valueChanged(int)), this, SLOT(handleIDChanged(int)));
-    connect(loop, SIGNAL(stateChanged(int)), this, SLOT(handleLoopChanged()));
-    connect(speed, SIGNAL(valueChanged(double)), this, SLOT(handleSpeedChanged(double)));
-    connect(acceleration, SIGNAL(valueChanged(double)), this, SLOT(handleAccelChanged(double)));
-    connect(delay, SIGNAL(valueChanged(int)), this, SLOT(handleDelayChanged(int)));
+    connect(pathList, &QListWidget::itemClicked, this, &PathEditorWidget::handlePathListIndexChanged);
+    connect(id, &QSpinBox::valueChanged, this, &PathEditorWidget::handleIDChanged);
+    connect(loop, &QCheckBox::stateChanged, this, &PathEditorWidget::handleLoopChanged);
+    connect(speed, &QDoubleSpinBox::valueChanged, this, &PathEditorWidget::handleSpeedChanged);
+    connect(acceleration, &QDoubleSpinBox::valueChanged, this, &PathEditorWidget::handleAccelChanged);
+    connect(delay, &QSpinBox::valueChanged, this, &PathEditorWidget::handleDelayChanged);
 
-    connect(rotation, SIGNAL(valueChanged(int)), this, SLOT(handleRotationChanged(int)));
-    connect(variableField, SIGNAL(valueChanged(int)), this, SLOT(handleVariableFieldChanged(int)));
-    connect(nextPathID, SIGNAL(valueChanged(int)), this, SLOT(handleNextPathIDChanged(int)));
-    connect(nodeID, SIGNAL(valueChanged(int)), this, SLOT(handleNodeIDChanged(int)));
+    connect(rotation, &QSpinBox::valueChanged, this, &PathEditorWidget::handleRotationChanged);
+    connect(variableField, &QSpinBox::valueChanged, this, &PathEditorWidget::handleVariableFieldChanged);
+    connect(nextPathID, &QSpinBox::valueChanged, this, &PathEditorWidget::handleNextPathIDChanged);
+    connect(nodeID, &QSpinBox::valueChanged, this, &PathEditorWidget::handleNodeIDChanged);
 
     updateEditor();
 }
@@ -111,7 +115,7 @@ void PathEditorWidget::updateList()
     foreach (Path* path, *paths)
     {
         QListWidgetItem* pathItem = new QListWidgetItem();
-        pathItem->setText(tr("Path %1: %n Node(s)", 0, path->getNumberOfNodes()).arg(path->getid()));
+        pathItem->setText(tr("Path %1: %n Node(s)", nullptr, path->getNumberOfNodes()).arg(path->getid()));
         pathList->addItem(pathItem);
     }
     pathList->setCurrentIndex(index);
@@ -151,7 +155,7 @@ void PathEditorWidget::select(PathNode* node)
     editingAPath = true;
     updateInfo();
     handleChanges = false;
-    pathList->setCurrentRow(paths->indexOf(editPath));
+    pathList->setCurrentRow(static_cast<int>(paths->indexOf(editPath)));
     handleChanges = true;
 }
 
@@ -172,80 +176,70 @@ void PathEditorWidget::handlePathListIndexChanged(QListWidgetItem *item)
     emit selectedPathChanged(editPath->getNode(0));
 }
 
-void PathEditorWidget::handleIDChanged(int idVal)
+void PathEditorWidget::handleIDChanged(int id)
 {
     if (!handleChanges) return;
-    editPath->setId(idVal);
+    undoStack->push(new Commands::PathCmd::SetId(editPath, id));
     updateList();
-    emit updateLevelView();
-    emit editMade();
 }
 
 void PathEditorWidget::handleLoopChanged()
 {
     if (!handleChanges) return;
-    if (loop->isChecked())
-        editPath->setLoop(2);
-    else
-        editPath->setLoop(0);
-
-    emit updateLevelView();
-    emit editMade();
+    if (loop->isChecked()) {
+        undoStack->push(new Commands::PathCmd::SetLoop(editPath, 2));
+    } else {
+        undoStack->push(new Commands::PathCmd::SetLoop(editPath, 0));
+    }
 }
 
-void PathEditorWidget::handleSpeedChanged(double speedVal)
+void PathEditorWidget::handleSpeedChanged(double speed)
 {
     if (!handleChanges) return;
-    editNode->setSpeed((float)speedVal);
-    emit editMade();
+    undoStack->push(new Commands::PathNodeCmd::SetSpeed(editNode, static_cast<float>(speed)));
 }
 
-void PathEditorWidget::handleAccelChanged(double accelVal)
+void PathEditorWidget::handleAccelChanged(double accel)
 {
     if (!handleChanges) return;
-    editNode->setAccel((float)accelVal);
-    emit editMade();
+    undoStack->push(new Commands::PathNodeCmd::SetAccel(editNode, static_cast<float>(accel)));
 }
 
-void PathEditorWidget::handleDelayChanged(int delayVal)
+void PathEditorWidget::handleDelayChanged(int delay)
 {
     if (!handleChanges) return;
-    editNode->setDelay(delayVal);
-    emit editMade();
+    undoStack->push(new Commands::PathNodeCmd::SetDelay(editNode, delay));
 }
 
-void PathEditorWidget::handleRotationChanged(int rotationVal)
+void PathEditorWidget::handleRotationChanged(int rotation)
 {
     if (!handleChanges) return;
-    editNode->setRotation(rotationVal);
-    emit editMade();
+    undoStack->push(new Commands::PathNodeCmd::SetRotation(editNode, static_cast<qint16>(rotation)));
 }
 
-void PathEditorWidget::handleVariableFieldChanged(int flagVal)
+void PathEditorWidget::handleVariableFieldChanged(int value)
 {
     if (!handleChanges) return;
-    editNode->setVariableField(flagVal);
-    emit editMade();
+    undoStack->push(new Commands::PathNodeCmd::SetVariableField(editNode, value));
 }
 
 void PathEditorWidget::handleNextPathIDChanged(int nextPathID)
 {
     if (!handleChanges) return;
-    editNode->setNextPathID(nextPathID);
-    emit editMade();
+    undoStack->push(new Commands::PathNodeCmd::SetNextPathID(editNode, nextPathID));
 }
 
 void PathEditorWidget::handleNodeIDChanged(int nodeID)
 {
     if (!handleChanges) return;
-    if (nodeID >= editPath->getNumberOfNodes())
-    {
+
+    if (nodeID >= editPath->getNumberOfNodes()) {
+        this->nodeID->blockSignals(true);
         this->nodeID->setValue(editPath->getIndexOfNode(editNode));
+        this->nodeID->blockSignals(false);
         return;
     }
 
-    editPath->swapNodes(editPath->getIndexOfNode(editNode), nodeID);
-    emit updateLevelView();
+    undoStack->push(new Commands::PathCmd::SwapNodes(editPath, editPath->getIndexOfNode(editNode), nodeID));
     updateInfo();
-    emit editMade();
 }

@@ -761,10 +761,8 @@ void LevelEditorWindow::loadArea(int id, bool closeLevel, bool init)
     connect(locationEditor, &LocationEditorWidget::selectedLocChanged, levelView, &LevelView::selectObj);
 
     // Setup Path Editor
-    pathEditor = new PathEditorWidget(&level->paths);
-    connect(pathEditor, SIGNAL(updateLevelView()), levelView, SLOT(update()));
-    connect(pathEditor, SIGNAL(selectedPathChanged(Object*)), levelView, SLOT(selectObj(Object*)));
-    connect(pathEditor, SIGNAL(editMade()), this, SLOT(handleEditMade()));
+    pathEditor = new PathEditorWidget(&level->paths, undoStack);
+    connect(pathEditor, &PathEditorWidget::selectedPathChanged, levelView, &LevelView::selectObj);
 
     // Setup Progress Path Editor
     progPathEditor = new ProgressPathEditorWidget(&level->progressPaths);
@@ -772,6 +770,7 @@ void LevelEditorWindow::loadArea(int id, bool closeLevel, bool init)
     connect(progPathEditor, SIGNAL(selectedProgPathChanged(Object*)), levelView, SLOT(selectObj(Object*)));
     connect(progPathEditor, SIGNAL(editMade()), this, SLOT(handleEditMade()));
 
+    // Setup Level View
     connect(levelView, SIGNAL(scrollTo(int,int)), this, SLOT(scrollTo(int,int)));
     connect(levelView->editManagerPtr(), SIGNAL(selectdObjectChanged(Object*)), this, SLOT(handleSelectionChanged(Object*)));
     connect(levelView->editManagerPtr(), SIGNAL(deselected()), this, SLOT(deselect()));

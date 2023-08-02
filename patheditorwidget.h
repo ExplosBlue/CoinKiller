@@ -10,22 +10,19 @@
 #include <QCheckBox>
 #include <QLabel>
 #include <QGroupBox>
+#include <QUndoStack>
 
 class PathEditorWidget : public QWidget
 {
     Q_OBJECT
 public:
-    PathEditorWidget(QList<Path*> *paths);
+    PathEditorWidget(QList<Path*> *paths, QUndoStack *undoStack, QWidget *parent = nullptr);
     void deselect();
     void select(PathNode* node);
     void updateEditor();
 
 signals:
-    void updateLevelView();
     void selectedPathChanged(Object* pPath);
-    void editMade();
-
-public slots:
 
 private:
     Path* editPath;
@@ -50,6 +47,7 @@ private:
 
     QSpinBox* nodeID;
 
+    QUndoStack *undoStack;
 
     void updateList();
     void updateInfo();
