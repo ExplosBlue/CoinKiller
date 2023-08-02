@@ -4,15 +4,18 @@
 #include <QVBoxLayout>
 #include <QLabel>
 
-LocationEditorWidget::LocationEditorWidget(QList<Location *> *locations)
-{
-    this->locations = locations;
+#include "EditorCommands/locationcommands.h"
+
+LocationEditorWidget::LocationEditorWidget(QList<Location *> *locations, QUndoStack *undoStack, QWidget *parent) :
+    QWidget(parent),
+    locations(locations),
+    undoStack(undoStack) {
 
     QVBoxLayout* layout = new QVBoxLayout();
     setLayout(layout);
 
     locationList = new QListWidget();
-    connect(locationList, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(handleLocationListIndexChange(QListWidgetItem*)));
+    connect(locationList, &QListWidget::itemClicked, this, &LocationEditorWidget::handleLocationListIndexChange);
     layout->addWidget(locationList);
 
     edits = new QWidget();
@@ -23,7 +26,7 @@ LocationEditorWidget::LocationEditorWidget(QList<Location *> *locations)
     subLayout->addWidget(new QLabel(tr("ID:")), 0, 0, 1, 1, Qt::AlignRight);
     id = new QSpinBox();
     id->setRange(0, 255);
-    connect(id, SIGNAL(valueChanged(int)), this, SLOT(handleIDChange(int)));
+    connect(id, &QSpinBox::valueChanged, this, &LocationEditorWidget::handleIDChange);
     subLayout->addWidget(id, 0, 1);
 
     layout->addWidget(edits);
@@ -78,13 +81,11 @@ void LocationEditorWidget::updateEditor()
     updateList();
 }
 
-void LocationEditorWidget::handleIDChange(int idVal)
+void LocationEditorWidget::handleIDChange(int id)
 {
     if (!handleChanges) return;
-    editLocation->setId(idVal);
+    undoStack->push(new Commands::LocationCmd::SetId(editLocation, id));
     updateList();
-    emit updateLevelView();
-    emit editMade();
 }
 
 void LocationEditorWidget::handleLocationListIndexChange(QListWidgetItem *item)

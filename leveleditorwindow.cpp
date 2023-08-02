@@ -752,17 +752,13 @@ void LevelEditorWindow::loadArea(int id, bool closeLevel, bool init)
 
     // Setup Zone Editor
     zoneEditor = new ZoneEditorWidget(&level->zones, &level->backgrounds, &level->boundings, undoStack, level);
-    connect(zoneEditor, SIGNAL(updateLevelView()), levelView, SLOT(update()));
-    connect(zoneEditor, SIGNAL(selectedZoneChanged(Object*)), levelView, SLOT(selectObj(Object*)));
-    connect(zoneEditor, SIGNAL(selectZoneContents(Zone*)), levelView, SLOT(selectZoneContents(Zone*)));
-    connect(zoneEditor, SIGNAL(editMade()), this, SLOT(handleEditMade()));
-    connect(zoneEditor, SIGNAL(screenshot(QRect)), levelView, SLOT(screenshot(QRect)));
+    connect(zoneEditor, &ZoneEditorWidget::selectedZoneChanged, levelView, &LevelView::selectObj);
+    connect(zoneEditor, &ZoneEditorWidget::selectZoneContents, levelView, &LevelView::selectZoneContents);
+    connect(zoneEditor, &ZoneEditorWidget::screenshot, levelView, &LevelView::screenshot);
 
     // Setup Location Editor
-    locationEditor = new LocationEditorWidget(&level->locations);
-    connect(locationEditor, SIGNAL(updateLevelView()), levelView, SLOT(update()));
-    connect(locationEditor, SIGNAL(selectedLocChanged(Object*)), levelView, SLOT(selectObj(Object*)));
-    connect(locationEditor, SIGNAL(editMade()), this, SLOT(handleEditMade()));
+    locationEditor = new LocationEditorWidget(&level->locations, undoStack);
+    connect(locationEditor, &LocationEditorWidget::selectedLocChanged, levelView, &LevelView::selectObj);
 
     // Setup Path Editor
     pathEditor = new PathEditorWidget(&level->paths);

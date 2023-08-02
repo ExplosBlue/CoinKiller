@@ -72,6 +72,7 @@ SOURCES += main.cpp\
     EditorCommands/insertzone.cpp \
     EditorCommands/insertzonebackground.cpp \
     EditorCommands/insertzonebounding.cpp \
+    EditorCommands/locationcommands.cpp \
     EditorCommands/lowerlayer.cpp \
     EditorCommands/lowerobject.cpp \
     EditorCommands/moveobject.cpp \
@@ -154,6 +155,7 @@ HEADERS  += mainwindow.h \
     EditorCommands/insertzone.h \
     EditorCommands/insertzonebackground.h \
     EditorCommands/insertzonebounding.h \
+    EditorCommands/locationcommands.h \
     EditorCommands/lowerlayer.h \
     EditorCommands/lowerobject.h \
     EditorCommands/moveobject.h \

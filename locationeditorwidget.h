@@ -6,20 +6,19 @@
 #include <QWidget>
 #include <QListWidget>
 #include <QSpinBox>
+#include <QUndoStack>
 
 class LocationEditorWidget : public QWidget
 {
     Q_OBJECT
 public:
-    LocationEditorWidget(QList<Location*> *locations);
+    LocationEditorWidget(QList<Location*> *locations, QUndoStack *undoStack, QWidget *parent = nullptr);
     void deselect();
     void select(Location *loc);
     void updateEditor();
 
 signals:
-    void updateLevelView();
     void selectedLocChanged(Object* loc);
-    void editMade();
 
 private slots:
     void handleLocationListIndexChange(QListWidgetItem *item);
@@ -37,6 +36,8 @@ private:
     Location* editLocation;
     bool editingALocation = false;
     bool handleChanges = true;
+
+    QUndoStack *undoStack;
 };
 
 #endif // LOCATIONEDITORWIDGET_H
