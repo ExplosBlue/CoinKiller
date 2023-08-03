@@ -1,7 +1,7 @@
 #ifndef GAME_H
 #define GAME_H
 
-#include "filesystem.h"
+#include "filesystem/filesystem.h"
 #include "tileset.h"
 #include "levelmanager.h"
 

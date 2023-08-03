@@ -30,12 +30,11 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-#include "filesystem.h"
+#include "filesystem/filesystem.h"
 
 #include "imagecache.h"
 
-#include "leveleditorwindow.h"
-#include "tileseteditorwindow.h"
+#include "tileseteditor/tileseteditorwindow.h"
 #include "sarcexplorerwindow.h"
 #include "newtilesetdialog.h"
 #include "newleveldialog.h"

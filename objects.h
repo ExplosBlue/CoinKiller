@@ -383,7 +383,7 @@ public:
     ProgressPathNode* getNode(qint32 id) const { return nodes[id]; }
     qint32 getIndexOfNode(ProgressPathNode* node) { return nodes.indexOf(node); }
     void setId(qint32 id) { this->id = id; }
-    void setAlternatePathFlag(bool flag) { this->alternatePathFlag = flag; }
+    void setAlternatePathFlag(quint8 flag) { this->alternatePathFlag = flag; }
     QString toString(qint32 xOffset, qint32 yOffset);
 protected:
     quint16 id;

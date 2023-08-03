@@ -6,7 +6,7 @@
 #include <QStandardItem>
 #include <QSortFilterProxyModel>
 
-#include "filesystem.h"
+#include "filesystem/filesystem.h"
 #include "settingsmanager.h"
 #include "windowbase.h"
 

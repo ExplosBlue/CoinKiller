@@ -18,7 +18,7 @@
 #ifndef LEVEL_H
 #define LEVEL_H
 
-#include "filesystem.h"
+#include "filesystem/filesystem.h"
 #include "tileset.h"
 #include "objects.h"
 
