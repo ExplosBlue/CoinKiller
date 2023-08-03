@@ -18,6 +18,7 @@
 #include "is.h"
 
 #include "settingsmanager.h"
+#include "settingsdialog.h"
 
 #include <QHBoxLayout>
 #include <QSizePolicy>
@@ -76,8 +77,8 @@ LevelEditorWindow::LevelEditorWindow(LevelManager* lvlMgr, int initialArea) :
     ui->actionRenderCameraLimits->setIcon(QIcon(basePath + "render_camera_limits.png"));
     ui->actionAddArea->setIcon(QIcon(basePath + "add.png"));
     ui->actionDeleteCurrentArea->setIcon(QIcon(basePath + "remove.png"));
-    ui->actionSetBackgroundColor->setIcon(QIcon(basePath + "colors.png"));
-    ui->actionResetBackgroundColor->setIcon(QIcon(basePath + "delete_colors.png"));
+
+    connect(ui->actionShowPreferences, &QAction::triggered, this, &LevelEditorWindow::showPreferencesDialog);
 
     ui->actionToggleLayer1->setIcon(QIcon(basePath + "layer1.png"));
     connect(ui->actionToggleLayer1, &QAction::toggled, this, &LevelEditorWindow::toggleLayer);
@@ -121,7 +122,6 @@ LevelEditorWindow::LevelEditorWindow(LevelManager* lvlMgr, int initialArea) :
 
     // Undo/Redo
     undoStack = new QUndoStack(this);
-    undoStack->setUndoLimit(50); // TODO: Make this a setting
     connect(undoStack, &QUndoStack::indexChanged, this, &LevelEditorWindow::historyStateChanged);
 
     actionUndo = undoStack->createUndoAction(this, tr("&Undo"));
@@ -164,8 +164,8 @@ LevelEditorWindow::LevelEditorWindow(LevelManager* lvlMgr, int initialArea) :
     ui->actionCheckerboard->setChecked(settings->get("checkerboard", false).toBool());
     ui->actionRenderLiquids->setChecked(settings->get("renderLiquids", true).toBool());
     ui->actionRenderCameraLimits->setChecked(settings->get("renderCameraLimits", true).toBool());
-    ui->actionHideStatusbar->setChecked(settings->get("lvleditorHideStatusBar", false).toBool());
 
+    loadSettings();
     setStatus(Ready);
 
 #ifdef USE_KDE_BLUR
@@ -200,6 +200,19 @@ void LevelEditorWindow::changeEvent(QEvent* event)
     }
 
     QMainWindow::changeEvent(event);
+}
+
+void LevelEditorWindow::showPreferencesDialog(bool show) {
+    SettingsDialog settingsDialog(this);
+    connect(&settingsDialog, &SettingsDialog::changesApplied, this, &LevelEditorWindow::loadSettings);
+    settingsDialog.exec();
+}
+
+void LevelEditorWindow::loadSettings() {
+    levelView->setBackgroundColor(settings->getLEWindowColor());
+    undoStack->setUndoLimit(static_cast<int>(settings->getLEUndoLimit()));
+    levelView->editManagerPtr()->toggleSelectAfterPlacement(settings->getLESelectOnPlace());
+    ui->statusbar->setHidden(!settings->getLEShowStatusbar());
 }
 
 void LevelEditorWindow::historyStateChanged(int index)
@@ -474,12 +487,6 @@ void LevelEditorWindow::setSelSprite(int spriteId)
     levelView->editManagerPtr()->setSprite(spriteId);
 }
 
-void LevelEditorWindow::on_actionSelectAfterPlacement_toggled(bool toggle)
-{
-    levelView->editManagerPtr()->toggleSelectAfterPlacement(toggle);
-    settings->set("SelectAfterPlacement", toggle);
-}
-
 void LevelEditorWindow::handleSelectionChanged(Object* obj)
 {
     deselect();
@@ -720,13 +727,11 @@ void LevelEditorWindow::loadArea(int id, bool closeLevel, bool init)
     ui->actionToggle2DTile->setChecked(true);
     ui->actionToggle3DOverlay->setChecked(true);
     ui->actionToggleEntrances->setChecked(true);
-    ui->actionSelectAfterPlacement->setChecked(settings->get("SelectAfterPlacement").toBool());
 
     levelView->toggleGrid(ui->actionGrid->isChecked());
     levelView->toggleCheckerboard(ui->actionCheckerboard->isChecked());
     levelView->toggleRenderLiquids(ui->actionRenderLiquids->isChecked());
     levelView->toggleRenderCameraLimits(ui->actionRenderCameraLimits->isChecked());
-    levelView->setBackgroundColor(settings->getColor("lewColor", QColor(119,136,153)));
 
 #ifdef USE_KDE_BLUR
     setBlurStylesheet();
@@ -810,6 +815,8 @@ void LevelEditorWindow::loadArea(int id, bool closeLevel, bool init)
 
     undoStack->clear();
     undoStack->blockSignals(false);
+
+    loadSettings();
     setStatus(Ready);
 }
 
@@ -883,38 +890,6 @@ void LevelEditorWindow::scrollTo(int x, int y)
     qMax(0.0f, y*zoom);
     ui->levelViewArea->horizontalScrollBar()->setValue(x*zoom);
     ui->levelViewArea->verticalScrollBar()->setValue(y*zoom);
-}
-
-void LevelEditorWindow::on_actionSetBackgroundColor_triggered()
-{
-    QColorDialog::ColorDialogOptions options = QColorDialog::DontUseNativeDialog;
-#ifdef USE_KDE_BLUR
-    options |= QColorDialog::ShowAlphaChannel;
-#endif
-
-    QColor bgColor = QColorDialog::getColor(settings->getColor("lewColor", QColor(119,136,153)), this, tr("Select Background Color"), options);
-    if(bgColor.isValid())
-    {
-        levelView->setBackgroundColor(bgColor);
-        settings->setColor("lewColor", bgColor);
-    }
-}
-
-void LevelEditorWindow::on_actionResetBackgroundColor_triggered()
-{
-    QMessageBox::StandardButton reset;
-    reset = QMessageBox::question(this, "CoinKiller", tr("Are you sure you wish to reset the background color?"), QMessageBox::Cancel|QMessageBox::Ok);
-    if(reset == QMessageBox::Ok)
-    {
-        levelView->setBackgroundColor(QColor(119,136,153));
-        settings->setColor("lewColor", QColor(119,136,153));
-    }
-}
-
-void LevelEditorWindow::on_actionHideStatusbar_toggled(bool hide)
-{
-    settings->set("lvleditorHideStatusBar", hide);
-    ui->statusbar->setHidden(hide);
 }
 
 void LevelEditorWindow::closeEvent(QCloseEvent *event)

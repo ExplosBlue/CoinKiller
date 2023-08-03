@@ -47,7 +47,7 @@
          <x>0</x>
          <y>0</y>
          <width>1278</width>
-         <height>629</height>
+         <height>624</height>
         </rect>
        </property>
       </widget>
@@ -61,7 +61,7 @@
      <x>0</x>
      <y>0</y>
      <width>1280</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -69,6 +69,8 @@
      <string>File</string>
     </property>
     <addaction name="actionSave"/>
+    <addaction name="separator"/>
+    <addaction name="actionShowPreferences"/>
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
@@ -111,15 +113,6 @@
     <addaction name="actionLowerLayer"/>
     <addaction name="separator"/>
    </widget>
-   <widget class="QMenu" name="menuSettings">
-    <property name="title">
-     <string>Settings</string>
-    </property>
-    <addaction name="actionSetBackgroundColor"/>
-    <addaction name="actionResetBackgroundColor"/>
-    <addaction name="actionSelectAfterPlacement"/>
-    <addaction name="actionHideStatusbar"/>
-   </widget>
    <widget class="QMenu" name="menuWindow">
     <property name="title">
      <string>Window</string>
@@ -132,7 +125,6 @@
    <addaction name="menuEdit"/>
    <addaction name="menuView"/>
    <addaction name="menuWindow"/>
-   <addaction name="menuSettings"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <widget class="QToolBar" name="toolBar">
@@ -443,22 +435,6 @@
     <string>Checkerboard</string>
    </property>
   </action>
-  <action name="actionSetBackgroundColor">
-   <property name="text">
-    <string>Set Background Color</string>
-   </property>
-   <property name="toolTip">
-    <string>Set Background Color</string>
-   </property>
-  </action>
-  <action name="actionResetBackgroundColor">
-   <property name="text">
-    <string>Reset Background Color</string>
-   </property>
-   <property name="toolTip">
-    <string>Reset Background Color</string>
-   </property>
-  </action>
   <action name="actionToggleSprites">
    <property name="checkable">
     <bool>true</bool>
@@ -490,28 +466,6 @@
    </property>
    <property name="toolTip">
     <string>Render Camera Limits</string>
-   </property>
-  </action>
-  <action name="actionSelectAfterPlacement">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Select Objects When Placed</string>
-   </property>
-   <property name="toolTip">
-    <string>Select Objects When Placed</string>
-   </property>
-  </action>
-  <action name="actionHideStatusbar">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Hide Statusbar</string>
-   </property>
-   <property name="toolTip">
-    <string>Hide Statusbar</string>
    </property>
   </action>
   <action name="actionShowMinimap">
@@ -589,6 +543,11 @@
    </property>
    <property name="toolTip">
     <string>Show History</string>
+   </property>
+  </action>
+  <action name="actionShowPreferences">
+   <property name="text">
+    <string>Preferences</string>
    </property>
   </action>
  </widget>

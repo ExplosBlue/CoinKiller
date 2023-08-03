@@ -29,9 +29,9 @@ class SettingsManager : public QObject
 {
     Q_OBJECT
 public:
-    static SettingsManager* init(QWidget* parentWidget);
+    static SettingsManager* init(QWidget *parent = nullptr);
     static SettingsManager* getInstance();
-    ~SettingsManager();
+    ~SettingsManager() override;
 
     QString dataPath(const QString& path = "");
 
@@ -54,6 +54,24 @@ public:
 
     QColor getColor(const QString &key, const QColor &defaultColor = Qt::white);
     void setColor(const QString &key, const QColor &color);
+
+    QColor getLEWindowColor();
+    void setLEWindowColor(const QColor &color);
+
+    quint32 getLEUndoLimit();
+    void setLEUndoLimit(const quint32 &value);
+
+    bool getLESelectOnPlace();
+    void setLESelectOnPlace(const bool &value);
+
+    bool getLEShowStatusbar();
+    void setLEShowStatusbar(const bool &value);
+
+    // Defaults - Level Editor
+    static constexpr QColor LE_WINDOW_COLOR_DEFAULT = QColor(119, 136, 153);
+    static constexpr int LE_UNDO_LIMIT_DEFAULT = 200;
+    static constexpr bool LE_SELECT_ON_PLACE_DEFAULT = true;
+    static constexpr bool LE_SHOW_STATUSBAR_DEFAULT = true;
 
 protected:
     SettingsManager(QWidget* parentWidget);

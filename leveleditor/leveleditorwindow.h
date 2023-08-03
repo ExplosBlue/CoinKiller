@@ -128,14 +128,6 @@ private slots:
 
     void on_actionSelectAll_triggered();
 
-    void on_actionSetBackgroundColor_triggered();
-
-    void on_actionResetBackgroundColor_triggered();
-
-    void on_actionSelectAfterPlacement_toggled(bool arg1);
-
-    void on_actionHideStatusbar_toggled(bool hide);
-
     void on_actionShowMinimap_toggled(bool checked);
 
     void on_actionShowToolbox_toggled(bool checked);
@@ -149,6 +141,10 @@ private slots:
     void on_actionToggle2DTile_toggled(bool arg1);
 
     void historyStateChanged(int index);
+
+    void showPreferencesDialog(bool show);
+
+    void loadSettings();
 
 private:
     Ui::LevelEditorWindow *ui;

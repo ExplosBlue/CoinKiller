@@ -78,6 +78,7 @@ SOURCES += \
     leveleditor/locationeditorwidget.cpp \
     leveleditor/patheditorwidget.cpp \
     leveleditor/progresspatheditorwidget.cpp \
+    leveleditor/settingsdialog.cpp \
     leveleditor/spriteeditorwidget.cpp \
     leveleditor/spriteidswidget.cpp \
     leveleditor/tilesetpalette.cpp \
@@ -137,6 +138,7 @@ HEADERS += \
     leveleditor/locationeditorwidget.h \
     leveleditor/patheditorwidget.h \
     leveleditor/progresspatheditorwidget.h \
+    leveleditor/settingsdialog.h \
     leveleditor/spriteeditorwidget.h \
     leveleditor/spriteidswidget.h \
     leveleditor/tilesetpalette.h \
@@ -168,6 +170,7 @@ HEADERS += \
 
 FORMS += \
     leveleditor/leveleditorwindow.ui \
+    leveleditor/settingsdialog.ui \
     tileseteditor/tileseteditorwindow.ui \
     mainwindow.ui \
     newleveldialog.ui \
