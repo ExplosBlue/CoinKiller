@@ -49,8 +49,8 @@ LevelEditorWindow::LevelEditorWindow(LevelManager* lvlMgr, int initialArea) :
     ui->toolBar->insertWidget(ui->actionAddArea, areaSelector);
     connect(areaSelector, &QComboBox::currentIndexChanged, this, &LevelEditorWindow::handleAreaIndexChange);
 
-    editStatus = new QLabel(this);
-    ui->statusbar->addWidget(editStatus);
+    statusLabel = new QLabel(this);
+    ui->statusbar->addWidget(statusLabel);
 
     // Load UI Icons
     QString basePath(settings->dataPath("icons/"));
@@ -166,7 +166,7 @@ LevelEditorWindow::LevelEditorWindow(LevelManager* lvlMgr, int initialArea) :
     ui->actionRenderCameraLimits->setChecked(settings->get("renderCameraLimits", true).toBool());
     ui->actionHideStatusbar->setChecked(settings->get("lvleditorHideStatusBar", false).toBool());
 
-    editStatus->setText(tr("Ready!"));
+    setStatus(Ready);
 
 #ifdef USE_KDE_BLUR
     if (KWindowEffects::isEffectAvailable(KWindowEffects::BlurBehind))
@@ -206,7 +206,7 @@ void LevelEditorWindow::historyStateChanged(int index)
 {
     Q_UNUSED(index);
 
-    unsavedChanges = true;
+    setStatus(Unsaved);
 
     if (levelView == nullptr) {
         return;
@@ -350,47 +350,59 @@ void LevelEditorWindow::on_actionZoom_Minimum_triggered()
     update();
 }
 
-void LevelEditorWindow::handleEditMade()
+void LevelEditorWindow::setStatus(EditorStatus newStatus)
 {
-    editStatus->setText(tr("Unsaved Changes"));
-    unsavedChanges = true;
+    switch (newStatus) {
+    case EditorStatus::Ready:
+        status = Ready;
+        statusLabel->setText(tr("Ready!"));
+        break;
+    case EditorStatus::Unsaved:
+        status = Unsaved;
+        statusLabel->setText(tr("Unsaved Changes"));
+        break;
+    case EditorStatus::SaveFailed:
+        status = SaveFailed;
+        statusLabel->setText(tr("Save Failed"));
+        break;
+    case EditorStatus::ChangesSaved:
+        status = ChangesSaved;
+        statusLabel->setText(tr("Changes Saved"));
+    default:
+        break;
+    }
 }
 
 void LevelEditorWindow::on_actionSave_triggered()
 {
     qint8 res = levelView->saveLevel();
-    if (res != 0)
-        editStatus->setText(tr("Save Failed"));
-    else
-    {
-        editStatus->setText(tr("Changes Saved"));
-        unsavedChanges = false;
+    if (res != 0) {
+        setStatus(SaveFailed);
+    }
+    else {
+        setStatus(ChangesSaved);
     }
 }
 
 void LevelEditorWindow::on_actionCopy_triggered()
 {
     levelView->copy();
-    emit handleEditMade();
 }
 
 void LevelEditorWindow::on_actionPaste_triggered()
 {
     spriteEditor->spriteIdsPtr()->deselect();
     levelView->paste();
-    emit handleEditMade();
 }
 
 void LevelEditorWindow::on_actionCut_triggered()
 {
     levelView->cut();
-    emit handleEditMade();
 }
 
 void LevelEditorWindow::on_actionDelete_triggered()
 {
     levelView->deleteSel();
-    emit handleEditMade();
 }
 
 void LevelEditorWindow::on_actionSelectAll_triggered()
@@ -401,25 +413,21 @@ void LevelEditorWindow::on_actionSelectAll_triggered()
 void LevelEditorWindow::on_actionRaise_triggered()
 {
     levelView->raise();
-    emit handleEditMade();
 }
 
 void LevelEditorWindow::on_actionLower_triggered()
 {
     levelView->lower();
-    emit handleEditMade();
 }
 
 void LevelEditorWindow::on_actionRaiseLayer_triggered()
 {
     levelView->raiseLayer();
-    emit handleEditMade();
 }
 
 void LevelEditorWindow::on_actionLowerLayer_triggered()
 {
     levelView->lowerLayer();
-    emit handleEditMade();
 }
 
 void LevelEditorWindow::on_actionFullscreen_toggled(bool toggle)
@@ -596,7 +604,7 @@ const int LevelEditorWindow::showSaveDialog()
     message.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
 
     QSpacerItem* spacer = new QSpacerItem(400, 0, QSizePolicy::Minimum, QSizePolicy::Expanding);
-    QGridLayout* layout = (QGridLayout*)message.layout();
+    QGridLayout* layout = qobject_cast<QGridLayout*>(message.layout());
     layout->addItem(spacer, layout->rowCount(), 0, 1, layout->columnCount());
 
     int exitCode = message.exec();
@@ -605,12 +613,10 @@ const int LevelEditorWindow::showSaveDialog()
     {
     case QMessageBox::Save:
         levelView->saveLevel();
-        unsavedChanges = false;
-        editStatus->setText(tr("Changes Saved"));
+        setStatus(ChangesSaved);
         break;
     case QMessageBox::Discard:
-        unsavedChanges = false;
-        editStatus->setText("");
+        setStatus(Ready);
         break;
     }
 
@@ -619,7 +625,7 @@ const int LevelEditorWindow::showSaveDialog()
 
 void LevelEditorWindow::on_actionAddArea_triggered()
 {
-    if (unsavedChanges) {
+    if (status == EditorStatus::Unsaved || status == EditorStatus::SaveFailed) {
         int exitCode = showSaveDialog();
 
         if (exitCode != QMessageBox::Cancel)
@@ -769,10 +775,10 @@ void LevelEditorWindow::loadArea(int id, bool closeLevel, bool init)
     connect(progPathEditor, &ProgressPathEditorWidget::selectedProgPathChanged, levelView, &LevelView::selectObj);
 
     // Setup Level View
-    connect(levelView, SIGNAL(scrollTo(int,int)), this, SLOT(scrollTo(int,int)));
-    connect(levelView->editManagerPtr(), SIGNAL(selectdObjectChanged(Object*)), this, SLOT(handleSelectionChanged(Object*)));
-    connect(levelView->editManagerPtr(), SIGNAL(deselected()), this, SLOT(deselect()));
-    connect(levelView->editManagerPtr(), SIGNAL(updateEditors()), this, SLOT(updateEditors()));
+    connect(levelView, &LevelView::scrollTo, this, &LevelEditorWindow::scrollTo);
+    connect(levelView->editManagerPtr(), &EditManager::selectdObjectChanged, this, &LevelEditorWindow::handleSelectionChanged);
+    connect(levelView->editManagerPtr(), &EditManager::deselected, this, &LevelEditorWindow::deselect);
+    connect(levelView->editManagerPtr(), &EditManager::updateEditors, this, &LevelEditorWindow::updateEditors);
 
     toolboxTabs->setUsesScrollButtons(true);
     toolboxTabs->addTab(areaEditor, QIcon(basePath + "settings.png"), "");
@@ -793,9 +799,9 @@ void LevelEditorWindow::loadArea(int id, bool closeLevel, bool init)
     toolboxTabs->setTabToolTip(7, "Progress Paths");
 
     miniMap = new LevelMiniMap(this, level);
-    connect(levelView, SIGNAL(updateMinimap(QRect)), miniMap, SLOT(update_(QRect)));
-    connect(levelView, SIGNAL(updateMinimapBounds()), miniMap, SLOT(updateBounds()));
-    connect(miniMap, SIGNAL(scrollTo(int,int)), this, SLOT(scrollTo(int,int)));
+    connect(levelView, &LevelView::updateMinimap, miniMap, &LevelMiniMap::update_);
+    connect(levelView, &LevelView::updateMinimapBounds, miniMap, &LevelMiniMap::updateBounds);
+    connect(miniMap, &LevelMiniMap::scrollTo, this, &LevelEditorWindow::scrollTo);
     minimapDock->setWidget(miniMap);
 
     update();
@@ -804,6 +810,7 @@ void LevelEditorWindow::loadArea(int id, bool closeLevel, bool init)
 
     undoStack->clear();
     undoStack->blockSignals(false);
+    setStatus(Ready);
 }
 
 void LevelEditorWindow::updateAreaSelector(int index)
@@ -836,64 +843,33 @@ void LevelEditorWindow::updateAreaSelector(int index)
 
 void LevelEditorWindow::handleAreaIndexChange(int index)
 {
-    bool ignore = false;
+    if (status == EditorStatus::Unsaved || status == EditorStatus::SaveFailed) {
+       int exitCode = showSaveDialog();
 
-    if (unsavedChanges)
-    {
-        QMessageBox message(this);
-        message.setWindowTitle(tr("Unsaved Changes"));
-        message.setText(tr("Do you want to save your changes?"));
-        message.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
-
-        QSpacerItem* spacer = new QSpacerItem(400, 0, QSizePolicy::Minimum, QSizePolicy::Expanding);
-        QGridLayout* layout = (QGridLayout*)message.layout();
-        layout->addItem(spacer, layout->rowCount(), 0, 1, layout->columnCount());
-
-        switch (message.exec())
-        {
-        case QMessageBox::Save:
-            levelView->saveLevel();
-            unsavedChanges = false;
-            editStatus->setText(tr("Changes Saved"));
-            break;
-        case QMessageBox::Discard:
-            unsavedChanges = false;
-            editStatus->setText(tr("Ready!"));
-            break;
-        case QMessageBox::Cancel:
-            ignore = true;
-            break;
-        }
-    }
-
-    if (!ignore)
-    {
-        index++;
-
-        if (lvlMgr->areaIsOpen(index))
-        {
-            updateAreaSelector(level->getAreaID());
-            QMessageBox::information(this, "CoinKiller", tr("Area %1 cannot be opened because it is already opened in another editor window.").arg(index), QMessageBox::Ok);
+       if (exitCode == QMessageBox::Cancel) {
+            areaSelector->blockSignals(true);
+            areaSelector->setCurrentIndex(level->getAreaID()-1);
+            areaSelector->blockSignals(false);
             return;
-        }
+       }
+    }
 
-        if (QApplication::queryKeyboardModifiers() &= Qt::ControlModifier)
-        {
-            updateAreaSelector(level->getAreaID());
-            lvlMgr->openAreaEditor(index);
-        }
-        else
-        {
-            loadArea(index);
-            updateAreaSelector();
-        }
-    }
-    else
-    {
-        areaSelector->blockSignals(true);
-        areaSelector->setCurrentIndex(level->getAreaID()-1);
-        areaSelector->blockSignals(false);
-    }
+   index++;
+
+   if (lvlMgr->areaIsOpen(index)) {
+        updateAreaSelector(level->getAreaID());
+        QMessageBox::information(this, "CoinKiller", tr("Area %1 cannot be opened because it is already opened in another editor window.").arg(index), QMessageBox::Ok);
+        return;
+   }
+
+   if (QApplication::queryKeyboardModifiers() & Qt::ControlModifier) {
+        updateAreaSelector(level->getAreaID());
+        lvlMgr->openAreaEditor(index);
+   }
+   else {
+        loadArea(index);
+        updateAreaSelector();
+   }
 }
 
 void LevelEditorWindow::handleMgrUpdate()
@@ -943,7 +919,7 @@ void LevelEditorWindow::on_actionHideStatusbar_toggled(bool hide)
 
 void LevelEditorWindow::closeEvent(QCloseEvent *event)
 {
-    if (unsavedChanges) {
+    if (status == EditorStatus::Unsaved || status == EditorStatus::SaveFailed) {
         int exitCode = showSaveDialog();
 
         if (exitCode == QMessageBox::Cancel) {

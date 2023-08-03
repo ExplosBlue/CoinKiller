@@ -64,7 +64,6 @@ public slots:
     void deselect();
     void updateEditors();
     void scrollTo(int x, int y);
-    void handleEditMade();
 
 private slots:
     void toggleLayer(bool toggle);
@@ -175,19 +174,26 @@ private:
 
     QComboBox* areaSelector;
 
-    QLabel* editStatus;
+    QLabel* statusLabel;
+
+    enum EditorStatus {
+        Ready,
+        Unsaved,
+        SaveFailed,
+        ChangesSaved
+    };
+
+    EditorStatus status;
+    void setStatus(EditorStatus newStatus);
 
     void changeEvent(QEvent* event);
 
     void updateAreaSelector(int index = -1);
 
-//    quint8 layerMask;
     float zoom;
 
     void loadArea(int id, bool closeLevel = true, bool init = false);
     bool closeLvlOnClose = true;
-
-    bool unsavedChanges = false;
 
     bool editorsLoaded();
 
