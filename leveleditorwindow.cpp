@@ -765,10 +765,8 @@ void LevelEditorWindow::loadArea(int id, bool closeLevel, bool init)
     connect(pathEditor, &PathEditorWidget::selectedPathChanged, levelView, &LevelView::selectObj);
 
     // Setup Progress Path Editor
-    progPathEditor = new ProgressPathEditorWidget(&level->progressPaths);
-    connect(progPathEditor, SIGNAL(updateLevelView()), levelView, SLOT(update()));
-    connect(progPathEditor, SIGNAL(selectedProgPathChanged(Object*)), levelView, SLOT(selectObj(Object*)));
-    connect(progPathEditor, SIGNAL(editMade()), this, SLOT(handleEditMade()));
+    progPathEditor = new ProgressPathEditorWidget(&level->progressPaths, undoStack);
+    connect(progPathEditor, &ProgressPathEditorWidget::selectedProgPathChanged, levelView, &LevelView::selectObj);
 
     // Setup Level View
     connect(levelView, SIGNAL(scrollTo(int,int)), this, SLOT(scrollTo(int,int)));

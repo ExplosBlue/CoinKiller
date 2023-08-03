@@ -78,6 +78,7 @@ SOURCES += main.cpp\
     EditorCommands/moveobject.cpp \
     EditorCommands/pathcommands.cpp \
     EditorCommands/pathnodecommands.cpp \
+    EditorCommands/progresspathcommands.cpp \
     EditorCommands/raiselayer.cpp \
     EditorCommands/raiseobject.cpp \
     EditorCommands/resizeobject.cpp \
@@ -163,6 +164,7 @@ HEADERS  += mainwindow.h \
     EditorCommands/moveobject.h \
     EditorCommands/pathcommands.h \
     EditorCommands/pathnodecommands.h \
+    EditorCommands/progresspathcommands.h \
     EditorCommands/raiselayer.h \
     EditorCommands/raiseobject.h \
     EditorCommands/resizeobject.h \

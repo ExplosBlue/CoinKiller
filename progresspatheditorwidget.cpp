@@ -2,9 +2,12 @@
 
 #include <QLabel>
 
-ProgressPathEditorWidget::ProgressPathEditorWidget(QList<ProgressPath*> *paths)
-{
-    this->paths = paths;
+#include "EditorCommands/progresspathcommands.h"
+
+ProgressPathEditorWidget::ProgressPathEditorWidget(QList<ProgressPath*> *paths, QUndoStack *undoStack, QWidget *parent) :
+    QWidget(parent),
+    paths(paths),
+    undoStack(undoStack) {
 
     QVBoxLayout* layout = new QVBoxLayout();
 
@@ -28,9 +31,9 @@ ProgressPathEditorWidget::ProgressPathEditorWidget(QList<ProgressPath*> *paths)
     layout->addWidget(edits);
     setLayout(layout);
 
-    connect(pathList, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(handlePathListIndexChanged(QListWidgetItem*)));
-    connect(id, SIGNAL(valueChanged(int)), this, SLOT(handleIDChanged(int)));
-    connect(alternatePathFlag, SIGNAL(toggled(bool)), this, SLOT(handleAlternetePathFlagChanged(bool)));
+    connect(pathList, &QListWidget::itemClicked, this, &ProgressPathEditorWidget::handlePathListIndexChanged);
+    connect(id, &QSpinBox::valueChanged, this, &ProgressPathEditorWidget::handleIDChanged);
+    connect(alternatePathFlag, &QAbstractButton::toggled, this, &ProgressPathEditorWidget::handleAlternetePathFlagChanged);
 
     updateList();
     updateInfo();
@@ -50,7 +53,7 @@ void ProgressPathEditorWidget::updateList()
     foreach (ProgressPath* path, *paths)
     {
         QListWidgetItem* pathItem = new QListWidgetItem();
-        pathItem->setText(tr("Progress Path %1: %n Node(s)", 0, path->getNumberOfNodes()).arg(path->getid()));
+        pathItem->setText(tr("Progress Path %1: %n Node(s)", nullptr, path->getNumberOfNodes()).arg(path->getid()));
         pathList->addItem(pathItem);
     }
     pathList->setCurrentIndex(index);
@@ -77,7 +80,7 @@ void ProgressPathEditorWidget::select(ProgressPathNode* node)
     editingAPath = true;
     updateInfo();
     handleChanges = false;
-    pathList->setCurrentRow(paths->indexOf(editPath));
+    pathList->setCurrentRow(static_cast<int>(paths->indexOf(editPath)));
     handleChanges = true;
 }
 
@@ -97,18 +100,15 @@ void ProgressPathEditorWidget::handlePathListIndexChanged(QListWidgetItem *item)
     emit selectedProgPathChanged(editPath->getNode(0));
 }
 
-void ProgressPathEditorWidget::handleIDChanged(int idVal)
+void ProgressPathEditorWidget::handleIDChanged(int id)
 {
     if (!handleChanges) return;
-    editPath->setId(idVal);
+    undoStack->push(new Commands::ProgressPathCmd::SetId(editPath, id));
     updateList();
-    emit updateLevelView();
-    emit editMade();
 }
 
-void ProgressPathEditorWidget::handleAlternetePathFlagChanged(bool apfVal)
+void ProgressPathEditorWidget::handleAlternetePathFlagChanged(bool flag)
 {
     if (!handleChanges) return;
-    editPath->setAlternatePathFlag(apfVal);
-    emit editMade();
+    undoStack->push(new Commands::ProgressPathCmd::SetAltPathFlag(editPath, flag));
 }

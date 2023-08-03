@@ -8,6 +8,7 @@
 #include <QListWidget>
 #include <QSpinBox>
 #include <QCheckBox>
+#include <QUndoStack>
 
 #include "objects.h"
 
@@ -15,15 +16,13 @@ class ProgressPathEditorWidget : public QWidget
 {
     Q_OBJECT
 public:
-    ProgressPathEditorWidget(QList<ProgressPath*> *paths);
+    ProgressPathEditorWidget(QList<ProgressPath*> *paths, QUndoStack *undoStack, QWidget *parent = nullptr);
     void deselect();
     void select(ProgressPathNode* node);
     void updateEditor();
 
 signals:
-    void updateLevelView();
     void selectedProgPathChanged(Object* pPath);
-    void editMade();
 
 public slots:
 
@@ -38,6 +37,8 @@ private:
     QListWidget* pathList;
     QSpinBox* id;
     QCheckBox* alternatePathFlag;
+
+    QUndoStack *undoStack;
 
     void updateList();
     void updateInfo();
