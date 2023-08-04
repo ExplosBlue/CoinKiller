@@ -377,7 +377,7 @@ class FloatingBoxRenderer: public SpriteRenderer
 {
 public:
     FloatingBoxRenderer(const Sprite *spr);
-    FloatingBoxRenderer() { delete img; }
+    ~FloatingBoxRenderer() { delete img; }
     void render(QPainter *painter, QRect *drawrect);
 protected:
     NormalImageRenderer *img;
@@ -574,7 +574,7 @@ class FourPlatRickRenderer: public SpriteRenderer
 {
 public:
     FourPlatRickRenderer(const Sprite *spr);
-    FourPlatRickRenderer() { delete img; }
+    ~FourPlatRickRenderer() { delete img; }
     void render(QPainter *painter, QRect *drawrect);
 protected:
     NormalImageRenderer *img;

@@ -1396,29 +1396,35 @@ void Sprite::setRect()
             offsety = -5;
         break;
     case 159: // Spike Top
-        if(getNybble(10) == 1)
+    {
+        bool counterClockwise = getNybble(11) % 2;
+        switch (getNybble(10) % 4)
         {
+        case 1:
             width = 25;
             height = 20;
             offsetx = -5;
-        }
-        else if(getNybble(10) == 2)
-        {
+            offsety = counterClockwise ? 20 : 0;
+            break;
+        case 2:
             width = 20;
             height = 25;
-        }
-        else if(getNybble(10) == 3)
-        {
+            offsetx = counterClockwise ? 10 : -10;
+            break;
+        case 3:
             width = 25;
             height = 20;
-        }
-        else
-        {
+            offsety = counterClockwise ? 0 : 20;
+            break;
+        default:
             width = 20;
             height = 25;
+            offsetx = counterClockwise ? -10 : 10;
             offsety = -5;
+            break;
         }
-        break;
+    }
+    break;
     case 162: // Morton
         width = 67;
         height = 67;
