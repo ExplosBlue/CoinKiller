@@ -1,7 +1,7 @@
 #ifndef CTPK_H
 #define CTPK_H
 
-#include "filesystem.h"
+#include "filesystem/filesystem.h"
 
 #include <QImage>
 

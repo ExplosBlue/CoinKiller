@@ -18,7 +18,7 @@
 #ifndef LEVEL_H
 #define LEVEL_H
 
-#include "filesystem.h"
+#include "filesystem/filesystem.h"
 #include "tileset.h"
 #include "objects.h"
 
@@ -61,14 +61,12 @@ public:
     }
 
     void add(QList<Object*> objs);
-    void add(Object* obj);
-    void remove(QList<Object*> objs);
-    void remove(Object* obj);
+    void add(Object *obj);
     void move(QList<Object*> objs, int deltax, int deltay);
     void raise(Object *obj);
-    void lower(Object* obj);
+    void lower(Object *obj);
     void raiseLayer(BgdatObject *obj);
-    void lowerLayer(BgdatObject* obj);
+    void lowerLayer(BgdatObject *obj);
 
     Entrance* newEntrance(int x, int y);
     Zone* newZone(int x, int y);
@@ -80,12 +78,14 @@ public:
     void setAreaID(int id) { this->area = id; }
 
     // Camera Limits
-    void sortCameraLimits(Sprite* spr);
+    bool isCameraLimit(Sprite* spr);
+    void insertCameraLimit(Sprite* spr);
+    void removeCameraLimit(Sprite* spr);
 
-    QList<Sprite*> getLeftCamLimits() { return leftCamLimits; }
-    QList<Sprite*> getRightCamLimits() { return rightCamLimits; }
-    QList<Sprite*> getBottomCamLimits() { return bottomCamLimits; }
-    QList<Sprite*> getTopCamLimits() { return topCamLimits; }
+    QList<Sprite*> leftCamLimits;
+    QList<Sprite*> rightCamLimits;
+    QList<Sprite*> bottomCamLimits;
+    QList<Sprite*> topCamLimits;
 
 private:
     SarcFilesystem* archive;
@@ -94,10 +94,7 @@ private:
 
     quint8 getNextZoneID(Object* obj);
 
-    QList<Sprite*> leftCamLimits;
-    QList<Sprite*> rightCamLimits;
-    QList<Sprite*> bottomCamLimits;
-    QList<Sprite*> topCamLimits;
+    void sortCameraLimits();
 };
 
 #endif // LEVEL_H

@@ -100,7 +100,6 @@ BgdatObject::BgdatObject(BgdatObject *obj)
     layer = obj->getLayer();
 }
 
-qint32 BgdatObject::getType() const { return 0; }
 qint32 BgdatObject::getid() const { return id; }
 qint32 BgdatObject::getLayer() const { return layer; }
 
@@ -109,9 +108,19 @@ void BgdatObject::setTsID(qint32 tsID)
     id = (id & 0xFFF) | (tsID << 12);
 }
 
+qint32 BgdatObject::getTsID() const
+{
+    return (id >> 12) & 0x3;
+}
+
 void BgdatObject::setObjID(qint32 objID)
 {
     id = (id & 0xF000) | objID;
+}
+
+qint32 BgdatObject::getObjID() const
+{
+    return id & 0x0FFF;
 }
 
 // Format: 0:ID:Layer:X:Y:Width:Height
@@ -2885,7 +2894,6 @@ void Sprite::setRect()
     }
 }
 
-qint32 Sprite::getType() const { return 1; }
 qint16 Sprite::getid() const { return id; }
 
 quint8 Sprite::getByte(qint32 id) const { return spriteData[id]; }
@@ -3144,7 +3152,6 @@ Location::Location(Location *loc)
     id = loc->getid();
 }
 
-qint32 Location::getType() const { return 4; }
 qint32 Location::getid() const { return id; }
 
 // Format: 4:ID:X:Y:Width:Height
@@ -3224,6 +3231,22 @@ PathNode::PathNode(qint32 x, qint32 y, float speed, float accel, quint16 delay, 
     this->rotation = rotation;
     this->variableField = variableField;
     this->nextPathID = nextPathID;
+    this->parentPath = parentPath;
+
+    this->offsetx = -10;
+    this->offsety = -10;
+}
+
+PathNode::PathNode(qint32 x, qint32 y, Path* parentPath)
+{
+    this->x = x;
+    this->y = y;
+    this->speed = 0;
+    this->accel = 0;
+    this->delay = 0;
+    this->rotation = 0;
+    this->variableField = 0;
+    this->nextPathID = 0;
     this->parentPath = parentPath;
 
     this->offsetx = -10;

@@ -18,7 +18,7 @@
 #ifndef TILESET_H
 #define TILESET_H
 
-#include "filesystem.h"
+#include "filesystem/filesystem.h"
 #include "ctpk.h"
 
 #include <QPainter>

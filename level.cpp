@@ -28,7 +28,7 @@
 #include <algorithm>
 
 Level::Level(Game *game, SarcFilesystem* archive, int area, QString lvlName)
-{    
+{
     this->game = game;
 
     this->archive = archive;
@@ -71,7 +71,7 @@ Level::Level(Game *game, SarcFilesystem* archive, int area, QString lvlName)
             tilesets[t] = game->getTileset(tilesetname);
         }
         catch (const std::exception &e)
-        {   
+        {
             QMessageBox::warning(nullptr, "CoinKiller", QObject::tr("Tileset %1 could not be found!").arg(tilesetname));
             tilesets[t] = nullptr;
         }
@@ -176,7 +176,9 @@ Level::Level(Game *game, SarcFilesystem* archive, int area, QString lvlName)
 
         spr->setRect();
         sprites.append(spr);
-        sortCameraLimits(spr);
+        if (isCameraLimit(spr)) {
+            insertCameraLimit(spr);
+        }
     }
 
     // Block 8: Sprites Used List (no need to read this)
@@ -332,14 +334,14 @@ Level::~Level()
             delete objects[l][o];
     }
 
-    for (int s = 0; s < sprites.size(); s++)
-        delete sprites[s];
-
-    for (int e = 0; e < entrances.size(); e++)
-        delete entrances[e];
-
-    for (int l = 0; l < locations.size(); l++)
-        delete locations[l];
+    qDeleteAll(sprites);
+    qDeleteAll(entrances);
+    qDeleteAll(locations);
+    qDeleteAll(zones);
+    qDeleteAll(paths);
+    qDeleteAll(progressPaths);
+    qDeleteAll(boundings);
+    qDeleteAll(backgrounds);
 }
 
 qint8 Level::save()
@@ -803,87 +805,6 @@ void Level::add(Object *obj)
         locations.append(dynamic_cast<Location*>(obj));
 }
 
-void Level::remove(QList<Object*> objs)
-{
-    foreach (Object* obj, objs)
-        remove(obj);
-}
-
-void Level::remove(Object* obj)
-{
-    if (is<BgdatObject*>(obj))
-    {
-        BgdatObject* bgdatobj = dynamic_cast<BgdatObject*>(obj);
-        objects[bgdatobj->getLayer()].removeOne(bgdatobj);
-        delete obj;
-    }
-    else if (is<Sprite*>(obj))
-    {
-        Sprite* spr = dynamic_cast<Sprite*>(obj);
-        sprites.removeOne(spr);
-        int id = spr->getid();
-
-        switch (id) {
-        case 156:
-            leftCamLimits.removeOne(spr);
-            break;
-        case 157:
-            rightCamLimits.removeOne(spr);
-            break;
-        case 160:
-            bottomCamLimits.removeOne(spr);
-            break;
-        case 161:
-            topCamLimits.removeOne(spr);
-            break;
-        }
-
-        delete obj;
-    }
-    else if (is<Entrance*>(obj))
-    {
-        entrances.removeOne(dynamic_cast<Entrance*>(obj));
-        delete obj;
-    }
-    else if (is<Zone*>(obj))
-    {
-        zones.removeOne(dynamic_cast<Zone*>(obj));
-        delete obj;
-    }
-    else if (is<Location*>(obj))
-    {
-        locations.removeOne(dynamic_cast<Location*>(obj));
-        delete obj;
-    }
-    else if (is<PathNode*>(obj))
-    {
-        PathNode* node = dynamic_cast<PathNode*>(obj);
-        Path* path = node->getParentPath();
-
-        path->removeNode(node);
-        delete obj;
-
-        if (path->getNumberOfNodes() <= 0)
-        {
-            paths.removeOne(path);
-            delete path;
-        }
-    }
-    else if (is<ProgressPathNode*>(obj))
-    {
-        ProgressPathNode* node = dynamic_cast<ProgressPathNode*>(obj);
-        ProgressPath* path = node->getParentPath();
-
-        path->removeNode(node);
-        delete obj;
-
-        if (path->getNumberOfNodes() <= 0)
-        {
-            progressPaths.removeOne(path);
-            delete path;
-        }
-    }
-}
 
 void Level::move(QList<Object*> objs, int deltax, int deltay)
 {
@@ -1065,25 +986,66 @@ ProgressPath* Level::newProgressPath()
     return new ProgressPath(id, 0);
 }
 
-void Level::sortCameraLimits(Sprite *spr)
+bool Level::isCameraLimit(Sprite *spr)
 {
     int id = spr->getid();
 
     if (id != 156 && id != 157 && id != 160 && id != 161)
+        return false;
+
+    return true;
+}
+
+void Level::insertCameraLimit(Sprite *spr)
+{
+    if (!isCameraLimit(spr))
         return;
 
-    if (id == 156)
+    switch (spr->getid()) {
+    case 156:
         leftCamLimits.append(spr);
-
-    if (id == 157)
+        break;
+    case 157:
         rightCamLimits.append(spr);
-
-    if (id == 160)
+        break;
+    case 160:
         bottomCamLimits.append(spr);
-
-    if (id == 161)
+        break;
+    case 161:
         topCamLimits.append(spr);
+        break;
+    default:
+        break;
+    }
 
+    sortCameraLimits();
+}
+
+void Level::removeCameraLimit(Sprite *spr)
+{
+    if (!isCameraLimit(spr))
+        return;
+
+    switch (spr->getid()) {
+    case 156:
+        leftCamLimits.removeOne(spr);
+        break;
+    case 157:
+        rightCamLimits.removeOne(spr);
+        break;
+    case 160:
+        bottomCamLimits.removeOne(spr);
+        break;
+    case 161:
+        topCamLimits.removeOne(spr);
+        break;
+    default:
+        break;
+    }
+}
+
+void Level::sortCameraLimits()
+{
     // Sort right limits from smallest to largest xPos
     std::sort(rightCamLimits.begin(), rightCamLimits.end(), [](const Sprite* a, const Sprite* b) -> bool { return a->getx() < b->getx(); });
 

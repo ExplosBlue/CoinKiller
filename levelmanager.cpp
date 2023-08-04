@@ -1,5 +1,5 @@
 #include "levelmanager.h"
-#include "leveleditorwindow.h"
+#include "leveleditor/leveleditorwindow.h"
 #include "game.h"
 #include "settingsmanager.h"
 

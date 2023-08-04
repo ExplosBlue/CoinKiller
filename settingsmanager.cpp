@@ -27,68 +27,63 @@
 #include <QStandardPaths>
 #include <stdexcept>
 
-SettingsManager* SettingsManager::instance = NULL;
+SettingsManager* SettingsManager::instance = nullptr;
 
-SettingsManager* SettingsManager::init(QWidget* parentWidget)
-{
+SettingsManager* SettingsManager::init(QWidget* parentWidget) {
     QCoreApplication::setOrganizationName("Blarg City");
     QCoreApplication::setApplicationName("CoinKiller");
 
-    if (instance != NULL)
-        throw new std::runtime_error("SettingsManager already inited.");
+    if (instance != nullptr) {
+        throw std::runtime_error("SettingsManager already inited.");
+    }
 
     instance = new SettingsManager(parentWidget);
     return instance;
 }
 
-SettingsManager* SettingsManager::getInstance()
-{
-    if (instance == NULL)
-        throw new std::runtime_error("SettingsManager not inited.");
+SettingsManager* SettingsManager::getInstance() {
+    if (instance == nullptr) {
+        throw std::runtime_error("SettingsManager not inited.");
+    }
 
     return instance;
 }
 
 
-SettingsManager::SettingsManager(QWidget* parentWidget)
-{
-    this->parentWidget = parentWidget;
+SettingsManager::SettingsManager(QWidget *parent) :
+    QObject(parent) {
 
     QFileInfo localDataDir(QCoreApplication::applicationDirPath() + "/coinkiller_data");
-    if (localDataDir.isDir() && localDataDir.isReadable())
+    if (localDataDir.isDir() && localDataDir.isReadable()) {
         dataBasePath = localDataDir.absoluteFilePath();
-    else
-    {
+    } else {
         dataBasePath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/coinkiller_data";
         QDir().mkpath(dataBasePath);
     }
 }
 
-SettingsManager::~SettingsManager()
-{
+SettingsManager::~SettingsManager() {
 
 }
 
-QString SettingsManager::dataPath(const QString& path)
-{
+QString SettingsManager::dataPath(const QString& path) {
     return QString("%1/%2").arg(dataBasePath).arg(path);
 }
 
-void SettingsManager::loadTranslations()
-{
+void SettingsManager::loadTranslations() {
     QString language = settings.value("Language", "English").toString();
     loadTranslations(language);
 }
 
-void SettingsManager::loadTranslations(QString languageName)
-{
+void SettingsManager::loadTranslations(QString languageName) {
     QString file = dataPath("languages/"+languageName+"/"+languageName);
     bool loaded = translator.load(file);
 
-    if (loaded)
+    if (loaded) {
        qApp->installTranslator(&translator);
-    else
+    } else {
        qApp->removeTranslator(&translator);
+    }
 
 
     QStringList translateFiles;
@@ -101,18 +96,17 @@ void SettingsManager::loadTranslations(QString languageName)
                    << "tilebehaviors.xml"
                    << "tilesetnames.txt";
 
-    foreach (QString transFile, translateFiles)
-    {
+    foreach (QString transFile, translateFiles) {
         QString path = dataPath("languages/"+languageName+"/"+transFile);
-        if(!QFile(path).exists())
+       if(!QFile(path).exists()) {
             path = dataPath(transFile);
+       }
 
         translatedFiles.insert(transFile, path);
     }
 }
 
-void SettingsManager::setupLanguageSelector(QListWidget* selector)
-{
+void SettingsManager::setupLanguageSelector(QListWidget* selector) {
     selector->blockSignals(true);
     selector->clear();
 
@@ -120,50 +114,77 @@ void SettingsManager::setupLanguageSelector(QListWidget* selector)
     translationsFolder.setFilter(QDir::NoDotAndDotDot | QDir::Dirs);
     QDirIterator directories(translationsFolder, QDirIterator::NoIteratorFlags);
 
-    while(directories.hasNext())
-    {
+    while(directories.hasNext()) {
         directories.next();
 
         QListWidgetItem* item = new QListWidgetItem(directories.fileName());
 
         selector->addItem(item);
 
-        if (directories.fileName() == settings.value("Language", "English").toString())
+        if (directories.fileName() == settings.value("Language", "English").toString()) {
             selector->setCurrentItem(item);
+        }
 
     }
 
-    connect(selector, SIGNAL(currentTextChanged(QString)), this, SLOT(setLanguage(QString)));
+    connect(selector, &QListWidget::currentTextChanged, this, &SettingsManager::setLanguage);
     selector->blockSignals(false);
 }
 
-QString SettingsManager::getFilePath(QString file)
-{
+QString SettingsManager::getFilePath(QString file) {
     return translatedFiles.value(file);
 }
 
-void SettingsManager::setLanguage(QString language)
-{      
+void SettingsManager::setLanguage(QString language) {
     settings.setValue("Language", language);
     loadTranslations(language);
 }
 
-QVariant SettingsManager::get(const QString &key, const QVariant &defaultValue)
-{
+QVariant SettingsManager::get(const QString &key, const QVariant &defaultValue) {
     return settings.value(key, defaultValue);
 }
 
-void SettingsManager::set(const QString &key, const QVariant &value)
-{
+void SettingsManager::set(const QString &key, const QVariant &value) {
     settings.setValue(key, value);
 }
 
-QColor SettingsManager::getColor(const QString &key, const QColor &defaultColor)
-{
+QColor SettingsManager::getColor(const QString &key, const QColor &defaultColor) {
    return QColor::fromRgba(settings.value(key, defaultColor.rgba()).toUInt());
 }
 
-void SettingsManager::setColor(const QString &key, const QColor &color)
-{
+void SettingsManager::setColor(const QString &key, const QColor &color) {
     settings.setValue(key, color.rgba());
+}
+
+// Level Editor settings
+QColor SettingsManager::getLEWindowColor() {
+    return QColor::fromRgba(settings.value("LE_WINDOW_COLOR", LE_WINDOW_COLOR_DEFAULT.rgba()).toUInt());
+}
+
+void SettingsManager::setLEWindowColor(const QColor &color) {
+    settings.setValue("LE_WINDOW_COLOR", color.rgba());
+}
+
+quint32 SettingsManager::getLEUndoLimit() {
+    return settings.value("LE_UNDO_LIMIT", LE_UNDO_LIMIT_DEFAULT).toUInt();
+}
+
+void SettingsManager::setLEUndoLimit(const quint32 &value) {
+    settings.setValue("LE_UNDO_LIMIT", value);
+}
+
+bool SettingsManager::getLESelectOnPlace() {
+    return settings.value("LE_SELECT_ON_PLACE", LE_SELECT_ON_PLACE_DEFAULT).toBool();
+}
+
+void SettingsManager::setLESelectOnPlace(const bool &value) {
+    settings.setValue("LE_SELECT_ON_PLACE", value);
+}
+
+bool SettingsManager::getLEShowStatusbar() {
+    return settings.value("LE_SHOW_STATUSBAR", LE_SHOW_STATUSBAR_DEFAULT).toBool();
+}
+
+void SettingsManager::setLEShowStatusbar(const bool &value) {
+    settings.setValue("LE_SHOW_STATUSBAR", value);
 }

@@ -93,8 +93,10 @@ QStandardItemModel* Game::getCourseModel()
         {
             fs->directoryContents("/Course/", QDir::Files, courseList);
 
-            if (courseList.isEmpty())
+            delete dirItem;
+            if (courseList.isEmpty()) {
                 continue;
+            }
 
             dirItem = model->invisibleRootItem();
         }
@@ -102,8 +104,10 @@ QStandardItemModel* Game::getCourseModel()
         {
             fs->directoryContents("/Course/" + dir, QDir::Files, courseList);
 
-            if (courseList.isEmpty())
+            if (courseList.isEmpty()) {
+                delete dirItem;
                 continue;
+            }
 
             model->invisibleRootItem()->appendRow(dirItem);
         }
@@ -289,6 +293,19 @@ QStandardItemModel* Game::getTilesetModel(int id, bool includeNoneItem)
         QString fileName = tilesetfiles[i];
         fileName.chop(5);
 
+        if (id == 0 && !fileName.startsWith("J_")){
+           continue;
+        }
+        else if (id == 1 && !fileName.startsWith("M_")){
+           continue;
+        }
+        else if (id == 2 && !fileName.startsWith("S1_")){
+           continue;
+        }
+        else if (id == 3 && !fileName.startsWith("S2_")){
+           continue;
+        }
+
         QString tilesetname;
 
         tilesetname = defaultNames.value(fileName, fileName);
@@ -303,22 +320,7 @@ QStandardItemModel* Game::getTilesetModel(int id, bool includeNoneItem)
         fileNameItem->setData(fileName);
         items.append(fileNameItem);
 
-        if (id == 0 && fileName.startsWith("J_"))
-        {
-            model->appendRow(items);
-        }
-        else if (id == 1 && fileName.startsWith("M_"))
-        {
-            model->appendRow(items);
-        }
-        else if (id == 2 && fileName.startsWith("S1_"))
-        {
-            model->appendRow(items);
-        }
-        else if (id == 3 && fileName.startsWith("S2_"))
-        {
-            model->appendRow(items);
-        }
+        model->appendRow(items);
     }
 
     return model;

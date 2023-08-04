@@ -103,6 +103,7 @@ Tileset::Tileset(Game *game, QString name)
             if (b == 0xFE) // start new row
             {
                 obj->rows.append(*row);
+                delete row;
 
                 row = new ObjectRow();
                 row->slopeFlags = 0;
@@ -224,6 +225,7 @@ Tileset::~Tileset()
 {
     delete ctpk;
     delete archive;
+    qDeleteAll(objectDefs);
 }
 
 

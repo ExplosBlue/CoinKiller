@@ -30,12 +30,11 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-#include "filesystem.h"
+#include "filesystem/filesystem.h"
 
 #include "imagecache.h"
 
-#include "leveleditorwindow.h"
-#include "tileseteditorwindow.h"
+#include "tileseteditor/tileseteditorwindow.h"
 #include "sarcexplorerwindow.h"
 #include "newtilesetdialog.h"
 #include "newleveldialog.h"
@@ -121,8 +120,12 @@ void MainWindow::changeEvent(QEvent* event)
 
         if (gameLoaded)
         {
-            ui->levelList->setModel(game->getCourseModel());
-            ui->tilesetView->setModel(game->getTilesetModel());
+            QStandardItemModel *courseModel = game->getCourseModel();
+            courseModel->setParent(this);
+            ui->levelList->setModel(courseModel);
+            QStandardItemModel *tilesetModel = game->getTilesetModel();
+            tilesetModel->setParent(this);
+            ui->tilesetView->setModel(tilesetModel);
         }
     }
 
@@ -164,10 +167,14 @@ void MainWindow::loadGame(const QString& path)
     setGameLoaded(true);
     statusLabel->setText(tr("Loaded: %1").arg(path));
 
-    ui->levelList->setModel(game->getCourseModel());
+    QStandardItemModel *courseModel = game->getCourseModel();
+    courseModel->setParent(this);
+    ui->levelList->setModel(courseModel);
 
     ui->tilesetView->setHeaderHidden(false);
-    ui->tilesetView->setModel(game->getTilesetModel());
+    QStandardItemModel *tilesetModel = game->getTilesetModel();
+    tilesetModel->setParent(this);
+    ui->tilesetView->setModel(tilesetModel);
     ui->tilesetView->setColumnWidth(0, 200);
 }
 
@@ -357,8 +364,9 @@ void MainWindow::on_addLevelBtn_clicked()
 
     blankLvl.copy(settings->getLastRomFSPath() + "/Course/" + nld.getName() + ".sarc");
 
-    ui->levelList->setModel(game->getCourseModel());
-}
+    QStandardItemModel *courseModel = game->getCourseModel();
+    courseModel->setParent(this);
+    ui->levelList->setModel(courseModel);}
 
 void MainWindow::on_removeLevelBtn_clicked()
 {
@@ -371,7 +379,9 @@ void MainWindow::on_removeLevelBtn_clicked()
             return;
 
         game->fs->deleteFile("/Course/" + selLvlName);
-        ui->levelList->setModel(game->getCourseModel());
+        QStandardItemModel *courseModel = game->getCourseModel();
+        courseModel->setParent(this);
+        ui->levelList->setModel(courseModel);
 
         ui->removeLevelBtn->setDisabled(true);
     }
@@ -412,7 +422,9 @@ void MainWindow::on_addTilesetBtn_clicked()
     ts.setInternalName(ntd.getName());
     ts.save();
 
-    ui->tilesetView->setModel(game->getTilesetModel());
+    QStandardItemModel *tilesetModel = game->getTilesetModel();
+    tilesetModel->setParent(this);
+    ui->tilesetView->setModel(tilesetModel);
 }
 
 void MainWindow::on_removeTilesetBtn_clicked()
@@ -429,7 +441,9 @@ void MainWindow::on_removeTilesetBtn_clicked()
             return;
 
         game->fs->deleteFile("/Unit/" + selTsName + ".sarc");
-        ui->tilesetView->setModel(game->getTilesetModel());
+        QStandardItemModel *tilesetModel = game->getTilesetModel();
+        tilesetModel->setParent(this);
+        ui->tilesetView->setModel(tilesetModel);
 
         ui->removeTilesetBtn->setDisabled(true);
     }
