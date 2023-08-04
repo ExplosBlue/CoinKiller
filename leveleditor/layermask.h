@@ -1,7 +1,7 @@
 #ifndef LAYERMASK_H
 #define LAYERMASK_H
 
-#include "qtypes.h"
+#include <QtTypes>
 
 enum LAYER_MASK : quint8
 {

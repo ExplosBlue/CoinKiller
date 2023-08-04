@@ -8,7 +8,7 @@ on:
 
 env:
   SOURCE_DIR:   ${{ github.workspace }}
-  QT_VERSION:   6.4.3
+  QT_VERSION:   6.2
 
 permissions:
   contents: write
@@ -76,7 +76,7 @@ jobs:
         run: |
           mkdir build
           cd build
-          qmake -r ${{ env.SOURCE_DIR }}\CoinKiller.pro CK_VERSION=${{ needs.setup-env.outputs.ck-version }}
+          qmake ${{ env.SOURCE_DIR }}\CoinKiller.pro CK_VERSION=${{ needs.setup-env.outputs.ck-version }}
           ${{ runner.temp }}\jom\jom
 
       - name: Deploy
@@ -129,7 +129,7 @@ jobs:
           run: |
             mkdir build
             cd build
-            qmake -r ${{ env.SOURCE_DIR }}/CoinKiller.pro QMAKE_APPLE_DEVICE_ARCHS="x86_64 arm64" CK_VERSION=${{ needs.setup-env.outputs.ck-version }}
+            qmake ${{ env.SOURCE_DIR }}/CoinKiller.pro QMAKE_APPLE_DEVICE_ARCHS="x86_64 arm64" CK_VERSION=${{ needs.setup-env.outputs.ck-version }}
             make -j1
 
         - name: Deploy
@@ -173,7 +173,7 @@ jobs:
         run: |
           mkdir build
           cd build
-          qmake -r ${{ env.SOURCE_DIR }}/CoinKiller.pro CK_VERSION=${{ needs.setup-env.outputs.ck-version }}
+          qmake ${{ env.SOURCE_DIR }}/CoinKiller.pro CK_VERSION=${{ needs.setup-env.outputs.ck-version }}
           make -j$(nproc)
           make install INSTALL_ROOT=AppDir
 
