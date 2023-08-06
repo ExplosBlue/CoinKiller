@@ -630,24 +630,24 @@ const int LevelEditorWindow::showSaveDialog()
     return exitCode;
 }
 
-void LevelEditorWindow::on_actionAddArea_triggered()
-{
+void LevelEditorWindow::on_actionAddArea_triggered() {
+
     if (status == EditorStatus::Unsaved || status == EditorStatus::SaveFailed) {
         int exitCode = showSaveDialog();
 
-        if (exitCode != QMessageBox::Cancel)
-        {
-            if (lvlMgr->getAreaCount() >= 4)
-            {
-                QMessageBox::information(this, "CoinKiller", tr("Due to limitations there can only be a maximum of 4 areas in a level."), QMessageBox::Ok);
-                return;
-            }
-
-            int seekArea = lvlMgr->addArea(lvlMgr->getAreaCount());
-            loadArea(seekArea);
-            updateAreaSelector(seekArea);
+        if (exitCode == QMessageBox::Cancel) {
+            return;
         }
     }
+
+    if (lvlMgr->getAreaCount() >= 4) {
+        QMessageBox::information(this, "CoinKiller", tr("Due to limitations there can only be a maximum of 4 areas in a level."), QMessageBox::Ok);
+        return;
+    }
+
+    int seekArea = lvlMgr->addArea(lvlMgr->getAreaCount());
+    loadArea(seekArea);
+    updateAreaSelector(seekArea);
 }
 
 void LevelEditorWindow::on_actionDeleteCurrentArea_triggered()
