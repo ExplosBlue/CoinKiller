@@ -124,8 +124,6 @@ private slots:
 
     void handleAreaIndexChange(int index);
 
-    void handleMgrUpdate();
-
     void on_actionSelectAll_triggered();
 
     void on_actionShowMinimap_toggled(bool checked);
