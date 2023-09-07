@@ -849,7 +849,7 @@ Verbindung zu %1 fehlgeschlagen!</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>This is a multi-purpose field. 
+        <source>This is a multi-purpose field.
 Check the notes of whatever sprite is paired to this path to see how to use this field.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1357,15 +1357,15 @@ Check the notes of whatever sprite is paired to this path to see how to use this
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Do you realy want to delete all 3D Overlays?</source>
+        <source>Do you really want to delete all 3D Overlays?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Do you realy want to delete all Behaviors?</source>
+        <source>Do you really want to delete all Behaviors?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Do you realy want to delete all objects?</source>
+        <source>Do you really want to delete all objects?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

@@ -738,7 +738,7 @@ void TilesetEditorWindow::on_pipeColorComboBox_currentIndexChanged(int index)
 
 void TilesetEditorWindow::on_actionDeleteAll3DOverlays_triggered()
 {
-    QMessageBox::StandardButton warning = QMessageBox::warning(this, "CoinKiller", tr("Do you realy want to delete all 3D Overlays?"), QMessageBox::Yes|QMessageBox::No);
+    QMessageBox::StandardButton warning = QMessageBox::warning(this, "CoinKiller", tr("Do you really want to delete all 3D Overlays?"), QMessageBox::Yes|QMessageBox::No);
 
     if (warning != QMessageBox::Yes)
         return;
@@ -753,7 +753,7 @@ void TilesetEditorWindow::on_actionDeleteAll3DOverlays_triggered()
 
 void TilesetEditorWindow::on_actionDeleteAllBehaviors_triggered()
 {
-    QMessageBox::StandardButton warning = QMessageBox::warning(this, "CoinKiller", tr("Do you realy want to delete all Behaviors?"), QMessageBox::Yes|QMessageBox::No);
+    QMessageBox::StandardButton warning = QMessageBox::warning(this, "CoinKiller", tr("Do you really want to delete all Behaviors?"), QMessageBox::Yes|QMessageBox::No);
 
     if (warning != QMessageBox::Yes)
         return;
@@ -843,7 +843,7 @@ void TilesetEditorWindow::on_moveObjectDownButton_clicked()
 
 void TilesetEditorWindow::on_actionDeleteAllObjects_triggered()
 {
-    QMessageBox::StandardButton warning = QMessageBox::warning(this, "CoinKiller", tr("Do you realy want to delete all objects?"), QMessageBox::Yes|QMessageBox::No);
+    QMessageBox::StandardButton warning = QMessageBox::warning(this, "CoinKiller", tr("Do you really want to delete all objects?"), QMessageBox::Yes|QMessageBox::No);
 
     if (warning != QMessageBox::Yes)
         return;
