@@ -84,6 +84,8 @@ private slots:
 
     void openInSarcExplorer();
 
+    void openInFileExplorer();
+
 private:
     Ui::MainWindow *ui;
 
@@ -102,6 +104,8 @@ private:
     void setNightmode(bool nightmode);
 
     void changeEvent(QEvent* event);
+
+    QString getFilePath(QAction* action);
 };
 
 #endif // MAINWINDOW_H
