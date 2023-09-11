@@ -526,16 +526,17 @@ void MainWindow::createLevelListContextMenu(const QPoint &pos)
 
     QAction openLevel(tr("Open In Level Editor"), this);
     QAction sarcExplorer(tr("Open In Sarc Explorer"), this);
-    QAction fileExplorer(tr("Open In File Explorer"), this);
+    QAction fileExplorer(tr("Show In File Explorer"), this);
     QAction removeLevel(tr("Remove Level"), this);
 
     connect(&openLevel, SIGNAL(triggered()), this, SLOT(openLevelFromConextMenu()));
     connect(&sarcExplorer, SIGNAL(triggered()), this, SLOT(openInSarcExplorer()));
-    connect(&fileExplorer, SIGNAL(triggered()), this, SLOT(openInFileExplorer()));
+    connect(&fileExplorer, SIGNAL(triggered()), this, SLOT(showInFileExplorer()));
     connect(&removeLevel, SIGNAL(triggered()), this, SLOT(on_removeLevelBtn_clicked()));
 
     openLevel.setData(QVariant(pos));
     sarcExplorer.setData(QVariant(pos));
+    fileExplorer.setData(QVariant(pos));
 
     contextMenu.addAction(&openLevel);
     contextMenu.addAction(&sarcExplorer);
@@ -555,16 +556,17 @@ void MainWindow::createTilesetListContextMenu(const QPoint &pos)
 
     QAction openTileset(tr("Open In Tileset Editor"), this);
     QAction sarcExplorer(tr("Open In Sarc Explorer"), this);
-    QAction fileExplorer(tr("Open In File Explorer"), this);
+    QAction fileExplorer(tr("Show In File Explorer"), this);
     QAction removeTileset(tr("Remove Tileset"), this);
 
     connect(&openTileset, SIGNAL(triggered()), this, SLOT(openTilesetFromConextMenu()));
     connect(&sarcExplorer, SIGNAL(triggered()), this, SLOT(openInSarcExplorer()));
-    connect(&fileExplorer, SIGNAL(triggered()), this, SLOT(openInFileExplorer()));
+    connect(&fileExplorer, SIGNAL(triggered()), this, SLOT(showInFileExplorer()));
     connect(&removeTileset, SIGNAL(triggered()), this, SLOT(on_removeTilesetBtn_clicked()));
 
     openTileset.setData(QVariant(pos));
     sarcExplorer.setData(QVariant(pos));
+    fileExplorer.setData(QVariant(pos));
 
     contextMenu.addAction(&openTileset);
     contextMenu.addAction(&sarcExplorer);
@@ -607,7 +609,7 @@ void MainWindow::openInSarcExplorer()
     sarcExplorer->show();
 }
 
-void MainWindow::openInFileExplorer()
+void MainWindow::showInFileExplorer()
 {
     QAction* action = qobject_cast<QAction*>(sender());
     QString path = getFilePath(action);
