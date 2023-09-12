@@ -66,6 +66,7 @@ LevelEditorWindow::LevelEditorWindow(LevelManager* lvlMgr, int initialArea) :
     ui->actionCopy->setIcon((QIcon(basePath + "copy.png")));
     ui->actionDelete->setIcon(QIcon(basePath + "delete.png"));
     ui->actionSelectAll->setIcon(QIcon(basePath + "select_all.png"));
+    ui->actionDeselect->setIcon(QIcon(basePath + "deselect.png"));
     ui->actionRaise->setIcon(QIcon(basePath + "raise.png"));
     ui->actionLower->setIcon(QIcon(basePath + "lower.png"));
     ui->actionRaiseLayer->setIcon(QIcon(basePath + "layer_up.png"));
@@ -421,6 +422,13 @@ void LevelEditorWindow::on_actionDelete_triggered()
 void LevelEditorWindow::on_actionSelectAll_triggered()
 {
     levelView->selectAll();
+}
+
+
+void LevelEditorWindow::on_actionDeselect_triggered()
+{
+    this->deselect();
+    levelView->deselect();
 }
 
 void LevelEditorWindow::on_actionRaise_triggered()
@@ -966,3 +974,5 @@ void LevelEditorWindow::paintEvent(QPaintEvent* evt)
     //ui->levelViewArea->horizontalScrollBar()->height()
 }
 #endif
+
+

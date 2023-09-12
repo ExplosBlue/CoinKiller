@@ -106,6 +106,7 @@
     <addaction name="actionCopy"/>
     <addaction name="actionDelete"/>
     <addaction name="actionSelectAll"/>
+    <addaction name="actionDeselect"/>
     <addaction name="separator"/>
     <addaction name="actionRaise"/>
     <addaction name="actionLower"/>
@@ -548,6 +549,17 @@
   <action name="actionShowPreferences">
    <property name="text">
     <string>Preferences</string>
+   </property>
+  </action>
+  <action name="actionDeselect">
+   <property name="text">
+    <string>Deselect</string>
+   </property>
+   <property name="toolTip">
+    <string>Deselect</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+A</string>
    </property>
   </action>
  </widget>
