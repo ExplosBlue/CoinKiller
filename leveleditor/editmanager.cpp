@@ -886,6 +886,11 @@ void EditManager::selectAll()
     foreach (ProgressPath* path, level->progressPaths) foreach (ProgressPathNode* node, path->getNodes()) selectedObjects.append(node);
 }
 
+void EditManager::deselect()
+{
+    selectedObjects.clear();
+}
+
 void EditManager::selectZoneContents(Zone* zone)
 {
     selectAll();
