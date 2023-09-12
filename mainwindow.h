@@ -83,8 +83,8 @@ private slots:
     void openTilesetFromConextMenu();
 
     void openInSarcExplorer();
-
-    void openInFileExplorer();
+    
+    void showInFileExplorer();
 
 private:
     Ui::MainWindow *ui;
