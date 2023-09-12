@@ -526,17 +526,21 @@ void MainWindow::createLevelListContextMenu(const QPoint &pos)
 
     QAction openLevel(tr("Open In Level Editor"), this);
     QAction sarcExplorer(tr("Open In Sarc Explorer"), this);
+    QAction fileExplorer(tr("Show In File Explorer"), this);
     QAction removeLevel(tr("Remove Level"), this);
 
     connect(&openLevel, SIGNAL(triggered()), this, SLOT(openLevelFromConextMenu()));
     connect(&sarcExplorer, SIGNAL(triggered()), this, SLOT(openInSarcExplorer()));
+    connect(&fileExplorer, SIGNAL(triggered()), this, SLOT(showInFileExplorer()));
     connect(&removeLevel, SIGNAL(triggered()), this, SLOT(on_removeLevelBtn_clicked()));
 
     openLevel.setData(QVariant(pos));
     sarcExplorer.setData(QVariant(pos));
+    fileExplorer.setData(QVariant(pos));
 
     contextMenu.addAction(&openLevel);
     contextMenu.addAction(&sarcExplorer);
+    contextMenu.addAction(&fileExplorer);
     contextMenu.addSeparator();
     contextMenu.addAction(&removeLevel);
 
@@ -552,17 +556,21 @@ void MainWindow::createTilesetListContextMenu(const QPoint &pos)
 
     QAction openTileset(tr("Open In Tileset Editor"), this);
     QAction sarcExplorer(tr("Open In Sarc Explorer"), this);
+    QAction fileExplorer(tr("Show In File Explorer"), this);
     QAction removeTileset(tr("Remove Tileset"), this);
 
     connect(&openTileset, SIGNAL(triggered()), this, SLOT(openTilesetFromConextMenu()));
     connect(&sarcExplorer, SIGNAL(triggered()), this, SLOT(openInSarcExplorer()));
+    connect(&fileExplorer, SIGNAL(triggered()), this, SLOT(showInFileExplorer()));
     connect(&removeTileset, SIGNAL(triggered()), this, SLOT(on_removeTilesetBtn_clicked()));
 
     openTileset.setData(QVariant(pos));
     sarcExplorer.setData(QVariant(pos));
+    fileExplorer.setData(QVariant(pos));
 
     contextMenu.addAction(&openTileset);
     contextMenu.addAction(&sarcExplorer);
+    contextMenu.addAction(&fileExplorer);
     contextMenu.addSeparator();
     contextMenu.addAction(&removeTileset);
 
@@ -595,6 +603,56 @@ void MainWindow::openTilesetFromConextMenu()
 void MainWindow::openInSarcExplorer()
 {
     QAction* action = qobject_cast<QAction*>(sender());
+    QString path = getFilePath(action);
+
+    SarcExplorerWindow* sarcExplorer = new SarcExplorerWindow(this, path, settings);
+    sarcExplorer->show();
+}
+
+void MainWindow::showInFileExplorer()
+{
+    QAction* action = qobject_cast<QAction*>(sender());
+    QString path = getFilePath(action);
+
+    QFileInfo info(path);
+#if defined(Q_OS_WIN)
+    QStringList args;
+    if (!info.isDir())
+        args << "/select,";
+    args << QDir::toNativeSeparators(path);
+    if (QProcess::startDetached("explorer", args))
+        return;
+#elif defined(Q_OS_MAC)
+    QStringList args;
+    args << "-e";
+    args << "tell application \"Finder\"";
+    args << "-e";
+    args << "activate";
+    args << "-e";
+    args << "select POSIX file \"" + path + "\"";
+    args << "-e";
+    args << "end tell";
+    args << "-e";
+    args << "return";
+    if (!QProcess::execute("/usr/bin/osascript", args))
+        return;
+#elif defined(Q_OS_LINUX)
+    QStringList args;
+    args << "--session";
+    args << "--dest=org.freedesktop.FileManager1";
+    args << "--type=method_call";
+    args << "/org/freedesktop/FileManager1";
+    args << "org.freedesktop.FileManager1.ShowItems";
+    args << "array:string:file://" + path;
+    args << "string:";
+    if (QProcess::startDetached("dbus-send", args))
+        return;
+#endif
+    QDesktopServices::openUrl(QUrl::fromLocalFile(info.isDir()? path : info.path()));
+}
+
+QString MainWindow::getFilePath(QAction* action)
+{
     QPoint pos = action->data().toPoint();
 
     QString path;
@@ -613,6 +671,5 @@ void MainWindow::openInSarcExplorer()
     if (!path.endsWith(".sarc"))
         path.append(".sarc");
 
-    SarcExplorerWindow* sarcExplorer = new SarcExplorerWindow(this, path, settings);
-    sarcExplorer->show();
+    return path;
 }

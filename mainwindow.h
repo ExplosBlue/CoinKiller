@@ -83,6 +83,8 @@ private slots:
     void openTilesetFromConextMenu();
 
     void openInSarcExplorer();
+    
+    void showInFileExplorer();
 
 private:
     Ui::MainWindow *ui;
@@ -102,6 +104,8 @@ private:
     void setNightmode(bool nightmode);
 
     void changeEvent(QEvent* event);
+
+    QString getFilePath(QAction* action);
 };
 
 #endif // MAINWINDOW_H
