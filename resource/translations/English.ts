@@ -672,6 +672,10 @@ Connection to %1 failed!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Show In File Explorer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>File</source>
         <translation type="unfinished"></translation>
     </message>
