@@ -18,12 +18,14 @@
 #ifndef UNITSCONVERT_H
 #define UNITSCONVERT_H
 
+#include "objects.h"
+
 int sign(int nbr);
 int to20(int nbr);
 int to16(int nbr);
 int toNext10(int nbr);
 int toNext20(int nbr);
 int toNext16Compatible(int nbr);
-int typeRound(int nbr, int type);
+int typeRound(int nbr, ObjectType type);
 
 #endif // UNITSCONVERT_H

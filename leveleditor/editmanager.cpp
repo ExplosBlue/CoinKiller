@@ -975,8 +975,8 @@ void EditManager::copy()
 
     if (hasBgDats)
     {
-        minX = typeRound(minX, 0);
-        minY = typeRound(minY, 0);
+        minX = typeRound(minX, ObjectType::BGDATOBJECT);
+        minY = typeRound(minY, ObjectType::BGDATOBJECT);
     }
 
     QList<Path*> paths;
