@@ -50,6 +50,7 @@ public:
 
     void select(Object* obj);
     void selectAll();
+    void deselect();
 
     void selectZoneContents(Zone* zone);
 

@@ -636,6 +636,17 @@ void MainWindow::showInFileExplorer()
     args << "return";
     if (!QProcess::execute("/usr/bin/osascript", args))
         return;
+#elif defined(Q_OS_LINUX)
+    QStringList args;
+    args << "--session";
+    args << "--dest=org.freedesktop.FileManager1";
+    args << "--type=method_call";
+    args << "/org/freedesktop/FileManager1";
+    args << "org.freedesktop.FileManager1.ShowItems";
+    args << "array:string:file://" + path;
+    args << "string:";
+    if (QProcess::startDetached("dbus-send", args))
+        return;
 #endif
     QDesktopServices::openUrl(QUrl::fromLocalFile(info.isDir()? path : info.path()));
 }

@@ -776,6 +776,12 @@ void LevelView::selectAll()
     update();
 }
 
+void LevelView::deselect()
+{
+    editManager->deselect();
+    update();
+}
+
 void LevelView::deleteSel()
 {
     editManager->deleteSelection();

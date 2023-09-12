@@ -128,6 +128,8 @@ private slots:
 
     void on_actionSelectAll_triggered();
 
+    void on_actionDeselect_triggered();
+
     void on_actionShowMinimap_toggled(bool checked);
 
     void on_actionShowToolbox_toggled(bool checked);
