@@ -101,9 +101,9 @@
     <property name="title">
      <string>Edit</string>
     </property>
-    <addaction name="actionPaste"/>
     <addaction name="actionCut"/>
     <addaction name="actionCopy"/>
+    <addaction name="actionPaste"/>
     <addaction name="actionDelete"/>
     <addaction name="actionSelectAll"/>
     <addaction name="actionDeselect"/>
@@ -143,9 +143,9 @@
    </attribute>
    <addaction name="actionSave"/>
    <addaction name="separator"/>
-   <addaction name="actionPaste"/>
    <addaction name="actionCut"/>
    <addaction name="actionCopy"/>
+   <addaction name="actionPaste"/>
    <addaction name="actionDelete"/>
    <addaction name="separator"/>
    <addaction name="actionRaise"/>
@@ -172,7 +172,6 @@
    <addaction name="separator"/>
    <addaction name="actionAddArea"/>
    <addaction name="actionDeleteCurrentArea"/>
-   <addaction name="separator"/>
   </widget>
   <action name="actionToggleLayer1">
    <property name="checkable">

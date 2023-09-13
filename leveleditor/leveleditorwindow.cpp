@@ -133,13 +133,15 @@ LevelEditorWindow::LevelEditorWindow(LevelManager* lvlMgr, int initialArea) :
     actionRedo->setIcon(QIcon(basePath + "redo.png"));
     actionRedo->setShortcuts(QKeySequence::Redo);
 
-    // Add actions to ui
-    ui->toolBar->addAction(actionUndo);
-    ui->toolBar->addAction(actionRedo);
+    // Add actions to toolbar
+    ui->toolBar->insertAction(ui->actionCut, actionUndo);
+    ui->toolBar->insertAction(ui->actionCut, actionRedo);
+    ui->toolBar->insertSeparator(ui->actionCut);
 
-    // Add actions to ui
-    ui->menuEdit->addAction(actionUndo);
-    ui->menuEdit->addAction(actionRedo);
+    // Add actions to edit menu
+    ui->menuEdit->insertAction(ui->actionCut, actionUndo);
+    ui->menuEdit->insertAction(ui->actionCut, actionRedo);
+    ui->menuEdit->insertSeparator(ui->actionCut);
 
     // Create undo view
     undoView = new QUndoView(undoStack);
