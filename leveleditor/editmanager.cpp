@@ -4,7 +4,6 @@
 #include "is.h"
 
 #include "commands/editorcommands.h"
-#include "commands/setvalue.h"
 #include "commands/spritecommands.h"
 #include "commands/bgdatcommands.h"
 #include "commands/pathcommands.h"
@@ -886,6 +885,11 @@ void EditManager::selectAll()
     foreach (ProgressPath* path, level->progressPaths) foreach (ProgressPathNode* node, path->getNodes()) selectedObjects.append(node);
 }
 
+void EditManager::deselect()
+{
+    selectedObjects.clear();
+}
+
 void EditManager::selectZoneContents(Zone* zone)
 {
     selectAll();
@@ -976,8 +980,8 @@ void EditManager::copy()
 
     if (hasBgDats)
     {
-        minX = typeRound(minX, 0);
-        minY = typeRound(minY, 0);
+        minX = typeRound(minX, ObjectType::BGDATOBJECT);
+        minY = typeRound(minY, ObjectType::BGDATOBJECT);
     }
 
     QList<Path*> paths;
@@ -1325,6 +1329,12 @@ void EditManager::swapSelectedSprites()
     }
 
     if (!swappableSprites.isEmpty()) {
+
+        if (swappableSprites.size() == 1) {
+            undoStack->push(new Commands::SpriteCmd::SetId(swappableSprites[0], selSprite));
+            return;
+        }
+
         undoStack->beginMacro(tr("Swapped Sprites(s)"));
         foreach (Sprite* spr, swappableSprites) {
             undoStack->push(new Commands::SpriteCmd::SetId(spr, selSprite));

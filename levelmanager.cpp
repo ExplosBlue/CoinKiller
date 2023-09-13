@@ -39,7 +39,6 @@ void LevelManager::openAreaEditor(int id)
         throw std::runtime_error("Opening Level Editor failed: Area does not exist.");
 
     LevelEditorWindow* lvlEditor = new LevelEditorWindow(this, id);
-    connect(this, SIGNAL(updateLevelEditors()), lvlEditor, SLOT(handleMgrUpdate()));
     lvlEditor->setAttribute(Qt::WA_DeleteOnClose);
     lvlEditor->show();
 }
@@ -100,8 +99,6 @@ int LevelManager::addArea(int id)
     newCourseFile->close();
     delete newCourseFile;
 
-    emit updateLevelEditors();
-
     return newAreaId;
 }
 
@@ -132,8 +129,6 @@ int LevelManager::removeArea(Level *level)
                 area->setAreaID(i-1);
         }
     }
-
-    emit updateLevelEditors();
 
     int seekArea = -1;
 

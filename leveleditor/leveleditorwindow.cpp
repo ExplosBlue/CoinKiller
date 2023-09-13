@@ -66,6 +66,7 @@ LevelEditorWindow::LevelEditorWindow(LevelManager* lvlMgr, int initialArea) :
     ui->actionCopy->setIcon((QIcon(basePath + "copy.png")));
     ui->actionDelete->setIcon(QIcon(basePath + "delete.png"));
     ui->actionSelectAll->setIcon(QIcon(basePath + "select_all.png"));
+    ui->actionDeselect->setIcon(QIcon(basePath + "deselect.png"));
     ui->actionRaise->setIcon(QIcon(basePath + "raise.png"));
     ui->actionLower->setIcon(QIcon(basePath + "lower.png"));
     ui->actionRaiseLayer->setIcon(QIcon(basePath + "layer_up.png"));
@@ -423,6 +424,13 @@ void LevelEditorWindow::on_actionSelectAll_triggered()
     levelView->selectAll();
 }
 
+
+void LevelEditorWindow::on_actionDeselect_triggered()
+{
+    this->deselect();
+    levelView->deselect();
+}
+
 void LevelEditorWindow::on_actionRaise_triggered()
 {
     levelView->raise();
@@ -685,6 +693,8 @@ void LevelEditorWindow::on_actionDeleteCurrentArea_triggered()
 
 void LevelEditorWindow::loadArea(int id, bool closeLevel, bool init)
 {
+    this->setDisabled(true);
+
     if (!lvlMgr->hasArea(id))
     {
         QMessageBox::information(this, "CoinKiller", tr("Area %1 does not exist.").arg(id));
@@ -817,6 +827,8 @@ void LevelEditorWindow::loadArea(int id, bool closeLevel, bool init)
     undoStack->blockSignals(false);
 
     loadSettings();
+
+    this->setDisabled(false);
     setStatus(Ready);
 }
 
@@ -877,11 +889,6 @@ void LevelEditorWindow::handleAreaIndexChange(int index)
         loadArea(index);
         updateAreaSelector();
    }
-}
-
-void LevelEditorWindow::handleMgrUpdate()
-{
-    updateAreaSelector(level->getAreaID());
 }
 
 void LevelEditorWindow::scrollTo(int x, int y)
@@ -967,3 +974,5 @@ void LevelEditorWindow::paintEvent(QPaintEvent* evt)
     //ui->levelViewArea->horizontalScrollBar()->height()
 }
 #endif
+
+

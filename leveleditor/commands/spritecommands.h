@@ -3,6 +3,7 @@
 
 #include <QUndoCommand>
 
+#include "commandids.h"
 #include "objects.h"
 
 namespace Commands::SpriteCmd {
@@ -14,11 +15,15 @@ public:
 
     void undo() override;
     void redo() override;
+    int id() const override { return CommandID::SpriteCmd_SetId; };
+    bool mergeWith(const QUndoCommand *cmd) override;
 
 private:
+    void updateText();
+
     Sprite *spr;
     quint16 newId;
-    quint16 oldId;
+    const quint16 oldId;
 };
 
 
@@ -29,10 +34,14 @@ public:
 
     void undo() override;
     void redo() override;
+    int id() const override { return CommandID::SpriteCmd_SetLayer; };
+    bool mergeWith(const QUndoCommand *cmd) override;
 
 private:
+    void updateText();
+
     Sprite *const spr;
-    const quint8 newLayer;
+    quint8 newLayer;
     const quint8 oldLayer;
 };
 
@@ -44,10 +53,14 @@ public:
 
     void undo() override;
     void redo() override;
+    int id() const override { return CommandID::SpriteCmd_SetBits; };
+    bool mergeWith(const QUndoCommand *cmd) override;
 
 private:
+    void updateText();
+
     Sprite *const spr;
-    const qint32 newData;
+    qint32 newData;
     const qint32 oldData;
     const qint32 start;
     const qint32 end;
@@ -61,11 +74,15 @@ public:
 
     void undo() override;
     void redo() override;
+    int id() const override { return CommandID::SpriteCmd_SetByte; };
+    bool mergeWith(const QUndoCommand *cmd) override;
 
 private:
+    void updateText();
+
     Sprite *const spr;
     const qint32 byteIndex;
-    const quint8 newValue;
+    quint8 newValue;
     const quint8 oldValue;
 };
 
@@ -77,10 +94,14 @@ public:
 
     void undo() override;
     void redo() override;
+    int id() const override { return CommandID::SpriteCmd_SetNybbleData; };
+    bool mergeWith(const QUndoCommand *cmd) override;
 
 private:
+    void updateText();
+
     Sprite *const spr;
-    const qint32 newData;
+    qint32 newData;
     const qint32 oldData;
     const qint32 start;
     const qint32 end;

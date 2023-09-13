@@ -1,4 +1,4 @@
-<p align="center"><img src="https://raw.githubusercontent.com/Arisotura/CoinKiller/master/resource/ck_icon.png" width="128" height="128"></p>
+<p align="center"><img src="https://raw.githubusercontent.com/Arisotura/CoinKiller/master/resource/io.github.Arisotura.CoinKiller.png" width="128" height="128"></p>
 <h1 align="center">CoinKiller</h1>
 <p align="center">
 A level editor for NSMB2. Uses Qt6 and is coded in C++.
@@ -13,11 +13,6 @@ Open your NSMB2 dump in CoinKiller and select a level from the menu to start cre
 * To create something, go to the associated tab in the toolbox and then right click somewhere in the level view
 
 For further help and information please visit the NSMB2 section at https://nsmbhd.net/
-
-## TODO
-* improved settings menu
-* undo/redo
-* creating new ctpks
 
 ## Credits
 * Arisotura

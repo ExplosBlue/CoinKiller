@@ -29,9 +29,6 @@ public:
     WindowBase* getParent();
     Game* getGame();
 
-signals:
-    void updateLevelEditors();
-
 private:
     SarcFilesystem* archive;
 
