@@ -26,11 +26,10 @@
 #include <QNetworkReply>
 #include <QDesktopServices>
 #include <QStyleFactory>
+#include <QFileSystemWatcher>
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-
-#include "filesystem/filesystem.h"
 
 #include "imagecache.h"
 
@@ -39,64 +38,27 @@
 #include "newtilesetdialog.h"
 #include "newleveldialog.h"
 #include "spritedata.h"
+#include "filedownloader.h"
 
 MainWindow::MainWindow(WindowBase *parent) :
-    WindowBase(parent),
-    ui(new Ui::MainWindow)
+    WindowBase(parent), ui(new Ui::MainWindow)
 {
     settings = SettingsManager::init(this);
 
     startupClose = checkForMissingFiles();
-
-    ui->setupUi(this);
-
     if (startupClose)
     {
-        QTimer::singleShot(0, this, SLOT(close()));
+        QTimer::singleShot(0, this, &MainWindow::close);
         this->move(0, -10000);
         return;
     }
 
-    settings->loadTranslations();
-
-    setWindowTitle("CoinKiller");
-
-    statusLabel = new ClickableLabel(this);
-    ui->statusBar->addWidget(statusLabel);
-    statusLabel->setFrameShape(QFrame::NoFrame);
-    connect(statusLabel, SIGNAL(doubleClicked()), this, SLOT(statusLabelClicked()));
-
     ImageCache::init();
 
-    settings->setupLanguageSelector(ui->languageSelector);
-    setGameLoaded(false);
-
-    ui->nightModeCheckbox->setChecked(settings->get("nightmode", false).toBool());
-    ui->maximisedCheckbox->setChecked(settings->get("maximised", false).toBool());
-    ui->loadLastCheckbox->setChecked(settings->get("loadLastOnStart", false).toBool());
-
-    ui->levelList->setContextMenuPolicy(Qt::CustomContextMenu);
-    connect(ui->levelList, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(createLevelListContextMenu(QPoint)));
-
-    ui->tilesetView->setContextMenuPolicy(Qt::CustomContextMenu);
-    connect(ui->tilesetView, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(createTilesetListContextMenu(QPoint)));
-
-    if (settings->get("loadLastOnStart", false).toBool() && !settings->getLastRomFSPath().isEmpty())
-    {
-        loadGame(settings->getLastRomFSPath());
-        ui->actionOpenlastROMFSDir->setEnabled(true);
-    }
-
-    // Check Spritedata.xml is the latest version
-    SpriteData spriteData;
-    if (spriteData.getVersion() != "2.0")
-    {
-        QMessageBox message(QMessageBox::Information, "CoinKiller", tr("Spritedata.xml is outdated, CoinKiller will now attempt to update it."), QMessageBox::Ok);
-        message.exec();
-
-        this->setEnabled(false);
-        FileDownloader::download(QUrl("https://smbnext.net/spritedb/spritexml.php"), this, SLOT(sdDownload_finished(QNetworkReply::NetworkError, const QByteArray&, const QUrl&)));
-    }
+    settings->loadTranslations();
+    initialiseUi();
+    createContextMenus();
+    loadSpriteData();
 }
 
 MainWindow::~MainWindow()
@@ -107,9 +69,88 @@ MainWindow::~MainWindow()
             delete game;
 
         delete ImageCache::getInstance();
-        delete SettingsManager::getInstance();
     }
+    delete SettingsManager::getInstance();
     delete ui;
+}
+
+void MainWindow::initialiseUi()
+{
+    ui->setupUi(this);
+
+    setWindowTitle("CoinKiller");
+
+    statusLabel = new ClickableLabel(this);
+    ui->statusBar->addWidget(statusLabel);
+    statusLabel->setFrameShape(QFrame::NoFrame);
+    connect(statusLabel, &ClickableLabel::doubleClicked, this, &MainWindow::statusLabelClicked);
+
+    ui->nightModeCheckbox->setChecked(settings->get("nightmode", false).toBool());
+    ui->maximisedCheckbox->setChecked(settings->get("maximised", false).toBool());
+    ui->loadLastCheckbox->setChecked(settings->get("loadLastOnStart", false).toBool());
+
+    settings->setupLanguageSelector(ui->languageSelector);
+
+    if (settings->get("loadLastOnStart", false).toBool() && !settings->getLastRomFSPath().isEmpty())
+    {
+        loadGame(settings->getLastRomFSPath());
+        ui->actionOpenlastROMFSDir->setEnabled(true);
+    }
+    else
+    {
+        setGameLoaded(false);
+    }
+
+    connect(&fileSystemWatcher, &QFileSystemWatcher::directoryChanged, this, &MainWindow::handleWatchedDirectoryChanged);
+}
+
+void MainWindow::createContextMenus()
+{
+    ui->levelList->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(ui->levelList, &QWidget::customContextMenuRequested, this, &MainWindow::createLevelListContextMenu);
+
+    ui->tilesetView->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(ui->tilesetView, &QWidget::customContextMenuRequested, this, &MainWindow::createTilesetListContextMenu);
+}
+
+void MainWindow::loadSpriteData()
+{
+    SpriteData spriteData;
+
+    // Check Spritedata.xml is the latest version
+    if (spriteData.getVersion() != "2.0")
+    {
+        QMessageBox message(QMessageBox::Information, "CoinKiller", tr("Spritedata.xml is outdated, CoinKiller will now attempt to update it."), QMessageBox::Ok);
+        message.exec();
+
+        this->setEnabled(false);
+        FileDownloader::download(QUrl("https://smbnext.net/spritedb/spritexml.php"), this, SLOT(sdDownload_finished(QNetworkReply::NetworkError, const QByteArray&, const QUrl&)));
+    }
+}
+
+void MainWindow::loadLevelList()
+{
+    QStandardItemModel *courseModel = game->getCourseModel();
+    courseModel->setParent(this);
+
+    if (ui->levelList->model() != nullptr) {
+        delete ui->levelList->model();
+    }
+
+    ui->levelList->setModel(courseModel);
+}
+
+
+void MainWindow::loadTilesetList()
+{
+    QStandardItemModel *tilesetModel = game->getTilesetModel();
+    tilesetModel->setParent(this);
+
+    if (ui->tilesetView->model() != nullptr) {
+        delete ui->tilesetView->model();
+    }
+
+    ui->tilesetView->setModel(tilesetModel);
 }
 
 void MainWindow::changeEvent(QEvent* event)
@@ -120,12 +161,8 @@ void MainWindow::changeEvent(QEvent* event)
 
         if (gameLoaded)
         {
-            QStandardItemModel *courseModel = game->getCourseModel();
-            courseModel->setParent(this);
-            ui->levelList->setModel(courseModel);
-            QStandardItemModel *tilesetModel = game->getTilesetModel();
-            tilesetModel->setParent(this);
-            ui->tilesetView->setModel(tilesetModel);
+            loadLevelList();
+            loadTilesetList();
         }
     }
 
@@ -167,15 +204,20 @@ void MainWindow::loadGame(const QString& path)
     setGameLoaded(true);
     statusLabel->setText(tr("Loaded: %1").arg(path));
 
-    QStandardItemModel *courseModel = game->getCourseModel();
-    courseModel->setParent(this);
-    ui->levelList->setModel(courseModel);
+    loadLevelList();
 
     ui->tilesetView->setHeaderHidden(false);
-    QStandardItemModel *tilesetModel = game->getTilesetModel();
-    tilesetModel->setParent(this);
-    ui->tilesetView->setModel(tilesetModel);
+    loadTilesetList();
     ui->tilesetView->setColumnWidth(0, 200);
+
+    fileSystemWatcher.removePaths(fileSystemWatcher.directories());
+
+    QStringList watchPaths;
+    watchPaths
+        << path + "/Course/"
+        << path + "/Unit/";
+
+    fileSystemWatcher.addPaths(watchPaths);
 }
 
 void MainWindow::on_actionLoadUnpackedROMFS_triggered()
@@ -193,7 +235,6 @@ void MainWindow::on_actionOpenlastROMFSDir_triggered()
     QString path = settings->getLastRomFSPath();
     if (path.isNull())
         return;
-
     QDesktopServices::openUrl(QUrl::fromLocalFile(path));
 }
 
@@ -364,9 +405,8 @@ void MainWindow::on_addLevelBtn_clicked()
 
     blankLvl.copy(settings->getLastRomFSPath() + "/Course/" + nld.getName() + ".sarc");
 
-    QStandardItemModel *courseModel = game->getCourseModel();
-    courseModel->setParent(this);
-    ui->levelList->setModel(courseModel);}
+    loadLevelList();
+}
 
 void MainWindow::on_removeLevelBtn_clicked()
 {
@@ -379,9 +419,7 @@ void MainWindow::on_removeLevelBtn_clicked()
             return;
 
         game->fs->deleteFile("/Course/" + selLvlName);
-        QStandardItemModel *courseModel = game->getCourseModel();
-        courseModel->setParent(this);
-        ui->levelList->setModel(courseModel);
+        loadLevelList();
 
         ui->removeLevelBtn->setDisabled(true);
     }
@@ -422,9 +460,7 @@ void MainWindow::on_addTilesetBtn_clicked()
     ts.setInternalName(ntd.getName());
     ts.save();
 
-    QStandardItemModel *tilesetModel = game->getTilesetModel();
-    tilesetModel->setParent(this);
-    ui->tilesetView->setModel(tilesetModel);
+    loadTilesetList();
 }
 
 void MainWindow::on_removeTilesetBtn_clicked()
@@ -441,9 +477,7 @@ void MainWindow::on_removeTilesetBtn_clicked()
             return;
 
         game->fs->deleteFile("/Unit/" + selTsName + ".sarc");
-        QStandardItemModel *tilesetModel = game->getTilesetModel();
-        tilesetModel->setParent(this);
-        ui->tilesetView->setModel(tilesetModel);
+        loadTilesetList();
 
         ui->removeTilesetBtn->setDisabled(true);
     }
@@ -529,10 +563,10 @@ void MainWindow::createLevelListContextMenu(const QPoint &pos)
     QAction fileExplorer(tr("Show In File Explorer"), this);
     QAction removeLevel(tr("Remove Level"), this);
 
-    connect(&openLevel, SIGNAL(triggered()), this, SLOT(openLevelFromConextMenu()));
-    connect(&sarcExplorer, SIGNAL(triggered()), this, SLOT(openInSarcExplorer()));
-    connect(&fileExplorer, SIGNAL(triggered()), this, SLOT(showInFileExplorer()));
-    connect(&removeLevel, SIGNAL(triggered()), this, SLOT(on_removeLevelBtn_clicked()));
+    connect(&openLevel,    &QAction::triggered, this, &MainWindow::openLevelFromConextMenu);
+    connect(&sarcExplorer, &QAction::triggered, this, &MainWindow::openInSarcExplorer);
+    connect(&fileExplorer, &QAction::triggered, this, &MainWindow::showInFileExplorer);
+    connect(&removeLevel,  &QAction::triggered, this, &MainWindow::on_removeLevelBtn_clicked);
 
     openLevel.setData(QVariant(pos));
     sarcExplorer.setData(QVariant(pos));
@@ -559,10 +593,10 @@ void MainWindow::createTilesetListContextMenu(const QPoint &pos)
     QAction fileExplorer(tr("Show In File Explorer"), this);
     QAction removeTileset(tr("Remove Tileset"), this);
 
-    connect(&openTileset, SIGNAL(triggered()), this, SLOT(openTilesetFromConextMenu()));
-    connect(&sarcExplorer, SIGNAL(triggered()), this, SLOT(openInSarcExplorer()));
-    connect(&fileExplorer, SIGNAL(triggered()), this, SLOT(showInFileExplorer()));
-    connect(&removeTileset, SIGNAL(triggered()), this, SLOT(on_removeTilesetBtn_clicked()));
+    connect(&openTileset,   &QAction::triggered, this, &MainWindow::openTilesetFromConextMenu);
+    connect(&sarcExplorer,  &QAction::triggered, this, &MainWindow::openInSarcExplorer);
+    connect(&fileExplorer,  &QAction::triggered, this, &MainWindow::showInFileExplorer);
+    connect(&removeTileset, &QAction::triggered, this, &MainWindow::on_removeTilesetBtn_clicked);
 
     openTileset.setData(QVariant(pos));
     sarcExplorer.setData(QVariant(pos));
@@ -672,4 +706,17 @@ QString MainWindow::getFilePath(QAction* action)
         path.append(".sarc");
 
     return path;
+}
+
+
+void MainWindow::handleWatchedDirectoryChanged(const QString& path)
+{
+    if (path.contains("Course"))
+    {
+        loadLevelList();
+    }
+    else if (path.contains("Unit"))
+    {
+        loadTilesetList();
+    }
 }

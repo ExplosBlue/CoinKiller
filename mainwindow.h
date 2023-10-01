@@ -20,9 +20,10 @@
 
 #include "game.h"
 #include "settingsmanager.h"
-#include "filedownloader.h"
 #include "clickablelabel.h"
 #include "windowbase.h"
+
+#include <QNetworkReply>
 
 namespace Ui {
 class MainWindow;
@@ -37,7 +38,7 @@ public:
     ~MainWindow();
 
 private slots:
-    
+
     void sdDownload_finished(QNetworkReply::NetworkError error, const QByteArray& data, const QUrl& url);
 
     void on_actionAbout_triggered();
@@ -83,8 +84,10 @@ private slots:
     void openTilesetFromConextMenu();
 
     void openInSarcExplorer();
-    
+
     void showInFileExplorer();
+
+    void handleWatchedDirectoryChanged(const QString &path);
 
 private:
     Ui::MainWindow *ui;
@@ -103,9 +106,18 @@ private:
 
     void setNightmode(bool nightmode);
 
-    void changeEvent(QEvent* event);
+    void changeEvent(QEvent* event) override;
 
     QString getFilePath(QAction* action);
+
+    void initialiseUi();
+    void createContextMenus();
+    void loadSpriteData();
+
+    void loadLevelList();
+    void loadTilesetList();
+
+    QFileSystemWatcher fileSystemWatcher;
 };
 
 #endif // MAINWINDOW_H
