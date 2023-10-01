@@ -35,89 +35,71 @@ class MainWindow : public WindowBase
 
 public:
     explicit MainWindow(WindowBase *parent = nullptr);
-    ~MainWindow();
+    ~MainWindow() override;
 
 private slots:
+    void loadUnpackedROMFS();
+    void showROMFSDir();
+    void showAboutDialog();
+    void openSarcExplorer();
 
-    void sdDownload_finished(QNetworkReply::NetworkError error, const QByteArray& data, const QUrl& url);
+    void levelListSelectedIndexChanged();
+    void openLevelFromListIndex(const QModelIndex &index);
 
-    void on_actionAbout_triggered();
+    void tilesetListSelectedIndexChanged();
+    void openTilesetFromListIndex(const QModelIndex &index);
 
-    void on_actionLoadUnpackedROMFS_triggered();
+    void addLevel();
+    void removeLevel();
 
-    void on_actionOpenlastROMFSDir_triggered();
+    void addTileset();
+    void removeTileset();
 
-    void on_levelList_clicked(const QModelIndex &index);
+    void updateSpriteData();
 
-    void on_levelList_doubleClicked(const QModelIndex &index);
-
-    void on_tilesetView_doubleClicked(const QModelIndex &index);
-
-    void on_updateSpriteData_clicked();
-
-    void on_actionSarcExplorer_triggered();
-
-    void on_addLevelBtn_clicked();
-
-    void on_removeLevelBtn_clicked();
-
-    void on_addTilesetBtn_clicked();
-
-    void on_removeTilesetBtn_clicked();
-
-    void on_tilesetView_clicked(const QModelIndex &index);
-
-    void on_nightModeCheckbox_toggled(bool checked);
-
-    void on_maximisedCheckbox_toggled(bool checked);
-
-    void statusLabelClicked();
-
-    void on_loadLastCheckbox_clicked(bool checked);
+    void setDarkMode(bool isDarkMode);
+    void setShouldStartMaximized(bool shouldMaximize);
+    void setShouldLoadLastROMFS(bool shouldLoad);
 
     void createLevelListContextMenu(const QPoint &pos);
-
     void createTilesetListContextMenu(const QPoint &pos);
 
     void openLevelFromConextMenu();
-
     void openTilesetFromConextMenu();
 
     void openInSarcExplorer();
-
     void showInFileExplorer();
 
     void handleWatchedDirectoryChanged(const QString &path);
 
+    void sdDownloadFinished(QNetworkReply::NetworkError error, const QByteArray &data, const QUrl &url);
+
 private:
-    Ui::MainWindow *ui;
-
-    Game* game;
-    bool gameLoaded;
-
-    SettingsManager* settings;
-
-    ClickableLabel* statusLabel;
-
-    void loadGame(const QString& path);
+    void loadGame(const QString &path);
     void setGameLoaded(bool loaded);
-    bool startupClose = false;
-    bool checkForMissingFiles();
-
-    void setNightmode(bool nightmode);
-
-    void changeEvent(QEvent* event) override;
-
-    QString getFilePath(QAction* action);
 
     void initialiseUi();
     void createContextMenus();
-    void loadSpriteData();
+    void checkSpriteDataVersion();
 
     void loadLevelList();
     void loadTilesetList();
 
-    QFileSystemWatcher fileSystemWatcher;
+    void changeEvent(QEvent *event) override;
+
+    bool checkForMissingFiles();
+
+    QString getFilePath(QAction *action);
+
+    Ui::MainWindow* ui {};
+    Game* game {};
+    SettingsManager* settings {};
+    ClickableLabel* statusLabel {};
+
+    QFileSystemWatcher fileSystemWatcher {};
+
+    bool gameLoaded {};
+    bool startupClose {};
 };
 
 #endif // MAINWINDOW_H

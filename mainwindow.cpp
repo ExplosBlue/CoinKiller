@@ -58,7 +58,7 @@ MainWindow::MainWindow(WindowBase *parent) :
     settings->loadTranslations();
     initialiseUi();
     createContextMenus();
-    loadSpriteData();
+    checkSpriteDataVersion();
 }
 
 MainWindow::~MainWindow()
@@ -78,14 +78,38 @@ void MainWindow::initialiseUi()
 {
     ui->setupUi(this);
 
+    // ui signals/slots
+    connect(ui->actionLoadUnpackedROMFS, &QAction::triggered, this, &MainWindow::loadUnpackedROMFS);
+    connect(ui->actionShowROMFSDir,      &QAction::triggered, this, &MainWindow::showROMFSDir);
+    connect(ui->actionAbout,             &QAction::triggered, this, &MainWindow::showAboutDialog);
+    connect(ui->actionSarcExplorer,      &QAction::triggered, this, &MainWindow::openSarcExplorer);
+
+    connect(ui->levelList, &QTreeView::clicked,       this, &MainWindow::levelListSelectedIndexChanged);
+    connect(ui->levelList, &QTreeView::doubleClicked, this, &MainWindow::openLevelFromListIndex);
+
+    connect(ui->tilesetList, &QTreeView::clicked,       this, &MainWindow::tilesetListSelectedIndexChanged);
+    connect(ui->tilesetList, &QTreeView::doubleClicked, this, &MainWindow::openTilesetFromListIndex);
+
+    connect(ui->addLevelBtn,    &QPushButton::clicked, this, &MainWindow::addLevel);
+    connect(ui->removeLevelBtn, &QPushButton::clicked, this, &MainWindow::removeLevel);
+
+    connect(ui->addTilesetBtn,    &QPushButton::clicked, this, &MainWindow::addTileset);
+    connect(ui->removeTilesetBtn, &QPushButton::clicked, this, &MainWindow::removeTileset);
+
+    connect(ui->updateSpriteData, &QPushButton::clicked, this, &MainWindow::updateSpriteData);
+
+    connect(ui->darkModeCheckbox,  &QCheckBox::toggled, this, &MainWindow::setDarkMode);
+    connect(ui->maximisedCheckbox, &QCheckBox::toggled, this, &MainWindow::setShouldStartMaximized);
+    connect(ui->loadLastCheckbox,  &QCheckBox::toggled, this, &MainWindow::setShouldLoadLastROMFS);
+
     setWindowTitle("CoinKiller");
 
     statusLabel = new ClickableLabel(this);
     ui->statusBar->addWidget(statusLabel);
     statusLabel->setFrameShape(QFrame::NoFrame);
-    connect(statusLabel, &ClickableLabel::doubleClicked, this, &MainWindow::statusLabelClicked);
+    connect(statusLabel, &ClickableLabel::doubleClicked, this, &MainWindow::showROMFSDir);
 
-    ui->nightModeCheckbox->setChecked(settings->get("nightmode", false).toBool());
+    ui->darkModeCheckbox->setChecked(settings->get("nightmode", false).toBool());
     ui->maximisedCheckbox->setChecked(settings->get("maximised", false).toBool());
     ui->loadLastCheckbox->setChecked(settings->get("loadLastOnStart", false).toBool());
 
@@ -94,7 +118,7 @@ void MainWindow::initialiseUi()
     if (settings->get("loadLastOnStart", false).toBool() && !settings->getLastRomFSPath().isEmpty())
     {
         loadGame(settings->getLastRomFSPath());
-        ui->actionOpenlastROMFSDir->setEnabled(true);
+        ui->actionShowROMFSDir->setEnabled(true);
     }
     else
     {
@@ -109,22 +133,21 @@ void MainWindow::createContextMenus()
     ui->levelList->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(ui->levelList, &QWidget::customContextMenuRequested, this, &MainWindow::createLevelListContextMenu);
 
-    ui->tilesetView->setContextMenuPolicy(Qt::CustomContextMenu);
-    connect(ui->tilesetView, &QWidget::customContextMenuRequested, this, &MainWindow::createTilesetListContextMenu);
+    ui->tilesetList->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(ui->tilesetList, &QWidget::customContextMenuRequested, this, &MainWindow::createTilesetListContextMenu);
 }
 
-void MainWindow::loadSpriteData()
+void MainWindow::checkSpriteDataVersion()
 {
     SpriteData spriteData;
 
-    // Check Spritedata.xml is the latest version
     if (spriteData.getVersion() != "2.0")
     {
         QMessageBox message(QMessageBox::Information, "CoinKiller", tr("Spritedata.xml is outdated, CoinKiller will now attempt to update it."), QMessageBox::Ok);
         message.exec();
 
         this->setEnabled(false);
-        FileDownloader::download(QUrl("https://smbnext.net/spritedb/spritexml.php"), this, SLOT(sdDownload_finished(QNetworkReply::NetworkError, const QByteArray&, const QUrl&)));
+        FileDownloader::download(QUrl("https://smbnext.net/spritedb/spritexml.php"), this, SLOT(sdDownloadFinished(QNetworkReply::NetworkError, const QByteArray&, const QUrl&)));
     }
 }
 
@@ -146,11 +169,11 @@ void MainWindow::loadTilesetList()
     QStandardItemModel *tilesetModel = game->getTilesetModel();
     tilesetModel->setParent(this);
 
-    if (ui->tilesetView->model() != nullptr) {
-        delete ui->tilesetView->model();
+    if (ui->tilesetList->model() != nullptr) {
+        delete ui->tilesetList->model();
     }
 
-    ui->tilesetView->setModel(tilesetModel);
+    ui->tilesetList->setModel(tilesetModel);
 }
 
 void MainWindow::changeEvent(QEvent* event)
@@ -177,7 +200,7 @@ void MainWindow::setGameLoaded(bool loaded)
     gameLoaded = loaded;
 }
 
-void MainWindow::on_actionAbout_triggered()
+void MainWindow::showAboutDialog()
 {
     QMessageBox msgBox;
     msgBox.setTextFormat(Qt::MarkdownText);
@@ -206,11 +229,12 @@ void MainWindow::loadGame(const QString& path)
 
     loadLevelList();
 
-    ui->tilesetView->setHeaderHidden(false);
+    ui->tilesetList->setHeaderHidden(false);
     loadTilesetList();
-    ui->tilesetView->setColumnWidth(0, 200);
+    ui->tilesetList->setColumnWidth(0, 200);
 
-    fileSystemWatcher.removePaths(fileSystemWatcher.directories());
+    if (!fileSystemWatcher.directories().isEmpty())
+        fileSystemWatcher.removePaths(fileSystemWatcher.directories());
 
     QStringList watchPaths;
     watchPaths
@@ -220,30 +244,32 @@ void MainWindow::loadGame(const QString& path)
     fileSystemWatcher.addPaths(watchPaths);
 }
 
-void MainWindow::on_actionLoadUnpackedROMFS_triggered()
+void MainWindow::loadUnpackedROMFS()
 {
     QString basepath = settings->getLastRomFSPath();
-
     QString dirpath = QFileDialog::getExistingDirectory(this, tr("Select unpacked ROMFS Folder..."), basepath);
-    if (dirpath.isNull())
-        return;
+    if (dirpath.isNull()) return;
+
     loadGame(dirpath);
 }
 
-void MainWindow::on_actionOpenlastROMFSDir_triggered()
+void MainWindow::showROMFSDir()
 {
+    if (!gameLoaded || game == nullptr) return;
+
     QString path = settings->getLastRomFSPath();
-    if (path.isNull())
-        return;
+    if (path.isNull()) return;
+
     QDesktopServices::openUrl(QUrl::fromLocalFile(path));
 }
 
-void MainWindow::on_levelList_clicked(const QModelIndex &index)
+void MainWindow::levelListSelectedIndexChanged()
 {
-    ui->removeLevelBtn->setEnabled(index.data(Qt::UserRole+1).toString() != "");
+    bool selectedIndexIsLevel = ui->levelList->currentIndex().data(Qt::UserRole+1).toString() != "";
+    ui->removeLevelBtn->setEnabled(selectedIndexIsLevel);
 }
 
-void MainWindow::on_levelList_doubleClicked(const QModelIndex &index)
+void MainWindow::openLevelFromListIndex(const QModelIndex &index)
 {
     if (index.data(Qt::UserRole+1).isNull())
         return;
@@ -254,7 +280,7 @@ void MainWindow::on_levelList_doubleClicked(const QModelIndex &index)
     lvlMgr->openAreaEditor(1);
 }
 
-void MainWindow::on_tilesetView_doubleClicked(const QModelIndex &index)
+void MainWindow::openTilesetFromListIndex(const QModelIndex &index)
 {
     if (index.data(Qt::UserRole+1).isNull())
         return;
@@ -301,9 +327,10 @@ bool MainWindow::checkForMissingFiles()
                                    "<ul><li>%1</li><li>%2</li></ul>"
                                    "Missing files:"
                                    "<ul>%3</ul>")
-                                   .arg(QCoreApplication::applicationDirPath() + "/coinkiller_data/")
-                                   .arg(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/coinkiller_data/")
-                                   .arg(missingFiles);
+                                   .arg(
+                                    QCoreApplication::applicationDirPath() + "/coinkiller_data/",
+                                    QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/coinkiller_data/",
+                                    missingFiles);
 
         QMessageBox message(QMessageBox::Information, "CoinKiller", infoText, QMessageBox::Ok);
         message.exec();
@@ -314,7 +341,7 @@ bool MainWindow::checkForMissingFiles()
     return false;
 }
 
-void MainWindow::on_updateSpriteData_clicked()
+void MainWindow::updateSpriteData()
 {
     QMessageBox::StandardButton reply;
     reply = QMessageBox::warning(this, "CoinKiller", tr("Any changes made to your spritedata.xml will be overwritten!\n\nDo you want to proceed?"), QMessageBox::Yes|QMessageBox::No);
@@ -323,10 +350,10 @@ void MainWindow::on_updateSpriteData_clicked()
 
     this->setEnabled(false);
 
-    FileDownloader::download(QUrl("https://smbnext.net/spritedb/spritexml.php"), this, SLOT(sdDownload_finished(QNetworkReply::NetworkError, const QByteArray&, const QUrl&)));
+    FileDownloader::download(QUrl("https://smbnext.net/spritedb/spritexml.php"), this, SLOT(sdDownloadFinished(QNetworkReply::NetworkError, const QByteArray&, const QUrl&)));
 }
 
-void MainWindow::sdDownload_finished(QNetworkReply::NetworkError error, const QByteArray& data, const QUrl& url)
+void MainWindow::sdDownloadFinished(QNetworkReply::NetworkError error, const QByteArray& data, const QUrl& url)
 {
     if (error == QNetworkReply::NoError)
     {
@@ -349,7 +376,7 @@ void MainWindow::sdDownload_finished(QNetworkReply::NetworkError error, const QB
     this->setEnabled(true);
 }
 
-void MainWindow::on_actionSarcExplorer_triggered()
+void MainWindow::openSarcExplorer()
 {
     QString basePath = "";
     if (!settings->getLastSarcFilePath().isEmpty())
@@ -371,7 +398,7 @@ void MainWindow::on_actionSarcExplorer_triggered()
     sarcExplorer->show();
 }
 
-void MainWindow::on_addLevelBtn_clicked()
+void MainWindow::addLevel()
 {
     QFile blankLvl(settings->dataPath("blank_level.sarc"));
     if (!blankLvl.exists())
@@ -408,7 +435,7 @@ void MainWindow::on_addLevelBtn_clicked()
     loadLevelList();
 }
 
-void MainWindow::on_removeLevelBtn_clicked()
+void MainWindow::removeLevel()
 {
     QString selLvlName = ui->levelList->selectionModel()->selectedIndexes().at(0).data(Qt::UserRole+1).toString();
     QMessageBox::StandardButton reply = QMessageBox::warning(this, "CoinKiller", tr("Are you sure you want to remove %1? This action cannot be undone.").arg(selLvlName), QMessageBox::Yes | QMessageBox::No);
@@ -425,7 +452,7 @@ void MainWindow::on_removeLevelBtn_clicked()
     }
 }
 
-void MainWindow::on_addTilesetBtn_clicked()
+void MainWindow::addTileset()
 {
     QFile blankTs(settings->dataPath("blank_tileset.sarc"));
     if (!blankTs.exists())
@@ -463,17 +490,17 @@ void MainWindow::on_addTilesetBtn_clicked()
     loadTilesetList();
 }
 
-void MainWindow::on_removeTilesetBtn_clicked()
+void MainWindow::removeTileset()
 {
-    if (ui->tilesetView->selectionModel()->selectedIndexes().length() == 0 || ui->tilesetView->selectionModel()->selectedIndexes().at(0).data(Qt::UserRole+1).toString() == "")
+    if (ui->tilesetList->selectionModel()->selectedIndexes().length() == 0 || ui->tilesetList->selectionModel()->selectedIndexes().at(0).data(Qt::UserRole+1).toString() == "")
         return;
 
-    QString selTsName = ui->tilesetView->selectionModel()->selectedIndexes().at(0).data(Qt::UserRole+1).toString();
+    QString selTsName = ui->tilesetList->selectionModel()->selectedIndexes().at(0).data(Qt::UserRole+1).toString();
     QMessageBox::StandardButton reply = QMessageBox::warning(this, "CoinKiller", tr("Are you sure you want to remove %1? This action cannot be undone.").arg(selTsName), QMessageBox::Yes | QMessageBox::No);
 
     if (reply == QMessageBox::Yes)
     {
-        if (ui->tilesetView->selectionModel()->selectedIndexes().length() == 0 || ui->tilesetView->selectionModel()->selectedIndexes().at(0).data(Qt::UserRole+1).toString() == "")
+        if (ui->tilesetList->selectionModel()->selectedIndexes().length() == 0 || ui->tilesetList->selectionModel()->selectedIndexes().at(0).data(Qt::UserRole+1).toString() == "")
             return;
 
         game->fs->deleteFile("/Unit/" + selTsName + ".sarc");
@@ -483,73 +510,80 @@ void MainWindow::on_removeTilesetBtn_clicked()
     }
 }
 
-void MainWindow::on_tilesetView_clicked(const QModelIndex &index)
+void MainWindow::tilesetListSelectedIndexChanged()
 {
-    ui->removeTilesetBtn->setEnabled(index.data(Qt::UserRole+1).toString() != "");
+    bool selectedIndexIsTileset = ui->tilesetList->currentIndex().data(Qt::UserRole+1).toString() != "";
+    ui->removeTilesetBtn->setEnabled(selectedIndexIsTileset);
 }
 
-void MainWindow::on_nightModeCheckbox_toggled(bool checked)
+void MainWindow::setDarkMode(bool isDarkMode)
 {
-    setNightmode(checked);
-}
+    settings->set("nightmode", isDarkMode);
 
-void MainWindow::setNightmode(bool nightmode)
-{
-    settings->set("nightmode", nightmode);
-
-    if (nightmode)
+    if (isDarkMode)
     {
         qApp->setStyle(QStyleFactory::create("Fusion"));
 
         QPalette darkPalette;
-        darkPalette.setColor(QPalette::Window, QColor(53,53,53));
-        darkPalette.setColor(QPalette::WindowText, Qt::white);
-        darkPalette.setColor(QPalette::Base, QColor(25,25,25));
-        darkPalette.setColor(QPalette::AlternateBase, QColor(53,53,53));
-        darkPalette.setColor(QPalette::ToolTipBase, Qt::white);
-        darkPalette.setColor(QPalette::ToolTipText, Qt::white);
-        darkPalette.setColor(QPalette::PlaceholderText, Qt::lightGray);
-        darkPalette.setColor(QPalette::Text, Qt::white);
-        darkPalette.setColor(QPalette::Button, QColor(53,53,53));
-        darkPalette.setColor(QPalette::ButtonText, Qt::white);
-        darkPalette.setColor(QPalette::BrightText, Qt::red);
-        darkPalette.setColor(QPalette::Link, QColor(42, 130, 218));
 
-        darkPalette.setColor(QPalette::Highlight, QColor(42, 130, 218));
+        QColor primaryColor = QColor(53, 53, 53);
+        QColor secondaryColor = QColor(25, 25, 25);
+        QColor accentColor = QColor(42, 130, 218);
+        QColor disabledColor = QColor(97, 97, 97);
+        QColor textColor = QColor(255, 255, 255);
+
+        darkPalette.setColor(QPalette::Window, primaryColor);
+        darkPalette.setColor(QPalette::WindowText, textColor);
+
+        darkPalette.setColor(QPalette::Base, secondaryColor);
+        darkPalette.setColor(QPalette::AlternateBase, primaryColor);
+
+        darkPalette.setColor(QPalette::ToolTipBase, textColor);
+        darkPalette.setColor(QPalette::ToolTipText, textColor);
+
+        darkPalette.setColor(QPalette::PlaceholderText, Qt::lightGray);
+        darkPalette.setColor(QPalette::Text, textColor);
+
+        darkPalette.setColor(QPalette::Button, primaryColor);
+        darkPalette.setColor(QPalette::ButtonText, textColor);
+
+        darkPalette.setColor(QPalette::BrightText, Qt::red);
+
+        darkPalette.setColor(QPalette::Link, accentColor);
+
+        darkPalette.setColor(QPalette::Highlight, accentColor);
         darkPalette.setColor(QPalette::HighlightedText, Qt::black);
 
-        qApp->setPalette(darkPalette);
+        darkPalette.setColor(QPalette::Disabled, QPalette::Text, disabledColor);
+        darkPalette.setColor(QPalette::Disabled, QPalette::ButtonText, disabledColor);
+        darkPalette.setColor(QPalette::Disabled, QPalette::HighlightedText, disabledColor);
 
-        qApp->setStyleSheet("QToolTip { color: #ffffff; background-color: #2a82da; border: 1px solid white; }");
+        qApp->setPalette(darkPalette);
+// TODO: Delete me
+//        QString darkStylesheet = QString("QToolTip { color: %1; background-color: %2; border: 1px solid %3; }").arg(
+//                                         textColor.name(), primaryColor.name(), textColor.name());
+
+//        qApp->setStyleSheet(darkStylesheet);
     }
     else
     {
-        qApp->setStyle(QStyleFactory::keys().first());
+        QStringList styleKeys = QStyleFactory::keys();
+        qApp->setStyle(styleKeys.first());
         qApp->setStyleSheet("");
-        qApp->setPalette(this->style()->standardPalette());
+        qApp->setPalette(qApp->style()->standardPalette());
         return;
     }
 }
 
-void MainWindow::on_maximisedCheckbox_toggled(bool checkState)
+void MainWindow::setShouldStartMaximized(bool shouldMaximize)
 {
-    settings->set("maximised", checkState);
+    settings->set("maximised", shouldMaximize);
 }
 
-void MainWindow::on_loadLastCheckbox_clicked(bool checked)
+void MainWindow::setShouldLoadLastROMFS(bool shouldLoad)
 {
-     settings->set("loadLastOnStart", checked);
+     settings->set("loadLastOnStart", shouldLoad);
 }
-
-void MainWindow::statusLabelClicked()
-{
-    if (!gameLoaded || game == nullptr)
-        return;
-
-    QString path = QString("file://%1").arg(QDir::toNativeSeparators(game->getPath()));
-    QDesktopServices::openUrl(path);
-}
-
 
 void MainWindow::createLevelListContextMenu(const QPoint &pos)
 {
@@ -566,7 +600,7 @@ void MainWindow::createLevelListContextMenu(const QPoint &pos)
     connect(&openLevel,    &QAction::triggered, this, &MainWindow::openLevelFromConextMenu);
     connect(&sarcExplorer, &QAction::triggered, this, &MainWindow::openInSarcExplorer);
     connect(&fileExplorer, &QAction::triggered, this, &MainWindow::showInFileExplorer);
-    connect(&removeLevel,  &QAction::triggered, this, &MainWindow::on_removeLevelBtn_clicked);
+    connect(&removeLevel,  &QAction::triggered, this, &MainWindow::removeLevel);
 
     openLevel.setData(QVariant(pos));
     sarcExplorer.setData(QVariant(pos));
@@ -583,7 +617,7 @@ void MainWindow::createLevelListContextMenu(const QPoint &pos)
 
 void MainWindow::createTilesetListContextMenu(const QPoint &pos)
 {
-    if (ui->tilesetView->indexAt(pos).data(Qt::UserRole+1).isNull())
+    if (ui->tilesetList->indexAt(pos).data(Qt::UserRole+1).isNull())
         return;
 
     QMenu contextMenu(tr("Context menu"), this);
@@ -596,7 +630,7 @@ void MainWindow::createTilesetListContextMenu(const QPoint &pos)
     connect(&openTileset,   &QAction::triggered, this, &MainWindow::openTilesetFromConextMenu);
     connect(&sarcExplorer,  &QAction::triggered, this, &MainWindow::openInSarcExplorer);
     connect(&fileExplorer,  &QAction::triggered, this, &MainWindow::showInFileExplorer);
-    connect(&removeTileset, &QAction::triggered, this, &MainWindow::on_removeTilesetBtn_clicked);
+    connect(&removeTileset, &QAction::triggered, this, &MainWindow::removeTileset);
 
     openTileset.setData(QVariant(pos));
     sarcExplorer.setData(QVariant(pos));
@@ -627,7 +661,7 @@ void MainWindow::openTilesetFromConextMenu()
     QAction* action = qobject_cast<QAction*>(sender());
     QPoint pos = action->data().toPoint();
 
-    QString path = ui->tilesetView->indexAt(pos).data(Qt::UserRole+1).toString();
+    QString path = ui->tilesetList->indexAt(pos).data(Qt::UserRole+1).toString();
 
     TilesetEditorWindow* tsEditor = new TilesetEditorWindow(this, game->getTileset(path));
     tsEditor->setAttribute(Qt::WA_DeleteOnClose);
@@ -698,7 +732,7 @@ QString MainWindow::getFilePath(QAction* action)
     }
     else
     {
-        path = ui->tilesetView->indexAt(pos).data(Qt::UserRole+1).toString();
+        path = ui->tilesetList->indexAt(pos).data(Qt::UserRole+1).toString();
         path.prepend(settings->getLastRomFSPath() + "/Unit/");
     }
 

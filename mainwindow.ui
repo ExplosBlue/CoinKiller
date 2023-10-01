@@ -103,7 +103,7 @@
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_3">
         <item>
-         <widget class="QTreeView" name="tilesetView">
+         <widget class="QTreeView" name="tilesetList">
           <property name="editTriggers">
            <set>QAbstractItemView::NoEditTriggers</set>
           </property>
@@ -164,9 +164,9 @@
         <item>
          <layout class="QGridLayout" name="gridLayout">
           <item row="0" column="0">
-           <widget class="QCheckBox" name="nightModeCheckbox">
+           <widget class="QCheckBox" name="darkModeCheckbox">
             <property name="text">
-             <string>Night Mode</string>
+             <string>Dark Mode</string>
             </property>
            </widget>
           </item>
@@ -207,7 +207,7 @@
     </property>
     <addaction name="actionLoadUnpackedROMFS"/>
     <addaction name="separator"/>
-    <addaction name="actionOpenlastROMFSDir"/>
+    <addaction name="actionShowROMFSDir"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -253,7 +253,7 @@
     <string>Sarc Explorer</string>
    </property>
   </action>
-  <action name="actionOpenlastROMFSDir">
+  <action name="actionShowROMFSDir">
    <property name="enabled">
     <bool>false</bool>
    </property>
