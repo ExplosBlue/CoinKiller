@@ -860,12 +860,12 @@ void CircleRenderer::render(QPainter *painter, QRect *)
     painter->setPen(Qt::NoPen);
 }
 
-MovIndicatorRenderer::MovIndicatorRenderer(int x, int y, int distX, int distY, bool vertical, QColor color)
+MovIndicatorRenderer::MovIndicatorRenderer(int x, int y, int endX, int endY, bool vertical, QColor color)
 {
     this->x = x;
     this->y = y;
-    this->distX = distX;
-    this->distY = distY;
+    this->endX = endX;
+    this->endY = endY;
     this->vertical = vertical;
     this->color = color;
 }
@@ -877,10 +877,10 @@ void MovIndicatorRenderer::render(QPainter *painter)
 
     painter->setPen(outline);
 
-    if (vertical && distY == y)
+    if (vertical && endY == y)
         return;
 
-    else if (!vertical && distX == x)
+    else if (!vertical && endX == x)
         return;
 
     for (int i = 0;  i <= 1; i++)
@@ -893,28 +893,28 @@ void MovIndicatorRenderer::render(QPainter *painter)
 
         if (vertical)
         {
-            if (distY < y) // Go Up
+            if (endY < y) // Go Up
             {
-                painter->drawLine(x, y+20, x, distY+18);
-                painter->drawEllipse(x-5, distY+5, 10, 10);
+                painter->drawLine(x, y+20, x, endY+18);
+                painter->drawEllipse(x-5, endY+5, 10, 10);
             }
             else // Go Down
             {
-                painter->drawLine(x, y-20, x, distY-18);
-                painter->drawEllipse(x-5, distY-15, 10, 10);
+                painter->drawLine(x, y-20, x, endY-18);
+                painter->drawEllipse(x-5, endY-15, 10, 10);
             }
         }
         else
         {
-            if (distX < x) // Go Left
+            if (endX < x) // Go Left
             {
-                painter->drawLine(x+20, y, distX+18, y);
-                painter->drawEllipse(distX+5, y-5, 10, 10);
+                painter->drawLine(x+20, y, endX+18, y);
+                painter->drawEllipse(endX+5, y-5, 10, 10);
             }
             else // Go Right
             {
-                painter->drawLine(x-20, y, distX-18, y);
-                painter->drawEllipse(distX-15, y-5, 10, 10);
+                painter->drawLine(x-20, y, endX-18, y);
+                painter->drawEllipse(endX-15, y-5, 10, 10);
             }
         }
     }
@@ -1020,18 +1020,40 @@ void BurnerRenderer::render(QPainter *painter, QRect *)
 WhompRenderer::WhompRenderer(const Sprite *spr)
 {
     this->spr = spr;
-
-    if (spr->getNybble(11) == 1)
-        filename  = "whomp_big.png";
-    else
-        filename = "whomp.png";
-
-    img = new NormalImageRenderer(spr, filename);
 }
 
-void WhompRenderer::render(QPainter *painter, QRect *drawrect)
+void WhompRenderer::render(QPainter *painter, QRect *)
 {
-    img->render(painter, drawrect);
+    this->spr = spr;
+    int x = spr->getx() + spr->getOffsetX();
+    int y = spr->gety() + spr->getOffsetY();
+
+    QString img_name = "whomp";
+
+    if (spr->getNybble(11) == 1)
+        img_name += "_big";
+
+    if (spr->getNybble(10) == 0)
+    {
+        img_name += "_walk";
+
+        // Show a distance indicator for patrol distance
+        int dist = spr->getNybble(8) * 20;
+
+        if (spr->getNybble(8) > 0)
+        {
+            int offsetXL = (spr->getNybble(11) == 1) ? 0: -10;
+            int offsetXR = spr->getwidth() + 10;
+
+            MovIndicatorRenderer leftIndicator(x + spr->getwidth()/2, y + spr->getheight()/2, x + offsetXL - dist, y + spr->getheight()/2, false, QColor(244, 250, 255));
+            leftIndicator.render(painter);
+
+            MovIndicatorRenderer rightIndicator(x + spr->getwidth()/2, y + spr->getheight()/2, x + offsetXR + dist, y + spr->getheight()/2, false, QColor(244, 250, 255));
+            rightIndicator.render(painter);
+        }
+    }
+
+    painter->drawPixmap(QRect(x, y, spr->getwidth(), spr->getheight()), ImageCache::getInstance()->get(SpriteImg, img_name + ".png"));
 }
 
 // Sprite 18: Tile God

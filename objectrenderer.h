@@ -82,14 +82,14 @@ class MovIndicatorRenderer: public ObjectRenderer
 {
 public:
     MovIndicatorRenderer();
-    MovIndicatorRenderer(int x, int y, int distX, int distY, bool vertical, QColor color);
+    MovIndicatorRenderer(int x, int y, int endX, int endY, bool vertical, QColor color);
     using ObjectRenderer::render;
     void render(QPainter *painter);
 protected:
     int x;
     int y;
-    int distX;
-    int distY;
+    int endX;
+    int endY;
     bool vertical;
     QColor color;
 };
@@ -128,11 +128,7 @@ class WhompRenderer: public SpriteRenderer
 {
 public:
     WhompRenderer(const Sprite *spr);
-    ~WhompRenderer() { delete img; }
     void render(QPainter *painter, QRect *drawrect);
-protected:
-    NormalImageRenderer *img;
-    QString filename;
 };
 
 // Sprite 18: Tile God

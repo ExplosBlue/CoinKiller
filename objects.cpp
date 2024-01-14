@@ -253,18 +253,38 @@ void Sprite::setRect()
         height = 25;
         break;
     case 9: // Whomp
-        if (getNybble(11) == 1)
+        if (getNybble(11) == 1) // Big
         {
-            width = 140;
-            height = 100;
-            offsetx = -50;
-            offsety = -40;
+            if (getNybble(10) == 0) // Big, walking
+            {
+                width = 105;
+                height = 102;
+                offsetx = -36;
+                offsety = -42;
+            }
+            else
+            {
+                width = 140;
+                height = 100;
+                offsetx = -50;
+                offsety = -40;
+            }
         }
-        else
+        else // Normal
         {
-            width = 80;
-            height = 60;
-            offsetx = -20;
+            if (getNybble(10) == 0) // Normal, walking
+            {
+                width = 58;
+                height = 56;
+                offsetx = -9;
+                offsety = 4;
+            }
+            else
+            {
+                width = 80;
+                height = 60;
+                offsetx = -20;
+            }
         }
         break;
     case 10: // Switchable Conveyor Belt - Lemmy Battle
