@@ -1278,42 +1278,44 @@ void Sprite::setRect()
         offsetx = -4;
         offsety = -21;
         break;
-    case 144: case 145: // Horizontal/Vertical Lift
-        if(getNybble(11) == 0)
+    case 144: case 145: case 254: // Horizontal/Vertical/Totem Lift
+    {
+        if (getNybble(11) == 0)
             width = 40;
         else
             width = (getNybble(11)-1)*20 + 40;
         height = 22;
-        //Down and right
+
+        // Down and right
         if (getNybble(7) == 1)
         {
-            if(getid() == 145)
-                renderOffsetH = (getNybble(9)*20);
+            if (getid() == 145 || getid() == 254)
+                    renderOffsetH = (getNybble(9)*20);
             else
-                renderOffsetW = -(getNybble(9)*20);
+                    renderOffsetW = -(getNybble(9)*20);
         }
         else
         {
-            if(getid() == 145)
-                renderOffsetH = -(getNybble(9)*20);
+            if (getid() == 145 || getid() == 254)
+                    renderOffsetH = -(getNybble(9)*20);
             else
-                renderOffsetW = (getNybble(9)*20);
+                    renderOffsetW = (getNybble(9)*20);
         }
-
-        //renderOffsetX = width/2;
-        //renderOffsetY = height/2;
         break;
+    }
     case 146: // Track Controlled Lift
-        if(getNybble(17) == 0)
+    {
+        if (getNybble(17) == 0)
             width = 84;
-        else if(getNybble(17) == 1)
+        else if (getNybble(17) == 1)
             width = 35;
         else
             width = (getNybble(17)-2)*20 + 44;
         height = 22;
-        offsetx = 40 -(width / 2);
+        offsetx = 40 - (width / 2);
         offsety = 10;
         break;
+    }
     case 147: // 3 plat rickshaw
         if (getNybble(11) != 1)
         {
@@ -1908,15 +1910,23 @@ void Sprite::setRect()
 
         break;
     case 205: // Red Ring
+    {
         width = 39;
         height = 56;
         offsety = 2;
+        if (getNybble(11) & 1)
+            offsetx = 10;
         break;
+    }
     case 206: // Gold Ring
+    {
         width = 40;
         height = 56;
         offsety = 2;
+        if (getNybble(11) & 1)
+            offsetx = 10;
         break;
+    }
     case 207: // Underwater Rock
         width = 80;
         height = 82;

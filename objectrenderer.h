@@ -530,8 +530,10 @@ protected:
 class LiftRenderer: public SpriteRenderer
 {
 public:
-    LiftRenderer(const Sprite *spr);
+    LiftRenderer(const Sprite *spr, QString dirname);
     void render(QPainter *painter, QRect *drawrect);
+protected:
+    QString dirname;
 };
 
 // Sprite 146: Track Controlled Lift

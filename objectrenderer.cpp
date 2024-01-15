@@ -362,10 +362,10 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
         ret = new NormalImageRenderer(spr, "conveyor_belt_switch.png");
         break;
     case 144: // Horizontal Lift
-        ret = new LiftRenderer(spr);
+        ret = new LiftRenderer(spr, "lift_platform");
         break;
     case 145: // Vertical Lift
-        ret = new LiftRenderer(spr);
+        ret = new LiftRenderer(spr, "lift_platform");
         break;
     case 146: // Track Controlled Lift
         ret = new TrackLiftRenderer(spr);
@@ -642,6 +642,9 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
         break;
     case 253: // Larry Battle Platform
         ret = new LarryPlatformRenderer(spr, tilesets[0]);
+        break;
+    case 254: // Vertical Lift - Totem
+        ret = new LiftRenderer(spr, "totem_lift");
         break;
     case 255: // Bowser Head Statue
         ret = new NormalImageRenderer(spr, "bowser_head_statue.png");
@@ -2179,10 +2182,11 @@ void GoombaTowerRenderer::render(QPainter *painter, QRect *drawrect)
 }
 
 
-// Sprite 144/145: Horizontal/Vertical Moving Lift
-LiftRenderer::LiftRenderer(const Sprite *spr)
+// Sprite 144/145/254: Horizontal/Vertical/Totem Lift
+LiftRenderer::LiftRenderer(const Sprite *spr, QString dirname)
 {
     this->spr = spr;
+    this->dirname = dirname;
 }
 
 void LiftRenderer::render(QPainter *painter, QRect *)
@@ -2191,7 +2195,7 @@ void LiftRenderer::render(QPainter *painter, QRect *)
 
         if (spr->getNybble(7) == 1  && distance > 0)
         {
-            if (spr->getid() == 145)
+            if (spr->getid() == 145 || spr->getid() == 254)
             {
                 MovIndicatorRenderer track(spr->getx()+spr->getwidth()/2, spr->gety()+spr->getheight()+13, spr->getx()+spr->getwidth()/2, spr->gety()+spr->getheight()+distance, true, QColor(244,250,255));
                 track.render(painter);
@@ -2204,7 +2208,7 @@ void LiftRenderer::render(QPainter *painter, QRect *)
         }
         else if (distance > 0)
         {
-            if (spr->getid() == 145)
+            if (spr->getid() == 145 || spr->getid() == 254)
             {
                 MovIndicatorRenderer track(spr->getx()+spr->getwidth()/2, spr->gety()+spr->getheight()-27, spr->getx()+spr->getwidth()/2, spr->gety()+spr->getheight()-20-distance, true, QColor(244,250,255));
                 track.render(painter);
@@ -2217,13 +2221,13 @@ void LiftRenderer::render(QPainter *painter, QRect *)
         }
 
 
-    painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX(), spr->gety(), 20, 22), ImageCache::getInstance()->get(SpriteImg, "lift_platform/l.png"));
-    if(spr->getNybble(11) == 0)
-        painter->drawPixmap(QRect(spr->getx()-spr->getOffsetX()+(spr->getNybble(11))*20+20, spr->gety(), 22, 22), ImageCache::getInstance()->get(SpriteImg, "lift_platform/r.png"));
+    painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX(), spr->gety(), 20, 22), ImageCache::getInstance()->get(SpriteImg, dirname + "/l.png"));
+    if (spr->getNybble(11) == 0)
+        painter->drawPixmap(QRect(spr->getx()-spr->getOffsetX()+(spr->getNybble(11))*20+20, spr->gety(), 22, 22), ImageCache::getInstance()->get(SpriteImg, dirname + "/r.png"));
     else
-        painter->drawPixmap(QRect(spr->getx()-spr->getOffsetX()+(spr->getNybble(11)-1)*20+20, spr->gety(), 22, 22), ImageCache::getInstance()->get(SpriteImg, "lift_platform/r.png"));
+        painter->drawPixmap(QRect(spr->getx()-spr->getOffsetX()+(spr->getNybble(11)-1)*20+20, spr->gety(), 22, 22), ImageCache::getInstance()->get(SpriteImg, dirname + "/r.png"));
     for (int i = 20; i < spr->getwidth()-20; i += 20)
-        painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()+i, spr->gety(), 20, 22), ImageCache::getInstance()->get(SpriteImg, "lift_platform/m.png"));
+        painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()+i, spr->gety(), 20, 22), ImageCache::getInstance()->get(SpriteImg, dirname + "/m.png"));
 }
 
 
