@@ -168,7 +168,7 @@
     <value pos="5" pos_type="nybbles" title="Lowering Delay" comment="Time it takes before the liquid lowers."/>
     <value pos="6" pos_type="nybbles" title="Rising Delay" comment="Time it takes before the liquid rises."/>
     <value pos="7-8" pos_type="nybbles" title="Movement Distance" comment="The base movement distance, in tiles."/>
-    <checkbox pos="9" pos_type="nybbles" title="Rising Lava" comment="Makes the lava rise/lower when checked."/>
+    <checkbox pos="9" pos_type="nybbles" title="Rising/Lowering Lava" comment="Makes the lava rise/lower when checked."/>
     <checkbox pos="9" pos_type="nybbles" title="Topless" mask="8" comment="Removes the top."/>
   </sprite>
   <sprite id="13" name="Poison" notes="Actor: 0x041&#13;&#10;Description: Poison water that kills the player on contact.&#13;&#10;Event Triggerable: Yes&#13;&#10;Affected by Gold Ring: No &#13;&#10;Requirements: N/A">
@@ -195,7 +195,7 @@
     <value pos="5" pos_type="nybbles" title="Lowering Delay" comment="Time it takes before the liquid lowers."/>
     <value pos="6" pos_type="nybbles" title="Rising Delay" comment="Time it takes before the liquid rises."/>
     <value pos="7-8" pos_type="nybbles" title="Movement Distance" comment="The base movement distance, in tiles."/>
-    <checkbox pos="9" pos_type="nybbles" title="Rising Poison" comment="Makes the poison rise/lower when checked."/>
+    <checkbox pos="9" pos_type="nybbles" title="Rising/Lowering Poison" comment="Makes the poison rise/lower when checked."/>
     <checkbox pos="9" pos_type="nybbles" title="Topless" mask="8" comment="Removes the top."/>
   </sprite>
   <sprite id="14" name="Cloud FG Effect" notes="Actor: 0x042&#13;&#10;Description: A horizontal line of clouds.&#13;&#10;Event Triggerable: No&#13;&#10;Affected by Gold Ring: No &#13;&#10;Requirements: N/A"/>
@@ -223,7 +223,7 @@
     <value pos="5" pos_type="nybbles" title="Lowering Delay" comment="Time it takes before the liquid lowers."/>
     <value pos="6" pos_type="nybbles" title="Rising Delay" comment="Time it takes before the liquid rises."/>
     <value pos="7-8" pos_type="nybbles" title="Movement Distance" comment="The base movement distance, in tiles."/>
-    <checkbox pos="9" pos_type="nybbles" title="Rising Water" comment="Makes the water rise/lower when checked."/>
+    <checkbox pos="9" pos_type="nybbles" title="Rising/Lowering Water" comment="Makes the water rise/lower when checked."/>
     <checkbox pos="9" pos_type="nybbles" title="Underwater Lighting" mask="8" comment="Uses alternate texture for underwater lighting."/>
     <checkbox pos="9" pos_type="nybbles" title="Appear Behind Layer 1" mask="2" comment="Makes the water appear behind Mario (and likely other objects). Does not affect tiles."/>
     <list pos="11" pos_type="nybbles" title="Underwater Transparency Level" comment="Adjusts the transparency level of the water when &quot;Underwater Lighting&quot; is checked.">
@@ -3845,7 +3845,7 @@
     <value pos="13" pos_type="nybbles" title="Unknown Value 20"/>
     <value pos="14" pos_type="nybbles" title="Sway Down Distance" comment="Determines how far down the platform will move when swaying."/>
     <checkbox pos="17" pos_type="nybbles" title="Is Ground-poundable" comment="It will allow the head part to be ground-pounded."/>
-    <list pos="18" pos_type="nybbles" title="Height Position on Ending" comment="Used to determine the height (relative to ending Path Node) the platform will remain at when it reaches the end of his path.&amp;#13;&amp;#10;If Sway Sync is 1, it will be higher up. If Sway Sync is 2, it will be lower down.">
+    <list pos="18" pos_type="nybbles" title="Height Position on Ending" comment="Used to determine the height (relative to ending Path Node) the platform will remain at when it reaches the end of his path. If Sway Sync is 1, it will be higher up. If Sway Sync is 2, it will be lower down.">
       <entry value="0">Start Height + Sway Down Distance</entry>
       <entry value="1">Start Height</entry>
     </list>

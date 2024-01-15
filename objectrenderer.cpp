@@ -4437,37 +4437,21 @@ LiquidRenderer::LiquidRenderer(const Sprite *liquid, const Zone *zone)
 
 void LiquidRenderer::render(QPainter *painter, QRect *drawrect)
 {
+    this->painter = painter;
+    this->drawrect = drawrect;
+
     if (liquid->getid() != 14)
     {
-        QPixmap top = ImageCache::getInstance()->get(SpriteImg, filename + "_top.png");
-        QPixmap base = ImageCache::getInstance()->get(SpriteImg, filename + ".png");
+        bool topless = (liquid->getid() != 15 && liquid->getNybble(9) >= 8);
 
-        int currY = liquid->gety() - 20;
+        bool movingDown = (liquid->getNybble(4) > 8);
+        int directedDistance = liquid->getNybbleData(7,8) * 20 * (movingDown ? 1 : -1);
+        bool moving = (liquid->getNybble(4) % 8 != 0) && (directedDistance != 0);
 
-        for (int x = zone->getx(); x < zone->getx() + zone->getwidth(); x += top.width())
-        {
-            QRect rect = QRect(x, currY, qMin(zone->getx() + zone->getwidth() - x, top.width()), qMin(zone->gety() + zone->getheight() - currY, top.height()));
-
-            if (!drawrect->intersects(rect))
-                continue;
-
-            painter->drawPixmap(rect, top, QRect(0, 0, rect.right()-rect.left(), rect.bottom()-rect.top()));
-        }
-
-        currY += top.height();
-
-        for (; currY < zone->gety() + zone->getheight(); currY += base.height())
-        {
-            for (int x = zone->getx(); x < zone->getx() + zone->getwidth(); x += base.width())
-            {
-                QRect rect = QRect(x, currY, qMin(zone->getx() + zone->getwidth() - x, base.width()), qMin(zone->gety() + zone->getheight() - currY, base.height()));
-
-                if (!drawrect->intersects(rect))
-                    continue;
-
-                painter->drawPixmap(rect, base, QRect(0, 0, rect.right()-rect.left(), rect.bottom()-rect.top()));
-            }
-        }
+        if (moving && movingDown)
+            drawLiquid(false, directedDistance, topless);
+        else
+            drawLiquid(false, 0, topless);
     }
     else
     {
@@ -4487,3 +4471,89 @@ void LiquidRenderer::render(QPainter *painter, QRect *drawrect)
     }
 }
 
+void LiquidRenderer::renderTranslucent(QPainter *painter, QRect *drawrect)
+{
+    this->painter = painter;
+    this->drawrect = drawrect;
+
+    bool topless = (liquid->getid() != 15 && liquid->getNybble(9) >= 8);
+
+    bool movingDown = (liquid->getNybble(4) > 8);
+    int directedDistance = liquid->getNybbleData(7,8) * 20 * (movingDown ? 1 : -1);
+    bool moving = (liquid->getNybble(4) % 8 != 0) && (directedDistance != 0);
+
+    if (!moving)
+        return;
+    else if (movingDown)
+        drawLiquid(true, 0, topless);
+    else
+        drawLiquid(true, directedDistance, topless);
+}
+
+void LiquidRenderer::drawLiquid(bool transparent, int yOffset, bool topless)
+{
+    painter->save();
+
+    if (transparent)
+    {
+        painter->setOpacity(0.25);
+        painter->setCompositionMode(QPainter::CompositionMode_Lighten);
+    }
+
+    QPixmap top = ImageCache::getInstance()->get(SpriteImg, filename + "_top.png");
+    QPixmap base = ImageCache::getInstance()->get(SpriteImg, filename + ".png");
+
+    // Calculate dimensions that never change
+    int x = qMax(zone->getx(), drawrect->x());
+    int width = qMin(zone->getx() + zone->getwidth(), drawrect->x() + drawrect->width()) - qMax(zone->getx(), drawrect->x());
+
+    // Draw the top part of the liquid
+    int yWithOffset = liquid->getid() >= 15 ? liquid->gety() - 25 + yOffset: liquid->gety() - 7 + yOffset;
+
+    if (!topless)
+    {
+        QRect topRect(x, yWithOffset, width, 0);
+        topRect.setHeight(qMin(top.height(), zone->gety() + zone->getheight() - yWithOffset));
+
+        // Move the texture with the sprite (as opposed to being masked by position)
+        int textureYOffset = yWithOffset % top.height() - 1;;
+
+        // Check if the liquid top is past the top zone edge (i.e. needs to be cropped)
+        bool topNeedsCropping = (0 < zone->gety() - yWithOffset && zone->gety() - yWithOffset < top.height());
+
+        // "Fake" a crop when the liquid top is above the top zone edge
+        if (topNeedsCropping)
+            topRect.setY(topRect.y() + (zone->gety() - yWithOffset));
+
+        QBrush topBrush = QBrush(top);
+        topBrush.setTransform(QTransform().translate(0, textureYOffset));
+
+        // Ensure the liquid top doesn't render past the bottom of the zone, or past the cutoff point for cropping
+        if (yWithOffset > zone->gety() + zone->getheight() || zone->gety() - yWithOffset >= top.height())
+            topRect.setHeight(0);
+
+        painter->setBrush(topBrush);
+        painter->drawRect(topRect);
+
+        yWithOffset += top.height() - 1;
+    }
+    else
+        yWithOffset += 7;
+
+    // Draw the base (fill) part of the liquid
+    QBrush baseBrush = QBrush(base);
+    baseBrush.setTransform(QTransform().translate(0, yWithOffset % base.height()));
+    painter->setBrush(baseBrush);
+
+    QRect baseRect(x, 0, width, 0);
+    baseRect.setY(qMax(yWithOffset, qMax(zone->gety(), drawrect->y())));
+
+    // Correctly resize the height to only where the liquid base is visible
+    int baseBottomBound = qMin(zone->gety() + zone->getheight(), drawrect->y() + drawrect->height());
+    int baseTopBound = qMax(yWithOffset, qMax(zone->gety(), drawrect->y()));
+    baseRect.setHeight(qMax(baseBottomBound - baseTopBound, 0));
+
+    painter->drawRect(baseRect);
+
+    painter->restore();
+}

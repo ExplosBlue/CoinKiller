@@ -32,10 +32,14 @@ public:
     LiquidRenderer() {}
     LiquidRenderer(const Sprite *liquid, const Zone *zone);
     void render(QPainter *painter, QRect *drawrect);
+    void renderTranslucent(QPainter *painter, QRect *drawrect);
+    void drawLiquid(bool transparent, int yOffset, bool topless);
 protected:
     const Sprite *liquid;
     const Zone *zone;
     QString filename;
+    QPainter *painter;
+    QRect *drawrect;
 };
 
 class NormalImageRenderer: public ObjectRenderer

@@ -135,6 +135,32 @@ void LevelView::paint(QPainter& painter, QRect rect, float zoomLvl, bool selecti
         painter.setOpacity(1);
     }
 
+    // Render Translucent Liquid Indicators
+    if (editManager->spriteInteractionEnabled() && renderLiquids)
+    {
+        for (int i = 0; i < level->zones.size(); i++)
+        {
+            const Zone* zone = level->zones.at(i);
+
+            QRect zonerect(zone->getx(), zone->gety(), zone->getwidth(), zone->getheight());
+
+            if (!drawrect.intersects(zonerect))
+                continue;
+
+            foreach (Sprite* s, level->sprites)
+            {
+                if (s->getid() != 12 && s->getid() != 13 && s->getid() != 15)
+                    continue;
+
+                if (zonerect.contains(s->getx(), s->gety(), false))
+                {
+                    LiquidRenderer liquidRend(s, zone);
+                    liquidRend.renderTranslucent(&painter, &drawrect);
+                }
+            }
+        }
+    }
+
     // Render Tiles
     for (int l = 1; l >= 0; l--)
     {
@@ -172,6 +198,7 @@ void LevelView::paint(QPainter& painter, QRect rect, float zoomLvl, bool selecti
     // Render Locations
     if (editManager->locationInteractionEnabled())
     {
+        painter.save();
         for (int i = 0; i < level->locations.size(); i++)
         {
             const Location* loc = level->locations.at(i);
@@ -191,6 +218,7 @@ void LevelView::paint(QPainter& painter, QRect rect, float zoomLvl, bool selecti
             painter.setPen(QColor(255,255,255));
             painter.drawText(locrect.adjusted(5,5,0,0), locText);
         }
+        painter.restore();
     }
 
     if (editManager->spriteInteractionEnabled())
