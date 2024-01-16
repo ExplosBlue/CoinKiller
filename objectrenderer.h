@@ -464,10 +464,7 @@ class BowserFlameRenderer: public SpriteRenderer
 {
 public:
     BowserFlameRenderer(const Sprite *spr);
-    ~BowserFlameRenderer() { delete img; }
     void render(QPainter *painter, QRect *drawrect);
-protected:
-    NormalImageRenderer *img;
 };
 
 // Sprite 131: Bowser Block
@@ -1071,6 +1068,17 @@ class IceLiftRenderer: public SpriteRenderer
 public:
     IceLiftRenderer(const Sprite *spr);
     ~IceLiftRenderer() { delete img; }
+    void render(QPainter *painter, QRect *drawrect);
+protected:
+    NormalImageRenderer* img;
+};
+
+// Sprite 310: Big Bowser Battle Lift
+class BowserLiftRenderer: public SpriteRenderer
+{
+public:
+    BowserLiftRenderer(const Sprite *spr);
+    ~BowserLiftRenderer() { delete img; }
     void render(QPainter *painter, QRect *drawrect);
 protected:
     NormalImageRenderer* img;

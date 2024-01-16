@@ -760,6 +760,9 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
     case 308: // Event Activated Rectangle Lift - Sand
         ret = new EventRecLiftRenderer(spr, "rect_lift_sand");
         break;
+    case 310: // Big Bowser Battle Lift
+        ret = new BowserLiftRenderer(spr);
+        break;
     case 311: // Coin Meteor
         ret = new CoinMeteorRenderer(spr);
         break;
@@ -2123,13 +2126,20 @@ void MushroomPlatformRenderer::render(QPainter *painter, QRect *)
 // Sprite 127: Bowser Flame
 BowserFlameRenderer::BowserFlameRenderer(const Sprite *spr)
 {
-    if (spr->getNybble(11) == 1) img = new NormalImageRenderer(spr, "dry_bowser_flame.png");
-    else img = new NormalImageRenderer(spr, "bowser_flame.png");
+    this->spr = spr;
 }
 
 void BowserFlameRenderer::render(QPainter *painter, QRect *drawrect)
 {
-    img->render(painter, drawrect);
+    QString filename = "bowser_flame.png";
+
+    if (spr->getNybble(11) == 1) filename = "bowser_flame_blue.png";
+    if (spr->getNybble(8) == 1) filename = "bowser_flame_purple.png";
+
+    QPixmap img = ImageCache::getInstance()->get(SpriteImg, filename);
+    if (spr->getNybble(10) == 1) img = img.transformed(QTransform().scale(-1, 1));
+
+    painter->drawPixmap(QRect(spr->getx() + spr->getOffsetX(), spr->gety() + spr->getOffsetY(), spr->getwidth(), spr->getheight()), img);
 }
 
 
@@ -4181,6 +4191,22 @@ IceLiftRenderer::IceLiftRenderer(const Sprite *spr)
 }
 
 void IceLiftRenderer::render(QPainter *painter, QRect *drawrect)
+{
+    img->render(painter, drawrect);
+}
+
+// Sprite 310: Big Bowser Battle Lift
+BowserLiftRenderer::BowserLiftRenderer(const Sprite *spr)
+{
+    switch (spr->getNybble(11))
+    {
+        case 1: img = new NormalImageRenderer(spr, "bowser_lift/m.png"); break;
+        case 2: img = new NormalImageRenderer(spr, "bowser_lift/l.png"); break;
+        default: img = new NormalImageRenderer(spr, "bowser_lift/s.png"); break;
+    }
+}
+
+void BowserLiftRenderer::render(QPainter *painter, QRect *drawrect)
 {
     img->render(painter, drawrect);
 }
