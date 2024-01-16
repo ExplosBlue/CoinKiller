@@ -765,10 +765,19 @@ void Sprite::setRect()
         height = 40;
         break;
     case 82: // Fire Snake
+    {
         width = 19;
         height = 26;
         offsety = -5;
+        if (getNybble(11) == 1)
+        {
+            width = 15;
+            height = 17;
+            offsetx = 2;
+            offsety = 3;
+        }
         break;
+    }
     case 83: // Fish Bone
         width = 33;
         height = 21;
@@ -2508,6 +2517,11 @@ void Sprite::setRect()
         height = 38;
         offsetx = 1;
         offsety = 1;
+        break;
+    case 271: // Big Icy Spiked Ball
+        width = 73;
+        height = 73;
+        offsetx = 20;
         break;
     case 272: // Peach Cage
         width = 68;

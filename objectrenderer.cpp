@@ -200,7 +200,7 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
         ret = new NormalImageRenderer(spr, "fireballpipe_junction.png");
         break;
     case 82: // Fire Snake
-        ret = new NormalImageRenderer(spr, "fire_snake.png");
+        ret = new FireSnakeRenderer(spr);
         break;
     case 83: // Fish Bone
         ret = new NormalImageRenderer(spr, "fish_bone.png");
@@ -666,6 +666,9 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
         break;
     case 270: // Icy Spiked Ball
         ret = new NormalImageRenderer(spr, "icy_spiked_ball.png");
+        break;
+    case 271: // Big Icy Spiked Ball
+        ret = new NormalImageRenderer(spr, "big_icy_spiked_ball.png");
         break;
     case 272: // Peach Cage
         ret = new NormalImageRenderer(spr, "peach_cage.png");
@@ -1613,6 +1616,20 @@ void FireBarRenderer::render(QPainter *painter, QRect *drawrect)
     }
 
     painter->drawPixmap(spr->getx(), spr->gety(), 20, 20, ImageCache::getInstance()->get(SpriteImg, "firebar_fire.png"));
+}
+
+// Sprite 82: Fire Snake
+FireSnakeRenderer::FireSnakeRenderer(const Sprite *spr)
+{
+    if (spr->getNybble(11) == 1)
+        img = new NormalImageRenderer(spr, "fire_snake_hidden.png");
+    else
+        img = new NormalImageRenderer(spr, "fire_snake.png");
+}
+
+void FireSnakeRenderer::render(QPainter *painter, QRect *drawrect)
+{
+    img->render(painter, drawrect);
 }
 
 // Sprite 84/85/86/87/88: Flags

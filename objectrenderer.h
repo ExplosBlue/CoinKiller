@@ -299,6 +299,17 @@ protected:
     CircleRenderer *radius;
 };
 
+// Sprite 82: Fire Snake
+class FireSnakeRenderer: public SpriteRenderer
+{
+public:
+    FireSnakeRenderer(const Sprite *spr);
+    ~FireSnakeRenderer() { delete img; }
+    void render(QPainter *painter, QRect *drawrect);
+protected:
+    NormalImageRenderer *img;
+};
+
 // Sprites 84/85/86/87/88: Flags
 class FlagRenderer: public SpriteRenderer
 {
