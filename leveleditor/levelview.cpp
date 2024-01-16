@@ -15,11 +15,12 @@
     with CoinKiller. If not, see http://www.gnu.org/licenses/.
 */
 
+#include "is.h"
 #include "leveleditorwindow.h"
 #include "levelview.h"
 #include "unitsconvert.h"
 #include "objectrenderer.h"
-#include "is.h"
+#include "settingsmanager.h"
 
 #include <QApplication>
 #include <QPainter>
@@ -135,8 +136,8 @@ void LevelView::paint(QPainter& painter, QRect rect, float zoomLvl, bool selecti
         painter.setOpacity(1);
     }
 
-    // Render Translucent Liquid Indicators
-    if (editManager->spriteInteractionEnabled() && renderLiquids)
+    // Render Translucent Liquid Indicators (if set to appear under tiles)
+    if (renderLiquids && editManager->spriteInteractionEnabled() && !SettingsManager::getInstance()->getLERenderTransparentLiquidAboveTiles())
     {
         for (int i = 0; i < level->zones.size(); i++)
         {
@@ -221,6 +222,7 @@ void LevelView::paint(QPainter& painter, QRect rect, float zoomLvl, bool selecti
         painter.restore();
     }
 
+    // Render anything that falls under "sprites"
     if (editManager->spriteInteractionEnabled())
     {
         // Render Liquids
@@ -243,6 +245,8 @@ void LevelView::paint(QPainter& painter, QRect rect, float zoomLvl, bool selecti
                     if (zonerect.contains(s->getx(), s->gety(), false))
                     {
                         LiquidRenderer liquidRend(s, zone);
+                        if (SettingsManager::getInstance()->getLERenderTransparentLiquidAboveTiles())
+                            liquidRend.renderTranslucent(&painter, &drawrect);
                         liquidRend.render(&painter, &drawrect);
                     }
                 }
@@ -603,7 +607,7 @@ void LevelView::paint(QPainter& painter, QRect rect, float zoomLvl, bool selecti
         painter.drawText(zonerect.adjusted(adjustX,adjustY,100,20), zoneText);
     }
 
-    // Render Edition Mode Stuff
+    // Render Stuff
     if (selections)
         editManager->render(&painter);
 
