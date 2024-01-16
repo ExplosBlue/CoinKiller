@@ -869,61 +869,67 @@ void CircleRenderer::render(QPainter *painter, QRect *)
     painter->setPen(Qt::NoPen);
 }
 
-MovIndicatorRenderer::MovIndicatorRenderer(int x, int y, int endX, int endY, bool vertical, QColor color)
+MovIndicatorRenderer::MovIndicatorRenderer(int startX, int startY, int endX, int endY, bool vertical, QColor color)
+: MovIndicatorRenderer::MovIndicatorRenderer(startX, startY, endX, endY, 4, 10, true, vertical, color)
+{}
+
+MovIndicatorRenderer::MovIndicatorRenderer(int startX, int startY, int endX, int endY, int thickness, int radius, bool applyOffset, bool vertical, QColor color)
 {
-    this->x = x;
-    this->y = y;
+    this->startX = startX;
+    this->startY = startY;
     this->endX = endX;
     this->endY = endY;
+    this->thickness = thickness;
+    this->radius = radius;
+    this->applyOffset = applyOffset;
     this->vertical = vertical;
     this->color = color;
 }
 
 void MovIndicatorRenderer::render(QPainter *painter)
 {
-    QPen outline(QColor(0,0,0,150), 8, Qt::SolidLine);
-    QPen fill(color, 4, Qt::SolidLine);
+    QPen outline(QColor(0,0,0,150), thickness * 2, Qt::SolidLine);
+    QPen fill(color, thickness, Qt::SolidLine);
 
     painter->setPen(outline);
 
-    if (vertical && endY == y)
+    if (vertical && endY == startY)
         return;
 
-    else if (!vertical && endX == x)
+    else if (!vertical && endX == startX)
         return;
 
     for (int i = 0;  i <= 1; i++)
     {
-
-        if ( i == 1)
+        if (i == 1)
             painter->setPen(fill);
         else
             painter->setPen(outline);
 
         if (vertical)
         {
-            if (endY < y) // Go Up
+            if (endY < startY) // Go Up
             {
-                painter->drawLine(x, y+20, x, endY+18);
-                painter->drawEllipse(x-5, endY+5, 10, 10);
+                painter->drawLine(startX, startY+(20*applyOffset)+(radius/2*!applyOffset), startX, endY+(20*applyOffset)+(radius*2*!applyOffset)-2);
+                painter->drawEllipse(startX-(radius/2), endY+(radius/2), radius, radius);
             }
             else // Go Down
             {
-                painter->drawLine(x, y-20, x, endY-18);
-                painter->drawEllipse(x-5, endY-15, 10, 10);
+                painter->drawLine(startX, startY-(20*applyOffset), startX, endY-(20*applyOffset)-(radius*2*!applyOffset)+2);
+                painter->drawEllipse(startX-(radius/2), endY-(1.5*radius), radius, radius);
             }
         }
         else
         {
-            if (endX < x) // Go Left
+            if (endX < startX) // Go Left
             {
-                painter->drawLine(x+20, y, endX+18, y);
-                painter->drawEllipse(endX+5, y-5, 10, 10);
+                painter->drawLine(startX+(20*applyOffset), startY, endX+(20*applyOffset)+(radius*2*!applyOffset)-2, startY);
+                painter->drawEllipse(endX+(radius/2), startY-(radius/2), radius, radius);
             }
             else // Go Right
             {
-                painter->drawLine(x-20, y, endX-18, y);
-                painter->drawEllipse(endX-15, y-5, 10, 10);
+                painter->drawLine(startX-(20*applyOffset), startY, endX-(20*applyOffset)-(radius*2*!applyOffset)+2, startY);
+                painter->drawEllipse(endX-(1.5*radius), startY-(radius/2), radius, radius);
             }
         }
     }

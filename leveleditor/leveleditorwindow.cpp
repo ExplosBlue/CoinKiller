@@ -75,6 +75,7 @@ LevelEditorWindow::LevelEditorWindow(LevelManager* lvlMgr, int initialArea) :
     ui->actionGrid->setIcon(QIcon(basePath + "grid.png"));
     ui->actionCheckerboard->setIcon(QIcon(basePath + "checkerboard.png"));
     ui->actionRenderLiquids->setIcon(QIcon(basePath + "render_liquids.png"));
+    ui->actionRenderControllers->setIcon(QIcon(basePath + "render_controllers.png"));
     ui->actionRenderCameraLimits->setIcon(QIcon(basePath + "render_camera_limits.png"));
     ui->actionAddArea->setIcon(QIcon(basePath + "add.png"));
     ui->actionDeleteCurrentArea->setIcon(QIcon(basePath + "remove.png"));
@@ -166,6 +167,7 @@ LevelEditorWindow::LevelEditorWindow(LevelManager* lvlMgr, int initialArea) :
     ui->actionGrid->setChecked(settings->get("grid", false).toBool());
     ui->actionCheckerboard->setChecked(settings->get("checkerboard", false).toBool());
     ui->actionRenderLiquids->setChecked(settings->get("renderLiquids", true).toBool());
+    ui->actionRenderControllers->setChecked(settings->get("renderControllers", true).toBool());
     ui->actionRenderCameraLimits->setChecked(settings->get("renderCameraLimits", true).toBool());
 
     loadSettings();
@@ -485,6 +487,12 @@ void LevelEditorWindow::on_actionRenderLiquids_toggled(bool toggle)
     settings->set("renderLiquids", toggle);
 }
 
+void LevelEditorWindow::on_actionRenderControllers_toggled(bool toggle)
+{
+    levelView->toggleRenderControllers(toggle);
+    settings->set("renderControllers", toggle);
+}
+
 void LevelEditorWindow::on_actionRenderCameraLimits_toggled(bool toggle)
 {
     levelView->toggleRenderCameraLimits(toggle);
@@ -743,6 +751,7 @@ void LevelEditorWindow::loadArea(int id, bool closeLevel, bool init)
     levelView->toggleGrid(ui->actionGrid->isChecked());
     levelView->toggleCheckerboard(ui->actionCheckerboard->isChecked());
     levelView->toggleRenderLiquids(ui->actionRenderLiquids->isChecked());
+    levelView->toggleRenderControllers(ui->actionRenderControllers->isChecked());
     levelView->toggleRenderCameraLimits(ui->actionRenderCameraLimits->isChecked());
 
 #ifdef USE_KDE_BLUR

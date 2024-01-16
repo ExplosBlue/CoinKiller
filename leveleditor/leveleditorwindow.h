@@ -98,6 +98,8 @@ private slots:
 
     void on_actionRenderLiquids_toggled(bool arg1);
 
+    void on_actionRenderControllers_toggled(bool arg1);
+
     void on_actionRenderCameraLimits_toggled(bool arg1);
 
     void on_actionPaste_triggered();

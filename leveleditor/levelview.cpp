@@ -23,6 +23,7 @@
 #include "settingsmanager.h"
 
 #include <QApplication>
+#include <QClipboard>
 #include <QPainter>
 #include <QBrush>
 #include <QColor>
@@ -30,8 +31,8 @@
 #include <QRectF>
 #include <QPaintEvent>
 #include <QPainterPath>
-#include <QClipboard>
 #include <QMessageBox>
+#include <QSet>
 
 
 LevelView::LevelView(QWidget *parent, Level *level, QUndoStack *undoStack) :
@@ -45,8 +46,9 @@ LevelView::LevelView(QWidget *parent, Level *level, QUndoStack *undoStack) :
     zoom = 1;
     grid = false;
     checkerboard = false;
-    renderLiquids = false;
-    renderCameraLimits = false;
+    renderLiquids = true;
+    renderControllers = true;
+    renderCameraLimits = true;
     render2DTile = true;
     render3DOverlay = true;
 
@@ -348,6 +350,71 @@ void LevelView::paint(QPainter& painter, QRect rect, float zoomLvl, bool selecti
                     SnakeBlockRenderer SnakeBlockRenderer(s, path);
                     SnakeBlockRenderer.render(&painter, &drawrect);
                 }
+            }
+        }
+
+        // Render Movement Controller - Back & Forth Indicators
+        static const QSet<int> supportsMovBackForth{28, 60, 101, 204, 293};
+        for (int i = 0; renderControllers && i < level->zones.size(); i++)
+        {
+            const Zone* zone = level->zones.at(i);
+            QRect zonerect(zone->getx() - 80, zone->gety() - 80, zone->getwidth() + 80, zone->getheight() + 80);
+
+            if (!drawrect.intersects(zonerect))
+                continue;
+
+            foreach (Sprite* s, level->sprites)
+            {
+                if (!zonerect.contains(s->getx(), s->gety(), false))
+                    continue;
+
+                if (!supportsMovBackForth.contains(s->getid()))
+                    continue;
+
+                int distance;
+                int direction = -1;
+
+                // Find the correct associated Back & Forth movement controller & note its data
+                foreach (Sprite* m, level->sprites)
+                {
+                    if (!zonerect.contains(m->getx(), m->gety(), false))
+                        continue;
+
+                    if (m->getid() != 166 || m->getNybbleData(20, 21) != s->getNybbleData(20, 21))
+                        continue;
+
+                    distance = m->getNybble(14) * 20;
+                    direction = m->getNybble(7) % 4;
+                    break;
+                }
+
+                if (direction == -1 || distance == 0)
+                    continue;
+
+                // Render a movement indicator for the sprite
+                QColor color = QColor(244, 250, 255);
+                int x = s->getx() + s->getOffsetX();
+                int y = s->gety() + s->getOffsetY();
+
+                MovIndicatorRenderer *indicator;
+                switch (direction)
+                {
+                case 0: // Right
+                    indicator = new MovIndicatorRenderer(x + s->getwidth(), y + s->getheight()/2, x + s->getwidth() + distance, y + s->getheight()/2, 2, 6, false, false, color);
+                    break;
+                case 1: // Left
+                    indicator = new MovIndicatorRenderer(x, y + s->getheight()/2, x - distance, y + s->getheight()/2, 2, 6, false, false, color);
+                    break;
+                case 2: // Up
+                    indicator = new MovIndicatorRenderer(x + s->getwidth()/2, y, x + s->getwidth()/2, y - distance, 2, 6, false, true, color);
+                    break;
+                default: // Down
+                    indicator = new MovIndicatorRenderer(x + s->getwidth()/2, y + s->getheight(), x + s->getwidth()/2, y + s->getheight() + distance, 2, 6, false, true, color);
+                    break;
+                }
+
+                indicator->render(&painter);
+                delete indicator;
             }
         }
 
