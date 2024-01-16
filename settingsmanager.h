@@ -61,6 +61,9 @@ public:
     quint32 getLEUndoLimit();
     void setLEUndoLimit(const quint32 &value);
 
+    bool getLERenderTransparentLiquidAboveTiles();
+    void setLERenderTransparentLiquidAboveTiles(const bool &value);
+
     bool getLESelectOnPlace();
     void setLESelectOnPlace(const bool &value);
 
@@ -70,6 +73,7 @@ public:
     // Defaults - Level Editor
     static constexpr QColor LE_WINDOW_COLOR_DEFAULT = QColor(119, 136, 153);
     static constexpr int LE_UNDO_LIMIT_DEFAULT = 200;
+    static constexpr bool LE_RENDER_TRANSPARENT_LIQUID_ABOVE_TILES_DEFAULT = false;
     static constexpr bool LE_SELECT_ON_PLACE_DEFAULT = true;
     static constexpr bool LE_SHOW_STATUSBAR_DEFAULT = true;
 

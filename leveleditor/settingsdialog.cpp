@@ -12,6 +12,7 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
 
     connect(ui->backgroundColorPickerButton, &QPushButton::clicked, this, &SettingsDialog::changeBackgroundColor);
     connect(ui->undoLimitSpinBox, &QSpinBox::valueChanged, this, &SettingsDialog::changeUndoLimit);
+    connect(ui->renderTransparentLiquidAboveTilesComboBox, &QComboBox::currentIndexChanged, this, &SettingsDialog::changeRenderTransparentLiquidAboveTiles);
     connect(ui->selectOnPlacedCheckBox, &QCheckBox::clicked, this, &SettingsDialog::changeSelectOnPlaced);
     connect(ui->showStatusBarCheckBox, &QCheckBox::clicked, this, &SettingsDialog::changeShowStatusbar);
     connect(ui->buttonBox, &QDialogButtonBox::clicked, this, &SettingsDialog::handleButtonClicked);
@@ -28,6 +29,9 @@ void SettingsDialog::loadSettings() {
     undoLimit = SettingsManager::getInstance()->getLEUndoLimit();
     ui->undoLimitSpinBox->setValue(static_cast<int>(undoLimit));
 
+    renderTransparentLiquidAboveTiles = SettingsManager::getInstance()->getLERenderTransparentLiquidAboveTiles();
+    ui->renderTransparentLiquidAboveTilesComboBox->setCurrentIndex(renderTransparentLiquidAboveTiles);
+
     selectOnPlaced = SettingsManager::getInstance()->getLESelectOnPlace();
     ui->selectOnPlacedCheckBox->setChecked(selectOnPlaced);
 
@@ -42,6 +46,9 @@ void SettingsDialog::restoreDefaults() {
     undoLimit = SettingsManager::LE_UNDO_LIMIT_DEFAULT;
     ui->undoLimitSpinBox->setValue(static_cast<int>(undoLimit));
 
+    renderTransparentLiquidAboveTiles = SettingsManager::LE_RENDER_TRANSPARENT_LIQUID_ABOVE_TILES_DEFAULT;
+    ui->renderTransparentLiquidAboveTilesComboBox->setCurrentIndex(renderTransparentLiquidAboveTiles);
+
     selectOnPlaced = SettingsManager::LE_SELECT_ON_PLACE_DEFAULT;
     ui->selectOnPlacedCheckBox->setChecked(selectOnPlaced);
 
@@ -52,6 +59,7 @@ void SettingsDialog::restoreDefaults() {
 void SettingsDialog::applyChanges() {
     SettingsManager::getInstance()->setLEWindowColor(backgroundColor);
     SettingsManager::getInstance()->setLEUndoLimit(undoLimit);
+    SettingsManager::getInstance()->setLERenderTransparentLiquidAboveTiles(renderTransparentLiquidAboveTiles);
     SettingsManager::getInstance()->setLESelectOnPlace(selectOnPlaced);
     SettingsManager::getInstance()->setLEShowStatusbar(showStatusbar);
 
@@ -90,6 +98,10 @@ void SettingsDialog::changeBackgroundColor() {
 
 void SettingsDialog::changeUndoLimit() {
     undoLimit = ui->undoLimitSpinBox->value();
+}
+
+void SettingsDialog::changeRenderTransparentLiquidAboveTiles() {
+    renderTransparentLiquidAboveTiles = ui->renderTransparentLiquidAboveTilesComboBox->currentIndex();
 }
 
 void SettingsDialog::changeSelectOnPlaced() {
