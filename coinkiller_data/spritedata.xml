@@ -2458,8 +2458,8 @@
     <value pos="7" pos_type="nybbles" title="Position Offset" comment="Offsets the X &amp; Y Position by the value. Offsets down and to the right. (UNUSED)"/>
     <checkbox pos="8" pos_type="nybbles" title="Above Layer 1"/>
     <list pos="9" pos_type="nybbles" title="Direction" comment="Determines the local movement direction. (UNUSED)">
-      <entry value="0">Down</entry>
-      <entry value="1">Up</entry>
+      <entry value="0">Up</entry>
+      <entry value="1">Down</entry>
     </list>
     <checkbox pos="10" pos_type="nybbles" title="Slippery" comment="When checked the platform will be slippery as if it is made of ice. (UNUSED)"/>
     <list pos="11" pos_type="nybbles" title="Spikes" comment="7/8 produce messed up hitboxes / repeats after 8 (UNUSED)">
@@ -2991,11 +2991,11 @@
       <entry value="2">Gold Flower Card Always</entry>
       <entry value="3">Super Leaf</entry>
     </list>
-    <checkbox pos="11" pos_type="nybbles" title="Shift 1/2 Block Right"/>
+    <checkbox pos="11" pos_type="nybbles" title="Shift 1/2 Tile Right"/>
   </sprite>
   <sprite id="206" name="Gold Ring">
     <value pos="0-1" pos_type="nybbles" title="Target Event ID" comment="The Gold Ring won't work properly if this is 0 or 255. If you set multiple Gold Rings to the same ID, they will &quot;chain&quot; together, rather than there being a new timer for each Gold Ring."/>
-    <checkbox pos="11" pos_type="nybbles" title="Shift 1/2 Block Right"/>
+    <checkbox pos="11" pos_type="nybbles" title="Shift 1/2 Tile Right"/>
   </sprite>
   <sprite id="207" name="Underwater Rock">
     <checkbox pos="6" pos_type="nybbles" title="Underwater Physics"/>
@@ -4164,8 +4164,9 @@
   <sprite id="283" name="Fixed-Size Platform - Larry Battle">
     <value pos="0-1" pos_type="nybbles" title="Triggering Event ID"/>
     <list pos="4" pos_type="nybbles" title="Mode" comment="1 freezes the lift at its position if event triggered.">
-      <entry value="0">Already moving</entry>
+      <entry value="0">Already Moving</entry>
       <entry value="1">Disabled By Event</entry>
+      <entry value="2">Enabled By Event</entry>
     </list>
     <list pos="5" pos_type="nybbles" title="Direction" comment="The direction the lift moves.">
       <entry value="0">Right</entry>
@@ -4192,6 +4193,7 @@
       <entry value="1">Unload if far from start of zone</entry>
       <entry value="2">Unload when loaded</entry>
     </list>
+    <value pos="10-11" pos_type="nybbles" title="Tiles to Move (When triggered)" comment="The distance the lift moves when event triggered."/>
     <value pos="12" pos_type="nybbles" title="Start Delay"/>
     <value pos="13" pos_type="nybbles" title="End Delay"/>
     <value pos="14" pos_type="nybbles" title="Tiles To Move" comment="The distance the lift moves."/>
@@ -4391,7 +4393,7 @@
   <sprite id="307" name="Fixed-Size Platform - Ruins" notes="As seen in 2-3 A2.">
     <value pos="0-1" pos_type="nybbles" title="Triggering Event ID"/>
     <list pos="4" pos_type="nybbles" title="Mode" comment="1 freezes the lift at its position if event triggered. 2 moves the lift if the flag is activated and moves back if the flag is deactivated.">
-      <entry value="0">Already moving</entry>
+      <entry value="0">Already Moving</entry>
       <entry value="1">Disabled By Event</entry>
       <entry value="2">Enabled By Event</entry>
     </list>

@@ -1715,6 +1715,8 @@ void Sprite::setRect()
     case 187: // Path controlled rect block
         width = 20 + getNybble(17)*20;
         height = 20 + getNybble(19)*20;
+        offsetx = getNybble(7);
+        offsety = offsetx;
         break;
     case 189: case 190: case 191: case 192: case 193: case 282: // Rect Blocks
         {
@@ -2469,10 +2471,12 @@ void Sprite::setRect()
     {
         width = 250;
         height = 80;
+        offsetx = -10;
         if (getNybble(19) == 1)
         {
             width = 100;
             height = 603;
+            offsetx = 0;
         }
 
         int distance = qMax((getNybbleData(17, 14)*20), (getNybbleData(10, 11)*20));
