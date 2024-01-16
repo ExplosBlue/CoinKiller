@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1341</width>
-    <height>506</height>
+    <width>1237</width>
+    <height>529</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -46,8 +46,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>1339</width>
-         <height>425</height>
+         <width>1235</width>
+         <height>448</height>
         </rect>
        </property>
       </widget>
@@ -60,7 +60,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1341</width>
+     <width>1237</width>
      <height>23</height>
     </rect>
    </property>
@@ -152,8 +152,8 @@
    <addaction name="actionLower"/>
    <addaction name="actionRaiseLayer"/>
    <addaction name="actionLowerLayer"/>
-   <addaction name="actionZoom_In"/>
    <addaction name="separator"/>
+   <addaction name="actionZoom_In"/>
    <addaction name="actionZoom_100"/>
    <addaction name="actionZoom_Out"/>
    <addaction name="separator"/>

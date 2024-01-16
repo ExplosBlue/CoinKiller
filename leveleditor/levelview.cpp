@@ -358,7 +358,7 @@ void LevelView::paint(QPainter& painter, QRect rect, float zoomLvl, bool selecti
         for (int i = 0; renderControllers && i < level->zones.size(); i++)
         {
             const Zone* zone = level->zones.at(i);
-            QRect zonerect(zone->getx() - 80, zone->gety() - 80, zone->getwidth() + 80, zone->getheight() + 80);
+            QRect zonerect(zone->getx() - 80, zone->gety() - 80, zone->getwidth() + 160, zone->getheight() + 160);
 
             if (!drawrect.intersects(zonerect))
                 continue;
