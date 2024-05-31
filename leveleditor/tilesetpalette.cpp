@@ -153,15 +153,21 @@ void TilesetPalette::reloadTilesets()
 
 void TilesetPalette::loadTileset(int tilesetNbr)
 {
+    if (objectsModel == nullptr)
+    {
+        objectsModel = new QStandardItemModel(this);
+    }
+
     if (!level->tilesets[tilesetNbr])
     {
         objectLists[tilesetNbr]->setEnabled(false);
-        objectLists[tilesetNbr]->setModel(new QStandardItemModel(this));
+        objectsModel->clear();
+        objectLists[tilesetNbr]->setModel(objectsModel);
         return;
     }
-    objectLists[tilesetNbr]->setEnabled(true);
 
-    QStandardItemModel* objectsModel = new QStandardItemModel(this);
+    objectLists[tilesetNbr]->setEnabled(true);
+    objectsModel->clear();
 
     for (int i = 0; i < level->tilesets[tilesetNbr]->getNumObjects(); i++)
     {
