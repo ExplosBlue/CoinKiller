@@ -117,7 +117,6 @@ jobs:
             dir:          ${{ runner.temp }}
             cache:        'true'
             cache-key-prefix: 'install-qt-action-macos'
-            setup-python: false
 
         - name: Setup xcode
           uses: maxim-lobanov/setup-xcode@v1

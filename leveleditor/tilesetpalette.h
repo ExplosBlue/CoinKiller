@@ -29,7 +29,6 @@ private:
     EditManager *editManager;
     Game *game;
     QUndoStack *undoStack;
-    QStandardItemModel* objectsModel = nullptr;
 
     QTabWidget *tabWidget;
     QList<QComboBox*> tilesetPickers;
