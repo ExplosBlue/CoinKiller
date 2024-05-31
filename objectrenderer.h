@@ -32,10 +32,15 @@ public:
     LiquidRenderer() {}
     LiquidRenderer(const Sprite *liquid, const Zone *zone);
     void render(QPainter *painter, QRect *drawrect);
+    void renderTranslucent(QPainter *painter, QRect *drawrect);
 protected:
     const Sprite *liquid;
     const Zone *zone;
     QString filename;
+    QPainter *painter;
+    QRect *drawrect;
+private:
+    void drawLiquid(bool transparent, int yOffset, bool topless);
 };
 
 class NormalImageRenderer: public ObjectRenderer
@@ -82,14 +87,18 @@ class MovIndicatorRenderer: public ObjectRenderer
 {
 public:
     MovIndicatorRenderer();
-    MovIndicatorRenderer(int x, int y, int distX, int distY, bool vertical, QColor color);
+    MovIndicatorRenderer(int startX, int startY, int endX, int endY, bool vertical, QColor color);
+    MovIndicatorRenderer(int startX, int startY, int endX, int endY, int thickness, int radius, bool applyOffset, bool vertical, QColor color);
     using ObjectRenderer::render;
     void render(QPainter *painter);
 protected:
-    int x;
-    int y;
-    int distX;
-    int distY;
+    int startX;
+    int startY;
+    int endX;
+    int endY;
+    int thickness;
+    int radius;
+    bool applyOffset;
     bool vertical;
     QColor color;
 };
@@ -128,11 +137,7 @@ class WhompRenderer: public SpriteRenderer
 {
 public:
     WhompRenderer(const Sprite *spr);
-    ~WhompRenderer() { delete img; }
     void render(QPainter *painter, QRect *drawrect);
-protected:
-    NormalImageRenderer *img;
-    QString filename;
 };
 
 // Sprite 18: Tile God
@@ -296,6 +301,17 @@ public:
     void render(QPainter *painter, QRect *drawrect);
 protected:
     CircleRenderer *radius;
+};
+
+// Sprite 82: Fire Snake
+class FireSnakeRenderer: public SpriteRenderer
+{
+public:
+    FireSnakeRenderer(const Sprite *spr);
+    ~FireSnakeRenderer() { delete img; }
+    void render(QPainter *painter, QRect *drawrect);
+protected:
+    NormalImageRenderer *img;
 };
 
 // Sprites 84/85/86/87/88: Flags
@@ -463,10 +479,7 @@ class BowserFlameRenderer: public SpriteRenderer
 {
 public:
     BowserFlameRenderer(const Sprite *spr);
-    ~BowserFlameRenderer() { delete img; }
     void render(QPainter *painter, QRect *drawrect);
-protected:
-    NormalImageRenderer *img;
 };
 
 // Sprite 131: Bowser Block
@@ -530,8 +543,10 @@ protected:
 class LiftRenderer: public SpriteRenderer
 {
 public:
-    LiftRenderer(const Sprite *spr);
+    LiftRenderer(const Sprite *spr, QString dirname);
     void render(QPainter *painter, QRect *drawrect);
+protected:
+    QString dirname;
 };
 
 // Sprite 146: Track Controlled Lift
@@ -705,6 +720,7 @@ public:
     RecLiftRenderer(const Sprite *spr, QString path);
     void render(QPainter *painter, QRect *drawrect);
 protected:
+    enum Direction {RIGHT, LEFT, UP, DOWN};
     QString path;
     int sideOffset = 0;
 };
@@ -1067,6 +1083,17 @@ class IceLiftRenderer: public SpriteRenderer
 public:
     IceLiftRenderer(const Sprite *spr);
     ~IceLiftRenderer() { delete img; }
+    void render(QPainter *painter, QRect *drawrect);
+protected:
+    NormalImageRenderer* img;
+};
+
+// Sprite 310: Big Bowser Battle Lift
+class BowserLiftRenderer: public SpriteRenderer
+{
+public:
+    BowserLiftRenderer(const Sprite *spr);
+    ~BowserLiftRenderer() { delete img; }
     void render(QPainter *painter, QRect *drawrect);
 protected:
     NormalImageRenderer* img;

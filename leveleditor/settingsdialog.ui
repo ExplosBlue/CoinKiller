@@ -99,9 +99,56 @@ background-color: rgb(119, 136, 153);
          </widget>
         </item>
         <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_4">
+          <item>
+           <widget class="QLabel" name="label_3">
+            <property name="toolTip">
+             <string/>
+            </property>
+            <property name="text">
+             <string>Liquid Movement Indicator Position:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QComboBox" name="renderTransparentLiquidAboveTilesComboBox">
+            <property name="toolTip">
+             <string>Chooses whether to render the transparent indicator for liquids above or below tiles.</string>
+            </property>
+            <property name="autoFillBackground">
+             <bool>false</bool>
+            </property>
+            <property name="editable">
+             <bool>false</bool>
+            </property>
+            <property name="maxVisibleItems">
+             <number>10</number>
+            </property>
+            <item>
+             <property name="text">
+              <string>Below Tiles</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Above Tiles</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="Line" name="line_3">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="QCheckBox" name="showStatusBarCheckBox">
           <property name="text">
-           <string>Show Statusbar</string>
+           <string>Show status bar</string>
           </property>
          </widget>
         </item>

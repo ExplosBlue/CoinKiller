@@ -173,6 +173,14 @@ void SettingsManager::setLEUndoLimit(const quint32 &value) {
     settings.setValue("LE_UNDO_LIMIT", value);
 }
 
+bool SettingsManager::getLERenderTransparentLiquidAboveTiles() {
+    return settings.value("LE_RENDER_TRANSPARENT_LIQUID_ABOVE_TILES", LE_RENDER_TRANSPARENT_LIQUID_ABOVE_TILES_DEFAULT).toBool();
+}
+
+void SettingsManager::setLERenderTransparentLiquidAboveTiles(const bool &value) {
+    settings.setValue("LE_RENDER_TRANSPARENT_LIQUID_ABOVE_TILES", value);
+}
+
 bool SettingsManager::getLESelectOnPlace() {
     return settings.value("LE_SELECT_ON_PLACE", LE_SELECT_ON_PLACE_DEFAULT).toBool();
 }

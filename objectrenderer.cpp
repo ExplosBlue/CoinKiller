@@ -200,7 +200,7 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
         ret = new NormalImageRenderer(spr, "fireballpipe_junction.png");
         break;
     case 82: // Fire Snake
-        ret = new NormalImageRenderer(spr, "fire_snake.png");
+        ret = new FireSnakeRenderer(spr);
         break;
     case 83: // Fish Bone
         ret = new NormalImageRenderer(spr, "fish_bone.png");
@@ -362,10 +362,10 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
         ret = new NormalImageRenderer(spr, "conveyor_belt_switch.png");
         break;
     case 144: // Horizontal Lift
-        ret = new LiftRenderer(spr);
+        ret = new LiftRenderer(spr, "lift_platform");
         break;
     case 145: // Vertical Lift
-        ret = new LiftRenderer(spr);
+        ret = new LiftRenderer(spr, "lift_platform");
         break;
     case 146: // Track Controlled Lift
         ret = new TrackLiftRenderer(spr);
@@ -643,6 +643,9 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
     case 253: // Larry Battle Platform
         ret = new LarryPlatformRenderer(spr, tilesets[0]);
         break;
+    case 254: // Vertical Lift - Totem
+        ret = new LiftRenderer(spr, "totem_lift");
+        break;
     case 255: // Bowser Head Statue
         ret = new NormalImageRenderer(spr, "bowser_head_statue.png");
         break;
@@ -663,6 +666,9 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
         break;
     case 270: // Icy Spiked Ball
         ret = new NormalImageRenderer(spr, "icy_spiked_ball.png");
+        break;
+    case 271: // Big Icy Spiked Ball
+        ret = new NormalImageRenderer(spr, "big_icy_spiked_ball.png");
         break;
     case 272: // Peach Cage
         ret = new NormalImageRenderer(spr, "peach_cage.png");
@@ -756,6 +762,9 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
         break;
     case 308: // Event Activated Rectangle Lift - Sand
         ret = new EventRecLiftRenderer(spr, "rect_lift_sand");
+        break;
+    case 310: // Big Bowser Battle Lift
+        ret = new BowserLiftRenderer(spr);
         break;
     case 311: // Coin Meteor
         ret = new CoinMeteorRenderer(spr);
@@ -860,61 +869,67 @@ void CircleRenderer::render(QPainter *painter, QRect *)
     painter->setPen(Qt::NoPen);
 }
 
-MovIndicatorRenderer::MovIndicatorRenderer(int x, int y, int distX, int distY, bool vertical, QColor color)
+MovIndicatorRenderer::MovIndicatorRenderer(int startX, int startY, int endX, int endY, bool vertical, QColor color)
+: MovIndicatorRenderer::MovIndicatorRenderer(startX, startY, endX, endY, 4, 10, true, vertical, color)
+{}
+
+MovIndicatorRenderer::MovIndicatorRenderer(int startX, int startY, int endX, int endY, int thickness, int radius, bool applyOffset, bool vertical, QColor color)
 {
-    this->x = x;
-    this->y = y;
-    this->distX = distX;
-    this->distY = distY;
+    this->startX = startX;
+    this->startY = startY;
+    this->endX = endX;
+    this->endY = endY;
+    this->thickness = thickness;
+    this->radius = radius;
+    this->applyOffset = applyOffset;
     this->vertical = vertical;
     this->color = color;
 }
 
 void MovIndicatorRenderer::render(QPainter *painter)
 {
-    QPen outline(QColor(0,0,0,150), 8, Qt::SolidLine);
-    QPen fill(color, 4, Qt::SolidLine);
+    QPen outline(QColor(0,0,0,150), thickness * 2, Qt::SolidLine);
+    QPen fill(color, thickness, Qt::SolidLine);
 
     painter->setPen(outline);
 
-    if (vertical && distY == y)
+    if (vertical && endY == startY)
         return;
 
-    else if (!vertical && distX == x)
+    else if (!vertical && endX == startX)
         return;
 
     for (int i = 0;  i <= 1; i++)
     {
-
-        if ( i == 1)
+        if (i == 1)
             painter->setPen(fill);
         else
             painter->setPen(outline);
 
         if (vertical)
         {
-            if (distY < y) // Go Up
+            if (endY < startY) // Go Up
             {
-                painter->drawLine(x, y+20, x, distY+18);
-                painter->drawEllipse(x-5, distY+5, 10, 10);
+                painter->drawLine(startX, startY+(20*applyOffset)+(radius/2*!applyOffset), startX, endY+(20*applyOffset)+(radius*2*!applyOffset)-2);
+                painter->drawEllipse(startX-(radius/2), endY+(radius/2), radius, radius);
             }
             else // Go Down
             {
-                painter->drawLine(x, y-20, x, distY-18);
-                painter->drawEllipse(x-5, distY-15, 10, 10);
+                painter->drawLine(startX, startY-(20*applyOffset), startX, endY-(20*applyOffset)-(radius*2*!applyOffset)+2);
+                painter->drawEllipse(startX-(radius/2), endY-(1.5*radius), radius, radius);
             }
         }
         else
         {
-            if (distX < x) // Go Left
+            if (endX < startX) // Go Left
             {
-                painter->drawLine(x+20, y, distX+18, y);
-                painter->drawEllipse(distX+5, y-5, 10, 10);
+                painter->drawLine(startX+(20*applyOffset), startY, endX+(20*applyOffset)+(radius*2*!applyOffset)-2, startY);
+                painter->drawEllipse(endX+(radius/2), startY-(radius/2), radius, radius);
             }
             else // Go Right
             {
-                painter->drawLine(x-20, y, distX-18, y);
-                painter->drawEllipse(distX-15, y-5, 10, 10);
+                painter->drawLine(startX-(20*applyOffset), startY, endX-(20*applyOffset)-(radius*2*!applyOffset)+2, startY);
+                painter->drawEllipse(endX-(1.5*radius), startY-(radius/2), radius, radius);
             }
         }
     }
@@ -1020,18 +1035,40 @@ void BurnerRenderer::render(QPainter *painter, QRect *)
 WhompRenderer::WhompRenderer(const Sprite *spr)
 {
     this->spr = spr;
-
-    if (spr->getNybble(11) == 1)
-        filename  = "whomp_big.png";
-    else
-        filename = "whomp.png";
-
-    img = new NormalImageRenderer(spr, filename);
 }
 
-void WhompRenderer::render(QPainter *painter, QRect *drawrect)
+void WhompRenderer::render(QPainter *painter, QRect *)
 {
-    img->render(painter, drawrect);
+    this->spr = spr;
+    int x = spr->getx() + spr->getOffsetX();
+    int y = spr->gety() + spr->getOffsetY();
+
+    QString img_name = "whomp";
+
+    if (spr->getNybble(11) == 1)
+        img_name += "_big";
+
+    if (spr->getNybble(10) == 0)
+    {
+        img_name += "_walk";
+
+        // Show a distance indicator for patrol distance
+        int dist = spr->getNybble(8) * 20;
+
+        if (spr->getNybble(8) > 0)
+        {
+            int offsetXL = (spr->getNybble(11) == 1) ? 0: -10;
+            int offsetXR = spr->getwidth() + 10;
+
+            MovIndicatorRenderer leftIndicator(x + spr->getwidth()/2, y + spr->getheight()/2, x + offsetXL - dist, y + spr->getheight()/2, false, QColor(244, 250, 255));
+            leftIndicator.render(painter);
+
+            MovIndicatorRenderer rightIndicator(x + spr->getwidth()/2, y + spr->getheight()/2, x + offsetXR + dist, y + spr->getheight()/2, false, QColor(244, 250, 255));
+            rightIndicator.render(painter);
+        }
+    }
+
+    painter->drawPixmap(QRect(x, y, spr->getwidth(), spr->getheight()), ImageCache::getInstance()->get(SpriteImg, img_name + ".png"));
 }
 
 // Sprite 18: Tile God
@@ -1587,6 +1624,20 @@ void FireBarRenderer::render(QPainter *painter, QRect *drawrect)
     painter->drawPixmap(spr->getx(), spr->gety(), 20, 20, ImageCache::getInstance()->get(SpriteImg, "firebar_fire.png"));
 }
 
+// Sprite 82: Fire Snake
+FireSnakeRenderer::FireSnakeRenderer(const Sprite *spr)
+{
+    if (spr->getNybble(11) == 1)
+        img = new NormalImageRenderer(spr, "fire_snake_hidden.png");
+    else
+        img = new NormalImageRenderer(spr, "fire_snake.png");
+}
+
+void FireSnakeRenderer::render(QPainter *painter, QRect *drawrect)
+{
+    img->render(painter, drawrect);
+}
+
 // Sprite 84/85/86/87/88: Flags
 FlagRenderer::FlagRenderer(const Sprite *spr)
 {
@@ -2098,13 +2149,20 @@ void MushroomPlatformRenderer::render(QPainter *painter, QRect *)
 // Sprite 127: Bowser Flame
 BowserFlameRenderer::BowserFlameRenderer(const Sprite *spr)
 {
-    if (spr->getNybble(11) == 1) img = new NormalImageRenderer(spr, "dry_bowser_flame.png");
-    else img = new NormalImageRenderer(spr, "bowser_flame.png");
+    this->spr = spr;
 }
 
 void BowserFlameRenderer::render(QPainter *painter, QRect *drawrect)
 {
-    img->render(painter, drawrect);
+    QString filename = "bowser_flame.png";
+
+    if (spr->getNybble(11) == 1) filename = "bowser_flame_blue.png";
+    if (spr->getNybble(8) == 1) filename = "bowser_flame_purple.png";
+
+    QPixmap img = ImageCache::getInstance()->get(SpriteImg, filename);
+    if (spr->getNybble(10) == 1) img = img.transformed(QTransform().scale(-1, 1));
+
+    painter->drawPixmap(QRect(spr->getx() + spr->getOffsetX(), spr->gety() + spr->getOffsetY(), spr->getwidth(), spr->getheight()), img);
 }
 
 
@@ -2157,10 +2215,11 @@ void GoombaTowerRenderer::render(QPainter *painter, QRect *drawrect)
 }
 
 
-// Sprite 144/145: Horizontal/Vertical Moving Lift
-LiftRenderer::LiftRenderer(const Sprite *spr)
+// Sprite 144/145/254: Horizontal/Vertical/Totem Lift
+LiftRenderer::LiftRenderer(const Sprite *spr, QString dirname)
 {
     this->spr = spr;
+    this->dirname = dirname;
 }
 
 void LiftRenderer::render(QPainter *painter, QRect *)
@@ -2169,7 +2228,7 @@ void LiftRenderer::render(QPainter *painter, QRect *)
 
         if (spr->getNybble(7) == 1  && distance > 0)
         {
-            if (spr->getid() == 145)
+            if (spr->getid() == 145 || spr->getid() == 254)
             {
                 MovIndicatorRenderer track(spr->getx()+spr->getwidth()/2, spr->gety()+spr->getheight()+13, spr->getx()+spr->getwidth()/2, spr->gety()+spr->getheight()+distance, true, QColor(244,250,255));
                 track.render(painter);
@@ -2182,7 +2241,7 @@ void LiftRenderer::render(QPainter *painter, QRect *)
         }
         else if (distance > 0)
         {
-            if (spr->getid() == 145)
+            if (spr->getid() == 145 || spr->getid() == 254)
             {
                 MovIndicatorRenderer track(spr->getx()+spr->getwidth()/2, spr->gety()+spr->getheight()-27, spr->getx()+spr->getwidth()/2, spr->gety()+spr->getheight()-20-distance, true, QColor(244,250,255));
                 track.render(painter);
@@ -2195,13 +2254,13 @@ void LiftRenderer::render(QPainter *painter, QRect *)
         }
 
 
-    painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX(), spr->gety(), 20, 22), ImageCache::getInstance()->get(SpriteImg, "lift_platform/l.png"));
-    if(spr->getNybble(11) == 0)
-        painter->drawPixmap(QRect(spr->getx()-spr->getOffsetX()+(spr->getNybble(11))*20+20, spr->gety(), 22, 22), ImageCache::getInstance()->get(SpriteImg, "lift_platform/r.png"));
+    painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX(), spr->gety(), 20, 22), ImageCache::getInstance()->get(SpriteImg, dirname + "/l.png"));
+    if (spr->getNybble(11) == 0)
+        painter->drawPixmap(QRect(spr->getx()-spr->getOffsetX()+(spr->getNybble(11))*20+20, spr->gety(), 22, 22), ImageCache::getInstance()->get(SpriteImg, dirname + "/r.png"));
     else
-        painter->drawPixmap(QRect(spr->getx()-spr->getOffsetX()+(spr->getNybble(11)-1)*20+20, spr->gety(), 22, 22), ImageCache::getInstance()->get(SpriteImg, "lift_platform/r.png"));
+        painter->drawPixmap(QRect(spr->getx()-spr->getOffsetX()+(spr->getNybble(11)-1)*20+20, spr->gety(), 22, 22), ImageCache::getInstance()->get(SpriteImg, dirname + "/r.png"));
     for (int i = 20; i < spr->getwidth()-20; i += 20)
-        painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()+i, spr->gety(), 20, 22), ImageCache::getInstance()->get(SpriteImg, "lift_platform/m.png"));
+        painter->drawPixmap(QRect(spr->getx()+spr->getOffsetX()+i, spr->gety(), 20, 22), ImageCache::getInstance()->get(SpriteImg, dirname + "/m.png"));
 }
 
 
@@ -2891,50 +2950,77 @@ void PathRecLiftRenderer::render(QPainter *painter, QRect *)
 {
     QString path = "tower_rectangle_lift/";
 
-    int blockWidth = spr->getNybble(17)*20;
-    int blockHeight = spr->getNybble(19)*20;
+    bool movesDown = (spr->getNybble(9) == 1);
+    int posOffset = spr->getNybble(7);
 
-    if (blockHeight == 0 || blockWidth == 0)
+    int vOffX = 0;
+    int vOffY = 0;
+
+    switch (spr->getNybble(11))
     {
-        if (tileset == nullptr)
-        {
-            painter->drawPixmap(spr->getx(), spr->gety(), spr->getwidth(), spr->getheight(), ImageCache::getInstance()->get(TileOverride, "error.png"));
-        }
-        else
-        {
-            QPixmap block(20, 20);
-            block.fill(QColor(0,0,0,0));
-            QPainter tempPainter(&block);
-
-            TileGrid tileGrid;
-            tileGrid[0xFFFFFFFF] = 1;
-
-            tileset->drawTile(tempPainter, tileGrid, 22, 0, 0, 1, 0);
-            painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), 20+blockWidth, 20+blockHeight, block);
-        }
+    case 1:
+        vOffY = -20;
+        break;
+    case 3:
+        vOffY = -20;
+        break;
+    case 4:
+        vOffX = -10;
+        break;
+    case 5:
+        vOffX = 10;
+        break;
+    default:
+        break;
     }
-    else
+
+    // Render Movement Indicators
+    int distance = spr->getNybble(14)*20;
+    int distOff = 0;
+
+    if ((0 < spr->getNybble(11) && spr->getNybble(11) < 3) && movesDown)
+        distOff = 20;
+    else if ((spr->getNybble(11) == 3) && movesDown)
+        distOff = 40;
+
+    if (movesDown && distance > 0)
     {
-        painter->drawPixmap(QRect(spr->getx(), spr->gety(), 20, 20), ImageCache::getInstance()->get(SpriteImg, path + "tl.png"));
-        painter->drawPixmap(QRect(spr->getx(), spr->gety()+blockHeight, 20, 20), ImageCache::getInstance()->get(SpriteImg, path + "bl.png"));
-        painter->drawPixmap(QRect(spr->getx()+blockWidth, spr->gety(), 20, 20), ImageCache::getInstance()->get(SpriteImg, path + "tr.png"));
-        painter->drawPixmap(QRect(spr->getx()+blockWidth, spr->gety()+blockHeight, 20, 20), ImageCache::getInstance()->get(SpriteImg, path + "br.png"));
-
-        for (int i = 0; i < spr->getNybble(17)-1; i++)
-        {
-            painter->drawPixmap(QRect(spr->getx() + i*20+20, spr->gety(), 20, 20), ImageCache::getInstance()->get(SpriteImg, path + "t.png"));
-            painter->drawPixmap(QRect(spr->getx() + i*20+20, spr->gety()+blockHeight, 20, 20), ImageCache::getInstance()->get(SpriteImg, path + "b.png"));
-        }
-        for (int i = 0; i < spr->getNybble(19)-1; i++)
-        {
-            painter->drawPixmap(QRect(spr->getx(), spr->gety() + i*20+20, 20, 20), ImageCache::getInstance()->get(SpriteImg, path + "l.png"));
-            painter->drawPixmap(QRect(spr->getx()+blockWidth, spr->gety() + i*20+20, 20, 20), ImageCache::getInstance()->get(SpriteImg, path + "r.png"));
-        }
-
-        for (int x = 20; x < blockWidth; x+=20)
-            for (int y = 20; y < blockHeight; y+=20)
-                painter->drawPixmap(QRect(spr->getx()+x, spr->gety()+y, 20, 20), ImageCache::getInstance()->get(SpriteImg, path + "c.png"));
+        MovIndicatorRenderer track(spr->getx()+vOffX+posOffset+spr->getwidth()/2, spr->gety()+vOffY+posOffset+spr->getheight(), spr->getx()+vOffX+posOffset+spr->getwidth()/2, spr->gety()+vOffY+posOffset+spr->getheight()+distance+distOff, true, QColor(244,250,255));
+        track.render(painter);
     }
+    else if (distance > 0)
+    {
+        MovIndicatorRenderer track(spr->getx()+posOffset+vOffX+spr->getwidth()/2, spr->gety()+posOffset+vOffY, spr->getx()+posOffset+vOffX+spr->getwidth()/2, spr->gety()+posOffset+vOffY-distance+distOff, true, QColor(244,250,255));
+        track.render(painter);
+    }
+
+    int blockWidth = spr->getNybble(17) > 0 ? spr->getNybble(17)*20 : 20;
+    int blockHeight = spr->getNybble(19) > 0 ? spr->getNybble(19)*20 : 20;
+
+    painter->drawPixmap(QRect(spr->getx()+posOffset, spr->gety()+posOffset, 20, 20), ImageCache::getInstance()->get(SpriteImg, path + "tl.png"));
+    painter->drawPixmap(QRect(spr->getx()+posOffset, spr->gety()+blockHeight+posOffset, 20, 20), ImageCache::getInstance()->get(SpriteImg, path + "bl.png"));
+    painter->drawPixmap(QRect(spr->getx()+blockWidth+posOffset, spr->gety()+posOffset, 20, 20), ImageCache::getInstance()->get(SpriteImg, path + "tr.png"));
+    painter->drawPixmap(QRect(spr->getx()+blockWidth+posOffset, spr->gety()+blockHeight+posOffset, 20, 20), ImageCache::getInstance()->get(SpriteImg, path + "br.png"));
+
+    for (int i = 0; i < spr->getNybble(17)-1; i++)
+    {
+        painter->drawPixmap(QRect(spr->getx()+posOffset + i*20+20, spr->gety()+posOffset, 20, 20), ImageCache::getInstance()->get(SpriteImg, path + "t.png"));
+        painter->drawPixmap(QRect(spr->getx()+posOffset + i*20+20, spr->gety()+posOffset+blockHeight, 20, 20), ImageCache::getInstance()->get(SpriteImg, path + "b.png"));
+    }
+    for (int i = 0; i < spr->getNybble(19)-1; i++)
+    {
+        painter->drawPixmap(QRect(spr->getx()+posOffset, spr->gety()+posOffset + i*20+20, 20, 20), ImageCache::getInstance()->get(SpriteImg, path + "l.png"));
+        painter->drawPixmap(QRect(spr->getx()+posOffset+blockWidth, spr->gety()+posOffset + i*20+20, 20, 20), ImageCache::getInstance()->get(SpriteImg, path + "r.png"));
+    }
+
+    for (int x = 20; x < blockWidth; x+=20)
+        for (int y = 20; y < blockHeight; y+=20)
+            painter->drawPixmap(QRect(spr->getx()+x+posOffset, spr->gety()+y+posOffset, 20, 20), ImageCache::getInstance()->get(SpriteImg, path + "c.png"));
+
+    if (spr->getNybble(11) == 1 || spr->getNybble(11) == 3) for (int x = 0; x < blockWidth+20; x+=20) painter->drawPixmap(QRect(spr->getx()+x+posOffset, spr->gety()-20+posOffset, 20, 20), ImageCache::getInstance()->get(SpriteImg, path + "s_t.png"));
+    if (spr->getNybble(11) == 2 || spr->getNybble(11) == 3) for (int x = 0; x < blockWidth+20; x+=20) painter->drawPixmap(QRect(spr->getx()+x+posOffset, spr->gety()+blockHeight+20+posOffset, 20, 20), ImageCache::getInstance()->get(SpriteImg, path + "s_b.png"));
+    if (spr->getNybble(11) == 4 || spr->getNybble(11) == 6) for (int y = 0; y < blockHeight+20; y+=20) painter->drawPixmap(QRect(spr->getx()+posOffset-20, spr->gety()+y+posOffset, 20, 20), ImageCache::getInstance()->get(SpriteImg, path + "s_l.png"));
+    if (spr->getNybble(11) == 5 || spr->getNybble(11) == 6) for (int y = 0; y < blockHeight+20; y+=20) painter->drawPixmap(QRect(spr->getx()+blockWidth+20+posOffset, spr->gety()+y+posOffset, 20, 20), ImageCache::getInstance()->get(SpriteImg, path + "s_r.png"));
 }
 
 // RecLiftRenderer
@@ -2946,12 +3032,15 @@ RecLiftRenderer::RecLiftRenderer(const Sprite *spr, QString path)
 }
 void RecLiftRenderer::render(QPainter *painter, QRect *)
 {
+    Direction direction = (Direction)(spr->getNybble(5) % 4);
+
     int hOffX = 0;
     int hOffY = 0;
     int vOffX = 0;
     int vOffY = 0;
 
-    switch (spr->getNybble(7)) {
+    switch (spr->getNybble(7))
+    {
     case 1:
         hOffY = -10;
         vOffY = -20;
@@ -2975,49 +3064,84 @@ void RecLiftRenderer::render(QPainter *painter, QRect *)
     default:
         hOffX = 0;
         hOffY = 0;
+        break;
     }
 
     // Render Movement Indicators
     int distance = spr->getNybble(14)*20;
     int eventDistance = spr->getNybbleData(10, 11)*20;
+    int distOff = 0;
 
-
-    switch (spr->getNybble(5)) {
-    case 1: case 5: case 9: case 13: // Left
+    if (((0 < spr->getNybble(7) && spr->getNybble(7) < 3) && (direction == DOWN)) ||
+        ((3 < spr->getNybble(7) && spr->getNybble(7) < 6) && (direction == RIGHT)))
     {
-        MovIndicatorRenderer track(spr->getx()+hOffX, spr->gety()+hOffY+spr->getheight()/2, spr->getx()+hOffX-distance, spr->gety()+hOffY+spr->getheight()/2, false, QColor(244,250,255));
-        track.render(painter);
-
-        MovIndicatorRenderer eventTrack(spr->getx()+hOffX, spr->gety()+hOffY+spr->getheight()/2, spr->getx()+hOffX-eventDistance, spr->gety()+hOffY+spr->getheight()/2, false, QColor(243,156,18));
-        eventTrack.render(painter);
+        distOff = 20;
     }
+    else if (((spr->getNybble(7) == 3) && (direction == DOWN)) ||
+            ((spr->getNybble(7) == 6) && (direction == RIGHT)))
+    {
+        distOff = 40;
+    }
+
+    switch (direction)
+    {
+    case LEFT:
+    {
+        if (distance > 0)
+        {
+            MovIndicatorRenderer track(spr->getx()+hOffX, spr->gety()+hOffY+spr->getheight()/2, spr->getx()+hOffX-distance+distOff, spr->gety()+hOffY+spr->getheight()/2, false, QColor(244,250,255));
+            track.render(painter);
+        }
+        if (eventDistance > 0)
+        {
+            MovIndicatorRenderer eventTrack(spr->getx()+hOffX, spr->gety()+hOffY+spr->getheight()/2, spr->getx()+hOffX-eventDistance+distOff, spr->gety()+hOffY+spr->getheight()/2, false, QColor(243,156,18));
+            eventTrack.render(painter);
+        }
         break;
-    case 2: case 6: case 10: case 14: // Up
-    {
-        MovIndicatorRenderer track(spr->getx()+vOffX-sideOffset+spr->getwidth()/2, spr->gety()+vOffY, spr->getx()+vOffX-sideOffset+spr->getwidth()/2, spr->gety()+vOffY-distance, true, QColor(244,250,255));
-        track.render(painter);
-
-        MovIndicatorRenderer eventTrack(spr->getx()+vOffX-sideOffset+spr->getwidth()/2, spr->gety()+vOffY, spr->getx()+vOffX-sideOffset+spr->getwidth()/2, spr->gety()+vOffY-eventDistance, true, QColor(243,156,18));
-        eventTrack.render(painter);
     }
+    case UP:
+    {
+        if (distance > 0)
+        {
+            MovIndicatorRenderer track(spr->getx()+vOffX-sideOffset+spr->getwidth()/2, spr->gety()+vOffY, spr->getx()+vOffX-sideOffset+spr->getwidth()/2, spr->gety()+vOffY-distance+distOff, true, QColor(244,250,255));
+            track.render(painter);
+        }
+        if (eventDistance > 0)
+        {
+            MovIndicatorRenderer eventTrack(spr->getx()+vOffX-sideOffset+spr->getwidth()/2, spr->gety()+vOffY, spr->getx()+vOffX-sideOffset+spr->getwidth()/2, spr->gety()+vOffY-eventDistance+distOff, true, QColor(243,156,18));
+            eventTrack.render(painter);
+        }
         break;
-    case 3: case 7: case 11: case 15: // Down
-    {
-        MovIndicatorRenderer track(spr->getx()+vOffX-sideOffset+spr->getwidth()/2, spr->gety()+vOffY+spr->getheight(), spr->getx()+vOffX-sideOffset+spr->getwidth()/2, spr->gety()+vOffY+spr->getheight()+distance, true, QColor(244,250,255));
-        track.render(painter);
-
-        MovIndicatorRenderer eventTrack(spr->getx()+vOffX-sideOffset+spr->getwidth()/2, spr->gety()+vOffY+spr->getheight(), spr->getx()+vOffX-sideOffset+spr->getwidth()/2, spr->gety()+vOffY+spr->getheight()+eventDistance, true, QColor(243,156,18));
-        eventTrack.render(painter);
     }
+    case DOWN:
+    {
+        if (distance > 0)
+        {
+            MovIndicatorRenderer track(spr->getx()+vOffX-sideOffset+spr->getwidth()/2, spr->gety()+vOffY+spr->getheight(), spr->getx()+vOffX-sideOffset+spr->getwidth()/2, spr->gety()+vOffY+spr->getheight()+distance+distOff, true, QColor(244,250,255));
+            track.render(painter);
+        }
+        if (eventDistance > 0)
+        {
+            MovIndicatorRenderer eventTrack(spr->getx()+vOffX-sideOffset+spr->getwidth()/2, spr->gety()+vOffY+spr->getheight(), spr->getx()+vOffX-sideOffset+spr->getwidth()/2, spr->gety()+vOffY+spr->getheight()+eventDistance+distOff, true, QColor(243,156,18));
+            eventTrack.render(painter);
+        }
         break;
-    default: // Right
-    {
-        MovIndicatorRenderer track(spr->getx()+hOffX+spr->getwidth(), spr->gety()+hOffY+spr->getheight()/2, spr->getx()+hOffX+spr->getwidth()+distance, spr->gety()+hOffY+spr->getheight()/2, false, QColor(244,250,255));
-        track.render(painter);
-
-        MovIndicatorRenderer eventTrack(spr->getx()+hOffX+spr->getwidth(), spr->gety()+hOffY+spr->getheight()/2, spr->getx()+hOffX+spr->getwidth()+eventDistance, spr->gety()+hOffY+spr->getheight()/2, false, QColor(243,156,18));
-        eventTrack.render(painter);
     }
+    case RIGHT:
+    {
+        if (distance > 0)
+        {
+            MovIndicatorRenderer track(spr->getx()+hOffX+spr->getwidth(), spr->gety()+hOffY+spr->getheight()/2, spr->getx()+hOffX+spr->getwidth()+distance+distOff, spr->gety()+hOffY+spr->getheight()/2, false, QColor(244,250,255));
+            track.render(painter);
+        }
+        if (eventDistance > 0)
+        {
+            MovIndicatorRenderer eventTrack(spr->getx()+hOffX+spr->getwidth(), spr->gety()+hOffY+spr->getheight()/2, spr->getx()+hOffX+spr->getwidth()+eventDistance+distOff, spr->gety()+hOffY+spr->getheight()/2, false, QColor(243,156,18));
+            eventTrack.render(painter);
+        }
+        break;
+    }
+    default:
         break;
     }
 
@@ -3807,47 +3931,67 @@ LavaRectLiftRenderer::LavaRectLiftRenderer(const Sprite *spr)
 void LavaRectLiftRenderer::render(QPainter *painter, QRect *)
 {
     // Render Movement Indicators
-    int distance = spr->getNybbleData(17, 14)*20;
+    int distance = spr->getNybble(14)*20;
     int eventDistance = spr->getNybbleData(10, 11)*20;
 
-
-    switch (spr->getNybble(5)) {
-    case 1: case 5: case 9: case 13: // Left
+    switch (spr->getNybble(5))
     {
-        MovIndicatorRenderer track(spr->getx(), spr->gety()+spr->getheight()/2, spr->getx()-distance, spr->gety()+spr->getheight()/2, false, QColor(244,250,255));
-        track.render(painter);
-
-        MovIndicatorRenderer eventTrack(spr->getx(), spr->gety()+spr->getheight()/2, spr->getx()-eventDistance, spr->gety()+spr->getheight()/2, false, QColor(243,156,18));
-        eventTrack.render(painter);
-    }
-        break;
-    case 2: case 6: case 10: case 14: // Up
-    {
-        MovIndicatorRenderer track(spr->getx()+spr->getwidth()/2, spr->gety(), spr->getx()+spr->getwidth()/2, spr->gety()-distance, true, QColor(244,250,255));
-        track.render(painter);
-
-        MovIndicatorRenderer eventTrack(spr->getx()+spr->getwidth()/2, spr->gety(), spr->getx()+spr->getwidth()/2, spr->gety()-eventDistance, true, QColor(243,156,18));
-        eventTrack.render(painter);
-    }
-        break;
-    case 3: case 7: case 11: case 15: // Down
-    {
-        MovIndicatorRenderer track(spr->getx()+spr->getwidth()/2, spr->gety()+spr->getheight(), spr->getx()+spr->getwidth()/2, spr->gety()+spr->getheight()+distance, true, QColor(244,250,255));
-        track.render(painter);
-
-        MovIndicatorRenderer eventTrack(spr->getx()+spr->getwidth()/2, spr->gety()+spr->getheight(), spr->getx()+spr->getwidth()/2, spr->gety()+spr->getheight()+eventDistance, true, QColor(243,156,18));
-        eventTrack.render(painter);
-    }
-        break;
-    default: // Right
-    {
-        MovIndicatorRenderer track(spr->getx()+spr->getwidth(), spr->gety()+spr->getheight()/2, spr->getx()+spr->getwidth()+distance, spr->gety()+spr->getheight()/2, false, QColor(244,250,255));
-        track.render(painter);
-
-        MovIndicatorRenderer eventTrack(spr->getx()+spr->getwidth(), spr->gety()+spr->getheight()/2, spr->getx()+spr->getwidth()+eventDistance, spr->gety()+spr->getheight()/2, false, QColor(243,156,18));
-        eventTrack.render(painter);
-    }
-        break;
+        case 1: case 5: case 9: case 13: // Left
+        {
+            if (distance != 0)
+            {
+                MovIndicatorRenderer track(spr->getx(), spr->gety()+spr->getheight()/2, spr->getx()+spr->getOffsetX()-distance, spr->gety()+spr->getheight()/2, false, QColor(244,250,255));
+                track.render(painter);
+            }
+            if (eventDistance != 0)
+            {
+                MovIndicatorRenderer eventTrack(spr->getx(), spr->gety()+spr->getheight()/2, spr->getx()+spr->getOffsetX()-eventDistance, spr->gety()+spr->getheight()/2, false, QColor(243,156,18));
+                eventTrack.render(painter);
+            }
+            break;
+        }
+        case 2: case 6: case 10: case 14: // Up
+        {
+            if (distance != 0)
+            {
+                MovIndicatorRenderer track(spr->getx() + spr->getOffsetX()+spr->getwidth()/2, spr->gety(), spr->getx()+spr->getwidth()/2, spr->gety()-distance, true, QColor(244,250,255));
+                track.render(painter);
+            }
+            if (eventDistance != 0)
+            {
+                MovIndicatorRenderer eventTrack(spr->getx() + spr->getOffsetX()+spr->getwidth()/2, spr->gety(), spr->getx()+spr->getwidth()/2, spr->gety()-eventDistance, true, QColor(243,156,18));
+                eventTrack.render(painter);
+            }
+            break;
+        }
+        case 3: case 7: case 11: case 15: // Down
+        {
+            if (distance != 0)
+            {
+                MovIndicatorRenderer track(spr->getx() + spr->getOffsetX()+spr->getwidth()/2, spr->gety()+spr->getheight(), spr->getx()+spr->getwidth()/2, spr->gety()+spr->getheight()+distance, true, QColor(244,250,255));
+                track.render(painter);
+            }
+            if (eventDistance != 0)
+            {
+                MovIndicatorRenderer eventTrack(spr->getx() + spr->getOffsetX()+spr->getwidth()/2, spr->gety()+spr->getheight(), spr->getx()+spr->getwidth()/2, spr->gety()+spr->getheight()+eventDistance, true, QColor(243,156,18));
+                eventTrack.render(painter);
+            }
+            break;
+        }
+        default: // Right
+        {
+            if (distance != 0)
+            {
+                MovIndicatorRenderer track(spr->getx()+spr->getwidth(), spr->gety()+spr->getheight()/2, spr->getx()+spr->getOffsetX()+spr->getwidth()+distance, spr->gety()+spr->getheight()/2, false, QColor(244,250,255));
+                track.render(painter);
+            }
+            if (eventDistance != 0)
+            {
+                MovIndicatorRenderer eventTrack(spr->getx()+spr->getwidth(), spr->gety()+spr->getheight()/2, spr->getx()+spr->getOffsetX()+spr->getwidth()+eventDistance, spr->gety()+spr->getheight()/2, false, QColor(243,156,18));
+                eventTrack.render(painter);
+            }
+            break;
+        }
     }
 
     if (spr->getNybble(19) == 1)
@@ -3907,15 +4051,15 @@ EventRecLiftRenderer::EventRecLiftRenderer(const Sprite *spr, QString path)
     {
         switch (spr->getNybble(19))
         {
-        case 1:
-            type = "_small.png";
-            break;
-        case 2:
-            type = "_big.png";
-            break;
-        default:
-            type = ".png";
-            break;
+            case 1:
+                type = "_small.png";
+                break;
+            case 2:
+                type = "_big.png";
+                break;
+            default:
+                type = ".png";
+                break;
         }
     }
 
@@ -3926,38 +4070,67 @@ void EventRecLiftRenderer::render(QPainter *painter, QRect *drawrect)
 {
     // Render Movement Indicators
 
-    int distance = 0;
+    int distance = spr->getNybble(14)*20;
+    int eventDistance = spr->getNybbleData(10, 11)*20;
 
-    if (spr->getid() == 283)
-        distance = spr->getNybble(14)*20;
-    else
-        distance = spr->getNybbleData(4,5)*20;
-
-    switch (spr->getNybble(5)) {
-    case 1: case 5: case 9: case 13: // Left
+    switch (spr->getNybble(5))
     {
-        MovIndicatorRenderer track(spr->getx(), spr->gety()+spr->getheight()/2, spr->getx()-distance, spr->gety()+spr->getheight()/2, false, QColor(243,156,18));
-        track.render(painter);
-    }
-        break;
-    case 2: case 6: case 10: case 14: // Up
-    {
-        MovIndicatorRenderer track(spr->getx()+spr->getwidth()/2, spr->gety(), spr->getx()+spr->getwidth()/2, spr->gety()-distance, true, QColor(243,156,18));
-        track.render(painter);
-    }
-        break;
-    case 3: case 7: case 11: case 15: // Down
-    {
-        MovIndicatorRenderer track(spr->getx()+spr->getwidth()/2, spr->gety()+spr->getheight(), spr->getx()+spr->getwidth()/2, spr->gety()+spr->getheight()+distance, true, QColor(243,156,18));
-        track.render(painter);
-    }
-        break;
-    default: // Right
-    {
-        MovIndicatorRenderer track(spr->getx()+spr->getwidth(), spr->gety()+spr->getheight()/2, spr->getx()+spr->getwidth()+distance, spr->gety()+spr->getheight()/2, false, QColor(243,156,18));
-        track.render(painter);
-    }
-        break;
+        case 1: case 5: case 9: case 13: // Left
+        {
+            if (distance > 0)
+            {
+                MovIndicatorRenderer track(spr->getx(), spr->gety()+spr->getheight()/2, spr->getx()-distance, spr->gety()+spr->getheight()/2, false, QColor(244,250,255));
+                track.render(painter);
+            }
+            if (eventDistance > 0)
+            {
+                MovIndicatorRenderer eventTrack(spr->getx(), spr->gety()+spr->getheight()/2, spr->getx()-eventDistance, spr->gety()+spr->getheight()/2, false, QColor(243,156,18));
+                eventTrack.render(painter);
+            }
+            break;
+        }
+        case 2: case 6: case 10: case 14: // Up
+        {
+            if (distance > 0)
+            {
+                MovIndicatorRenderer track(spr->getx()+spr->getwidth()/2, spr->gety(), spr->getx()+spr->getwidth()/2, spr->gety()-distance, true, QColor(244,250,255));
+                track.render(painter);
+            }
+            if (eventDistance > 0)
+            {
+                MovIndicatorRenderer eventTrack(spr->getx()+spr->getwidth()/2, spr->gety(), spr->getx()+spr->getwidth()/2, spr->gety()-eventDistance, true, QColor(243,156,18));
+                eventTrack.render(painter);
+            }
+            break;
+        }
+        case 3: case 7: case 11: case 15: // Down
+        {
+            if (distance > 0)
+            {
+                MovIndicatorRenderer track(spr->getx()+spr->getwidth()/2, spr->gety()+spr->getheight(), spr->getx()+spr->getwidth()/2, spr->gety()+spr->getheight()+distance, true, QColor(244,250,255));
+                track.render(painter);
+            }
+            if (eventDistance > 0)
+            {
+                MovIndicatorRenderer eventTrack(spr->getx()+spr->getwidth()/2, spr->gety()+spr->getheight(), spr->getx()+spr->getwidth()/2, spr->gety()+spr->getheight()+eventDistance, true, QColor(243,156,18));
+                eventTrack.render(painter);
+            }
+            break;
+        }
+        default: // Right
+        {
+            if (distance > 0)
+            {
+                MovIndicatorRenderer track(spr->getx()+spr->getwidth(), spr->gety()+spr->getheight()/2, spr->getx()+spr->getwidth()+distance, spr->gety()+spr->getheight()/2, false, QColor(244,250,255));
+                track.render(painter);
+            }
+            if (eventDistance > 0)
+            {
+                MovIndicatorRenderer eventTrack(spr->getx()+spr->getwidth(), spr->gety()+spr->getheight()/2, spr->getx()+spr->getwidth()+eventDistance, spr->gety()+spr->getheight()/2, false, QColor(243,156,18));
+                eventTrack.render(painter);
+            }
+            break;
+        }
     }
 
     img->render(painter, drawrect);
@@ -4045,6 +4218,22 @@ void IceLiftRenderer::render(QPainter *painter, QRect *drawrect)
     img->render(painter, drawrect);
 }
 
+// Sprite 310: Big Bowser Battle Lift
+BowserLiftRenderer::BowserLiftRenderer(const Sprite *spr)
+{
+    switch (spr->getNybble(11))
+    {
+        case 1: img = new NormalImageRenderer(spr, "bowser_lift/m.png"); break;
+        case 2: img = new NormalImageRenderer(spr, "bowser_lift/l.png"); break;
+        default: img = new NormalImageRenderer(spr, "bowser_lift/s.png"); break;
+    }
+}
+
+void BowserLiftRenderer::render(QPainter *painter, QRect *drawrect)
+{
+    img->render(painter, drawrect);
+}
+
 // Sprite 311: Coin Meteor
 CoinMeteorRenderer::CoinMeteorRenderer(const Sprite *spr)
 {
@@ -4070,33 +4259,67 @@ UnderwaterRecLiftRenderer::UnderwaterRecLiftRenderer(const Sprite *spr)
 
 void UnderwaterRecLiftRenderer::render(QPainter *painter, QRect *drawrect)
 {
-    int distance = spr->getNybbleData(10, 11)*20;
+    int distance = spr->getNybble(14)*20;
+    int eventDistance = spr->getNybbleData(10, 11)*20;
 
-    switch (spr->getNybble(5)) {
+    switch (spr->getNybble(5))
+    {
     case 1: case 5: case 9: case 13: // Left
+    {
+        if (distance > 0)
         {
-            MovIndicatorRenderer track(spr->getx(), spr->gety()+spr->getheight()/2, spr->getx()-distance, spr->gety()+spr->getheight()/2, false, QColor(243,156,18));
+            MovIndicatorRenderer track(spr->getx(), spr->gety()+spr->getheight()/2, spr->getx()-distance, spr->gety()+spr->getheight()/2, false, QColor(244,250,255));
             track.render(painter);
         }
+        if (eventDistance > 0)
+        {
+            MovIndicatorRenderer eventTrack(spr->getx(), spr->gety()+spr->getheight()/2, spr->getx()-eventDistance, spr->gety()+spr->getheight()/2, false, QColor(243,156,18));
+            eventTrack.render(painter);
+        }
         break;
+    }
     case 2: case 6: case 10: case 14: // Up
+    {
+        if (distance > 0)
         {
-            MovIndicatorRenderer track(spr->getx()+spr->getwidth()/2, spr->gety(), spr->getx()+spr->getwidth()/2, spr->gety()-distance, true, QColor(243,156,18));
+            MovIndicatorRenderer track(spr->getx()+spr->getwidth()/2, spr->gety(), spr->getx()+spr->getwidth()/2, spr->gety()-distance, true, QColor(244,250,255));
             track.render(painter);
         }
+        if (eventDistance > 0)
+        {
+            MovIndicatorRenderer eventTrack(spr->getx()+spr->getwidth()/2, spr->gety(), spr->getx()+spr->getwidth()/2, spr->gety()-eventDistance, true, QColor(243,156,18));
+            eventTrack.render(painter);
+        }
         break;
+    }
     case 3: case 7: case 11: case 15: // Down
+    {
+        if (distance > 0)
         {
-            MovIndicatorRenderer track(spr->getx()+spr->getwidth()/2, spr->gety()+spr->getheight(), spr->getx()+spr->getwidth()/2, spr->gety()+spr->getheight()+distance, true, QColor(243,156,18));
+            MovIndicatorRenderer track(spr->getx()+spr->getwidth()/2, spr->gety()+spr->getheight(), spr->getx()+spr->getwidth()/2, spr->gety()+spr->getheight()+distance, true, QColor(244,250,255));
             track.render(painter);
         }
+        if (eventDistance > 0)
+        {
+            MovIndicatorRenderer eventTrack(spr->getx()+spr->getwidth()/2, spr->gety()+spr->getheight(), spr->getx()+spr->getwidth()/2, spr->gety()+spr->getheight()+eventDistance, true, QColor(243,156,18));
+            eventTrack.render(painter);
+        }
         break;
+    }
     default: // Right
+    {
+        if (distance > 0)
         {
-            MovIndicatorRenderer track(spr->getx()+spr->getwidth(), spr->gety()+spr->getheight()/2, spr->getx()+spr->getwidth()+distance, spr->gety()+spr->getheight()/2, false, QColor(243,156,18));
+            MovIndicatorRenderer track(spr->getx()+spr->getwidth(), spr->gety()+spr->getheight()/2, spr->getx()+spr->getwidth()+distance, spr->gety()+spr->getheight()/2, false, QColor(244,250,255));
             track.render(painter);
         }
+        if (eventDistance > 0)
+        {
+            MovIndicatorRenderer eventTrack(spr->getx()+spr->getwidth(), spr->gety()+spr->getheight()/2, spr->getx()+spr->getwidth()+eventDistance, spr->gety()+spr->getheight()/2, false, QColor(243,156,18));
+            eventTrack.render(painter);
+        }
         break;
+    }
     }
 
     img->render(painter, drawrect);
@@ -4415,37 +4638,21 @@ LiquidRenderer::LiquidRenderer(const Sprite *liquid, const Zone *zone)
 
 void LiquidRenderer::render(QPainter *painter, QRect *drawrect)
 {
+    this->painter = painter;
+    this->drawrect = drawrect;
+
     if (liquid->getid() != 14)
     {
-        QPixmap top = ImageCache::getInstance()->get(SpriteImg, filename + "_top.png");
-        QPixmap base = ImageCache::getInstance()->get(SpriteImg, filename + ".png");
+        bool topless = (liquid->getid() != 15 && liquid->getNybble(9) >= 8);
 
-        int currY = liquid->gety() - 20;
+        bool movingDown = (liquid->getNybble(4) > 8);
+        int directedDistance = liquid->getNybbleData(7,8) * 20 * (movingDown ? 1 : -1);
+        bool moving = (liquid->getNybble(4) % 8 != 0) && (directedDistance != 0);
 
-        for (int x = zone->getx(); x < zone->getx() + zone->getwidth(); x += top.width())
-        {
-            QRect rect = QRect(x, currY, qMin(zone->getx() + zone->getwidth() - x, top.width()), qMin(zone->gety() + zone->getheight() - currY, top.height()));
-
-            if (!drawrect->intersects(rect))
-                continue;
-
-            painter->drawPixmap(rect, top, QRect(0, 0, rect.right()-rect.left(), rect.bottom()-rect.top()));
-        }
-
-        currY += top.height();
-
-        for (; currY < zone->gety() + zone->getheight(); currY += base.height())
-        {
-            for (int x = zone->getx(); x < zone->getx() + zone->getwidth(); x += base.width())
-            {
-                QRect rect = QRect(x, currY, qMin(zone->getx() + zone->getwidth() - x, base.width()), qMin(zone->gety() + zone->getheight() - currY, base.height()));
-
-                if (!drawrect->intersects(rect))
-                    continue;
-
-                painter->drawPixmap(rect, base, QRect(0, 0, rect.right()-rect.left(), rect.bottom()-rect.top()));
-            }
-        }
+        if (moving && movingDown)
+            drawLiquid(false, directedDistance, topless);
+        else
+            drawLiquid(false, 0, topless);
     }
     else
     {
@@ -4465,3 +4672,89 @@ void LiquidRenderer::render(QPainter *painter, QRect *drawrect)
     }
 }
 
+void LiquidRenderer::renderTranslucent(QPainter *painter, QRect *drawrect)
+{
+    this->painter = painter;
+    this->drawrect = drawrect;
+
+    bool topless = (liquid->getid() != 15 && liquid->getNybble(9) >= 8);
+
+    bool movingDown = (liquid->getNybble(4) > 8);
+    int directedDistance = liquid->getNybbleData(7,8) * 20 * (movingDown ? 1 : -1);
+    bool moving = (liquid->getNybble(4) % 8 != 0) && (directedDistance != 0);
+
+    if (!moving)
+        return;
+    else if (movingDown)
+        drawLiquid(true, 0, topless);
+    else
+        drawLiquid(true, directedDistance, topless);
+}
+
+void LiquidRenderer::drawLiquid(bool transparent, int yOffset, bool topless)
+{
+    painter->save();
+
+    if (transparent)
+    {
+        painter->setOpacity(0.25);
+        painter->setCompositionMode(QPainter::CompositionMode_Lighten);
+    }
+
+    QPixmap top = ImageCache::getInstance()->get(SpriteImg, filename + "_top.png");
+    QPixmap base = ImageCache::getInstance()->get(SpriteImg, filename + ".png");
+
+    // Calculate dimensions that never change
+    int x = qMax(zone->getx(), drawrect->x());
+    int width = qMin(zone->getx() + zone->getwidth(), drawrect->x() + drawrect->width()) - qMax(zone->getx(), drawrect->x());
+
+    // Draw the top part of the liquid
+    int yWithOffset = liquid->getid() >= 15 ? liquid->gety() - 25 + yOffset: liquid->gety() - 7 + yOffset;
+
+    if (!topless)
+    {
+        QRect topRect(x, yWithOffset, width, 0);
+        topRect.setHeight(qMin(top.height(), zone->gety() + zone->getheight() - yWithOffset));
+
+        // Move the texture with the sprite (as opposed to being masked by position)
+        int textureYOffset = yWithOffset % top.height() - 1;;
+
+        // Check if the liquid top is past the top zone edge (i.e. needs to be cropped)
+        bool topNeedsCropping = (0 < zone->gety() - yWithOffset && zone->gety() - yWithOffset < top.height());
+
+        // "Fake" a crop when the liquid top is above the top zone edge
+        if (topNeedsCropping)
+            topRect.setY(topRect.y() + (zone->gety() - yWithOffset));
+
+        QBrush topBrush = QBrush(top);
+        topBrush.setTransform(QTransform().translate(0, textureYOffset));
+
+        // Ensure the liquid top doesn't render past the bottom of the zone, or past the cutoff point for cropping
+        if (yWithOffset > zone->gety() + zone->getheight() || zone->gety() - yWithOffset >= top.height())
+            topRect.setHeight(0);
+
+        painter->setBrush(topBrush);
+        painter->drawRect(topRect);
+
+        yWithOffset += top.height() - 1;
+    }
+    else
+        yWithOffset += 7;
+
+    // Draw the base (fill) part of the liquid
+    QBrush baseBrush = QBrush(base);
+    baseBrush.setTransform(QTransform().translate(0, yWithOffset % base.height()));
+    painter->setBrush(baseBrush);
+
+    QRect baseRect(x, 0, width, 0);
+    baseRect.setY(qMax(yWithOffset, qMax(zone->gety(), drawrect->y())));
+
+    // Correctly resize the height to only where the liquid base is visible
+    int baseBottomBound = qMin(zone->gety() + zone->getheight(), drawrect->y() + drawrect->height());
+    int baseTopBound = qMax(yWithOffset, qMax(zone->gety(), drawrect->y()));
+    baseRect.setHeight(qMax(baseBottomBound - baseTopBound, 0));
+
+    painter->drawRect(baseRect);
+
+    painter->restore();
+}

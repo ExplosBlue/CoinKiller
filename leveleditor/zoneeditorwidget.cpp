@@ -266,7 +266,11 @@ void ZoneEditorWidget::updateInfo()
     multiplayerTracking->setCurrentText(multiplayerTrackings.value(editZone->getMultiplayerTracking()));
     progPathId->setValue(editZone->getProgPathId());
     unk1->setValue(editZone->getUnk1());
+    boundingId->setDisabled(true);
+    boundingId->setStyleSheet("color: gray");
     boundingId->setValue(editZone->getBoundingId());
+    backgroundId->setDisabled(true);
+    backgroundId->setStyleSheet("color: gray");
     backgroundId->setValue(editZone->getBackgroundId());
 
     handleChanges = true;

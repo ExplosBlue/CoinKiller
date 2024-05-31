@@ -21,6 +21,7 @@ signals:
 private slots:
     void changeBackgroundColor();
     void changeUndoLimit();
+    void changeRenderTransparentLiquidAboveTiles();
     void changeSelectOnPlaced();
     void changeShowStatusbar();
     void handleButtonClicked(QAbstractButton *button);
@@ -36,6 +37,7 @@ private:
 
     QColor backgroundColor;
     quint32 undoLimit;
+    bool renderTransparentLiquidAboveTiles;
     bool selectOnPlaced;
     bool showStatusbar;
 };
