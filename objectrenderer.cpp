@@ -870,10 +870,10 @@ void CircleRenderer::render(QPainter *painter, QRect *)
 }
 
 MovIndicatorRenderer::MovIndicatorRenderer(int startX, int startY, int endX, int endY, bool vertical, QColor color)
-: MovIndicatorRenderer::MovIndicatorRenderer(startX, startY, endX, endY, 4, 10, true, vertical, color)
+: MovIndicatorRenderer::MovIndicatorRenderer(startX, startY, endX, endY, 4, 10, vertical, color)
 {}
 
-MovIndicatorRenderer::MovIndicatorRenderer(int startX, int startY, int endX, int endY, int thickness, int radius, bool applyOffset, bool vertical, QColor color)
+MovIndicatorRenderer::MovIndicatorRenderer(int startX, int startY, int endX, int endY, int thickness, int radius, bool vertical, QColor color)
 {
     this->startX = startX;
     this->startY = startY;
@@ -881,7 +881,6 @@ MovIndicatorRenderer::MovIndicatorRenderer(int startX, int startY, int endX, int
     this->endY = endY;
     this->thickness = thickness;
     this->radius = radius;
-    this->applyOffset = applyOffset;
     this->vertical = vertical;
     this->color = color;
 }
@@ -910,26 +909,26 @@ void MovIndicatorRenderer::render(QPainter *painter)
         {
             if (endY < startY) // Go Up
             {
-                painter->drawLine(startX, startY+(20*applyOffset)+(radius/2*!applyOffset), startX, endY+(20*applyOffset)+(radius*2*!applyOffset)-2);
-                painter->drawEllipse(startX-(radius/2), endY+(radius/2), radius, radius);
+                painter->drawLine(startX, startY + (radius/2), startX, endY + (radius*2) - 2);
+                painter->drawEllipse(startX - (radius/2), endY + (radius/2), radius, radius);
             }
             else // Go Down
             {
-                painter->drawLine(startX, startY-(20*applyOffset), startX, endY-(20*applyOffset)-(radius*2*!applyOffset)+2);
-                painter->drawEllipse(startX-(radius/2), endY-(1.5*radius), radius, radius);
+                painter->drawLine(startX, startY, startX, endY - (radius*2) + 2);
+                painter->drawEllipse(startX - (radius/2), endY - (1.5*radius), radius, radius);
             }
         }
         else
         {
             if (endX < startX) // Go Left
             {
-                painter->drawLine(startX+(20*applyOffset), startY, endX+(20*applyOffset)+(radius*2*!applyOffset)-2, startY);
-                painter->drawEllipse(endX+(radius/2), startY-(radius/2), radius, radius);
+                painter->drawLine(startX, startY, endX + (radius*2) - 2, startY);
+                painter->drawEllipse(endX + (radius/2), startY - (radius/2), radius, radius);
             }
             else // Go Right
             {
-                painter->drawLine(startX-(20*applyOffset), startY, endX-(20*applyOffset)-(radius*2*!applyOffset)+2, startY);
-                painter->drawEllipse(endX-(1.5*radius), startY-(radius/2), radius, radius);
+                painter->drawLine(startX, startY, endX - (radius*2) + 2, startY);
+                painter->drawEllipse(endX - (1.5*radius), startY - (radius/2), radius, radius);
             }
         }
     }
@@ -2230,7 +2229,7 @@ void LiftRenderer::render(QPainter *painter, QRect *)
         {
             if (spr->getid() == 145 || spr->getid() == 254)
             {
-                MovIndicatorRenderer track(spr->getx()+spr->getwidth()/2, spr->gety()+spr->getheight()+13, spr->getx()+spr->getwidth()/2, spr->gety()+spr->getheight()+distance, true, QColor(244,250,255));
+                MovIndicatorRenderer track(spr->getx()+spr->getwidth()/2, spr->gety()+spr->getheight(), spr->getx()+spr->getwidth()/2, spr->gety()+spr->getheight()+distance, true, QColor(244,250,255));
                 track.render(painter);
             }
             else
@@ -2552,12 +2551,12 @@ void KoopaParatroopaRenderer::render(QPainter *painter, QRect *drawrect)
 
             if (spr->getNybble(8) == 1) // right
             {
-                MovIndicatorRenderer indicator(x+spr->getwidth(), y, x+spr->getwidth()+distance, y, false, QColor(244,250,255));
+                MovIndicatorRenderer indicator(x+spr->getwidth()-20, y, x+spr->getwidth()+distance, y, false, QColor(244,250,255));
                 indicator.render(painter);
             }
             else // left
             {
-                MovIndicatorRenderer indicator(x, y, x-distance, y, false, QColor(244,250,255));
+                MovIndicatorRenderer indicator(x+20, y, x-distance, y, false, QColor(244,250,255));
                 indicator.render(painter);
             }
         }
@@ -2567,10 +2566,10 @@ void KoopaParatroopaRenderer::render(QPainter *painter, QRect *drawrect)
             if (spr->getNybble(8)%2)
                 offsetx = -2;
 
-                MovIndicatorRenderer rightIndicator(x+spr->getwidth()+offsetx, y, x+spr->getwidth()+distance+offsetx, y, false, QColor(244,250,255));
+                MovIndicatorRenderer rightIndicator(x+spr->getwidth()+offsetx-20, y, x+spr->getwidth()+distance+offsetx, y, false, QColor(244,250,255));
                 rightIndicator.render(painter);
 
-                MovIndicatorRenderer leftIndicator(x+offsetx, y, x-distance+offsetx, y, false, QColor(244,250,255));
+                MovIndicatorRenderer leftIndicator(x+offsetx+20, y, x-distance+offsetx, y, false, QColor(244,250,255));
                 leftIndicator.render(painter);
         }
     }
@@ -2584,12 +2583,12 @@ void KoopaParatroopaRenderer::render(QPainter *painter, QRect *drawrect)
         {
             distance = 160;
 
-            if (spr->getNybble(8) == 1) // bottom
+            if (spr->getNybble(8) < 2) // Up
             {
-                MovIndicatorRenderer indicator(x, y, x, y-distance+10, true, QColor(244,250,255));
+                MovIndicatorRenderer indicator(x, y+20, x, y-distance+10, true, QColor(244,250,255));
                 indicator.render(painter);
             }
-            else // top
+            else // Down
             {
                 MovIndicatorRenderer indicator(x, y+spr->getheight(), x, y+spr->getheight()+distance, true, QColor(244,250,255));
                 indicator.render(painter);
@@ -2601,10 +2600,10 @@ void KoopaParatroopaRenderer::render(QPainter *painter, QRect *drawrect)
             if (spr->getNybble(8)%2)
                 offsetx = -2;
 
-                MovIndicatorRenderer topIndicator(x, y, x, y-distance+10, true, QColor(244,250,255));
+                MovIndicatorRenderer topIndicator(x, y+35, x, y-distance+10, true, QColor(244,250,255));
                 topIndicator.render(painter);
 
-                MovIndicatorRenderer bottomIndicator(x, y+spr->getheight(), x, y+spr->getheight()+distance, true, QColor(244,250,255));
+                MovIndicatorRenderer bottomIndicator(x, y+spr->getheight()-20, x, y+spr->getheight()+distance, true, QColor(244,250,255));
                 bottomIndicator.render(painter);
         }
     }
@@ -2664,10 +2663,10 @@ void CheepCheepRenderer::render(QPainter *painter, QRect *drawrect)
 
         int y = spr->gety()+spr->getheight()/2;
 
-        MovIndicatorRenderer rightIndicator(spr->getx()+spr->getwidth()+10, y, spr->getx()+spr->getwidth()+distance, y, false, QColor(244,250,255));
+        MovIndicatorRenderer rightIndicator(spr->getx()+spr->getwidth()-10, y, spr->getx()+spr->getwidth()+distance, y, false, QColor(244,250,255));
         rightIndicator.render(painter);
 
-        MovIndicatorRenderer leftIndicator(spr->getx()-10, y, spr->getx()-distance, y, false, QColor(244,250,255));
+        MovIndicatorRenderer leftIndicator(spr->getx()+10, y, spr->getx()-distance, y, false, QColor(244,250,255));
         leftIndicator.render(painter);
     }
 
@@ -2737,10 +2736,10 @@ void SpinyCheepRenderer::render(QPainter *painter, QRect *drawrect)
     if (spr->getNybble(4)%3 == 2)
         offset = 2;
 
-    MovIndicatorRenderer rightIndicator(x+spr->getwidth()+10, y, x+spr->getwidth()+distance + offset, y, false, QColor(244,250,255));
+    MovIndicatorRenderer rightIndicator(x+spr->getwidth()-10, y, x+spr->getwidth()+distance + offset, y, false, QColor(244,250,255));
     rightIndicator.render(painter);
 
-    MovIndicatorRenderer leftIndicator(x-10 - offset, y, x-distance, y, false, QColor(244,250,255));
+    MovIndicatorRenderer leftIndicator(x + 10 - offset, y, x-distance, y, false, QColor(244,250,255));
     leftIndicator.render(painter);
 
     img->render(painter, drawrect);
@@ -3480,7 +3479,7 @@ void UrchinRenderer::render(QPainter *painter, QRect *drawrect)
         {
             if (spr->getNybble(9)) // Start at Top
             {
-                MovIndicatorRenderer track(x+spr->getwidth()/2, y+spr->getheight(), x+spr->getwidth()/2, y+spr->getheight()+distance, true, QColor(244,250,255));
+                MovIndicatorRenderer track(x+spr->getwidth()/2, y+spr->getheight()-10, x+spr->getwidth()/2, y+spr->getheight()+distance, true, QColor(244,250,255));
                 track.render(painter);
             }
             else // Start at Bottom
@@ -3496,7 +3495,7 @@ void UrchinRenderer::render(QPainter *painter, QRect *drawrect)
             MovIndicatorRenderer upTrack(x+spr->getwidth()/2, y, x+spr->getwidth()/2, y-distance, true, QColor(244,250,255));
             upTrack.render(painter);
 
-            MovIndicatorRenderer downTrack(x+spr->getwidth()/2, y+spr->getheight(), x+spr->getwidth()/2, y+spr->getheight()+distance, true, QColor(244,250,255));
+            MovIndicatorRenderer downTrack(x+spr->getwidth()/2, y+spr->getheight()-10, x+spr->getwidth()/2, y+spr->getheight()+distance, true, QColor(244,250,255));
             downTrack.render(painter);
         }
     }
@@ -3506,12 +3505,12 @@ void UrchinRenderer::render(QPainter *painter, QRect *drawrect)
         {
             if (spr->getNybble(9)) // Start at Right
             {
-                MovIndicatorRenderer leftTrack(x, y+spr->getheight()/2, x-distance, y+spr->getheight()/2, false, QColor(244,250,255));
+                MovIndicatorRenderer leftTrack(x+20, y+spr->getheight()/2, x-distance, y+spr->getheight()/2, false, QColor(244,250,255));
                 leftTrack.render(painter);
             }
             else // Start at Left
             {
-                MovIndicatorRenderer rightTrack(x+spr->getwidth(), y+spr->getheight()/2, x+spr->getwidth()+distance, y+spr->getheight(), false, QColor(244,250,255));
+                MovIndicatorRenderer rightTrack(x+spr->getwidth()-20, y+spr->getheight()/2, x+spr->getwidth()+distance, y+spr->getheight(), false, QColor(244,250,255));
                 rightTrack.render(painter);
             }
         }
@@ -3519,10 +3518,10 @@ void UrchinRenderer::render(QPainter *painter, QRect *drawrect)
         {
             distance = distance/2;
 
-            MovIndicatorRenderer leftTrack(x, y+spr->getheight()/2, x-distance, y+spr->getheight()/2, false, QColor(244,250,255));
+            MovIndicatorRenderer leftTrack(x+20, y+spr->getheight()/2, x-distance, y+spr->getheight()/2, false, QColor(244,250,255));
             leftTrack.render(painter);
 
-            MovIndicatorRenderer rightTrack(x+spr->getwidth(), y+spr->getheight()/2, x+spr->getwidth()+distance, y+spr->getheight(), false, QColor(244,250,255));
+            MovIndicatorRenderer rightTrack(x+spr->getwidth()-20, y+spr->getheight()/2, x+spr->getwidth()+distance, y+spr->getheight(), false, QColor(244,250,255));
             rightTrack.render(painter);
         }
     }

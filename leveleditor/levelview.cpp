@@ -400,16 +400,16 @@ void LevelView::paint(QPainter& painter, QRect rect, float zoomLvl, bool selecti
                 switch (direction)
                 {
                 case 0: // Right
-                    indicator = new MovIndicatorRenderer(x + s->getwidth(), y + s->getheight()/2, x + s->getwidth() + distance, y + s->getheight()/2, 2, 6, false, false, color);
+                    indicator = new MovIndicatorRenderer(x + s->getwidth(), y + s->getheight()/2, x + s->getwidth() + distance, y + s->getheight()/2, 2, 6, false, color);
                     break;
                 case 1: // Left
-                    indicator = new MovIndicatorRenderer(x, y + s->getheight()/2, x - distance, y + s->getheight()/2, 2, 6, false, false, color);
+                    indicator = new MovIndicatorRenderer(x, y + s->getheight()/2, x - distance, y + s->getheight()/2, 2, 6, false, color);
                     break;
                 case 2: // Up
-                    indicator = new MovIndicatorRenderer(x + s->getwidth()/2, y, x + s->getwidth()/2, y - distance, 2, 6, false, true, color);
+                    indicator = new MovIndicatorRenderer(x + s->getwidth()/2, y, x + s->getwidth()/2, y - distance, 2, 6, true, color);
                     break;
                 default: // Down
-                    indicator = new MovIndicatorRenderer(x + s->getwidth()/2, y + s->getheight(), x + s->getwidth()/2, y + s->getheight() + distance, 2, 6, false, true, color);
+                    indicator = new MovIndicatorRenderer(x + s->getwidth()/2, y + s->getheight(), x + s->getwidth()/2, y + s->getheight() + distance, 2, 6, true, color);
                     break;
                 }
 

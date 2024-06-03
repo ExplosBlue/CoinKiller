@@ -434,9 +434,9 @@
     </list>
     <list pos="4" pos_type="nybbles" title="Behavior" comment="[Unused]">
       <entry value="0">Normal</entry>
-      <entry value="1">Jump When Spawned</entry>
+      <entry value="1">From Pipe</entry>
       <entry value="2">Shot From Cannon</entry>
-      <entry value="3">Frozen</entry>
+      <entry value="3">About to Explode</entry>
     </list>
     <value pos="5" pos_type="nybbles" title="Z-Order Modifier" comment="This field is used by the Enemy Generator for Pipe and increases by 1 each time a new enemy is spawned."/>
     <checkbox pos="9" pos_type="nybbles" title="Unknown Flag 9" comment="Set to 1 if the Enemy Generator for Pipe's Unknown 8 setting value is odd."/>
@@ -503,7 +503,7 @@
     <value pos="10" pos_type="nybbles" title="Unknown Value 5"/>
     <value pos="11" pos_type="nybbles" title="Time Between Jumps" comment="In seconds"/>
   </sprite>
-  <sprite id="36" name="Arch-movement Lava Bubble" notes="Actor: 0x07E&#13;&#10;Description: Lava bubbles that come out of the lava and make an arc.&#13;&#10;Event Triggerable: Yes&#13;&#10;Affected by Gold Ring: No &#13;&#10;Requirements: Must have a triggering ID set.">
+  <sprite id="36" name="Arched Lava Bubble" notes="Actor: 0x07E&#13;&#10;Description: Lava bubbles that come out of the lava and make an arc.&#13;&#10;Event Triggerable: Yes&#13;&#10;Affected by Gold Ring: No &#13;&#10;Requirements: Must have a triggering ID set.">
     <value pos="0-1" pos_type="nybbles" title="Triggering Event ID"/>
     <list pos="7" pos_type="nybbles" title="Direction">
       <entry value="0">Left</entry>
@@ -946,6 +946,7 @@
     </list>
     <checkbox pos="19" pos_type="bits" title="Use Rotation Controller Starting Rotation Offset" comment="If enabled, the Coin Will use the start offset specified in the rotation controller."/>
     <value pos="0-1" pos_type="nybbles" title="Triggering Event ID" comment="If not set to 0, appears without &quot;flourish&quot; when this is triggered."/>
+    <checkbox pos="18" pos_type="nybbles" title="Start Invisible" mask="2" comment="If checked, the coin will stay invisible until the associated rotation controller is triggered."/>
     <value pos="20-21" pos_type="nybbles" title="Rotation ID"/>
   </sprite>
   <sprite id="60" name="Movement-controlled Coin" notes="Actor: 0x0E2&#13;&#10;Description: A Coin that can be moved.&#13;&#10;Event Triggerable: No&#13;&#10;Affected by Gold Ring: No &#13;&#10;Requirements: Must have a Movement ID set.">
@@ -2233,7 +2234,7 @@
       <entry value="2">Limit Until Both Players Cross</entry>
       <entry value="3">Unknown Value 3</entry>
     </list>
-    <checkbox pos="7" pos_type="nybbles" title="Unknown Checkbox 7"/>
+    <checkbox pos="7" pos_type="nybbles" title="Always Kill in Multiplayer" comment="In multiplayer, when the camera is past the limit in some cases, leaving this value at 0 can put a player in a bubble instead of killing them if they are behind the intended limit and there is room behind."/>
     <checkbox pos="8" pos_type="nybbles" title="Permeable Camera Limit" comment="Allows the camera to scroll past the limiter. Allows the player to walk through the limiter if an X Offset is set."/>
     <value pos="9" pos_type="nybbles" title="Priority ID" comment="15 is lowest priority, 1 is highest. Each pair must have the same Priority ID."/>
     <value pos="10-11" pos_type="nybbles" title="Camera X Offset" comment="Offsets the camera by N number of pixels."/>
@@ -2249,7 +2250,7 @@
       <entry value="2">Limit Until Both Players Cross</entry>
       <entry value="3">Unknown Value 3</entry>
     </list>
-    <checkbox pos="7" pos_type="nybbles" title="Unknown Checkbox 7"/>
+    <checkbox pos="7" pos_type="nybbles" title="Always Kill in Multiplayer" comment="In multiplayer, when the camera is past the limit in some cases, leaving this value at 0 can put a player in a bubble instead of killing them if they are behind the intended limit and there is room behind."/>
     <checkbox pos="8" pos_type="nybbles" title="Permeable Camera Limit" comment="Allows the camera to scroll past the limiter. Allows the player to walk through the limiter if an X Offset is set."/>
     <value pos="9" pos_type="nybbles" title="Priority ID" comment="15 is lowest priority, 1 is highest. Each pair must have the same Priority ID."/>
     <value pos="10-11" pos_type="nybbles" title="Camera X Offset" comment="Offsets the camera by N number of pixels."/>
@@ -2406,9 +2407,9 @@
       <entry value="1">Below Layer 1 Tiles</entry>
     </list>
     <list pos="8" pos_type="nybbles" title="Direction" comment="Determines the direction the paratroopa will move in.">
-      <entry value="0">Towards Player</entry>
-      <entry value="1">Right</entry>
-      <entry value="2">Left</entry>
+      <entry value="0">Towards Player/Up</entry>
+      <entry value="1">Right/Up</entry>
+      <entry value="2">Left/Down</entry>
     </list>
     <list pos="9" pos_type="nybbles" title="Flight Start Point" comment="Determines the flight path, range is always 10 tiles. The starting edge is determined by the direction nybble.">
       <entry value="0">From Center</entry>
@@ -3041,10 +3042,12 @@
   </sprite>
   <sprite id="209" name="Swinging Rope">
     <value pos="0-1" pos_type="nybbles" title="Triggering Event ID" comment="When triggered, the rope will spawn. [Unused]"/>
-    <checkbox pos="4" pos_type="nybbles" title="No swing syncing" comment="Checkbox? (used in vine)"/>
-    <value pos="8" pos_type="nybbles" title="Speed" comment="The speed of the rope."/>
+    <value pos="2-3" pos_type="nybbles" title="Triggering Event ID 2" comment="When triggered, the rope will spawn. [Unused]"/>
+    <checkbox pos="4" pos_type="nybbles" title="No swing syncing"/>
+    <checkbox pos="5" pos_type="nybbles" title="Swing Manually" comment="Lets the player swing the vine manually like in NSMBW."/>
+    <value pos="8" pos_type="nybbles" title="Swinging Speed" comment="The speed of the rope."/>
     <value pos="9" pos_type="nybbles" title="Start Position" comment="Determines the start position of the rope."/>
-    <value pos="10" pos_type="nybbles" title="Swinging Distance" comment="The distance of the swing arc."/>
+    <value pos="10" pos_type="nybbles" title="Swing Distance" comment="The distance of the swing arc."/>
     <list pos="11" pos_type="nybbles" title="Length" comment="Determines the length of the rope. Capped at 12.">
       <entry value="0">4 Tiles</entry>
       <entry value="1">5 Tiles</entry>
@@ -3124,10 +3127,19 @@
     </list>
   </sprite>
   <sprite id="214" name="Camera Controller - Scroll View" notes="Used to shift camera relative to Mario?">
-    <value pos="6" pos_type="nybbles" title="Behavior related?" comment="If the value is 0 scrolling temparailly deactivates when you jump."/>
-    <value pos="8" pos_type="nybbles" title="Speed" comment="Higher values make the camera scroll faster."/>
-    <value pos="9" pos_type="nybbles" title="Unknown Value 8"/>
-    <value pos="10" pos_type="nybbles" title="Distance" comment="Higher values make the camera scroll further. Distance in tiles."/>
+    <list pos="4" pos_type="nybbles" title="Direction" comment="If set to any value above 7, the controller will no longer work. [Unused]">
+      <entry value="0">Right</entry>
+      <entry value="1">Left</entry>
+      <entry value="2">Up</entry>
+      <entry value="3">Down</entry>
+      <entry value="4">Right/Up</entry>
+      <entry value="5">Right/Down</entry>
+      <entry value="6">Left/Up</entry>
+      <entry value="7">Left/Down</entry>
+    </list>
+    <value pos="6-7" pos_type="nybbles" title="Scroll View Height" comment="The number of vertical tiles from the sprite where the Scroll effect will be applied. Extends Up and to the Left."/>
+    <value pos="8-9" pos_type="nybbles" title="Scroll View Width" comment="The number of horizontal tiles from the sprite where the Scroll effect will be applied."/>
+    <value pos="10-11" pos_type="nybbles" title="Distance" comment="Higher values make the camera scroll further. A value of 16 is 1 Tile."/>
   </sprite>
   <sprite id="215" name="Parabomb Cannon" notes="Does not launch regular Bob-ombs, as they just stick.">
     <list pos="7" pos_type="nybbles" title="Launch Type" comment="Amount of bob-ombs thrown before a break.">
@@ -3627,8 +3639,10 @@
   </sprite>
   <sprite id="239" name="Swinging Vine">
     <value pos="0-1" pos_type="nybbles" title="Triggering Event ID" comment="When triggered, the vine will spawn. [Unused]"/>
+    <value pos="2-3" pos_type="nybbles" title="Triggering Event ID 2" comment="When triggered, the vine will spawn. [Unused]"/>
     <checkbox pos="4" pos_type="nybbles" title="No swing syncing"/>
-    <value pos="8" pos_type="nybbles" title="Speed" comment="The speed of the vines."/>
+    <checkbox pos="5" pos_type="nybbles" title="Swing Manually" comment="Lets the player swing the vine manually like in NSMBW."/>
+    <value pos="8" pos_type="nybbles" title="Swinging Speed" comment="The speed of the vine."/>
     <value pos="9" pos_type="nybbles" title="Start Position" comment="Determines the start position of the vine."/>
     <value pos="10" pos_type="nybbles" title="Swing Distance" comment="The distance of the swing arc."/>
     <list pos="11" pos_type="nybbles" title="Length" comment="Determines the length of the vine. Capped at 12.">
