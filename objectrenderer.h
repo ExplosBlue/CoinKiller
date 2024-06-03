@@ -88,7 +88,7 @@ class MovIndicatorRenderer: public ObjectRenderer
 public:
     MovIndicatorRenderer();
     MovIndicatorRenderer(int startX, int startY, int endX, int endY, bool vertical, QColor color);
-    MovIndicatorRenderer(int startX, int startY, int endX, int endY, int thickness, int radius, bool applyOffset, bool vertical, QColor color);
+    MovIndicatorRenderer(int startX, int startY, int endX, int endY, int thickness, int radius, bool vertical, QColor color);
     using ObjectRenderer::render;
     void render(QPainter *painter);
 protected:
@@ -98,7 +98,6 @@ protected:
     int endY;
     int thickness;
     int radius;
-    bool applyOffset;
     bool vertical;
     QColor color;
 };
