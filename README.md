@@ -1,4 +1,4 @@
-<p align="center"><img src="https://raw.githubusercontent.com/Arisotura/CoinKiller/master/resource/io.github.Arisotura.CoinKiller.png" width="128" height="128"></p>
+<p align="center"><img src="https://raw.githubusercontent.com/Arisotura/CoinKiller/master/resource/io.github.ExplosBlue.CoinKiller.png" width="128" height="128"></p>
 <h1 align="center">CoinKiller</h1>
 <p align="center">
 A level editor for NSMB2. Uses Qt6 and is coded in C++.
