@@ -91,7 +91,7 @@ jobs:
           xcopy ${{ env.SOURCE_DIR }}\LICENSE .
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: CoinKiller-Windows
           path: ${{ runner.temp }}\deploy\
@@ -138,7 +138,7 @@ jobs:
             macdeployqt CoinKiller.app -dmg
 
         - name: Upload artifact
-          uses: actions/upload-artifact@v3
+          uses: actions/upload-artifact@v4
           with:
             name: CoinKiller-Macos
             path: ${{ runner.temp }}/build/CoinKiller.dmg
@@ -186,7 +186,7 @@ jobs:
           ./linuxdeploy-x86_64.AppImage --appdir ${{ runner.temp }}/build/AppDir --plugin qt --output appimage
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: CoinKiller-Linux
           path: ${{ runner.temp }}/CoinKiller-x86_64.AppImage
@@ -200,19 +200,19 @@ jobs:
 
     steps:
       - name: Download artifacts (Windows)
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: CoinKiller-Windows
           path: ${{ runner.temp }}/CoinKiller-Windows
 
       - name: Download artifacts (Macos)
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: CoinKiller-Macos
           path: ${{ runner.temp }}/CoinKiller-Macos
 
       - name: Download artifacts (Linux)
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: CoinKiller-Linux
           path: ${{ runner.temp }}/CoinKiller-Linux
