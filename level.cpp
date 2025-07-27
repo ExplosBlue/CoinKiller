@@ -202,9 +202,10 @@ Level::Level(Game *game, SarcFilesystem* archive, int area, QString lvlName)
         quint8 musicId = header->read8();
         header->skip(1);
         quint8 backgroundId = header->read8();
-        header->skip(3);
+        quint8 cameraFlags = header->read8();
+        header->skip(2);
 
-        Zone* zone = new Zone(to20(x), to20(y), to20(width), to20(height), id, progPathId, musicId, multiplayerTracking, zoneUnk1, boundingId, backgroundId);
+        Zone* zone = new Zone(to20(x), to20(y), to20(width), to20(height), id, progPathId, musicId, multiplayerTracking, zoneUnk1, boundingId, backgroundId, cameraFlags);
         zones.append(zone);
     }
 
@@ -679,7 +680,8 @@ qint8 Level::save()
         header->write8(z->getMusicId());
         header->write8(0);
         header->write8(z->getBackgroundId());
-        for (int j = 0; j < 3; j++) header->write8(0);
+        header->write8(z->getCameraFlags());
+        for (int j = 0; j < 2; j++) header->write8(0);
     }
 
 
@@ -926,7 +928,7 @@ Zone* Level::newZone(int x, int y)
             break;
         }
     }
-    return new Zone(toNext16Compatible(x), toNext16Compatible(y), 400, 240, id, 0, 0, 0, 0, 0, 0);
+    return new Zone(toNext16Compatible(x), toNext16Compatible(y), 400, 240, id, 0, 0, 0, 0, 0, 0, 0);
 }
 
 Location* Level::newLocation(int x, int y)

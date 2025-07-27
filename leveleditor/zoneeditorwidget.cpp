@@ -84,6 +84,29 @@ ZoneEditorWidget::ZoneEditorWidget(QList<Zone*> *zones, QList<ZoneBackground*> *
     backgroundId->setReadOnly(true);
     backgroundId->setEnabled(false);
 
+    cameraFlagGroup = new QGroupBox();
+    cameraFlagGroup->setSizePolicy(policy);
+
+    camFlag1 = new QCheckBox(tr("Don't zoom out on enter"));
+    camFlag1->setToolTip(tr("If checked, the camera will start at the normal size when the zone is entered. Does not apply to entrances that do not zoom out."));
+    camFlag1->setProperty("flag", 1);
+    connect(camFlag1, &QCheckBox::toggled, this, &ZoneEditorWidget::handleCameraFlagsChange);
+
+    camFlag2 = new QCheckBox(tr("Move X position to zone center on enter"));
+    camFlag2->setToolTip(tr("If checked, the camera will start at the horizontal center of the zone when it is entered. Does not apply to non-starting entrances."));
+    camFlag2->setProperty("flag", 2);
+    connect(camFlag2, &QCheckBox::toggled, this, &ZoneEditorWidget::handleCameraFlagsChange);
+
+    camFlag3 = new QCheckBox(tr("Snap camera Y position to ground state"));
+    camFlag3->setToolTip(tr("If checked, the camera will rapidly move up or down to where the player has last landed."));
+    camFlag3->setProperty("flag", 4);
+    connect(camFlag3, &QCheckBox::toggled, this, &ZoneEditorWidget::handleCameraFlagsChange);
+
+    camFlag4 = new QCheckBox(tr("Freeze X position at the end of the zone"));
+    camFlag4->setToolTip(tr("If checked, the camera will freeze in place horizontally once it reaches the end of the zone."));
+    camFlag4->setProperty("flag", 8);
+    connect(camFlag4, &QCheckBox::toggled, this, &ZoneEditorWidget::handleCameraFlagsChange);
+
     editBounding = new QPushButton(tr("Open Bounding Editor"), this);
     connect(editBounding, &QPushButton::clicked, this, &ZoneEditorWidget::handleEditBoundingClicked);
 
@@ -133,6 +156,19 @@ ZoneEditorWidget::ZoneEditorWidget(QList<Zone*> *zones, QList<ZoneBackground*> *
     settingsLayout->addWidget(new QLabel(tr("Background ID:")), 6, 0, 1, 1, Qt::AlignRight);
     settingsLayout->addWidget(backgroundId, 6, 1);
     settingsLayout->addWidget(editBackground, 6, 2);
+
+    settingsLayout->addWidget(new QLabel(tr("Camera Flags:")), 7, 0, 1, 1, Qt::AlignCenter);
+
+    QGridLayout* cameraFlagsLayout = new QGridLayout();
+    cameraFlagsLayout->setContentsMargins(5, 5, 5, 5);
+
+    cameraFlagsLayout->addWidget(camFlag1, 0, 0);
+    cameraFlagsLayout->addWidget(camFlag2, 1, 0);
+    cameraFlagsLayout->addWidget(camFlag3, 2, 0);
+    cameraFlagsLayout->addWidget(camFlag4, 3, 0);
+
+    cameraFlagGroup->setLayout(cameraFlagsLayout);
+    settingsLayout->addWidget(cameraFlagGroup, 7, 1, 1, 2);
 
     settingsGroup->setLayout(settingsLayout);
 
@@ -272,6 +308,10 @@ void ZoneEditorWidget::updateInfo()
     backgroundId->setDisabled(true);
     backgroundId->setStyleSheet("color: gray");
     backgroundId->setValue(editZone->getBackgroundId());
+    camFlag1->setChecked(editZone->getCameraFlags() & 1);
+    camFlag2->setChecked(editZone->getCameraFlags() & 2);
+    camFlag3->setChecked(editZone->getCameraFlags() & 4);
+    camFlag4->setChecked(editZone->getCameraFlags() & 8);
 
     handleChanges = true;
 }
@@ -323,6 +363,24 @@ void ZoneEditorWidget::handleUnk1Change(int unk1)
 {
     if (!handleChanges) return;
     undoStack->push(new Commands::ZoneCmd::SetUnk1(editZone, unk1));
+}
+
+void ZoneEditorWidget::handleCameraFlagsChange(bool checked)
+{
+    if (!handleChanges) return;
+
+    QObject* obj = sender();
+    if (!obj) return;
+
+    int flag = obj->property("flag").toInt();
+    int cameraFlags = editZone->getCameraFlags();
+
+    if (checked)
+        cameraFlags |= flag;
+    else
+        cameraFlags &= ~flag;
+
+    undoStack->push(new Commands::ZoneCmd::SetCameraFlags(editZone, cameraFlags));
 }
 
 void ZoneEditorWidget::handleSelectContentsClicked()

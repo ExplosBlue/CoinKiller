@@ -111,6 +111,21 @@ private:
     const quint8 oldId;
 };
 
+
+class SetCameraFlags : public QUndoCommand
+{
+public:
+    SetCameraFlags(Zone *zone, quint8 unk19);
+
+    void undo() override;
+    void redo() override;
+
+private:
+    Zone *const zone;
+    const quint8 newValue;
+    const quint8 oldValue;
+};
+
 } // namespace Commands::ZoneCmd
 
 #endif // COMMANDS_ZONECMD_H

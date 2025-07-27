@@ -172,6 +172,11 @@ private:
     QPushButton* editBackground;
     ZoneBackgroundWidget* backgroundWidget;
 
+    QGroupBox* cameraFlagGroup;
+    QCheckBox* camFlag1;
+    QCheckBox* camFlag2;
+    QCheckBox* camFlag3;
+    QCheckBox* camFlag4;
     QGroupBox* settingsGroup;
 
     QList<Zone*> *zones;
@@ -199,6 +204,7 @@ private slots:
     void handleMusicIDChange(QString text);
     void handleMultiPlayerTrackingChange(QString text);
     void handleUnk1Change(int val);
+    void handleCameraFlagsChange(bool checked);
     void handleSelectContentsClicked();
     void handleScreenshotClicked();
     void handleBoundingIDChange(int val);

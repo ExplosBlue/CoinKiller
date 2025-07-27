@@ -3144,7 +3144,7 @@ QString Entrance::toString(qint32 xOffset, qint32 yOffset) const
 
 
 // Zone
-Zone::Zone(qint32 x, qint32 y, qint32 width, qint32 height, quint8 id, quint8 progPathId, quint8 musicId, quint8 multiplayerTracking, quint16 unk1, quint8 boundingId, quint8 backgroundId)
+Zone::Zone(qint32 x, qint32 y, qint32 width, qint32 height, quint8 id, quint8 progPathId, quint8 musicId, quint8 multiplayerTracking, quint16 unk1, quint8 boundingId, quint8 backgroundId, quint8 cameraFlags)
 {
     this->x = x;
     this->y = y;
@@ -3157,6 +3157,7 @@ Zone::Zone(qint32 x, qint32 y, qint32 width, qint32 height, quint8 id, quint8 pr
     this->unk1 = unk1;
     this->boundingId = boundingId;
     this->backgroundId = backgroundId;
+    this->cameraFlags = cameraFlags;
 }
 
 Zone::Zone(Zone *zone)
@@ -3172,6 +3173,7 @@ Zone::Zone(Zone *zone)
     unk1 = zone->getUnk1();
     boundingId = zone->getBoundingId();
     backgroundId = zone->getBackgroundId();
+    cameraFlags = zone->getCameraFlags();
 }
 
 bool Zone::clickDetection(qint32 xcheck, qint32 ycheck)
@@ -3186,8 +3188,8 @@ bool Zone::clickDetection(QRect rect)
 
 QString Zone::toString(qint32 xOffset, qint32 yOffset) const
 {
-    return QString("3:%1:%2:%3:%4:%5:%6:%7:%8:%9:%10:%11").arg(x+xOffset).arg(y+yOffset)
-            .arg(width).arg(height).arg(id).arg(progPathId).arg(musicId).arg(multiplayerTracking).arg(unk1).arg(boundingId).arg(backgroundId);
+    return QString("3:%1:%2:%3:%4:%5:%6:%7:%8:%9:%10:%11:%12").arg(x+xOffset).arg(y+yOffset)
+        .arg(width).arg(height).arg(id).arg(progPathId).arg(musicId).arg(multiplayerTracking).arg(unk1).arg(boundingId).arg(backgroundId).arg(cameraFlags);
 }
 
 ZoneBounding::ZoneBounding(quint16 id, quint32 primaryUpperBound, qint32 primaryLowerBound, qint32 secondaryUpperBound, qint32 secondaryLowerBound, quint16 upScrolling)

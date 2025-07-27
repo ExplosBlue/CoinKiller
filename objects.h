@@ -235,7 +235,7 @@ class Zone: public Object
 public:
     Zone() {}
     Zone(Zone* zone);
-    Zone(qint32 x, qint32 y, qint32 width, qint32 height, quint8 id, quint8 progPathId, quint8 musicId, quint8 multiplayerTracking, quint16 unk1, quint8 boundingId, quint8 backgroundId);
+    Zone(qint32 x, qint32 y, qint32 width, qint32 height, quint8 id, quint8 progPathId, quint8 musicId, quint8 multiplayerTracking, quint16 unk1, quint8 boundingId, quint8 backgroundId, quint8 cameraFlags);
     bool clickDetection(qint32 xcheck, qint32 ycheck);
     bool clickDetection(QRect rect);
     ObjectType getType() const { return ObjectType::ZONE; }
@@ -248,6 +248,7 @@ public:
     quint8 getProgPathId() const { return progPathId; }
     quint8 getMusicId() const { return musicId; }
     quint8 getBackgroundId() const { return backgroundId; }
+    quint8 getCameraFlags() const { return cameraFlags; }
     void setUnk1(quint32 unk1) { this->unk1 = unk1; }
     void setID(quint8 id) { this->id = id; }
     void setBoundingId(quint8 boundingId) { this->boundingId = boundingId; }
@@ -255,6 +256,7 @@ public:
     void setProgPathId(quint8 progPathId) { this->progPathId = progPathId; }
     void setMusicID(quint8 musicId) { this->musicId = musicId; }
     void setBackgroundId(quint8 backgroundId) { this->backgroundId = backgroundId; }
+    void setCameraFlags(quint8 cameraFlags) { this->cameraFlags = cameraFlags; }
 
 protected:
     quint16 unk1;
@@ -264,6 +266,7 @@ protected:
     quint8 progPathId;
     quint8 musicId;
     quint8 backgroundId;
+    quint8 cameraFlags;
 };
 
 

@@ -113,4 +113,20 @@ void SetBackgroundId::redo() {
     zone->setBackgroundId(newId);
 }
 
+
+SetCameraFlags::SetCameraFlags(Zone *zone, quint8 cameraFlags) :
+    zone(zone),
+    newValue(cameraFlags),
+    oldValue(zone->getCameraFlags()) {
+    this->setText(QObject::tr("Set Zone Camera Flags"));
+}
+
+void SetCameraFlags::undo() {
+    zone->setCameraFlags(oldValue);
+}
+
+void SetCameraFlags::redo() {
+    zone->setCameraFlags(newValue);
+}
+
 } // namespace Commands::ZoneCmd

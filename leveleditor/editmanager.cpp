@@ -1133,7 +1133,7 @@ void EditManager::paste(int currX, int currY, int currW, int currH)
         }
         case 3: // Zone
         {
-            Zone* newZone = new Zone(params[1].toInt()+pOffsetX, params[2].toInt()+pOffsetY, params[3].toInt(), params[4].toInt(), params[5].toInt(), params[6].toInt(), params[7].toInt(), params[8].toInt(), params[9].toInt(), params[10].toInt(), params[11].toInt());
+            Zone* newZone = new Zone(params[1].toInt()+pOffsetX, params[2].toInt()+pOffsetY, params[3].toInt(), params[4].toInt(), params[5].toInt(), params[6].toInt(), params[7].toInt(), params[8].toInt(), params[9].toInt(), params[10].toInt(), params[11].toInt(), params[12].toInt());
             undoStack->push(new Commands::LevelCmd::InsertZone(level, newZone));
             selectedObjects.append(newZone);
             break;
