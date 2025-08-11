@@ -41,7 +41,7 @@ LevelView::LevelView(QWidget *parent, Level *level, QUndoStack *undoStack) :
     setMouseTracking(true);
 
     editManager = new EditManager(level, undoStack);
-    connect(editManager, SIGNAL(updateLevelView()), this, SLOT(update()));
+    connect(editManager, SIGNAL(updateLevelView()), this, SLOT(requestUpdate()));
 
     zoom = 1;
     grid = false;
@@ -756,7 +756,7 @@ void LevelView::mousePressEvent(QMouseEvent* evt)
             editManager->mouseDown(evt->position().x()/zoom, evt->position().y()/zoom, evt->buttons(), evt->modifiers(), drawrect);
         setCursor(QCursor(editManager->getActualCursor()));
     }
-    update();
+    requestUpdate();
 
     emit updateMinimapBounds();
 }
@@ -787,7 +787,7 @@ void LevelView::mouseMoveEvent(QMouseEvent* evt)
         setCursor(QCursor(editManager->getActualCursor()));
     }
 
-    update();
+    requestUpdate();
     emit updateMinimapBounds();
 }
 
@@ -795,12 +795,12 @@ void LevelView::mouseReleaseEvent(QMouseEvent *evt)
 {
     editManager->mouseUp(evt->position().x()/zoom, evt->position().y()/zoom);
     setCursor(QCursor(editManager->getActualCursor()));
-    update();
+    requestUpdate();
 }
 
 void LevelView::moveEvent(QMoveEvent *)
 {
-    update();
+    requestUpdate();
 }
 
 void LevelView::keyPressEvent(QKeyEvent* evt)
@@ -814,6 +814,25 @@ void LevelView::keyPressEvent(QKeyEvent* evt)
     }
 
     editManager->keyPress(evt);
+}
+
+
+
+
+void LevelView::requestUpdate()
+{
+    if (!updatePending)
+    {
+        updatePending = true;
+        QTimer::singleShot([=]() -> int {
+            QScreen *scr = QGuiApplication::primaryScreen();
+            qreal hz = scr ? scr->refreshRate() : 60.0;
+            return static_cast<int>(1000.0 / hz);
+        }(), this, [this] {
+           update();
+           updatePending = false;
+       });
+    }
 }
 
 qint8 LevelView::saveLevel()
@@ -834,58 +853,58 @@ void LevelView::paste()
     int h = visibleRegion().boundingRect().height()/zoom;
 
     editManager->paste(x, y, w, h);
-    update();
+    requestUpdate();
     emit updateMinimapBounds();
 }
 
 void LevelView::raise()
 {
     editManager->raise();
-    update();
+    requestUpdate();
 }
 
 void LevelView::lower()
 {
     editManager->lower();
-    update();
+    requestUpdate();
 }
 
 void LevelView::raiseLayer()
 {
     editManager->raiseLayer();
-    update();
+    requestUpdate();
 }
 
 void LevelView::lowerLayer()
 {
     editManager->lowerLayer();
-    update();
+    requestUpdate();
 }
 
 void LevelView::cut()
 {
     editManager->cut();
-    update();
+    requestUpdate();
     emit updateMinimapBounds();
 }
 
 void LevelView::selectAll()
 {
     editManager->selectAll();
-    update();
+    requestUpdate();
 }
 
 void LevelView::deselect()
 {
     editManager->deselect();
-    update();
+    requestUpdate();
 }
 
 void LevelView::deleteSel()
 {
     editManager->deleteSelection();
     setCursor(QCursor(editManager->getActualCursor()));
-    update();
+    requestUpdate();
     emit updateMinimapBounds();
 }
 
@@ -907,11 +926,11 @@ void LevelView::selectObj(Object *obj)
         emit scrollTo(sX, sY);
     }
 
-    update();
+    requestUpdate();
 }
 
 void LevelView::selectZoneContents(Zone* zone)
 {
     editManager->selectZoneContents(zone);
-    update();
+    requestUpdate();
 }

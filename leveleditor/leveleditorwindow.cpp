@@ -186,6 +186,7 @@ LevelEditorWindow::LevelEditorWindow(LevelManager* lvlMgr, int initialArea) :
     ui->levelViewArea->setFrameShadow(QScrollArea::Plain);
 #endif
 
+    updatePending = false;
 }
 
 LevelEditorWindow::~LevelEditorWindow()
@@ -568,15 +569,25 @@ void LevelEditorWindow::updateEditors()
         return;
     }
 
-    tilesetPalette->updateEditor();
-    areaEditor->updateEditor();
-    entranceEditor->updateEditor();
-    zoneEditor->updateEditor();
-    locationEditor->updateEditor();
-    pathEditor->updateEditor();
-    progPathEditor->updateEditor();
-    spriteEditor->spriteIdsPtr()->updateEditor();
-//    spriteEditor->spriteDataEditorPtr()->updateEditor();
+    if (!updatePending)
+    {
+        updatePending = true;
+        QTimer::singleShot([=]() -> int {
+            QScreen *scr = QGuiApplication::primaryScreen();
+            qreal hz = scr ? scr->refreshRate() : 60.0;
+            return static_cast<int>(1000.0 / hz);
+        }(), this, [this] {
+           tilesetPalette->updateEditor();
+           areaEditor->updateEditor();
+           entranceEditor->updateEditor();
+           zoneEditor->updateEditor();
+           locationEditor->updateEditor();
+           pathEditor->updateEditor();
+           progPathEditor->updateEditor();
+           //    spriteEditor->spriteIdsPtr()->updateEditor();
+           updatePending = false;
+       });
+    }
 }
 
 bool LevelEditorWindow::editorsLoaded()

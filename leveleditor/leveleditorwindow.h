@@ -212,6 +212,8 @@ private:
     QAction* actionRedo;
 
     const int showSaveDialog();
+
+    bool updatePending;
 };
 
 #endif // LEVELEDITORWINDOW_H

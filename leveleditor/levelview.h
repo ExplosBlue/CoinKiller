@@ -70,6 +70,8 @@ public slots:
     void selectZoneContents(Zone* zone);
     void screenshot(QRect rect);
 
+    void requestUpdate();
+
 protected:
     void paintEvent(QPaintEvent *) Q_DECL_OVERRIDE;
     void mousePressEvent(QMouseEvent *) Q_DECL_OVERRIDE;
@@ -107,6 +109,7 @@ private:
 
     QColor backgroundColor;
 
+    bool updatePending = false;
 };
 
 #endif // LEVELVIEW_H
