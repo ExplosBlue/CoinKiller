@@ -33,7 +33,7 @@ jobs:
           echo "CK_VERSION=Automated-${{ steps.timestamp.outputs.TIMESTAMP }}" >> "$GITHUB_OUTPUT"
 
   build-windows:
-    runs-on:  windows-2019
+    runs-on:  windows-latest
     needs: [setup-env]
     defaults:
       run:
@@ -169,13 +169,25 @@ jobs:
           make -j$(nproc)
           make install INSTALL_ROOT=AppDir
 
+      - name: Download linuxdeploy
+        working-directory: ${{ runner.temp }}
+        run: |
+          for i in {1..5}; do
+            wget https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage && break
+            echo "Download failed, retrying in 10 seconds..."
+            sleep 10
+          done
+          for i in {1..5}; do
+            wget https://github.com/linuxdeploy/linuxdeploy-plugin-qt/releases/download/continuous/linuxdeploy-plugin-qt-x86_64.AppImage && break
+            echo "Download failed, retrying in 10 seconds..."
+            sleep 10
+          done
+          chmod +x linuxdeploy-x86_64.AppImage
+          chmod +x linuxdeploy-plugin-qt-x86_64.AppImage
+
       - name: Deploy
         working-directory: ${{ runner.temp }}
         run: |
-          wget https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage
-          chmod +x linuxdeploy-x86_64.AppImage
-          wget https://github.com/linuxdeploy/linuxdeploy-plugin-qt/releases/download/continuous/linuxdeploy-plugin-qt-x86_64.AppImage
-          chmod +x linuxdeploy-plugin-qt-x86_64.AppImage
           ./linuxdeploy-x86_64.AppImage --appdir ${{ runner.temp }}/build/AppDir --plugin qt --output appimage
 
       - name: Upload artifact
