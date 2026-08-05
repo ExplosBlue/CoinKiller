@@ -18,12 +18,9 @@
 #include "mainwindow.h"
 #include <QApplication>
 
-#include "rg_etc1.h"
-
 int main(int argc, char *argv[])
 {
     srand(time(nullptr));
-    rg_etc1::pack_etc1_block_init();
 
     QApplication a(argc, argv);
     MainWindow w;

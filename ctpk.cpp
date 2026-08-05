@@ -3,8 +3,14 @@
 
 #include <QDebug>
 #include <QtEndian>
-#include "rg_etc1.h"
+#include <Etc1.h>
 #include "crc32.h"
+
+#include <algorithm>
+#include <atomic>
+#include <cstring>
+#include <thread>
+#include <vector>
 
 Ctpk::Ctpk(FileBase* file)
 {
@@ -437,64 +443,96 @@ void Ctpk::setTextureEtc1(quint32 entryIndex, QImage& img, bool alpha, uint qual
     assert(entry->width == img.width());
     assert(entry->height == img.height());
 
-    rg_etc1::etc1_pack_params pack_params;
+    Etc1::Etc1PackParams pack_params;
     if (quality == 0)
-        pack_params.m_quality = rg_etc1::cLowQuality;
+        pack_params.mQuality = Etc1::Etc1Quality::Low;
     else if (quality == 1)
-        pack_params.m_quality = rg_etc1::cMediumQuality;
+        pack_params.mQuality = Etc1::Etc1Quality::Medium;
     else
-        pack_params.m_quality = rg_etc1::cHighQuality;
-    pack_params.m_dithering = dither;
+        pack_params.mQuality = Etc1::Etc1Quality::High;
+    pack_params.mDithering = dither;
 
-    printf("ETC1 compression progress: 0%%");
-    fflush(stdout);
+    const quint32 tilesX = img.width() / 8;
+    const quint32 tilesY = img.height() / 8;
+    const quint32 totalBlocks = tilesX * tilesY * 4;
+    const quint32 bytesPerBlock = alpha ? 16 : 8;
 
-    file->open();
-    file->seek(texSectionOffset + entry->dataOffset);
+    std::vector<quint8> output(static_cast<size_t>(totalBlocks) * bytesPerBlock, 0);
 
-    for (int y = 0; y < img.height(); y += 8)
-    {
-        for (int x = 0; x < img.width(); x += 8)
+    auto packBlock = [&](quint32 idx) {
+        const quint32 t = idx & 3;
+        const quint32 rem = idx >> 2;
+        const int x = static_cast<int>((rem % tilesX) * 8);
+        const int y = static_cast<int>((rem / tilesX) * 8);
+        const int tx = static_cast<int>(t & 1) * 4;
+        const int ty = static_cast<int>(t >> 1) * 4;
+
+        quint64 alphaBlock = 0;
+        unsigned int packData[4*4];
+
+        for (int sy = 0; sy < 4; sy++)
         {
-            for (int ty = 0; ty < 8; ty += 4)
+            for (int sx = 0; sx < 4; sx++)
             {
-                for (int tx = 0; tx < 8; tx += 4)
-                {
-                    quint64 alphaData = 0;
-                    unsigned int packData[4*4];
+                const int x_ = x + tx + sx;
+                const int y_ = y + ty + sy;
 
-                    for (int sx = 0; sx < 4; sx++)
-                    {
-                        for (int sy = 0; sy < 4; sy++)
-                        {
-                            int x_ = x+tx+sx;
-                            int y_ = y+ty+sy;
+                QColor c = img.pixelColor(x_, y_);
+                packData[sy*4 + sx] = (c.red()<<0) | (c.green()<<8) | (c.blue()<<16) | (0xFF<<24);
 
-                            QColor c = img.pixelColor(x_, y_);
-                            packData[sy*4 + sx] = (c.red()<<0) | (c.green()<<8) | (c.blue()<<16) | (0xFF<<24);
-
-                            alphaData = (alphaData >> 4ULL) | (static_cast<quint64>(c.alpha() >> 4) << 60ULL);
-                        }
-                    }
-
-                    if (alpha)
-                        file->write64(alphaData);
-
-                    quint64 etc1block;
-                    rg_etc1::pack_etc1_block(&etc1block, packData, pack_params);
-
-                    file->write64(qbswap(etc1block));
-                }
+                if (alpha)
+                    alphaBlock |= (static_cast<quint64>(c.alpha() >> 4) & 0xF) << (4ULL * (sx*4 + sy));
             }
         }
 
-        printf("\rETC1 compression progress: %d%%", (y+8)*100 / img.height());
-        fflush(stdout);
+        quint64 etc1block;
+        Etc1::packEtc1Block(&etc1block, packData, pack_params);
+
+        quint8* dst = &output[static_cast<size_t>(idx) * bytesPerBlock];
+
+        if (alpha)
+        {
+            std::memcpy(dst, &alphaBlock, sizeof(quint64));
+            dst += sizeof(quint64);
+        }
+
+        const quint64 cBlock = qbswap(etc1block);
+        std::memcpy(dst, &cBlock, sizeof(quint64));
+    };
+
+    const quint32 hwThreads = static_cast<quint32>(std::thread::hardware_concurrency());
+    const quint32 threadCount = std::clamp<quint32>(hwThreads, 1, totalBlocks);
+
+    if (totalBlocks <= 1 || threadCount == 1)
+    {
+        for (quint32 idx = 0; idx < totalBlocks; ++idx)
+            packBlock(idx);
+    }
+    else
+    {
+        std::atomic<quint32> nextBlock{0};
+
+        std::vector<std::thread> workers;
+        workers.reserve(threadCount);
+        for (quint32 w = 0; w < threadCount; ++w)
+        {
+            workers.emplace_back([&]() {
+                for (;;)
+                {
+                    const quint32 idx = nextBlock.fetch_add(1, std::memory_order_relaxed);
+                    if (idx >= totalBlocks) return;
+                    packBlock(idx);
+                }
+            });
+        }
+
+        for (auto& thread : workers)
+            thread.join();
     }
 
-    printf("\rETC1 compression progress: Done.\n");
-    fflush(stdout);
-
+    file->open();
+    file->seek(texSectionOffset + entry->dataOffset);
+    file->writeData(output.data(), output.size());
     file->save();
     file->close();
 }

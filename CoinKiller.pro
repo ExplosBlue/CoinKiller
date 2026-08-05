@@ -97,7 +97,7 @@ SOURCES += \
     newtilesetdialog.cpp \
     objectrenderer.cpp \
     objects.cpp \
-    rg_etc1.cpp \
+    third_party/ExETC1/Etc1.cpp \
     sarcexplorerwindow.cpp \
     settingsmanager.cpp \
     spritedata.cpp \
@@ -159,7 +159,6 @@ HEADERS += \
     newtilesetdialog.h \
     objectrenderer.h \
     objects.h \
-    rg_etc1.h \
     sarcexplorerwindow.h \
     settingsmanager.h \
     shit.h \
@@ -182,4 +181,6 @@ TRANSLATIONS += \
     resource/translations/German.ts \
     resource/translations/Italian.ts
 
-CONFIG += c++17
+CONFIG += c++23
+
+INCLUDEPATH += third_party/ExETC1

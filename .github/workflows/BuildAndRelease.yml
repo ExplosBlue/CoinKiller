@@ -42,6 +42,8 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
+        with:
+          submodules: recursive
 
       - name: Install Qt
         uses: jurplel/install-qt-action@v3
@@ -106,6 +108,8 @@ jobs:
       steps:
         - name: Checkout repo
           uses: actions/checkout@v3
+          with:
+            submodules: recursive
 
         - name: Install Qt
           uses: jurplel/install-qt-action@v3
@@ -153,6 +157,8 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
+        with:
+          submodules: recursive
 
       - name: Install dependencies
         run: |
