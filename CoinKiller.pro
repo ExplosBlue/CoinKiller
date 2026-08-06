@@ -183,4 +183,10 @@ TRANSLATIONS += \
 
 CONFIG += c++23
 
+msvc {
+    QMAKE_CXXFLAGS += /std:c++latest
+} else {
+    QMAKE_CXXFLAGS += -std=c++23
+}
+
 INCLUDEPATH += third_party/ExETC1
