@@ -113,11 +113,6 @@ jobs:
             arch: clang_64
             cache: true
 
-        - name: Setup xcode
-          uses: maxim-lobanov/setup-xcode@v1
-          with:
-            xcode-version: latest-stable
-
         - name: Build
           working-directory: ${{ runner.temp }}
           run: |
