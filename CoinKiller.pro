@@ -189,4 +189,8 @@ msvc {
     QMAKE_CXXFLAGS += -std=c++23
 }
 
+macx-clang {
+    QMAKE_CXXFLAGS += -include arm_acle.h
+}
+
 INCLUDEPATH += third_party/ExETC1
