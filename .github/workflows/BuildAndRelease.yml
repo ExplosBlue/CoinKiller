@@ -123,7 +123,7 @@ jobs:
           run: |
             mkdir build
             cd build
-            qmake ${{ env.SOURCE_DIR }}/CoinKiller.pro QMAKE_APPLE_DEVICE_ARCHS="x86_64 arm64" CK_VERSION=${{ needs.setup-env.outputs.ck-version }}
+            qmake ${{ env.SOURCE_DIR }}/CoinKiller.pro QMAKE_APPLE_DEVICE_ARCHS="arm64" CK_VERSION=${{ needs.setup-env.outputs.ck-version }}
             make -j1
 
         - name: Deploy
@@ -228,7 +228,7 @@ jobs:
 
       - name: Rename output Files
         run: |
-          mv ${{ runner.temp }}/CoinKiller-Macos/CoinKiller.dmg ${{ runner.temp }}/CoinKiller-Macos/CoinKiller-MacOS-Universal-${{ needs.setup-env.outputs.timestamp }}.dmg
+          mv ${{ runner.temp }}/CoinKiller-Macos/CoinKiller.dmg ${{ runner.temp }}/CoinKiller-Macos/CoinKiller-MacOS-arm64-${{ needs.setup-env.outputs.timestamp }}.dmg
           mv ${{ runner.temp }}/CoinKiller-Linux/CoinKiller-x86_64.AppImage ${{ runner.temp }}/CoinKiller-Linux/CoinKiller-Linux-x86_64-${{ needs.setup-env.outputs.timestamp }}.AppImage
 
       - name: Release
