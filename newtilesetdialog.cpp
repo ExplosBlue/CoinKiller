@@ -1,6 +1,9 @@
 #include "newtilesetdialog.h"
 #include "ui_newtilesetdialog.h"
 
+#include <QRegularExpression>
+#include <QRegularExpressionValidator>
+
 NewTilesetDialog::NewTilesetDialog(QWidget *parent, SettingsManager* settings, QString initialName, int initialSlot, QString title) :
     QDialog(parent),
     ui(new Ui::NewTilesetDialog)
@@ -13,6 +16,8 @@ NewTilesetDialog::NewTilesetDialog(QWidget *parent, SettingsManager* settings, Q
     ui->cancelButton->setText(tr("Cancel"));
 
     ui->okButton->setEnabled(false);
+
+    ui->tilesetNameEdit->setValidator(new QRegularExpressionValidator(QRegularExpression("[^\\s]*"), ui->tilesetNameEdit));
 
     QStringList slotNames;
     slotNames << tr("Standard Suite") << tr("Stage Suite") << tr("Background Suite") << tr("Interactive Suite");

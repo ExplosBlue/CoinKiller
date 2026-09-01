@@ -29,6 +29,8 @@
 #include <QFileSystemWatcher>
 #include <QInputDialog>
 #include <QLineEdit>
+#include <QRegularExpression>
+#include <QRegularExpressionValidator>
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
@@ -555,8 +557,15 @@ void MainWindow::renameTileset()
 
     int slot = tilesetSlotFromPrefix(selTsName);
 
-    bool ok = false;
-    QString newName = QInputDialog::getText(this, "CoinKiller", tr("Rename %1 to:").arg(selTsName), QLineEdit::Normal, selTsName, &ok);
+    QInputDialog dlg(this);
+    dlg.setWindowTitle("CoinKiller Next");
+    dlg.setLabelText(tr("Rename %1 to:").arg(selTsName));
+    dlg.setTextValue(selTsName);
+    if (QLineEdit *lineEdit = dlg.findChild<QLineEdit*>())
+        lineEdit->setValidator(new QRegularExpressionValidator(QRegularExpression("[^\\s]*"), lineEdit));
+
+    bool ok = dlg.exec() == QDialog::Accepted;
+    QString newName = dlg.textValue();
     if (!ok || newName.trimmed().isEmpty())
         return;
 
