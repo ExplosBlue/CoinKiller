@@ -932,33 +932,6 @@ void Tileset::setObjectBehavior(int selObj, int type, int hStart, int hEnd, int 
 }
 
 
-void Tileset::replaceCTPK(QString filename)
-{
-    QFile newCtpk(filename);
-
-    if(!newCtpk.open(QIODevice::ReadOnly))
-        return;
-
-    newCtpk.seek(0);
-    char* data = new char[newCtpk.size()];
-    newCtpk.read(data, newCtpk.size());
-    newCtpk.close();
-
-    delete ctpk;
-
-    FileBase* texFile = archive->openFile("/BG_tex/"+name+".ctpk");
-    texFile->open();
-    texFile->resize(newCtpk.size());
-    texFile->seek(0);
-    texFile->writeData((quint8*)data, texFile->size());
-    texFile->save();
-    texFile->close();
-
-    ctpk = new Ctpk(archive->openFile("/BG_tex/"+name+".ctpk"));
-
-    texImage = ctpk->getTexture(name + ".tga");
-}
-
 void Tileset::setInternalName(QString newName)
 {
     qDebug() << "setting filename";

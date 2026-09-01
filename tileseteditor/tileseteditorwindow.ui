@@ -786,7 +786,6 @@
     </property>
     <addaction name="actionImportImage"/>
     <addaction name="actionImportImageWithPadding"/>
-    <addaction name="actionImportImageLegacy"/>
     <addaction name="actionImportImageReplaceSelection"/>
     <addaction name="actionExportImage"/>
     <addaction name="separator"/>
@@ -909,17 +908,6 @@
    </property>
    <property name="toolTip">
     <string>Delete all Behaviors</string>
-   </property>
-  </action>
-  <action name="actionImportImageLegacy">
-   <property name="text">
-    <string>Import Image (Legacy)...</string>
-   </property>
-   <property name="toolTip">
-    <string>Import Image (Legacy)...</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+Shift+I</string>
    </property>
   </action>
   <action name="actionToggleCollision">

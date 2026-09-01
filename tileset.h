@@ -98,9 +98,6 @@ public:
 
     void save();
 
-    // temp function
-    void replaceCTPK(QString filename);
-
     static QImage padTilesetImage(const QImage& img, quint32 outWidth = 512, quint32 outHeight = 512);
 
 private:

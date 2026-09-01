@@ -101,8 +101,6 @@ private slots:
 
     void on_actionImportImageWithPadding_triggered();
 
-    void on_actionImportImageLegacy_triggered();
-
     void on_actionImportImageReplaceSelection_triggered();
 
     void on_actionToggleCollision_toggled(bool value);
@@ -165,14 +163,9 @@ private:
 
     SettingsManager* settings;
 
-    bool isConvertCancelled;
-
     QLabel* editStatus;
 
     void changeEvent(QEvent* event);
-
-private slots:
-    void convertCancelled();
 };
 
 class ImportTilesetImageDlg : public QDialog
