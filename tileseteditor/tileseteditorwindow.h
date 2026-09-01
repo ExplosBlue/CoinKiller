@@ -103,6 +103,8 @@ private slots:
 
     void on_actionImportImageLegacy_triggered();
 
+    void on_actionImportImageReplaceSelection_triggered();
+
     void on_actionToggleCollision_toggled(bool value);
 
 private:

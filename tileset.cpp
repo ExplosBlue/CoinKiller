@@ -19,6 +19,8 @@
 #include "game.h"
 #include "imagecache.h"
 
+#include <utility>
+
 Tileset::Tileset(Game *game, QString name)
 {
     this->game = game;
@@ -553,6 +555,60 @@ void Tileset::setImage(QImage &img, uint quality, bool dither)
     texImage = ctpk->getTexture((quint32)0);
 }
 
+static void paintPaddedTile(QImage& dst, const QImage& sheet, int i, int tilew)
+{
+    const int spx = i % tilew * 20;
+    const int spy = i / tilew * 20;
+    const int dpx = i % tilew * 20 + i % tilew * 4;
+    const int dpy = i / tilew * 20 + i / tilew * 4;
+
+    QPainter p(&dst);
+    p.setCompositionMode(QPainter::CompositionMode_Source);
+    p.fillRect(QRect(dpx, dpy, 24, 24), Qt::transparent);
+    p.setCompositionMode(QPainter::CompositionMode_SourceOver);
+
+    // Margins
+    p.drawImage(QRect(dpx, 2 + dpy, 2, 20), sheet.copy(spx, spy, 1, 20));                        // Left
+    p.drawImage(QRect(22 + dpx, 2 + dpy, 2, 20), sheet.copy(19 + spx, spy, 1, 20));              // Right
+    p.drawImage(QRect(2 + dpx, dpy, 20, 2), sheet.copy(spx, spy, 20, 1));                        // Top
+    p.drawImage(QRect(2 + dpx, 22 + dpy, 20, 2), sheet.copy(spx, 19 + spy, 20, 1));              // Bottom
+    p.drawImage(QRect(dpx, dpy, 2, 2), sheet.copy(spx, spy, 1, 1));                              // Top-Left
+    p.drawImage(QRect(22 + dpx, dpy, 2, 2), sheet.copy(19 + spx, spy, 1, 1));                    // Top-Right
+    p.drawImage(QRect(dpx, 22 + dpy, 2, 2), sheet.copy(spx, 19 + spy, 1, 1));                    // Bottom-Left
+    p.drawImage(QRect(22 + dpx, 22 + dpy, 2, 2), sheet.copy(19 + spx, 19 + spy, 1, 1));          // Bottom-Right
+    // Core Tile
+    p.drawImage(QRect(2 + dpx, 2 + dpy, 20, 20), sheet.copy(spx, spy, 20, 20));
+    p.end();
+}
+
+void Tileset::setImageRegion(QImage &sheet, int tileTL, int tileBR, uint quality, bool dither)
+{
+    if (tileTL < 0 || tileBR < 0)
+        return;
+
+    int x0Tile = tileTL % 21;
+    int y0Tile = tileTL / 21;
+    int x1Tile = tileBR % 21;
+    int y1Tile = tileBR / 21;
+
+    if (x1Tile < x0Tile) std::swap(x0Tile, x1Tile);
+    if (y1Tile < y0Tile) std::swap(y0Tile, y1Tile);
+
+    if (x0Tile < 0 || y0Tile < 0 || x1Tile > 20 || y1Tile > 20)
+        return;
+
+    QImage newImg = texImage.copy();
+
+    for (int y = y0Tile; y <= y1Tile; y++)
+        for (int x = x0Tile; x <= x1Tile; x++)
+            paintPaddedTile(newImg, sheet, y * 21 + x, 21);
+
+    QRect pxRect(x0Tile * 24, y0Tile * 24, (x1Tile - x0Tile + 1) * 24, (y1Tile - y0Tile + 1) * 24);
+
+    ctpk->setTextureEtc1Region(0, newImg, pxRect, quality, dither);
+    texImage = ctpk->getTexture((quint32)0);
+}
+
 void Tileset::save()
 {
     // Save Behaviors
@@ -641,6 +697,9 @@ void Tileset::save()
 
     delete objindex;
     delete objdata;
+
+    // save the (possibly in-memory edited) texture
+    ctpk->save();
 }
 
 void Tileset::addObject(int objNbr)

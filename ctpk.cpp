@@ -12,6 +12,46 @@
 #include <thread>
 #include <vector>
 
+Etc1::Etc1PackParams Ctpk::makePackParams(uint quality, bool dither)
+{
+    Etc1::Etc1PackParams pack_params;
+    if (quality == 0)
+        pack_params.mQuality = Etc1::Etc1Quality::Low;
+    else if (quality == 1)
+        pack_params.mQuality = Etc1::Etc1Quality::Medium;
+    else
+        pack_params.mQuality = Etc1::Etc1Quality::High;
+    pack_params.mDithering = dither;
+    return pack_params;
+}
+
+void Ctpk::packEtc1Block16(const QImage& img, int blockX, int blockY,
+                           Etc1::Etc1PackParams& params, quint8 out[16])
+{
+    quint64 alphaBlock = 0;
+    unsigned int packData[4 * 4];
+
+    for (int sy = 0; sy < 4; sy++)
+    {
+        for (int sx = 0; sx < 4; sx++)
+        {
+            const int x_ = blockX + sx;
+            const int y_ = blockY + sy;
+
+            QColor c = img.pixelColor(x_, y_);
+            packData[sy * 4 + sx] = (c.red() << 0) | (c.green() << 8) | (c.blue() << 16) | (0xFF << 24);
+            alphaBlock |= (static_cast<quint64>(c.alpha() >> 4) & 0xF) << (4ULL * (sx * 4 + sy));
+        }
+    }
+
+    quint64 etc1block;
+    Etc1::packEtc1Block(&etc1block, packData, params);
+
+    std::memcpy(out, &alphaBlock, sizeof(quint64));
+    const quint64 cBlock = qbswap(etc1block);
+    std::memcpy(out + 8, &cBlock, sizeof(quint64));
+}
+
 Ctpk::Ctpk(FileBase* file)
 {
     this->file = file;
@@ -443,14 +483,7 @@ void Ctpk::setTextureEtc1(quint32 entryIndex, QImage& img, bool alpha, uint qual
     assert(entry->width == img.width());
     assert(entry->height == img.height());
 
-    Etc1::Etc1PackParams pack_params;
-    if (quality == 0)
-        pack_params.mQuality = Etc1::Etc1Quality::Low;
-    else if (quality == 1)
-        pack_params.mQuality = Etc1::Etc1Quality::Medium;
-    else
-        pack_params.mQuality = Etc1::Etc1Quality::High;
-    pack_params.mDithering = dither;
+    Etc1::Etc1PackParams pack_params = makePackParams(quality, dither);
 
     const quint32 tilesX = img.width() / 8;
     const quint32 tilesY = img.height() / 8;
@@ -467,37 +500,18 @@ void Ctpk::setTextureEtc1(quint32 entryIndex, QImage& img, bool alpha, uint qual
         const int tx = static_cast<int>(t & 1) * 4;
         const int ty = static_cast<int>(t >> 1) * 4;
 
-        quint64 alphaBlock = 0;
-        unsigned int packData[4*4];
-
-        for (int sy = 0; sy < 4; sy++)
-        {
-            for (int sx = 0; sx < 4; sx++)
-            {
-                const int x_ = x + tx + sx;
-                const int y_ = y + ty + sy;
-
-                QColor c = img.pixelColor(x_, y_);
-                packData[sy*4 + sx] = (c.red()<<0) | (c.green()<<8) | (c.blue()<<16) | (0xFF<<24);
-
-                if (alpha)
-                    alphaBlock |= (static_cast<quint64>(c.alpha() >> 4) & 0xF) << (4ULL * (sx*4 + sy));
-            }
-        }
-
-        quint64 etc1block;
-        Etc1::packEtc1Block(&etc1block, packData, pack_params);
+        quint8 blockData[16];
+        packEtc1Block16(img, x + tx, y + ty, pack_params, blockData);
 
         quint8* dst = &output[static_cast<size_t>(idx) * bytesPerBlock];
 
         if (alpha)
         {
-            std::memcpy(dst, &alphaBlock, sizeof(quint64));
+            std::memcpy(dst, blockData, sizeof(quint64));
             dst += sizeof(quint64);
         }
 
-        const quint64 cBlock = qbswap(etc1block);
-        std::memcpy(dst, &cBlock, sizeof(quint64));
+        std::memcpy(dst, blockData + 8, sizeof(quint64));
     };
 
     const quint32 hwThreads = static_cast<quint32>(std::thread::hardware_concurrency());
@@ -535,6 +549,59 @@ void Ctpk::setTextureEtc1(quint32 entryIndex, QImage& img, bool alpha, uint qual
     file->writeData(output.data(), output.size());
     file->save();
     file->close();
+}
+
+void Ctpk::setTextureEtc1Region(quint32 entryIndex, QImage& img, QRect region, uint quality, bool dither)
+{
+    assert(entryIndex < numEntries);
+
+    CtpkEntry* entry = entries[entryIndex];
+    assert(entry->format == ETC1_A4);
+    assert(img.width() == (int)entry->width);
+    assert(img.height() == (int)entry->height);
+
+    Etc1::Etc1PackParams pack_params = makePackParams(quality, dither);
+
+    const quint32 tilesX = entry->width / 8;
+
+    // Clamp the region to the texture and expand it to whole 4x4 ETC1 blocks
+    const int rx0 = std::max(0, region.x());
+    const int ry0 = std::max(0, region.y());
+    const int rx1 = std::min((int)entry->width,  region.x() + region.width());
+    const int ry1 = std::min((int)entry->height, region.y() + region.height());
+    if (rx1 <= rx0 || ry1 <= ry0)
+        return;
+
+    const int bx0 = rx0 / 4;
+    const int by0 = ry0 / 4;
+    const int bx1 = (rx1 - 1) / 4;
+    const int by1 = (ry1 - 1) / 4;
+
+    file->open();
+
+    for (int by = by0; by <= by1; by++)
+    {
+        for (int bx = bx0; bx <= bx1; bx++)
+        {
+            const quint32 tx = bx / 2;
+            const quint32 ty = by / 2;
+            const quint32 t = (bx & 1) | ((by & 1) << 1);
+            const quint32 idx = (ty * tilesX + tx) * 4 + t;
+
+            quint8 blockData[16];
+            packEtc1Block16(img, bx * 4, by * 4, pack_params, blockData);
+
+            file->seek(texSectionOffset + entry->dataOffset + static_cast<qint64>(idx) * 16);
+            file->writeData(blockData, sizeof(blockData));
+        }
+    }
+
+    file->close();
+}
+
+void Ctpk::save()
+{
+    file->save();
 }
 
 void Ctpk::setFilename(QString newName)

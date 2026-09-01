@@ -94,6 +94,7 @@ public:
 
     QImage& getImage();
     void setImage(QImage& img, uint quality = 1, bool dither = false);
+    void setImageRegion(QImage& sheet, int tileTL, int tileBR, uint quality = 1, bool dither = false);
 
     void save();
 

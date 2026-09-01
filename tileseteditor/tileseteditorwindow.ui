@@ -18,7 +18,7 @@
     <item>
      <layout class="QVBoxLayout" name="sideBar">
       <property name="sizeConstraint">
-       <enum>QLayout::SetFixedSize</enum>
+       <enum>QLayout::SizeConstraint::SetFixedSize</enum>
       </property>
       <property name="leftMargin">
        <number>0</number>
@@ -83,7 +83,7 @@
       <item>
        <spacer name="verticalSpacer">
         <property name="orientation">
-         <enum>Qt::Vertical</enum>
+         <enum>Qt::Orientation::Vertical</enum>
         </property>
         <property name="sizeHint" stdset="0">
          <size>
@@ -139,7 +139,7 @@
                </size>
               </property>
               <property name="editTriggers">
-               <set>QAbstractItemView::NoEditTriggers</set>
+               <set>QAbstractItemView::EditTrigger::NoEditTriggers</set>
               </property>
              </widget>
             </item>
@@ -230,7 +230,7 @@
                </size>
               </property>
               <property name="editTriggers">
-               <set>QAbstractItemView::NoEditTriggers</set>
+               <set>QAbstractItemView::EditTrigger::NoEditTriggers</set>
               </property>
              </widget>
             </item>
@@ -345,7 +345,7 @@
              </size>
             </property>
             <property name="editTriggers">
-             <set>QAbstractItemView::NoEditTriggers</set>
+             <set>QAbstractItemView::EditTrigger::NoEditTriggers</set>
             </property>
            </widget>
           </item>
@@ -727,7 +727,7 @@
           <item>
            <spacer name="objectEditorSpacer">
             <property name="orientation">
-             <enum>Qt::Vertical</enum>
+             <enum>Qt::Orientation::Vertical</enum>
             </property>
             <property name="sizeHint" stdset="0">
              <size>
@@ -764,7 +764,7 @@
      <x>0</x>
      <y>0</y>
      <width>1165</width>
-     <height>22</height>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -787,6 +787,7 @@
     <addaction name="actionImportImage"/>
     <addaction name="actionImportImageWithPadding"/>
     <addaction name="actionImportImageLegacy"/>
+    <addaction name="actionImportImageReplaceSelection"/>
     <addaction name="actionExportImage"/>
     <addaction name="separator"/>
     <addaction name="actionDeleteAllBehaviors"/>
@@ -941,6 +942,17 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+Alt+I</string>
+   </property>
+  </action>
+  <action name="actionImportImageReplaceSelection">
+   <property name="text">
+    <string>Import Image (Re&amp;place Selection)...</string>
+   </property>
+   <property name="toolTip">
+    <string>Replace the selected tiles with an image while keeping all other tiles untouched</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::MenuRole::NoRole</enum>
    </property>
   </action>
  </widget>

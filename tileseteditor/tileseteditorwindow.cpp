@@ -37,6 +37,7 @@ TilesetEditorWindow::TilesetEditorWindow(WindowBase *parent, Tileset *tileset) :
     ui->actionImportImage->setIcon(QIcon(basePath + "import.png"));
     ui->actionImportImageWithPadding->setIcon(QIcon(basePath + "import.png"));
     ui->actionImportImageLegacy->setIcon(QIcon(basePath + "import.png"));
+    ui->actionImportImageReplaceSelection->setIcon(QIcon(basePath + "import.png"));
     ui->actionDeleteAllObjects->setIcon(QIcon(basePath + "delete_objects.png"));
     ui->actionDeleteAll3DOverlays->setIcon(QIcon(basePath + "delete_overlays.png"));
     ui->actionDeleteAllBehaviors->setIcon(QIcon(basePath + "delete_behaviors.png"));
@@ -1084,6 +1085,49 @@ void TilesetEditorWindow::on_actionImportImage_triggered()
 void TilesetEditorWindow::on_actionImportImageWithPadding_triggered()
 {
     importTilesetImage(true);
+}
+
+void TilesetEditorWindow::on_actionImportImageReplaceSelection_triggered()
+{
+    if (selectedTileTL == -1 || selectedTileBR == -1)
+    {
+        QMessageBox::information(this, tr("CoinKiller"), tr("Select one or more tiles in the tileset picker first."), QMessageBox::Ok);
+        return;
+    }
+
+    QString pngFileName = QFileDialog::getOpenFileName(this, tr("Replace Selected Tiles with Image"), QDir::currentPath(), "PNG Files (*.png)");
+    if (!pngFileName.endsWith(".png"))
+        pngFileName.append(".png");
+    if (pngFileName.isEmpty())
+        return;
+
+    QImage inputImg;
+    if (!inputImg.load(pngFileName))
+        return;
+
+    if (inputImg.width() != 420 || inputImg.height() != 420)
+    {
+        QMessageBox::information(this, " ", tr("The input image is not 420x420 pixels."), QMessageBox::Ok);
+        return;
+    }
+
+    ImportTilesetImageDlg* dlg = new ImportTilesetImageDlg(this);
+    bool ok = dlg->exec() == QDialog::Accepted;
+    int quality = dlg->getQuality();
+    bool dither = dlg->getDither();
+    delete dlg;
+
+    if (!ok)
+        return;
+
+    qApp->processEvents();
+
+    tileset->setImageRegion(inputImg, selectedTileTL, selectedTileBR, quality, dither);
+
+    tilesetPicker->setTilesetImage(tileset->getImage());
+    setupObjectsModel(true);
+
+    editStatus->setText(tr("Selected Tiles Replaced"));
 }
 
 void TilesetEditorWindow::on_actionImportImageLegacy_triggered()

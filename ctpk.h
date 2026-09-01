@@ -3,6 +3,7 @@
 
 #include "filesystem/filesystem.h"
 
+#include <Etc1.h>
 #include <QImage>
 
 class Ctpk
@@ -16,6 +17,10 @@ public:
 
     // only supports replacing with exact same data size for now!
     void setTextureEtc1(quint32 entryIndex, QImage& img, bool alpha, uint quality = 1, bool dither = false);
+
+    void setTextureEtc1Region(quint32 entryIndex, QImage& img, QRect region, uint quality = 1, bool dither = false);
+
+    void save();
 
     void setFilename(QString newName);
 
@@ -87,6 +92,10 @@ private:
         if (val < 0) return 0;
         return val;
     }
+
+    static Etc1::Etc1PackParams makePackParams(uint quality, bool dither);
+    static void packEtc1Block16(const QImage& img, int blockX, int blockY,
+                                Etc1::Etc1PackParams& params, quint8 out[16]);
 
     void updataEntryHasAlpha(CtpkEntry* entry);
 
