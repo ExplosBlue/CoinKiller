@@ -14,8 +14,9 @@ class NewTilesetDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit NewTilesetDialog(QWidget *parent, SettingsManager *settings);
-    ~NewTilesetDialog();
+    explicit NewTilesetDialog(QWidget *parent, SettingsManager *settings,
+                              QString initialName = QString(), int initialSlot = -1,
+                              QString title = QString());    ~NewTilesetDialog();
     QString getName();
     int getSlot();
 

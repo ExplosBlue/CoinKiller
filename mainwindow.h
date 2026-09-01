@@ -54,6 +54,8 @@ private slots:
 
     void addTileset();
     void removeTileset();
+    void duplicateTileset();
+    void renameTileset();
 
     void updateSpriteData();
 
@@ -90,6 +92,14 @@ private:
     bool checkForMissingFiles();
 
     QString getFilePath(QAction *action);
+
+    bool copySarcFile(const QString &fromPath, const QString &toPath);
+    void updateTilesetInternals(const QString &fromBase, const QString &toName, int slot = -1);
+
+    int tilesetSlotFromPrefix(const QString &name);
+    QString tilesetPrefixForSlot(int slot);
+    QString stripTilesetPrefix(const QString &name);
+    QString ensureTilesetSlot(const QString &name, int slot);
 
     Ui::MainWindow* ui {};
     Game* game {};

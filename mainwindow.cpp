@@ -27,6 +27,8 @@
 #include <QDesktopServices>
 #include <QStyleFactory>
 #include <QFileSystemWatcher>
+#include <QInputDialog>
+#include <QLineEdit>
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
@@ -166,6 +168,14 @@ void MainWindow::loadLevelList()
 
 void MainWindow::loadTilesetList()
 {
+    const int oldRowCount = ui->tilesetList->model() != nullptr
+        ? ui->tilesetList->model()->rowCount()
+        : 0;
+
+    QVector<bool> expanded;
+    for (int i = 0; i < oldRowCount; i++)
+        expanded.append(ui->tilesetList->isExpanded(ui->tilesetList->model()->index(i, 0)));
+
     QStandardItemModel *tilesetModel = game->getTilesetModel();
     tilesetModel->setParent(this);
 
@@ -174,6 +184,9 @@ void MainWindow::loadTilesetList()
     }
 
     ui->tilesetList->setModel(tilesetModel);
+
+    for (int i = 0; i < qMin(expanded.size(), tilesetModel->rowCount()); i++)
+        ui->tilesetList->setExpanded(tilesetModel->index(i, 0), expanded[i]);
 }
 
 void MainWindow::changeEvent(QEvent* event)
@@ -467,27 +480,16 @@ void MainWindow::addTileset()
     if (result != QDialog::Accepted)
         return;
 
-    if (game->fs->fileExists("/Unit/" + ntd.getName() + ".sarc"))
+    QString newName = ensureTilesetSlot(ntd.getName(), ntd.getSlot());
+
+    if (game->fs->fileExists("/Unit/" + newName + ".sarc"))
     {
         QMessageBox::information(this, "CoinKiller", tr("A tileset with that name already exists."), QMessageBox::StandardButton::Ok);
         return;
     }
 
-    blankTs.copy(settings->getLastRomFSPath() + "/Unit/" + ntd.getName() + ".sarc");
-
-    SarcFilesystem sarc(game->fs->openFile("/Unit/" + ntd.getName() + ".sarc"));
-    sarc.renameFile("BG_chk/d_bgchk_REPLACE.bin", "d_bgchk_" + ntd.getName() + ".bin");
-    sarc.renameFile("BG_tex/REPLACE.ctpk", ntd.getName() + ".ctpk");
-    sarc.renameFile("BG_unt/REPLACE.bin", ntd.getName() + ".bin");
-    sarc.renameFile("BG_unt/REPLACE_add.bin", ntd.getName() + "_add.bin");
-    sarc.renameFile("BG_unt/REPLACE_hd.bin", ntd.getName() + "_hd.bin");
-
-    Tileset ts(game, ntd.getName());
-    ts.setSlot(ntd.getSlot());
-    ts.setInternalName(ntd.getName());
-    ts.save();
-
-    loadTilesetList();
+    blankTs.copy(settings->getLastRomFSPath() + "/Unit/" + newName + ".sarc");
+    updateTilesetInternals("REPLACE", newName, ntd.getSlot());
 }
 
 void MainWindow::removeTileset()
@@ -508,6 +510,75 @@ void MainWindow::removeTileset()
 
         ui->removeTilesetBtn->setDisabled(true);
     }
+}
+
+void MainWindow::duplicateTileset()
+{
+    if (game == nullptr)
+        return;
+
+    QString selTsName = ui->tilesetList->selectionModel()->selectedIndexes().at(0).data(Qt::UserRole+1).toString();
+    if (selTsName.isEmpty())
+        return;
+
+    int sourceSlot = tilesetSlotFromPrefix(selTsName);
+
+    NewTilesetDialog ntd(this, settings, selTsName + "_copy", sourceSlot, tr("Duplicate Tileset..."));
+    int result = ntd.exec();
+
+    if (result != QDialog::Accepted)
+        return;
+
+    int slot = ntd.getSlot();
+    QString newName = ensureTilesetSlot(ntd.getName(), slot);
+
+    if (game->fs->fileExists("/Unit/" + newName + ".sarc"))
+    {
+        QMessageBox::information(this, "CoinKiller", tr("A tileset with that name already exists."), QMessageBox::StandardButton::Ok);
+        return;
+    }
+
+    if (!copySarcFile("/Unit/" + selTsName + ".sarc", "/Unit/" + newName + ".sarc"))
+        return;
+
+    updateTilesetInternals(selTsName, newName, slot);
+}
+
+void MainWindow::renameTileset()
+{
+    if (game == nullptr)
+        return;
+
+    QString selTsName = ui->tilesetList->selectionModel()->selectedIndexes().at(0).data(Qt::UserRole+1).toString();
+    if (selTsName.isEmpty())
+        return;
+
+    int slot = tilesetSlotFromPrefix(selTsName);
+
+    bool ok = false;
+    QString newName = QInputDialog::getText(this, "CoinKiller", tr("Rename %1 to:").arg(selTsName), QLineEdit::Normal, selTsName, &ok);
+    if (!ok || newName.trimmed().isEmpty())
+        return;
+
+    newName = ensureTilesetSlot(newName.trimmed(), slot);
+
+    if (newName == selTsName)
+        return;
+
+    if (game->fs->fileExists("/Unit/" + newName + ".sarc"))
+    {
+        QMessageBox::information(this, "CoinKiller", tr("A tileset with that name already exists."), QMessageBox::StandardButton::Ok);
+        return;
+    }
+
+    if (!copySarcFile("/Unit/" + selTsName + ".sarc", "/Unit/" + newName + ".sarc"))
+        return;
+
+    game->fs->deleteFile("/Unit/" + selTsName + ".sarc");
+
+    updateTilesetInternals(selTsName, newName);
+
+    ui->removeTilesetBtn->setDisabled(true);
 }
 
 void MainWindow::tilesetListSelectedIndexChanged()
@@ -621,11 +692,15 @@ void MainWindow::createTilesetListContextMenu(const QPoint &pos)
     QAction openTileset(tr("Open In Tileset Editor"), this);
     QAction sarcExplorer(tr("Open In Sarc Explorer"), this);
     QAction fileExplorer(tr("Show In File Explorer"), this);
+    QAction renameTileset(tr("Rename Tileset"), this);
+    QAction duplicateTileset(tr("Duplicate Tileset"), this);
     QAction removeTileset(tr("Remove Tileset"), this);
 
     connect(&openTileset,   &QAction::triggered, this, &MainWindow::openTilesetFromConextMenu);
     connect(&sarcExplorer,  &QAction::triggered, this, &MainWindow::openInSarcExplorer);
     connect(&fileExplorer,  &QAction::triggered, this, &MainWindow::showInFileExplorer);
+    connect(&renameTileset, &QAction::triggered, this, &MainWindow::renameTileset);
+    connect(&duplicateTileset, &QAction::triggered, this, &MainWindow::duplicateTileset);
     connect(&removeTileset, &QAction::triggered, this, &MainWindow::removeTileset);
 
     openTileset.setData(QVariant(pos));
@@ -635,6 +710,9 @@ void MainWindow::createTilesetListContextMenu(const QPoint &pos)
     contextMenu.addAction(&openTileset);
     contextMenu.addAction(&sarcExplorer);
     contextMenu.addAction(&fileExplorer);
+    contextMenu.addSeparator();
+    contextMenu.addAction(&renameTileset);
+    contextMenu.addAction(&duplicateTileset);
     contextMenu.addSeparator();
     contextMenu.addAction(&removeTileset);
 
@@ -749,4 +827,78 @@ void MainWindow::handleWatchedDirectoryChanged(const QString& path)
     {
         loadTilesetList();
     }
+}
+
+bool MainWindow::copySarcFile(const QString &fromPath, const QString &toPath)
+{
+    FileBase* src = game->fs->openFile(fromPath);
+    src->open();
+    const quint64 srcSize = src->size();
+    QByteArray blob(static_cast<int>(srcSize), '\0');
+    src->readData(reinterpret_cast<quint8*>(blob.data()), srcSize);
+    src->close();
+    delete src;
+
+    FileBase* dst = game->fs->openFile(toPath);
+    dst->open();
+    dst->resize(blob.size());
+    dst->seek(0);
+    dst->writeData(reinterpret_cast<quint8*>(blob.data()), blob.size());
+    dst->save();
+    dst->close();
+    delete dst;
+
+    return true;
+}
+
+void MainWindow::updateTilesetInternals(const QString &fromBase, const QString &toName, int slot)
+{
+    SarcFilesystem sarc(game->fs->openFile("/Unit/" + toName + ".sarc"));
+    sarc.renameFile("BG_chk/d_bgchk_" + fromBase + ".bin", "d_bgchk_" + toName + ".bin");
+    sarc.renameFile("BG_tex/" + fromBase + ".ctpk", toName + ".ctpk");
+    sarc.renameFile("BG_unt/" + fromBase + ".bin", toName + ".bin");
+    sarc.renameFile("BG_unt/" + fromBase + "_add.bin", toName + "_add.bin");
+    sarc.renameFile("BG_unt/" + fromBase + "_hd.bin", toName + "_hd.bin");
+
+    Tileset ts(game, toName);
+    if (slot >= 0)
+        ts.setSlot(slot);
+    ts.setInternalName(toName);
+    ts.save();
+
+    loadTilesetList();
+}
+
+int MainWindow::tilesetSlotFromPrefix(const QString &name)
+{
+    if (name.startsWith("J_")) return 0;
+    if (name.startsWith("M_")) return 1;
+    if (name.startsWith("S1_")) return 2;
+    if (name.startsWith("S2_")) return 3;
+    return -1;
+}
+
+QString MainWindow::tilesetPrefixForSlot(int slot)
+{
+    switch (slot)
+    {
+    case 0: return "J_";
+    case 2: return "S1_";
+    case 3: return "S2_";
+    }
+    return "M_";
+}
+
+QString MainWindow::stripTilesetPrefix(const QString &name)
+{
+    if (name.startsWith("J_") || name.startsWith("M_"))
+        return name.mid(2);
+    if (name.startsWith("S1_") || name.startsWith("S2_"))
+        return name.mid(3);
+    return name;
+}
+
+QString MainWindow::ensureTilesetSlot(const QString &name, int slot)
+{
+    return tilesetPrefixForSlot(slot) + stripTilesetPrefix(name);
 }
