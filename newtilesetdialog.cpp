@@ -62,6 +62,11 @@ QString NewTilesetDialog::getName()
     return (prefix + ui->tilesetNameEdit->text());
 }
 
+QString NewTilesetDialog::getBaseName()
+{
+    return ui->tilesetNameEdit->text();
+}
+
 int NewTilesetDialog::getSlot()
 {
     return ui->tilesetTypeBox->currentIndex();

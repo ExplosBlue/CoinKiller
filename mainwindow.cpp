@@ -482,7 +482,7 @@ void MainWindow::addTileset()
     if (result != QDialog::Accepted)
         return;
 
-    QString newName = ensureTilesetSlot(ntd.getName(), ntd.getSlot());
+    QString newName = ensureTilesetSlot(ntd.getBaseName(), ntd.getSlot());
 
     if (game->fs->fileExists("/Unit/" + newName + ".sarc"))
     {
@@ -532,7 +532,7 @@ void MainWindow::duplicateTileset()
         return;
 
     int slot = ntd.getSlot();
-    QString newName = ensureTilesetSlot(ntd.getName(), slot);
+    QString newName = ensureTilesetSlot(ntd.getBaseName(), slot);
 
     if (game->fs->fileExists("/Unit/" + newName + ".sarc"))
     {

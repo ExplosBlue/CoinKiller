@@ -18,6 +18,7 @@ public:
                               QString initialName = QString(), int initialSlot = -1,
                               QString title = QString());    ~NewTilesetDialog();
     QString getName();
+    QString getBaseName();
     int getSlot();
 
 private slots:
