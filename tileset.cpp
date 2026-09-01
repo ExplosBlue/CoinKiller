@@ -963,7 +963,7 @@ void Tileset::setInternalName(QString newName)
 {
     qDebug() << "setting filename";
 
-    ctpk->setFilename(name + ".tga");
+    ctpk->setFilename(newName + ".tga");
 }
 
 QImage Tileset::padTilesetImage(const QImage& img, quint32 outWidth, quint32 outHeight)

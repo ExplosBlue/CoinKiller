@@ -1,6 +1,7 @@
 #include "ctpk.h"
 #include "settingsmanager.h"
 
+#include <QDataStream>
 #include <QDebug>
 #include <QtEndian>
 #include <Etc1.h>
@@ -9,8 +10,49 @@
 #include <algorithm>
 #include <atomic>
 #include <cstring>
+#include <ctime>
 #include <thread>
 #include <vector>
+
+namespace
+{
+
+constexpr quint32 ctpkHeaderSize = 0x20;
+constexpr quint32 ctpkEntrySize = 0x20;
+
+constexpr quint32 bitmapEntrySize = sizeof(quint32);
+constexpr quint32 hashEntrySize = 2 * sizeof(quint32);
+constexpr quint32 conversionInfoEntrySize = sizeof(quint32);
+
+constexpr quint32 hashSectionAlignment = 0x8;
+constexpr quint32 textureSectionAlignment = 0x80;
+
+constexpr char ctpkMagic[4] = {'C', 'T', 'P', 'K'};
+
+constexpr quint32 alignUp(quint32 value, quint32 alignment)
+{
+    return (value + alignment - 1) / alignment * alignment;
+}
+
+void writeZeroBytes(QDataStream& out, qint64 count)
+{
+    while (count > 0)
+    {
+        const int chunk = static_cast<int>(std::min<qint64>(count, 0x4000));
+        const QByteArray zeros(chunk, '\0');
+        out.writeRawData(zeros.constData(), chunk);
+        count -= chunk;
+    }
+}
+
+void writePadding(QDataStream& out, quint64 position)
+{
+    const qint64 padding = static_cast<qint64>(position) - out.device()->pos();
+    if (padding > 0)
+        writeZeroBytes(out, padding);
+}
+
+}
 
 Etc1::Etc1PackParams Ctpk::makePackParams(uint quality, bool dither)
 {
@@ -86,7 +128,7 @@ Ctpk::Ctpk(FileBase* file)
         entry->filenameOffset = file->read32();
         entry->dataSize = file->read32();
         entry->dataOffset = file->read32();
-        entry->format = (TextrueFormat)file->read32();
+        entry->format = static_cast<TextrueFormat>(file->read32());
         updataEntryHasAlpha(entry);
         entry->width = file->read16();
         entry->height = file->read16();
@@ -244,7 +286,7 @@ void Ctpk::getTextureRaster(CtpkEntry* entry, QImage* tex)
                                 for (quint32 xx = 0; xx < 2; xx++)
                                 {
 
-                                    quint32 r, g, b, a;
+                                    quint32 r = 0, g = 0, b = 0, a = 0;
 
                                     switch (entry->format)
                                     {
@@ -356,11 +398,11 @@ void Ctpk::getTextureETC1(CtpkEntry* entry, QImage* tex)
             {
                 for (quint32 tx = 0; tx < 8; tx += 4)
                 {
-                    quint64 alpha;
+                    quint64 alpha = 0;
                     if (entry->format == ETC1_A4)
                     {
-                        alpha = (quint64)file->read32();
-                        alpha |= ((quint64)file->read32() << 32);
+                        alpha = static_cast<quint64>(file->read32());
+                        alpha |= (static_cast<quint64>(file->read32()) << 32);
                     }
 
                     quint16 subindexes = file->read16();
@@ -557,8 +599,8 @@ void Ctpk::setTextureEtc1Region(quint32 entryIndex, QImage& img, QRect region, u
 
     CtpkEntry* entry = entries[entryIndex];
     assert(entry->format == ETC1_A4);
-    assert(img.width() == (int)entry->width);
-    assert(img.height() == (int)entry->height);
+    assert(img.width() == static_cast<int>(entry->width));
+    assert(img.height() == static_cast<int>(entry->height));
 
     Etc1::Etc1PackParams pack_params = makePackParams(quality, dither);
 
@@ -567,8 +609,8 @@ void Ctpk::setTextureEtc1Region(quint32 entryIndex, QImage& img, QRect region, u
     // Clamp the region to the texture and expand it to whole 4x4 ETC1 blocks
     const int rx0 = std::max(0, region.x());
     const int ry0 = std::max(0, region.y());
-    const int rx1 = std::min((int)entry->width,  region.x() + region.width());
-    const int ry1 = std::min((int)entry->height, region.y() + region.height());
+    const int rx1 = std::min(static_cast<int>(entry->width),  region.x() + region.width());
+    const int ry1 = std::min(static_cast<int>(entry->height), region.y() + region.height());
     if (rx1 <= rx0 || ry1 <= ry0)
         return;
 
@@ -604,31 +646,191 @@ void Ctpk::save()
     file->save();
 }
 
+quint32 Ctpk::hashFilename(const QString& filename) const
+{
+    quint32 table[256];
+    crc32::generate_table(table);
+
+    const QByteArray ascii = filename.toUtf8();
+    return crc32::update(table, 0, ascii.constData(), ascii.size());
+}
+
+void Ctpk::rebuild()
+{
+    QList<quint32> oldDataOffsets;
+    oldDataOffsets.reserve(entries.size());
+    for (const CtpkEntry* entry : std::as_const(entries))
+        oldDataOffsets.append(entry->dataOffset);
+
+    const QByteArray oldTexData = readTextureSection();
+    const Layout layout = computeLayout();
+
+    commit(serialize(layout, oldTexData, oldDataOffsets));
+}
+
+Ctpk::Layout Ctpk::computeLayout()
+{
+    quint32 cursor = ctpkHeaderSize + numEntries * (ctpkEntrySize + bitmapEntrySize);
+
+    for (CtpkEntry* entry : std::as_const(entries))
+    {
+        entry->filenameOffset = cursor;
+        cursor += static_cast<quint32>(entry->filename.toLatin1().size()) + 1;
+    }
+
+    cursor = alignUp(cursor, hashSectionAlignment);
+    hashSectionOffset = cursor;
+    cursor += numEntries * hashEntrySize;
+
+    infoSectionOffset = cursor;
+    cursor += numEntries * conversionInfoEntrySize;
+
+    cursor = alignUp(cursor, textureSectionAlignment);
+    texSectionOffset = cursor;
+
+    quint32 texPos = cursor;
+    for (CtpkEntry* entry : std::as_const(entries))
+    {
+        texPos = alignUp(texPos, textureSectionAlignment);
+        entry->dataOffset = texPos - texSectionOffset;
+        texPos += entry->dataSize;
+    }
+
+    texSectionSize = texPos - texSectionOffset;
+
+    Layout layout;
+    layout.hashSectionOffset = hashSectionOffset;
+    layout.infoSectionOffset = infoSectionOffset;
+    layout.texSectionOffset = texSectionOffset;
+    layout.texSectionSize = texSectionSize;
+    layout.totalSize = texPos;
+    return layout;
+}
+
+QByteArray Ctpk::readTextureSection() const
+{
+    const quint64 fileSize = file->size();
+    if (texSectionOffset >= fileSize)
+        return QByteArray();
+
+    const int size = static_cast<int>(std::min<quint64>(texSectionSize, fileSize - texSectionOffset));
+    QByteArray data(size, '\0');
+
+    file->open();
+    file->seek(texSectionOffset);
+    file->readData(reinterpret_cast<quint8*>(data.data()), static_cast<quint64>(size));
+    file->close();
+
+    return data;
+}
+
+QByteArray Ctpk::serialize(const Layout& layout, const QByteArray& oldTexData, const QList<quint32>& oldDataOffsets) const
+{
+    QByteArray blob;
+    QDataStream out(&blob, QIODevice::WriteOnly);
+    out.setByteOrder(QDataStream::LittleEndian);
+
+    out.writeRawData(ctpkMagic, sizeof(ctpkMagic));
+    out << static_cast<quint16>(version);
+    out << static_cast<quint16>(numEntries);
+    out << layout.texSectionOffset;
+    out << layout.texSectionSize;
+    out << layout.hashSectionOffset;
+    out << layout.infoSectionOffset;
+    out << quint64(0);
+
+    for (const CtpkEntry* entry : entries)
+    {
+        out << entry->filenameOffset;
+        out << entry->dataSize;
+        out << entry->dataOffset;
+        out << static_cast<quint32>(entry->format);
+        out << entry->width;
+        out << entry->height;
+        out << entry->mipLevel;
+        out << entry->type;
+        out << entry->unk;
+        out << entry->bmpSizeOffset;
+        out << entry->unixTimestamp;
+    }
+
+    for (const CtpkEntry* entry : entries)
+        out << entry->dataSize;
+
+    for (const CtpkEntry* entry : entries)
+    {
+        const QByteArray name = entry->filename.toLatin1();
+        out.writeRawData(name.constData(), name.size());
+        out << quint8(0);
+    }
+
+    writePadding(out, layout.hashSectionOffset);
+
+    for (quint32 i = 0; i < numEntries; i++)
+    {
+        out << entries[i]->filenameHash;
+        out << i;
+    }
+
+    for (const CtpkEntry* entry : entries)
+        out << entry->info2;
+
+    writePadding(out, layout.texSectionOffset);
+
+    for (quint32 i = 0; i < numEntries; i++)
+    {
+        const CtpkEntry* entry = entries[i];
+
+        const qint64 available = static_cast<qint64>(oldTexData.size()) - oldDataOffsets[i];
+        const qint64 copied = std::max<qint64>(0, std::min<qint64>(available, entry->dataSize));
+
+        if (copied > 0)
+            out.writeRawData(oldTexData.constData() + oldDataOffsets[i], static_cast<int>(copied));
+
+        if (copied < static_cast<qint64>(entry->dataSize))
+            writeZeroBytes(out, static_cast<qint64>(entry->dataSize) - copied);
+
+        if (i + 1 < numEntries)
+            writePadding(out, layout.texSectionOffset + entries[i + 1]->dataOffset);
+    }
+
+    return blob;
+}
+
+void Ctpk::commit(QByteArray data)
+{
+    file->open();
+    file->resize(static_cast<quint64>(data.size()));
+    file->seek(0);
+    file->writeData(reinterpret_cast<quint8*>(data.data()), static_cast<quint64>(data.size()));
+    file->close();
+}
+
 void Ctpk::setFilename(QString newName)
 {
-    // Hacky fix to ensure ctpk filename is correct when creating new tilesets
-    // TODO: implement proper ctpk writing so files
-    for (uint i = 0; i< numEntries; i++)
+    foreach (CtpkEntry* entry, entries)
     {
-        file->open();
-        file->seek(entries[i]->filenameOffset);
-        file->writeStringASCII(newName, 36);
-
-        // Calculate filename hash
-        file->seek(hashSectionOffset + i*64);
-
-        quint32 table[256];
-        crc32::generate_table(table);
-
-        std::string utf8_text = newName.toUtf8().constData();
-        const void * a = utf8_text.c_str();
-
-        quint32 crc = crc32::update(table, 0, a, utf8_text.size());
-        file->write32(crc);
-
-        file->save();
-        file->close();
+        entry->filename = newName;
+        entry->filenameHash = hashFilename(newName);
     }
+
+    rebuild();
+}
+
+void Ctpk::setTextureSize(quint32 entryIndex, quint32 w, quint32 h)
+{
+    assert(entryIndex < numEntries);
+
+    CtpkEntry* entry = entries[entryIndex];
+    entry->width = w;
+    entry->height = h;
+
+    static const quint32 bpp[14] = {32, 24, 16, 16, 16, 16, 16, 8, 8, 8, 4, 4, 4, 8};
+    if (static_cast<quint32>(entry->format) < 14)
+        entry->dataSize = w * h * bpp[entry->format] / 8;
+    entry->unixTimestamp = static_cast<quint32>(time(nullptr));
+
+    rebuild();
 }
 
 void Ctpk::printInfo()
