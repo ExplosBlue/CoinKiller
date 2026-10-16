@@ -810,6 +810,14 @@ void LevelView::moveEvent(QMoveEvent *)
 
 void LevelView::keyPressEvent(QKeyEvent* evt)
 {
+    if (editManager->hasSelection() &&
+        (evt->key() == Qt::Key_Up || evt->key() == Qt::Key_Down ||
+         evt->key() == Qt::Key_Left || evt->key() == Qt::Key_Right))
+    {
+        editManager->keyPress(evt);
+        return;
+    }
+
     // Allow scrolling on ScrollView
     if (evt->key() == Qt::Key_Up || evt->key() == Qt::Key_Down ||
         evt->key() == Qt::Key_Left || evt->key() == Qt::Key_Right)
