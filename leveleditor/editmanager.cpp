@@ -1304,10 +1304,6 @@ void EditManager::swapSelectedBgdatObjects()
 
 void EditManager::setSprite(int selSprite)
 {
-    if (this->selSprite == selSprite) {
-        return;
-    }
-
     this->selSprite = selSprite;
 
     swapSelectedSprites();
