@@ -34,6 +34,8 @@
 #include <QMessageBox>
 #include <QSet>
 #include <QGesture>
+#include <QScrollArea>
+#include <QScrollBar>
 
 
 LevelView::LevelView(QWidget *parent, Level *level, QUndoStack *undoStack) :
@@ -967,19 +969,29 @@ void LevelView::handleWheelScroll(QWheelEvent* evt)
         }
     }
 
+    if (evt->modifiers() & Qt::ShiftModifier)
+    {
+        float tmp = dx;
+        dx = dy;
+        dy = tmp;
+    }
+
     dx *= speed;
     dy *= speed;
 
     if (dx == 0 && dy == 0)
         return;
 
-    float curX = visibleRegion().boundingRect().x();
-    float curY = visibleRegion().boundingRect().y();
-
-    float newX = qMax(0.0f, curX + dx);
-    float newY = qMax(0.0f, curY + dy);
-
-    emit scrollTo(newX / zoom, newY / zoom);
+    QScrollArea* area = qobject_cast<QScrollArea*>(parent()->parent());
+    if (area)
+    {
+        float curX = static_cast<float>(area->horizontalScrollBar()->value());
+        float curY = static_cast<float>(area->verticalScrollBar()->value());
+        float newX = qMax(0.0f, curX + dx);
+        float newY = qMax(0.0f, curY + dy);
+        area->horizontalScrollBar()->setValue(qRound(newX));
+        area->verticalScrollBar()->setValue(qRound(newY));
+    }
 }
 
 void LevelView::handlePinchZoom(QPinchGesture* gesture)
