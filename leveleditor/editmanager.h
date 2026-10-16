@@ -20,7 +20,8 @@ public:
     void mouseMove(int x, int y);
     void mouseUp(int x, int y);
 
-    void keyPress(QKeyEvent *) {}
+    void keyPress(QKeyEvent *);
+    bool hasSelection() const { return !selectedObjects.isEmpty(); }
 
     void render(QPainter *painter);
 

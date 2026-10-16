@@ -317,7 +317,7 @@
       <entry value="8">Star if invincible</entry>
       <entry value="9">???</entry>
       <entry value="10">Multi Coin Block</entry>
-      <entry value="11">1-UP</entry>
+      <entry value="11">1-Up Mushroom</entry>
       <entry value="12">None 3</entry>
       <entry value="13">Springboard</entry>
       <entry value="14">Mushroom if small</entry>
@@ -460,7 +460,7 @@
       <entry value="6">World 5</entry>
     </list>
   </sprite>
-  <sprite id="31" name="Boomerang Bro." notes="Actor: 0x114&#13;&#10;Description: An enemy that throws boomerang projectiles.&#13;&#10;Event Triggerable: No&#13;&#10;Affected by Gold Ring: Yes&#13;&#10;Requirements: N/A">
+  <sprite id="31" name="Boomerang Bro" notes="Actor: 0x114&#13;&#10;Description: An enemy that throws boomerang projectiles.&#13;&#10;Event Triggerable: No&#13;&#10;Affected by Gold Ring: Yes&#13;&#10;Requirements: N/A">
     <list pos="11" pos_type="nybbles" title="Jump Frequency" comment="How frquently the Boomerang Bro will jump.">
       <entry value="0">More</entry>
       <entry value="1">Average</entry>
@@ -469,7 +469,7 @@
     </list>
     <checkbox pos="13" pos_type="nybbles" title="Doesn't Jump Down" comment="If checked the Boomerang Bro will not jump below the platform it is stood on."/>
   </sprite>
-  <sprite id="32" name="Fire Bro." notes="Actor: 0x115&#13;&#10;Description: An enemy that throws fire projectiles.&#13;&#10;Event Triggerable: No&#13;&#10;Affected by Gold Ring: Yes&#13;&#10;Requirements: N/A">
+  <sprite id="32" name="Fire Bro" notes="Actor: 0x115&#13;&#10;Description: An enemy that throws fire projectiles.&#13;&#10;Event Triggerable: No&#13;&#10;Affected by Gold Ring: Yes&#13;&#10;Requirements: N/A">
     <value pos="0-1" pos_type="nybbles" title="Defunct Gold Ring Flag" comment="Defunct Triggering Event that was presumably required for Gold Ring functionality at one point."/>
     <list pos="11" pos_type="nybbles" title="Jump Frequency" comment="How frquently the Fire Bro will jump.">
       <entry value="0">More</entry>
@@ -479,7 +479,7 @@
     </list>
     <checkbox pos="13" pos_type="nybbles" title="Doesn't Jump Down" comment="If checked the Fire Bro will not jump below the platform it is stood on."/>
   </sprite>
-  <sprite id="33" name="Hammer Bro." notes="Actor: 0x113&#13;&#10;Description: An enemy that throws hammer projectiles.&#13;&#10;Event Triggerable: No&#13;&#10;Affected by Gold Ring: Yes&#13;&#10;Requirements: N/A">
+  <sprite id="33" name="Hammer Bro" notes="Actor: 0x113&#13;&#10;Description: An enemy that throws hammer projectiles.&#13;&#10;Event Triggerable: No&#13;&#10;Affected by Gold Ring: Yes&#13;&#10;Requirements: N/A">
     <list pos="11" pos_type="nybbles" title="Jump Frequency" comment="How frquently the Hammer Bro will jump.">
       <entry value="0">More</entry>
       <entry value="1">Average</entry>
@@ -488,7 +488,7 @@
     </list>
     <checkbox pos="13" pos_type="nybbles" title="Doesn't Jump Down" comment="If checked the Hammer Bro will not jump below the platform it is stood on."/>
   </sprite>
-  <sprite id="34" name="Sledge Bro." notes="Actor:  0x13E &#13;&#10;Description: An enemy that throws hammer projectiles and creates shockwaves when it jumps.&#13;&#10;Event Triggerable: No&#13;&#10;Affected by Gold Ring: Yes&#13;&#10;Requirements: N/A">
+  <sprite id="34" name="Sledge Bro" notes="Actor:  0x13E &#13;&#10;Description: An enemy that throws hammer projectiles and creates shockwaves when it jumps.&#13;&#10;Event Triggerable: No&#13;&#10;Affected by Gold Ring: Yes&#13;&#10;Requirements: N/A">
     <list pos="11" pos_type="nybbles" title="Jump Frequency" comment="How frquently the Sledge Bro will jump.">
       <entry value="0">More</entry>
       <entry value="1">Average</entry>
@@ -705,7 +705,7 @@
     <value pos="10" pos_type="nybbles" title="Swing Amount" comment="Determines how much the chain will swing. Used for phase 3."/>
     <value pos="11" pos_type="nybbles" title="Length" comment="Length of the chain."/>
   </sprite>
-  <sprite id="50" name="Ludgwig Battle Chain Controller" notes="Actor: 0x06B&#13;&#10;Description: The battle chain controller for Ludwig's castle battle.&#13;&#10;Event Triggerable: No&#13;&#10;Affected by Gold Ring: No &#13;&#10;Requirements: N/A"/>
+  <sprite id="50" name="Ludwig Battle Chain Controller" notes="Actor: 0x06B&#13;&#10;Description: The battle chain controller for Ludwig's castle battle.&#13;&#10;Event Triggerable: No&#13;&#10;Affected by Gold Ring: No &#13;&#10;Requirements: N/A"/>
   <sprite id="51" name="Fuzzy" notes="Actor: 0x149&#13;&#10;Description: An enemy that moves along tracks.&#13;&#10;Event Triggerable: No&#13;&#10;Affected by Gold Ring: No &#13;&#10;Requirements: Must be placed on a track.">
     <value pos="0-1" pos_type="nybbles" title="Triggering Event ID" comment="Spawned when this event is activated."/>
     <value pos="2-3" pos_type="nybbles" title="Triggering Event ID (Duplicate)" comment="Takes priority over the other ID if set."/>
@@ -871,10 +871,8 @@
     <checkbox pos="4" pos_type="nybbles" title="Hidden" comment="When checked, the coin will appear below layer 1 tiles, but will be uncollectable if not fully visible."/>
     <value pos="5" pos_type="nybbles" title="Unknown Value 12 "/>
     <value pos="6" pos_type="nybbles" title="Unknown Value 9"/>
-    <list pos="7" pos_type="nybbles" title="Spawn Behavior" comment="Changes how the coin spawns. Is probably used internally when spawning coins. [Unused]">
-      <entry value="0">Normal</entry>
-      <entry value="2">Smoke Effect</entry>
-    </list>
+    <checkbox pos="7" pos_type="nybbles" title="Spawn With Smoke Effect" mask="2" comment="Changes how the coin spawns. Is probably used internally when spawning coins. [Unused]"/>
+    <checkbox pos="7" pos_type="nybbles" title="Larger Exist Distance" comment="When checked, the exist distance is set to 128.0f in both directions. "/>
     <checkbox pos="8" pos_type="nybbles" title="Temporary Coin" comment="Causes the coin to despawn after a couple of seconds, similar to a coin dropped by an enemy. [unused]"/>
     <list pos="9" pos_type="nybbles" title="Z-Order" comment="Determines the Z position of the coin. Values &gt; 2 are the same as 2.">
       <entry value="0">Above layer 1</entry>
@@ -943,7 +941,7 @@
       <entry value="4">Coin Faces Controller</entry>
     </list>
     <checkbox pos="19" pos_type="bits" title="Use Rotation Controller Starting Rotation Offset" comment="If enabled, the Coin Will use the start offset specified in the rotation controller."/>
-    <value pos="0-1" pos_type="nybbles" title="Triggering Event ID" comment="If not set to 0, appears without &quot;flourish&quot; when this is triggered."/>
+    <value pos="0-1" pos_type="nybbles" title="Triggering Event ID"/>
     <checkbox pos="18" pos_type="nybbles" title="Start Invisible" mask="2" comment="If checked, the coin will stay invisible until the associated rotation controller is triggered."/>
     <value pos="20-21" pos_type="nybbles" title="Rotation ID"/>
   </sprite>
@@ -1575,7 +1573,7 @@
       <entry value="7">Star</entry>
       <entry value="8">Star if invincible</entry>
       <entry value="10">Multi Coin Block</entry>
-      <entry value="11">1-UP</entry>
+      <entry value="11">1-Up Mushroom</entry>
       <entry value="13">Springboard</entry>
       <entry value="14">Mushroom if small</entry>
     </list>
@@ -1592,7 +1590,7 @@
       <entry value="7">Star</entry>
       <entry value="8">Star/Coin</entry>
       <entry value="10">10 Coins</entry>
-      <entry value="11">1-UP</entry>
+      <entry value="11">1-Up Mushroom</entry>
       <entry value="13">Trampoline</entry>
       <entry value="14">Mushroom/Coin</entry>
     </list>
@@ -1966,13 +1964,6 @@
       <entry value="6">Six</entry>
       <entry value="7">Seven</entry>
       <entry value="8">Eight</entry>
-      <entry value="9">Nine</entry>
-      <entry value="10">Ten</entry>
-      <entry value="11">Elven</entry>
-      <entry value="12">Twelve</entry>
-      <entry value="13">Thirteen</entry>
-      <entry value="14">Fourteen</entry>
-      <entry value="15">Fifteen</entry>
     </list>
   </sprite>
   <sprite id="140" name="Crowber"/>
@@ -2968,7 +2959,7 @@
       <entry value="7">Star</entry>
       <entry value="8">Star if invincible</entry>
       <entry value="10">Multi Coin Block</entry>
-      <entry value="11">1-UP</entry>
+      <entry value="11">1-Up Mushroom</entry>
       <entry value="13">Springboard</entry>
       <entry value="14">Mushroom if small</entry>
     </list>
@@ -2985,7 +2976,7 @@
       <entry value="7">Star</entry>
       <entry value="8">Star if invincible</entry>
       <entry value="10">Multi Coin Block</entry>
-      <entry value="11">1-UP</entry>
+      <entry value="11">1-Up Mushroom</entry>
       <entry value="13">Springboard</entry>
       <entry value="14">Mushroom if small</entry>
     </list>
@@ -3482,7 +3473,7 @@
     <bitfield pos="16-19" pos_type="nybbles" title="Peepa Gap Position" comment="The gap where the player can jump through"/>
   </sprite>
   <sprite id="231" name="Boohemoth" notes="Actor: 0x12d">
-    <value pos="0-1" pos_type="nybbles" title="Triggering Event ID" comment="Spawns with &quot;flourish&quot; when flag is triggered."/>
+    <value pos="0-1" pos_type="nybbles" title="Triggering Event ID"/>
     <value pos="9" pos_type="nybbles" title="Path ID"/>
     <list pos="10" pos_type="nybbles" title="Direction" comment="Changes the direction of the Boohemoth, with 0 being right, and 1 being left.">
       <entry value="0">Right</entry>
@@ -3921,7 +3912,7 @@
       <entry value="7">Star</entry>
       <entry value="8">Star/Coin</entry>
       <entry value="10">10 Coins</entry>
-      <entry value="11">1-UP</entry>
+      <entry value="11">1-Up Mushroom</entry>
       <entry value="13">Trampoline</entry>
       <entry value="14">Mushroom/Coin</entry>
     </list>
@@ -4041,13 +4032,12 @@
   </sprite>
   <sprite id="272" name="Peach Cage For Cutscene" notes="The cage peach is in for a cutscene."/>
   <sprite id="273" name="Coin Roulette Block" notes="Pops when touched by Mega Mario or a Spiked Ball.">
-    <value pos="0-1" pos_type="nybbles" title="Triggering Event ID" comment="Spawned if on with no &quot;flourish&quot;."/>
-    <checkbox pos="18" pos_type="nybbles" title="Destroyable" comment="When checked the roulette block can be destroyed by other sprites."/>
-    <list pos="19" pos_type="nybbles" title="Type" comment="Values greater than 3 are repeated.">
-      <entry value="0">Starts on five</entry>
-      <entry value="1">Starts on 10</entry>
-      <entry value="2">Big</entry>
-      <entry value="3">Starts on 50</entry>
+    <value pos="0-1" pos_type="nybbles" title="Triggering Event ID"/>
+    <checkbox pos="18" pos_type="nybbles" title="Destroyable" comment="When checked, the roulette block can be destroyed by other sprites."/>
+    <list pos="19" pos_type="nybbles" title="Roulette Pattern" comment="Values greater than 3 are repeated. Value 3 doesn't function properly.">
+      <entry value="0">5&#x201A; 10&#x201A; 30&#x201A; 5&#x201A; 10&#x201A; 30&#x201A; 5&#x201A; 10&#x201A; 30&#x201A; 5&#x201A; 50&#x201A; 10</entry>
+      <entry value="1">10&#x201A; 30&#x201A; 50</entry>
+      <entry value="2">10&#x201A; 50&#x201A; 10&#x201A; 100</entry>
     </list>
   </sprite>
   <sprite id="274" name="Flying Gold Block Spawn Point" notes="This is similar in function to the Red ? Blocks and the Hammer Bros that appear in NSMB.">
@@ -4078,7 +4068,7 @@
       <entry value="7">Star</entry>
       <entry value="8">Star/Coin</entry>
       <entry value="10">10 Coins</entry>
-      <entry value="11">1-UP</entry>
+      <entry value="11">1-Up Mushroom</entry>
       <entry value="13">Trampoline</entry>
       <entry value="14">Mushroom/Coin</entry>
     </list>
@@ -4094,7 +4084,7 @@
       <entry value="7">Star</entry>
       <entry value="8">Star/Coin</entry>
       <entry value="10">10 Coins</entry>
-      <entry value="11">1-UP</entry>
+      <entry value="11">1-Up Mushroom</entry>
       <entry value="13">Trampoline</entry>
       <entry value="14">Mushroom/Coin</entry>
     </list>
@@ -4694,6 +4684,7 @@
   </sprite>
   <sprite id="319" name="Staff Credits - Koopa Clown Car" notes="The Koopa Clown Car actor used for the staff credits."/>
   <sprite id="320" name="Path-controlled Lift" notes="Uses the Path Node &quot;Variable Use&quot; field to determine how rotation acts, a value of 0 will cause the platform to wobble, a value of 1 will cause the platform to be at a fixed rotation.">
+    <value pos="4" pos_type="nybbles" title="unk 4"/>
     <value pos="7-8" pos_type="nybbles" title="Starting Path Node" comment="The ID of the path node the platform will start at."/>
     <value pos="9-10" pos_type="nybbles" title="Path ID" comment="The ID of the path the platform will follow."/>
     <value pos="11" pos_type="nybbles" title="Platform Length" comment="Length of the platform."/>

@@ -59,6 +59,7 @@ SpriteEditorWidget::SpriteEditorWidget(QList<Sprite*> *sprites, QUndoStack *undo
     this->restoreState(SettingsManager::getInstance()->get("SpriteEditorSplitter").toByteArray());
 
     connect(spriteTree, &QTreeWidget::currentItemChanged, this, &SpriteEditorWidget::handleIndexChange);
+    connect(spriteTree, &QTreeWidget::itemClicked, this, [this](QTreeWidgetItem *item, int) { handleIndexChange(item); });
     connect(spriteIds, &SpriteIdWidget::selectedSpriteChanged, this, &SpriteEditorWidget::handleSelectedSpriteChanged);
     connect(this, &SpriteEditorWidget::splitterMoved, this, &SpriteEditorWidget::handleSplitterMoved);
 }

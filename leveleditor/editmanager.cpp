@@ -323,6 +323,62 @@ void EditManager::mouseMove(int x, int y)
     actualCursor = getCursorAtPos(x, y);
 }
 
+void EditManager::keyPress(QKeyEvent *evt)
+{
+    if (selectedObjects.isEmpty())
+        return;
+
+    int dx = 0, dy = 0;
+
+    switch (evt->key())
+    {
+    case Qt::Key_Up:
+        dy = -1;
+        break;
+    case Qt::Key_Down:
+        dy = 1;
+        break;
+    case Qt::Key_Left:
+        dx = -1;
+        break;
+    case Qt::Key_Right:
+        dx = 1;
+        break;
+    default:
+        return;
+    }
+
+    updateSelectionBounds();
+
+    if (selectionHasBGDats)
+    {
+        dx *= 20;
+        dy *= 20;
+    }
+
+    if (minBoundX + dx < 0) dx = -minBoundX;
+    if (minBoundY + dy < 0) dy = -minBoundY;
+
+    if (dx == 0 && dy == 0)
+        return;
+
+    undoStack->beginMacro(tr("Nudged Selection (%1,%2)").arg(dx).arg(dy));
+    foreach (Object* obj, selectedObjects)
+    {
+        undoStack->push(new Commands::ObjectCmd::IncreasePosition(obj, dx, dy, 0));
+    }
+    undoStack->endMacro();
+
+    minBoundX += dx;
+    minBoundY += dy;
+    lx += dx;
+    ly += dy;
+
+    evt->accept();
+    emit updateEditors();
+    emit updateLevelView();
+}
+
 void EditManager::mouseUp(int x, int y)
 {
     mouseAct = getActionAtPos(x, y);
@@ -1304,10 +1360,6 @@ void EditManager::swapSelectedBgdatObjects()
 
 void EditManager::setSprite(int selSprite)
 {
-    if (this->selSprite == selSprite) {
-        return;
-    }
-
     this->selSprite = selSprite;
 
     swapSelectedSprites();

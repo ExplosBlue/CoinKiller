@@ -3,6 +3,20 @@
 
 #include <QHash>
 
+class CourseItem : public QStandardItem
+{
+public:
+    using QStandardItem::QStandardItem;
+    bool operator<(const QStandardItem &other) const override
+    {
+        QVariant a = data(Qt::UserRole);
+        QVariant b = other.data(Qt::UserRole);
+        if (a.isValid() && b.isValid())
+            return a.toString() < b.toString();
+        return QStandardItem::operator<(other);
+    }
+};
+
 Game::Game(const QString& path)
 {
     this->fs = new ExternalFilesystem(path);
@@ -120,9 +134,10 @@ QStandardItemModel* Game::getCourseModel()
             if (!re.match(filename, 0, QRegularExpression::NormalMatch).hasMatch())
                 continue;
 
-            QString worldName = worldNames.value(filename.split(".")[0].split("-")[0].toInt());
-
             QString worldNum = filename.split(".")[0].split("-")[0];
+            QString levelNum = filename.split(".")[0].split("-")[1];
+
+            QString worldName = worldNames.value(worldNum.toInt());
 
             if (worldName.isEmpty())
                 worldName = worldNum;
@@ -130,7 +145,8 @@ QStandardItemModel* Game::getCourseModel()
             // World Categories
             if (worldItemPtr == nullptr || worldItemPtr->text() != QString(worldName))
             {
-                QStandardItem* subItem = new QStandardItem(worldName);
+                CourseItem* subItem = new CourseItem(worldName);
+                subItem->setData(worldNum.rightJustified(3, '0'), Qt::UserRole);
                 worldItemPtr = subItem;
                 dirItem->appendRow(subItem);
             }
@@ -138,12 +154,15 @@ QStandardItemModel* Game::getCourseModel()
             // Levels
             if (worldItemPtr != nullptr)
             {
-                QString levelName = levelNames.value(filename.split(".")[0].split("-")[1].toInt()).arg(worldName);
+                QString levelName = levelNames.value(levelNum.toInt());
 
                 if (levelName.isEmpty())
-                    levelName = filename;
+                    levelName = worldName + " - " + levelNum;
+                else
+                    levelName = levelName.arg(worldName);
 
-                QStandardItem* subItem = new QStandardItem(levelName);
+                CourseItem* subItem = new CourseItem(levelName);
+                subItem->setData(levelNum.rightJustified(3, '0'), Qt::UserRole);
                 if (dir != "")
                     subItem->setData(dir + "/" + filename);
                 else
