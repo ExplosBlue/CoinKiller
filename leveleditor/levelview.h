@@ -26,6 +26,7 @@
 #include <QApplication>
 #include <QGestureEvent>
 #include <QPinchGesture>
+#include <QNativeGestureEvent>
 
 #include "filesystem/filesystem.h"
 #include "level.h"
@@ -93,6 +94,7 @@ private:
     void handleWheelZoom(QWheelEvent* evt);
     void handleWheelScroll(QWheelEvent* evt);
     void handlePinchZoom(QPinchGesture* gesture);
+    void handleNativeZoom(QNativeGestureEvent* evt);
 
     Level* level;
 

@@ -41,7 +41,9 @@ LevelView::LevelView(QWidget *parent, Level *level, QUndoStack *undoStack) :
 {
     setMouseTracking(true);
     setAttribute(Qt::WA_AcceptTouchEvents);
+#if defined(Q_OS_MACOS)
     grabGesture(Qt::PinchGesture);
+#endif
 
     editManager = new EditManager(level, undoStack);
     connect(editManager, SIGNAL(updateLevelView()), this, SLOT(requestUpdate()));
@@ -821,6 +823,7 @@ void LevelView::keyPressEvent(QKeyEvent* evt)
 
 bool LevelView::event(QEvent* evt)
 {
+#if defined(Q_OS_MACOS)
     if (evt->type() == QEvent::Gesture)
     {
         QGestureEvent* gestureEvt = static_cast<QGestureEvent*>(evt);
@@ -828,6 +831,19 @@ bool LevelView::event(QEvent* evt)
         if (pinch)
         {
             handlePinchZoom(pinch);
+            return true;
+        }
+    }
+#endif
+
+    if (evt->type() == QEvent::NativeGesture)
+    {
+        QNativeGestureEvent* nativeEvt = static_cast<QNativeGestureEvent*>(evt);
+        if (nativeEvt->gestureType() == Qt::ZoomNativeGesture ||
+            nativeEvt->gestureType() == Qt::BeginNativeGesture ||
+            nativeEvt->gestureType() == Qt::EndNativeGesture)
+        {
+            handleNativeZoom(nativeEvt);
             return true;
         }
     }
@@ -986,6 +1002,33 @@ void LevelView::handlePinchZoom(QPinchGesture* gesture)
 
 
 
+
+void LevelView::handleNativeZoom(QNativeGestureEvent* evt)
+{
+    if (evt->gestureType() == Qt::ZoomNativeGesture)
+    {
+        float newZoom = qBound(0.3f, zoom * (1.0f + static_cast<float>(evt->value())), 4.0f);
+
+        if (newZoom != zoom)
+        {
+            float oldZoom = zoom;
+            int vpW = visibleRegion().boundingRect().width();
+            int vpH = visibleRegion().boundingRect().height();
+            float centerX = (visibleRegion().boundingRect().x() + vpW / 2.0f) / oldZoom;
+            float centerY = (visibleRegion().boundingRect().y() + vpH / 2.0f) / oldZoom;
+
+            setZoom(newZoom);
+
+            float newScrollX = qMax(0.0f, centerX * newZoom - vpW / 2.0f);
+            float newScrollY = qMax(0.0f, centerY * newZoom - vpH / 2.0f);
+
+            emit zoomLevelChanged(newZoom);
+            emit scrollTo(newScrollX / newZoom, newScrollY / newZoom);
+        }
+
+        evt->accept();
+    }
+}
 
 void LevelView::requestUpdate()
 {
