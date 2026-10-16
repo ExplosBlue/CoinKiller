@@ -33,12 +33,15 @@
 #include <QPainterPath>
 #include <QMessageBox>
 #include <QSet>
+#include <QGesture>
 
 
 LevelView::LevelView(QWidget *parent, Level *level, QUndoStack *undoStack) :
     QWidget(parent), level(level), undoStack(undoStack)
 {
     setMouseTracking(true);
+    setAttribute(Qt::WA_AcceptTouchEvents);
+    grabGesture(Qt::PinchGesture);
 
     editManager = new EditManager(level, undoStack);
     connect(editManager, SIGNAL(updateLevelView()), this, SLOT(requestUpdate()));
@@ -816,6 +819,171 @@ void LevelView::keyPressEvent(QKeyEvent* evt)
     editManager->keyPress(evt);
 }
 
+bool LevelView::event(QEvent* evt)
+{
+    if (evt->type() == QEvent::Gesture)
+    {
+        QGestureEvent* gestureEvt = static_cast<QGestureEvent*>(evt);
+        QPinchGesture* pinch = static_cast<QPinchGesture*>(gestureEvt->gesture(Qt::PinchGesture));
+        if (pinch)
+        {
+            handlePinchZoom(pinch);
+            return true;
+        }
+    }
+
+    return QWidget::event(evt);
+}
+
+void LevelView::wheelEvent(QWheelEvent* evt)
+{
+    bool ctrlHeld = (evt->modifiers() & Qt::ControlModifier) ||
+                    (QApplication::keyboardModifiers() & Qt::ControlModifier);
+
+    if (ctrlHeld)
+        handleWheelZoom(evt);
+    else
+        handleWheelScroll(evt);
+
+    evt->accept();
+}
+
+void LevelView::handleWheelZoom(QWheelEvent* evt)
+{
+    if (evt->phase() == Qt::ScrollMomentum)
+        return;
+
+    int delta = evt->angleDelta().y();
+    if (delta == 0)
+        delta = evt->angleDelta().x();
+    if (delta == 0 && !evt->pixelDelta().isNull())
+    {
+        delta = evt->pixelDelta().y() * 6;
+        if (delta == 0)
+            delta = evt->pixelDelta().x() * 6;
+    }
+
+    scrollAccumulator += delta;
+
+    int steps = scrollAccumulator / 120;
+    scrollAccumulator %= 120;
+
+    if (steps == 0)
+        return;
+
+    float oldZoom = zoom;
+    float newZoom = zoom;
+
+    if (steps > 0)
+    {
+        for (int i = 0; i < steps && newZoom < 4; i++)
+        {
+            if (newZoom < 1) newZoom += 0.1f;
+            else newZoom += 0.25f;
+        }
+    }
+    else
+    {
+        for (int i = 0; i < -steps && newZoom > 0.3f; i++)
+        {
+            if (newZoom <= 1.5f) newZoom -= 0.1f;
+            else newZoom -= 0.25f;
+        }
+    }
+
+    if (newZoom != oldZoom)
+    {
+        float mx = evt->position().x();
+        float my = evt->position().y();
+        float scrollX = visibleRegion().boundingRect().x();
+        float scrollY = visibleRegion().boundingRect().y();
+
+        float ratio = newZoom / oldZoom;
+
+        setZoom(newZoom);
+
+        float newScrollX = qMax(0.0f, scrollX + mx * (ratio - 1.0f));
+        float newScrollY = qMax(0.0f, scrollY + my * (ratio - 1.0f));
+
+        emit zoomLevelChanged(newZoom);
+        emit scrollTo(newScrollX / newZoom, newScrollY / newZoom);
+    }
+}
+
+void LevelView::handleWheelScroll(QWheelEvent* evt)
+{
+    if (evt->phase() == Qt::ScrollMomentum)
+        return;
+
+    QPoint pixelD = evt->pixelDelta();
+    QPoint angleD = evt->angleDelta();
+    float speed = 2.5f;
+
+    float dx = 0, dy = 0;
+
+    if (!pixelD.isNull() && pixelD != QPoint(0, 0))
+    {
+        dx = static_cast<float>(-pixelD.x());
+        dy = static_cast<float>(-pixelD.y());
+    }
+    else
+    {
+        float ax = angleD.x() * 20.0f / 120.0f;
+        float ay = angleD.y() * 20.0f / 120.0f;
+
+        if (evt->inverted())
+        {
+            dx = ax;
+            dy = ay;
+        }
+        else
+        {
+            dx = -ax;
+            dy = -ay;
+        }
+    }
+
+    dx *= speed;
+    dy *= speed;
+
+    if (dx == 0 && dy == 0)
+        return;
+
+    float curX = visibleRegion().boundingRect().x();
+    float curY = visibleRegion().boundingRect().y();
+
+    float newX = qMax(0.0f, curX + dx);
+    float newY = qMax(0.0f, curY + dy);
+
+    emit scrollTo(newX / zoom, newY / zoom);
+}
+
+void LevelView::handlePinchZoom(QPinchGesture* gesture)
+{
+    if (gesture->changeFlags() & QPinchGesture::ScaleFactorChanged)
+    {
+        float oldZoom = zoom;
+        float newZoom = qBound(0.3f, oldZoom * static_cast<float>(gesture->scaleFactor()), 4.0f);
+
+        if (newZoom != oldZoom)
+        {
+            int vpW = visibleRegion().boundingRect().width();
+            int vpH = visibleRegion().boundingRect().height();
+
+            float centerX = (visibleRegion().boundingRect().x() + vpW / 2.0f) / oldZoom;
+            float centerY = (visibleRegion().boundingRect().y() + vpH / 2.0f) / oldZoom;
+
+            setZoom(newZoom);
+
+            float newScrollX = qMax(0.0f, centerX * newZoom - vpW / 2.0f);
+            float newScrollY = qMax(0.0f, centerY * newZoom - vpH / 2.0f);
+
+            emit zoomLevelChanged(newZoom);
+            emit scrollTo(newScrollX / newZoom, newScrollY / newZoom);
+        }
+    }
+}
+
 
 
 
@@ -831,6 +999,8 @@ void LevelView::requestUpdate()
         }(), this, [this] {
            update();
            updatePending = false;
+
+           scrollAccumulator = 0;
        });
     }
 }
