@@ -18,8 +18,14 @@
 #include "tileset.h"
 #include "game.h"
 #include "imagecache.h"
+#include "settingsmanager.h"
 
 #include <utility>
+#include <QDomDocument>
+#include <QObject>
+#include <QSet>
+#include <QDir>
+#include <QFile>
 
 Tileset::Tileset(Game *game, QString name)
 {
@@ -967,4 +973,201 @@ QImage Tileset::padTilesetImage(const QImage& img, quint32 outWidth, quint32 out
     }
 
     return ret;
+}
+
+namespace {
+
+QString tilesetDisplayNameFromFile(const QString& fileName)
+{
+    QString name = fileName;
+
+    if (name.startsWith("S1_") || name.startsWith("S2_"))
+        name = name.mid(3);
+    else if (name.startsWith("M_") || name.startsWith("J_"))
+        name = name.mid(2);
+
+    return name.replace('_', ' ');
+}
+
+bool parseTilesetsXml(const QString& path, QList<TilesetGroup>& groups)
+{
+    QFile file(path);
+    if (!file.open(QIODevice::ReadOnly))
+        return false;
+
+    QDomDocument xml;
+    xml.setContent(&file);
+    file.close();
+
+    QDomElement root = xml.documentElement();
+    if (root.isNull())
+        return false;
+
+    for (QDomElement groupElement = root.firstChildElement("group"); !groupElement.isNull(); groupElement = groupElement.nextSiblingElement("group"))
+    {
+        TilesetGroup group;
+        group.name = groupElement.attribute("name");
+
+        for (QDomElement tsElement = groupElement.firstChildElement("tileset"); !tsElement.isNull(); tsElement = tsElement.nextSiblingElement("tileset"))
+        {
+            TilesetEntry entry;
+            entry.fileName = tsElement.attribute("file");
+            entry.name = tsElement.attribute("name", entry.fileName);
+
+            if (entry.fileName.isEmpty())
+                continue;
+
+            group.tilesets.append(entry);
+        }
+
+        groups.append(group);
+    }
+
+    return true;
+}
+
+}
+
+TilesetList::TilesetList(FilesystemBase* fs) :
+    fs(fs)
+{
+}
+
+QList<TilesetGroup> TilesetList::groups() const
+{
+    QList<TilesetGroup> groups;
+
+    QString basePath = SettingsManager::getInstance()->dataPath("tilesets.xml");
+    parseTilesetsXml(basePath, groups);
+
+    QString translatedPath = SettingsManager::getInstance()->getFilePath("tilesets.xml");
+    if (!translatedPath.isEmpty() && translatedPath != basePath)
+    {
+        QList<TilesetGroup> translatedGroups;
+        if (parseTilesetsXml(translatedPath, translatedGroups))
+        {
+            for (const TilesetGroup& translatedGroup : translatedGroups)
+            {
+                TilesetGroup* targetGroup = nullptr;
+                for (TilesetGroup& group : groups)
+                {
+                    if (group.name == translatedGroup.name)
+                    {
+                        targetGroup = &group;
+                        break;
+                    }
+                }
+
+                if (targetGroup == nullptr)
+                {
+                    groups.append(translatedGroup);
+                    continue;
+                }
+
+                for (const TilesetEntry& translatedEntry : translatedGroup.tilesets)
+                {
+                    bool found = false;
+                    for (TilesetEntry& entry : targetGroup->tilesets)
+                    {
+                        if (entry.fileName == translatedEntry.fileName)
+                        {
+                            entry.name = translatedEntry.name;
+                            found = true;
+                            break;
+                        }
+                    }
+
+                    if (!found)
+                        targetGroup->tilesets.append(translatedEntry);
+                }
+            }
+        }
+    }
+
+    QList<QString> tilesetFiles;
+    fs->directoryContents("/Unit", QDir::Files, tilesetFiles);
+
+    QList<QString> existingFiles;
+    for (const QString& file : tilesetFiles)
+        existingFiles.append(stripExtension(file));
+
+    QSet<QString> mapped;
+    for (TilesetGroup& group : groups)
+    {
+        for (int i = group.tilesets.size() - 1; i >= 0; i--)
+        {
+            if (!existingFiles.contains(group.tilesets[i].fileName))
+            {
+                group.tilesets.removeAt(i);
+                continue;
+            }
+
+            mapped.insert(group.tilesets[i].fileName);
+        }
+    }
+
+    for (int i = groups.size() - 1; i >= 0; i--)
+        if (groups[i].tilesets.isEmpty())
+            groups.removeAt(i);
+
+    TilesetGroup otherGroup;
+    otherGroup.name = QObject::tr("Other");
+
+    for (const QString& fileName : existingFiles)
+    {
+        if (mapped.contains(fileName))
+            continue;
+
+        TilesetEntry entry;
+        entry.fileName = fileName;
+        entry.name = tilesetDisplayNameFromFile(fileName);
+        otherGroup.tilesets.append(entry);
+    }
+
+    if (!otherGroup.tilesets.isEmpty())
+        groups.append(otherGroup);
+
+    return groups;
+}
+
+bool TilesetList::matchesSlot(const QString& fileName, int slot)
+{
+    switch (slot)
+    {
+    case 0: return fileName.startsWith("J_");
+    case 1: return fileName.startsWith("M_");
+    case 2: return fileName.startsWith("S1_");
+    case 3: return fileName.startsWith("S2_");
+    }
+
+    return true;
+}
+
+QString TilesetList::stripExtension(const QString& fileName)
+{
+    int dot = fileName.lastIndexOf('.');
+    if (dot > 0)
+        return fileName.left(dot);
+
+    return fileName;
+}
+
+QString TilesetList::displayName(const QString& fileName) const
+{
+    for (const TilesetGroup& group : groups())
+        for (const TilesetEntry& entry : group.tilesets)
+            if (entry.fileName == fileName)
+                return entry.name;
+
+    return fileName;
+}
+
+QString TilesetList::groupName(const QString& fileName) const
+{
+    for (const TilesetGroup& group : groups())
+        for (const TilesetEntry& entry : group.tilesets)
+            if (entry.fileName == fileName)
+                return group.name;
+
+    return QString();
 }

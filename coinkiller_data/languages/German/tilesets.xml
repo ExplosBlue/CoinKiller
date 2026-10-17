@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tilesets>
+	<group name="Retail">
+		<tileset file="J_Kihon" name="Oberwelt"/>
+		<tileset file="J_Chika" name="Untergrund"/>
+		<tileset file="J_Setsugen" name="Schnee"/>
+		<tileset file="J_Suichu" name="Unterwasser"/>
+		<tileset file="J_Yougan" name="Lava"/>
+		<tileset file="J_Gold" name="Gold"/>
+		<tileset file="J_Kihon_Test" name="Oberwelt (Beta)"/>
+		<tileset file="M_Chika" name="Höhle"/>
+		<tileset file="M_Gake" name="Berge"/>
+		<tileset file="M_Gake_Setsugen" name="Verschneite Berge"/>
+		<tileset file="M_Jungle" name="Wald"/>
+		<tileset file="M_Kaigan" name="Strand"/>
+		<tileset file="M_Kaigan_Obake" name="Heimgesuchter Strand"/>
+		<tileset file="M_Kazan" name="Vulkan"/>
+		<tileset file="M_Kinopio_Normal" name="Bonus Haus Boden"/>
+		<tileset file="M_Koopa" name="Letzte Burg"/>
+		<tileset file="M_Nohara" name="Oberwelt/Grasland"/>
+		<tileset file="M_Nohara_BigTree" name="Oberwelt/Grasland mit Bäumen"/>
+		<tileset file="M_Nohara_Onpu" name="Oberwelt/Grasland mit Notenblock"/>
+		<tileset file="M_Nohara2" name="Himmel"/>
+		<tileset file="M_Obake" name="Geiseterhaus"/>
+		<tileset file="M_Obake_Soto" name="Geiseterhaus Ausgang"/>
+		<tileset file="M_Rainbow" name="Regenbogen Bonus"/>
+		<tileset file="M_Sabaku" name="Wüste"/>
+		<tileset file="M_Sabaku_Chika" name="Wüstenhöhle"/>
+		<tileset file="M_Setsugen" name="Schnee"/>
+		<tileset file="M_Shiro" name="Burg"/>
+		<tileset file="M_Shiro_Boss" name="Burg (Bosskampf)"/>
+		<tileset file="M_Shiro_Yogan" name="Burg (Lava)"/>
+		<tileset file="M_SkyTower" name="Himmel (Grasbedeckte Konstruktionen)"/>
+		<tileset file="M_Sora" name="Bonus"/>
+		<tileset file="M_Suichu" name="Unterwasser"/>
+		<tileset file="M_Toride" name="Turm"/>
+		<tileset file="M_Toride_Blue" name="Turm (Unterwasser)"/>
+		<tileset file="M_Toride_Red" name="Turm (Lava)"/>
+		<tileset file="M_Totempole" name="Totempfähle"/>
+		<tileset file="M_WarpZone" name="Kanone"/>
+		<tileset file="S1_Iseki" name="Wüsten Dekorationen (verschiedene Plattformen)"/>
+		<tileset file="S1_Kanaami" name="Gitter"/>
+		<tileset file="S1_Kinoko" name="Pilze (Blöcke, Stämme und Plattformen)"/>
+		<tileset file="S1_Kinoko_Snow" name="Verschneite Pilze (Stämme und Plattformen)"/>
+		<tileset file="S1_Kori" name="Eis"/>
+		<tileset file="S1_Obake_Room" name="Geisterhaus Dekoration"/>
+		<tileset file="S1_Obake_Soto" name="Heimgesuchter Garten"/>
+		<tileset file="S1_Rail_Black" name="Schwarze Schienen"/>
+		<tileset file="S1_Rail_Gray" name="Grey Schienen"/>
+		<tileset file="S1_Rail_Gray_Mae" name="Graue Schienen"/>
+		<tileset file="S1_Rail_White" name="Weiße Schienen"/>
+		<tileset file="S1_Sabaku" name="Wüsten Dekorationen (Steine und Kakteen)"/>
+		<tileset file="S1_SkyTower" name="Himmelskonstruktionen Dekoration"/>
+		<tileset file="S1_Suichu" name="Unterwasser Dekoration"/>
+		<tileset file="S1_Toride" name="Burgwände und Gitter"/>
+		<tileset file="S2_Assist" name="Verschiedene Dekorationsteile"/>
+		<tileset file="S2_Kanaami" name="Gitter"/>
+		<tileset file="S2_Kinoko_variation" name="Kleine und große Pilze"/>
+		<tileset file="S2_Obake_Room" name="Geiterhaus Dekoration"/>
+		<tileset file="S2_Obake_Soto" name="Heimgesuchter Garten"/>
+		<tileset file="S2_Rail_Black" name="Schwarze Schienen"/>
+		<tileset file="S2_Rail_Gray" name="Graue Schienen"/>
+		<tileset file="S2_Rail_White" name="Weiße Schienen"/>
+		<tileset file="S2_Sabaku" name="Wüsten Dekorationen (Steine und Kakteen)"/>
+	</group>
+</tilesets>

@@ -39,7 +39,7 @@
        <attribute name="title">
         <string>Levels</string>
        </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_2" stretch="0,0">
+       <layout class="QVBoxLayout" name="verticalLayout_2" stretch="0,0,0">
         <property name="leftMargin">
          <number>9</number>
         </property>
@@ -52,6 +52,16 @@
         <property name="bottomMargin">
          <number>9</number>
         </property>
+        <item>
+         <widget class="QLineEdit" name="levelFilterEdit">
+          <property name="placeholderText">
+           <string>Filter levels...</string>
+          </property>
+          <property name="clearButtonEnabled">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
         <item>
          <widget class="QTreeView" name="levelList">
           <property name="sizePolicy">
@@ -102,6 +112,16 @@
         <string>Tilesets</string>
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_3">
+        <item>
+         <widget class="QLineEdit" name="tilesetFilterEdit">
+          <property name="placeholderText">
+           <string>Filter tilesets...</string>
+          </property>
+          <property name="clearButtonEnabled">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
         <item>
          <widget class="QTreeView" name="tilesetList">
           <property name="editTriggers">

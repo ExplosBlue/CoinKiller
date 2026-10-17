@@ -6,7 +6,7 @@
 #include "levelmanager.h"
 
 #include <QStandardItemModel>
-#include <QtXml>
+#include <QList>
 
 class Game
 {
@@ -23,10 +23,13 @@ public:
     QStandardItemModel* getTilesetModel();
     QStandardItemModel* getTilesetModel(int id, bool includeNoneItem = false);
 
+    TilesetList* getTilesetList() { return tilesetList; }
+
     FilesystemBase* fs;
 
 private:
     QString path;
+    TilesetList* tilesetList;
 };
 
 #endif // GAME_H

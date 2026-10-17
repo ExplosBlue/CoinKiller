@@ -4,10 +4,39 @@
 #include <QVBoxLayout>
 #include <QLabel>
 #include <QRadioButton>
+#include <QPushButton>
 #include <QStandardItemModel>
 #include <QSpacerItem>
+#include <QStylePainter>
+#include <QStyleOptionComboBox>
 
+#include <algorithm>
+
+#include "tilesetselectdialog.h"
 #include "commands/levelcommands.h"
+
+namespace {
+
+class TilesetComboBox : public QComboBox
+{
+public:
+    using QComboBox::QComboBox;
+
+    QString displaySuffix;
+
+protected:
+    void paintEvent(QPaintEvent*) override
+    {
+        QStylePainter painter(this);
+        QStyleOptionComboBox opt;
+        initStyleOption(&opt);
+        painter.drawComplexControl(QStyle::CC_ComboBox, opt);
+        opt.currentText += displaySuffix;
+        painter.drawControl(QStyle::CE_ComboBoxLabel, opt);
+    }
+};
+
+}
 
 TilesetPalette::TilesetPalette(Level* level, EditManager* editManager, Game* game, QUndoStack *undoStack, QWidget *parent) :
     QWidget(parent),
@@ -42,50 +71,30 @@ TilesetPalette::TilesetPalette(Level* level, EditManager* editManager, Game* gam
 
     // Setup Tileset Selector
     for (int tsSlot = 0; tsSlot < 4; tsSlot++) {
-        QComboBox* tsPicker = new QComboBox();
-        tilesetPickers.insert(tsSlot, tsPicker);
-        QStandardItemModel* model = game->getTilesetModel(tsSlot, true);
-        model->setParent(this);
-
-        model->sort(0, Qt::AscendingOrder);
-
-        for (int pickerIndex = 0; pickerIndex < model->rowCount(); pickerIndex++) {
-            // Tileset Name
-            QModelIndex tsNameIndex = model->index(pickerIndex, 0);
-            QString tilesetName = tsNameIndex.data().toString();
-
-            tsPicker->addItem(tilesetName);
-
-            // File Name
-            QModelIndex fileNameIndex = model->index(pickerIndex, 1);
-            QString fileName = fileNameIndex.data().toString();
-
-            tsPicker->setItemData(pickerIndex, fileName, Qt::UserRole);
-
-            if (level->tilesets[tsSlot]) {
-                QString selectedTs = level->tilesets[tsSlot]->getName();
-
-                if (selectedTs == fileName) {
-                    tsPicker->setCurrentIndex(pickerIndex);
-                }
-            }
-        }
-
-        connect(tsPicker, &QComboBox::currentIndexChanged, this, &TilesetPalette::tilesetPickerChosen);
-
         QWidget* tabPage = new QWidget;
         QGridLayout* tabLayout = new QGridLayout;
 
         QLabel* tilesetLabel = new QLabel(tr("Tileset:"));
         tilesetLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 
+        QComboBox* tsPicker = new TilesetComboBox();
+        tsPicker->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+        tilesetPickers.insert(tsSlot, tsPicker);
+        connect(tsPicker, &QComboBox::currentIndexChanged, this, &TilesetPalette::tilesetComboChosen);
+
+        QPushButton* changeButton = new QPushButton(tr("Change..."));
+        changeButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+        tilesetButtons.insert(tsSlot, changeButton);
+        connect(changeButton, &QPushButton::clicked, this, &TilesetPalette::changeTileset);
+
         tabLayout->addWidget(tilesetLabel, 0, 0, 1, 1);
         tabLayout->addWidget(tsPicker, 0, 1);
+        tabLayout->addWidget(changeButton, 0, 2);
 
         tabPage->setLayout(tabLayout);
 
         objectLists.insert(tsSlot, new QListView());
-        tabLayout->addWidget(objectLists[tsSlot], 1, 0, 1, 2);
+        tabLayout->addWidget(objectLists[tsSlot], 1, 0, 1, 3);
 
         QString title;
         if (tsSlot == 0) title = tr("Standard");
@@ -111,39 +120,72 @@ TilesetPalette::TilesetPalette(Level* level, EditManager* editManager, Game* gam
 
     connect(layer1RadioBtn, &QRadioButton::toggled, this, &TilesetPalette::layerToggled);
 
+    updateTilesetPickers();
 }
 
 void TilesetPalette::updateEditor()
 {
     reloadTilesets();
-    updateTilesetPickerIndex();
+    updateTilesetPickers();
 }
 
-void TilesetPalette::updateTilesetPickerIndex()
+void TilesetPalette::updateTilesetPickers()
 {
-    for (int tsSlot = 0; tsSlot < 4; tsSlot++) {
+    for (int tsSlot = 0; tsSlot < 4; tsSlot++)
+        populateTilesetCombo(tsSlot);
+}
 
-        QComboBox *tsPicker = tilesetPickers[tsSlot];
-        tsPicker->blockSignals(true);
+void TilesetPalette::populateTilesetCombo(int tsSlot)
+{
+    QComboBox* tsPicker = tilesetPickers[tsSlot];
+    tsPicker->blockSignals(true);
+    tsPicker->clear();
 
-        if (!level->tilesets[tsSlot]) {
-            tsPicker->setCurrentIndex(0);
-            tsPicker->blockSignals(false);
+    QString current = level->tilesets[tsSlot] ? level->tilesets[tsSlot]->getName() : QString();
+    QString group = current.isEmpty() ? QString("Retail") : game->getTilesetList()->groupName(current);
+
+    if (group.isEmpty())
+        group = "Retail";
+
+    QList<TilesetEntry> entries;
+    for (const TilesetGroup& tsGroup : game->getTilesetList()->groups())
+    {
+        if (tsGroup.name != group)
             continue;
-        }
 
-        QString selectedTs = level->tilesets[tsSlot]->getName();
+        for (const TilesetEntry& entry : tsGroup.tilesets)
+            if (TilesetList::matchesSlot(entry.fileName, tsSlot))
+                entries.append(entry);
+    }
 
-        for (int pickerIndex = 0; pickerIndex < tsPicker->model()->rowCount(); pickerIndex++) {
-            QString fileName = tsPicker->itemData(pickerIndex).toString();
+    std::sort(entries.begin(), entries.end(), [](const TilesetEntry& a, const TilesetEntry& b) {
+        return a.name.compare(b.name, Qt::CaseInsensitive) < 0;
+    });
 
-            if (selectedTs == fileName) {
-                tsPicker->setCurrentIndex(pickerIndex);
+    tsPicker->addItem(tr("<none>"), QString());
+    for (const TilesetEntry& entry : entries)
+        tsPicker->addItem(entry.name, entry.fileName);
+
+    int index = 0;
+    if (!current.isEmpty())
+    {
+        for (int i = 1; i < tsPicker->count(); i++)
+        {
+            if (tsPicker->itemData(i).toString() == current)
+            {
+                index = i;
                 break;
             }
         }
-        tsPicker->blockSignals(false);
     }
+
+    tsPicker->setCurrentIndex(index);
+
+    TilesetComboBox* tilesetCombo = static_cast<TilesetComboBox*>(tsPicker);
+    tilesetCombo->displaySuffix = (index > 0) ? QString(" (%1)").arg(group) : QString();
+
+    tsPicker->blockSignals(false);
+    tsPicker->update();
 }
 
 void TilesetPalette::reloadTilesets()
@@ -234,23 +276,78 @@ void TilesetPalette::select(BgdatObject *obj)
     editManager->setObject(obj->getObjID(), obj->getTsID());
 }
 
-void TilesetPalette::tilesetPickerChosen(int index)
+void TilesetPalette::changeTileset()
 {
-    QComboBox* tsNameCombobox = qobject_cast<QComboBox*>(sender());
+    QPushButton* button = qobject_cast<QPushButton*>(sender());
+    int tsId = tilesetButtons.indexOf(button);
 
-    QString tsName = tsNameCombobox->itemData(index).toString();
-    int tsId = tabWidget->currentIndex();
+    if (tsId < 0)
+        return;
 
-    Tileset *newTs;
+    QString current = level->tilesets[tsId] ? level->tilesets[tsId]->getName() : QString();
+    int currentObjectCount = level->tilesets[tsId] ? level->tilesets[tsId]->getNumObjects() : -1;
 
-    if (tsName == "") {
-        newTs = nullptr;
-    } else {
-        newTs = game->getTileset(tsName);
+    TilesetSelectionDialog dialog(game, tsId, current, currentObjectCount, this);
+
+    if (dialog.exec() != QDialog::Accepted)
+        return;
+
+    QString tsName = dialog.selectedTileset();
+
+    if (tsName == current)
+        return;
+
+    Tileset* newTs = nullptr;
+
+    if (!tsName.isEmpty())
+    {
+        try
+        {
+            newTs = game->getTileset(tsName);
+        }
+        catch (...)
+        {
+            return;
+        }
     }
 
     undoStack->push(new Commands::LevelCmd::SetTileset(level, tsId, newTs));
 
+    reloadTilesets();
+    updateTilesetPickers();
+}
+
+void TilesetPalette::tilesetComboChosen(int index)
+{
+    QComboBox* tsPicker = qobject_cast<QComboBox*>(sender());
+    int tsId = tilesetPickers.indexOf(tsPicker);
+
+    if (tsId < 0 || index < 0)
+        return;
+
+    QString tsName = tsPicker->itemData(index).toString();
+    QString current = level->tilesets[tsId] ? level->tilesets[tsId]->getName() : QString();
+
+    if (tsName == current)
+        return;
+
+    Tileset* newTs = nullptr;
+
+    if (!tsName.isEmpty())
+    {
+        try
+        {
+            newTs = game->getTileset(tsName);
+        }
+        catch (...)
+        {
+            updateTilesetPickers();
+            return;
+        }
+    }
+
+    undoStack->push(new Commands::LevelCmd::SetTileset(level, tsId, newTs));
 
     reloadTilesets();
+    updateTilesetPickers();
 }

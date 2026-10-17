@@ -25,6 +25,9 @@
 
 #include <QNetworkReply>
 
+class QTreeView;
+class QEvent;
+
 namespace Ui {
 class MainWindow;
 }
@@ -48,6 +51,10 @@ private slots:
 
     void tilesetListSelectedIndexChanged();
     void openTilesetFromListIndex(const QModelIndex &index);
+
+    void filterLevelList(const QString &text);
+    void filterTilesetList(const QString &text);
+    void showFilterBox();
 
     void addLevel();
     void removeLevel();
@@ -87,7 +94,10 @@ private:
     void loadLevelList();
     void loadTilesetList();
 
+    bool applyTreeFilter(QTreeView *view, const QModelIndex &parent, const QString &filter, bool parentMatched);
+
     void changeEvent(QEvent *event) override;
+    bool eventFilter(QObject *watched, QEvent *event) override;
 
     bool checkForMissingFiles();
 

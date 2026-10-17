@@ -31,6 +31,8 @@
 #include <QLineEdit>
 #include <QRegularExpression>
 #include <QRegularExpressionValidator>
+#include <QShortcut>
+#include <QKeyEvent>
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
@@ -93,6 +95,16 @@ void MainWindow::initialiseUi()
 
     connect(ui->tilesetList, &QTreeView::clicked,       this, &MainWindow::tilesetListSelectedIndexChanged);
     connect(ui->tilesetList, &QTreeView::doubleClicked, this, &MainWindow::openTilesetFromListIndex);
+
+    connect(ui->levelFilterEdit,   &QLineEdit::textChanged, this, &MainWindow::filterLevelList);
+    connect(ui->tilesetFilterEdit, &QLineEdit::textChanged, this, &MainWindow::filterTilesetList);
+
+    ui->levelFilterEdit->setVisible(false);
+    ui->levelList->installEventFilter(this);
+    ui->tilesetList->installEventFilter(this);
+
+    QShortcut* findShortcut = new QShortcut(QKeySequence::Find, this);
+    connect(findShortcut, &QShortcut::activated, this, &MainWindow::showFilterBox);
 
     connect(ui->addLevelBtn,    &QPushButton::clicked, this, &MainWindow::addLevel);
     connect(ui->removeLevelBtn, &QPushButton::clicked, this, &MainWindow::removeLevel);
@@ -165,19 +177,13 @@ void MainWindow::loadLevelList()
     }
 
     ui->levelList->setModel(courseModel);
+
+    filterLevelList(ui->levelFilterEdit->text());
 }
 
 
 void MainWindow::loadTilesetList()
 {
-    const int oldRowCount = ui->tilesetList->model() != nullptr
-        ? ui->tilesetList->model()->rowCount()
-        : 0;
-
-    QVector<bool> expanded;
-    for (int i = 0; i < oldRowCount; i++)
-        expanded.append(ui->tilesetList->isExpanded(ui->tilesetList->model()->index(i, 0)));
-
     QStandardItemModel *tilesetModel = game->getTilesetModel();
     tilesetModel->setParent(this);
 
@@ -186,9 +192,101 @@ void MainWindow::loadTilesetList()
     }
 
     ui->tilesetList->setModel(tilesetModel);
+    ui->tilesetList->expandAll();
 
-    for (int i = 0; i < qMin(expanded.size(), tilesetModel->rowCount()); i++)
-        ui->tilesetList->setExpanded(tilesetModel->index(i, 0), expanded[i]);
+    filterTilesetList(ui->tilesetFilterEdit->text());
+}
+
+void MainWindow::filterLevelList(const QString &text)
+{
+    applyTreeFilter(ui->levelList, QModelIndex(), text, false);
+
+    if (!text.isEmpty())
+        ui->levelList->expandAll();
+}
+
+void MainWindow::filterTilesetList(const QString &text)
+{
+    applyTreeFilter(ui->tilesetList, QModelIndex(), text, false);
+
+    if (!text.isEmpty())
+        ui->tilesetList->expandAll();
+}
+
+bool MainWindow::applyTreeFilter(QTreeView *view, const QModelIndex &parent, const QString &filter, bool parentMatched)
+{
+    QAbstractItemModel *model = view->model();
+
+    if (model == nullptr)
+        return false;
+
+    bool anyVisible = false;
+
+    for (int row = 0; row < model->rowCount(parent); row++)
+    {
+        QModelIndex index = model->index(row, 0, parent);
+        bool selfMatch = filter.isEmpty() || index.data(Qt::DisplayRole).toString().contains(filter, Qt::CaseInsensitive);
+        bool force = parentMatched || selfMatch;
+
+        bool childVisible = applyTreeFilter(view, index, filter, force);
+        bool visible = force || childVisible;
+
+        view->setRowHidden(row, parent, !visible);
+
+        if (visible)
+            anyVisible = true;
+    }
+
+    return anyVisible;
+}
+
+void MainWindow::showFilterBox()
+{
+    if (ui->tabWidget->currentWidget() == ui->tab_tilesets)
+    {
+        ui->tilesetFilterEdit->setVisible(true);
+        ui->tilesetFilterEdit->setFocus();
+        ui->tilesetFilterEdit->selectAll();
+    }
+    else
+    {
+        ui->levelFilterEdit->setVisible(true);
+        ui->levelFilterEdit->setFocus();
+        ui->levelFilterEdit->selectAll();
+    }
+}
+
+bool MainWindow::eventFilter(QObject* watched, QEvent* event)
+{
+    if (event->type() == QEvent::KeyPress && (watched == ui->levelList || watched == ui->tilesetList))
+    {
+        QLineEdit* target = (watched == ui->levelList) ? ui->levelFilterEdit : ui->tilesetFilterEdit;
+        QKeyEvent* keyEvent = static_cast<QKeyEvent*>(event);
+
+        if (!(keyEvent->modifiers() & (Qt::ControlModifier | Qt::AltModifier | Qt::MetaModifier)))
+        {
+            const QString text = keyEvent->text();
+
+            if (!text.isEmpty() && text.at(0).isPrint())
+            {
+                target->setVisible(true);
+                target->setText(target->text() + text);
+                target->setFocus();
+                return true;
+            }
+
+            if (keyEvent->key() == Qt::Key_Backspace && !target->text().isEmpty())
+            {
+                const QString current2 = target->text();
+                target->setVisible(true);
+                target->setText(current2.left(current2.size() - 1));
+                target->setFocus();
+                return true;
+            }
+        }
+    }
+
+    return QMainWindow::eventFilter(watched, event);
 }
 
 void MainWindow::changeEvent(QEvent* event)
@@ -320,7 +418,7 @@ bool MainWindow::checkForMissingFiles()
     << "spritecategories.xml"
     << "spritedata.xml"
     << "tilebehaviors.xml"
-    << "tilesetnames.txt";
+    << "tilesets.xml";
 
     QList<int> missingFilesIds;
 

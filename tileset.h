@@ -123,4 +123,33 @@ private:
     bool draw2D;
 };
 
+struct TilesetEntry
+{
+    QString fileName;
+    QString name;
+};
+
+struct TilesetGroup
+{
+    QString name;
+    QList<TilesetEntry> tilesets;
+};
+
+class TilesetList
+{
+public:
+    TilesetList(FilesystemBase* fs);
+
+    QList<TilesetGroup> groups() const;
+
+    static bool matchesSlot(const QString& fileName, int slot);
+    static QString stripExtension(const QString& fileName);
+
+    QString displayName(const QString& fileName) const;
+    QString groupName(const QString& fileName) const;
+
+private:
+    FilesystemBase* fs;
+};
+
 #endif // TILESET_H

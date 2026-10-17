@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tilesets>
+	<group name="Retail">
+		<tileset file="J_Kihon" name="Aria aperta"/>
+		<tileset file="J_J_Kihon_P" name="Aria aperta Viola (Beta)"/>
+		<tileset file="J_Chika" name="Sotterranei"/>
+		<tileset file="J_Setsugen" name="Neve"/>
+		<tileset file="J_Suichu" name="Sott’acqua"/>
+		<tileset file="J_Yougan" name="Lava"/>
+		<tileset file="J_Gold" name="Oro"/>
+		<tileset file="J_Kihon_Test" name="Aria aperta (Beta)"/>
+		<tileset file="M_Chika" name="Sotterranei"/>
+		<tileset file="M_Chika_Red" name="Sotterranei Rossi (Beta)"/>
+		<tileset file="M_Gake" name="Montagne"/>
+		<tileset file="M_Gake_Setsugen" name="Montagne Innevate"/>
+		<tileset file="M_Jungle" name="Giungla"/>
+		<tileset file="M_Kaigan" name="Spiaggia"/>
+		<tileset file="M_Kaigan_Obake" name="Spiaggia Infestata"/>
+		<tileset file="M_Kazan" name="Vulcano"/>
+		<tileset file="M_Kinopio_Normal" name="Casa Bonus Terreno"/>
+		<tileset file="M_Koopa" name="Castello Finale"/>
+		<tileset file="M_Nohara" name="Aria aperta/Grassland"/>
+		<tileset file="M_Nohara_BigTree" name="Aria aperta/Grassland con Albeti"/>
+		<tileset file="M_Nohara_Onpu" name="Aria aperta/Grassland con Blocco Nota"/>
+		<tileset file="M_Nohara2" name="Cielo"/>
+		<tileset file="M_Obake" name="Casa Fantasma (Dentro)"/>
+		<tileset file="M_Obake_Soto" name="Casa Fantasma (Fuori)"/>
+		<tileset file="M_Rainbow" name="Arcobaleno Bonus"/>
+		<tileset file="M_Sabaku" name="Deserto"/>
+		<tileset file="M_Sabaku_Chika" name="Sotterranei nel deserto"/>
+		<tileset file="M_Setsugen" name="Neve"/>
+		<tileset file="M_Shiro" name="Castello"/>
+		<tileset file="M_Shiro_Boss" name="Castello (Boss)"/>
+		<tileset file="M_Shiro_Yogan" name="Castello (Lava)"/>
+		<tileset file="M_SkyTower" name="Cielo (Costruzione con erba sopra)"/>
+		<tileset file="M_Sora" name="Bonus"/>
+		<tileset file="M_Suichu" name="Sott’acqua"/>
+		<tileset file="M_Toride" name="Torre"/>
+		<tileset file="M_Toride_Blue" name="Torre (Sott’acqua)"/>
+		<tileset file="M_Toride_Red" name="Torre (Lava)"/>
+		<tileset file="M_Totempole" name="Polo Totem"/>
+		<tileset file="M_WarpZone" name="Cannone"/>
+		<tileset file="S1_Iseki" name="Decorazioni del deserto (piattaforme varie)"/>
+		<tileset file="S1_Kanaami" name="Staccionate"/>
+		<tileset file="S1_Kinoko" name="Funghi (Blocchi, Gambi e Piattaforme)"/>
+		<tileset file="S1_Kinoko_Snow" name="Funghi Innevati (Gambi e Piattaforme)"/>
+		<tileset file="S1_Kori" name="Ghiaccio"/>
+		<tileset file="S1_Obake_Room" name="Decorazioni Casa Fantasma"/>
+		<tileset file="S1_Obake_Soto" name="Giardino Infestato"/>
+		<tileset file="S1_Rail_Black" name="Rotaie nere"/>
+		<tileset file="S1_Rail_Gray" name="Rotaie grigie"/>
+		<tileset file="S1_Rail_Gray_Mae" name="Rotaie grigie"/>
+		<tileset file="S1_Rail_White" name="Rotaie bianche"/>
+		<tileset file="S1_Sabaku" name="Decorazioni del deserto (Pietre e cactus)"/>
+		<tileset file="S1_SkyTower" name="Decorazioni costruzione del cielo"/>
+		<tileset file="S1_Suichu" name="Decorazioni sottomarine"/>
+		<tileset file="S1_Toride" name="Mura e staccionate del castello"/>
+		<tileset file="S2_Assist" name="Varie decorazioni"/>
+		<tileset file="S2_Kanaami" name="Staccionate"/>
+		<tileset file="S2_Kinoko_variation" name="Funghi piccoli grandi"/>
+		<tileset file="S2_Obake_Room" name="Decorazioni Casa Fantasma"/>
+		<tileset file="S2_Obake_Soto" name="Giardino Infestato"/>
+		<tileset file="S2_Rail_Black" name="Rotaie nere"/>
+		<tileset file="S2_Rail_Gray" name="Rotaie grigie"/>
+		<tileset file="S2_Rail_White" name="Rotaie bianche"/>
+		<tileset file="S2_Sabaku" name="Decorazioni del deserto (Pietre e cactus)"/>
+	</group>
+</tilesets>
