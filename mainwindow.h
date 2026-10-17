@@ -27,6 +27,7 @@
 
 class QTreeView;
 class QEvent;
+class QMenu;
 
 namespace Ui {
 class MainWindow;
@@ -79,6 +80,9 @@ private slots:
     void openInSarcExplorer();
     void showInFileExplorer();
 
+    void openRecentROMFS();
+    void clearRecentROMFS();
+
     void handleWatchedDirectoryChanged(const QString &path);
 
     void sdDownloadFinished(QNetworkReply::NetworkError error, const QByteArray &data, const QUrl &url);
@@ -90,6 +94,7 @@ private:
     void initialiseUi();
     void createContextMenus();
     void checkSpriteDataVersion();
+    void updateRecentMenu();
 
     void loadLevelList();
     void loadTilesetList();
@@ -115,6 +120,7 @@ private:
     Game* game {};
     SettingsManager* settings {};
     ClickableLabel* statusLabel {};
+    QMenu* recentMenu {};
 
     QFileSystemWatcher fileSystemWatcher {};
 

@@ -33,6 +33,7 @@
 #include <QRegularExpressionValidator>
 #include <QShortcut>
 #include <QKeyEvent>
+#include <QMenu>
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
@@ -89,6 +90,29 @@ void MainWindow::initialiseUi()
     connect(ui->actionShowROMFSDir,      &QAction::triggered, this, &MainWindow::showROMFSDir);
     connect(ui->actionAbout,             &QAction::triggered, this, &MainWindow::showAboutDialog);
     connect(ui->actionSarcExplorer,      &QAction::triggered, this, &MainWindow::openSarcExplorer);
+
+    recentMenu = new QMenu(tr("Recent"), this);
+
+    QAction* beforeRecent = nullptr;
+    bool afterLoad = false;
+    for (QAction* action : ui->menuFile->actions())
+    {
+        if (afterLoad)
+        {
+            beforeRecent = action;
+            break;
+        }
+
+        if (action == ui->actionLoadUnpackedROMFS)
+            afterLoad = true;
+    }
+
+    if (beforeRecent != nullptr)
+        ui->menuFile->insertMenu(beforeRecent, recentMenu);
+    else
+        ui->menuFile->addMenu(recentMenu);
+
+    updateRecentMenu();
 
     connect(ui->levelList, &QTreeView::clicked,       this, &MainWindow::levelListSelectedIndexChanged);
     connect(ui->levelList, &QTreeView::doubleClicked, this, &MainWindow::openLevelFromListIndex);
@@ -294,6 +318,7 @@ void MainWindow::changeEvent(QEvent* event)
     if (event->type() == QEvent::LanguageChange)
     {
         ui->retranslateUi(this);
+        updateRecentMenu();
 
         if (gameLoaded)
         {
@@ -334,6 +359,8 @@ void MainWindow::showAboutDialog()
 void MainWindow::loadGame(const QString& path)
 {
     settings->setLastRomFSPath(path);
+    settings->addRecentROMFS(path);
+    updateRecentMenu();
 
     game = new Game(path);
 
@@ -355,6 +382,56 @@ void MainWindow::loadGame(const QString& path)
         << path + "/Unit/";
 
     fileSystemWatcher.addPaths(watchPaths);
+}
+
+void MainWindow::updateRecentMenu()
+{
+    if (recentMenu == nullptr)
+        return;
+
+    recentMenu->clear();
+    recentMenu->setTitle(tr("Recent"));
+
+    QStringList recents = settings->getRecentROMFS();
+
+    if (recents.isEmpty())
+    {
+        QAction* emptyAction = recentMenu->addAction(tr("<empty>"));
+        emptyAction->setEnabled(false);
+        return;
+    }
+
+    for (const QString& path : recents)
+    {
+        QAction* recentAction = recentMenu->addAction(path);
+        recentAction->setData(path);
+        connect(recentAction, &QAction::triggered, this, &MainWindow::openRecentROMFS);
+    }
+
+    recentMenu->addSeparator();
+
+    QAction* clearAction = recentMenu->addAction(tr("Clear History"));
+    connect(clearAction, &QAction::triggered, this, &MainWindow::clearRecentROMFS);
+}
+
+void MainWindow::openRecentROMFS()
+{
+    QAction* action = qobject_cast<QAction*>(sender());
+    if (action == nullptr)
+        return;
+
+    QString path = action->data().toString();
+    if (path.isEmpty())
+        return;
+
+    loadGame(path);
+    ui->actionShowROMFSDir->setEnabled(true);
+}
+
+void MainWindow::clearRecentROMFS()
+{
+    settings->clearRecentROMFS();
+    updateRecentMenu();
 }
 
 void MainWindow::loadUnpackedROMFS()

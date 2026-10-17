@@ -49,6 +49,10 @@ public:
     QString getLastSarcExpPath() { return settings.value("LastSarcExpPath", "").toString(); }
     void setLastSarcExpPath(QString dirpath) { settings.setValue("LastSarcExpPath", dirpath); }
 
+    QStringList getRecentROMFS() { return settings.value("RecentROMFS").toStringList(); }
+    void addRecentROMFS(const QString& dirpath);
+    void clearRecentROMFS() { settings.remove("RecentROMFS"); }
+
     QVariant get(const QString &key, const QVariant &defaultValue = QVariant());
     void set(const QString &key, const QVariant &value);
 
