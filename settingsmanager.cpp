@@ -162,6 +162,29 @@ void SettingsManager::addRecentROMFS(const QString& dirpath) {
     settings.setValue("RecentROMFS", recents);
 }
 
+QStringList SettingsManager::getExistingRecentROMFS() {
+    QStringList recents = settings.value("RecentROMFS").toStringList();
+    QStringList existing;
+
+    for (const QString& path : recents)
+    {
+        if (QDir(path).exists())
+            existing.append(path);
+    }
+
+    if (existing != recents)
+        settings.setValue("RecentROMFS", existing);
+
+    return existing;
+}
+
+void SettingsManager::removeRecentROMFS(const QString& dirpath) {
+    QStringList recents = settings.value("RecentROMFS").toStringList();
+
+    if (recents.removeAll(dirpath) > 0)
+        settings.setValue("RecentROMFS", recents);
+}
+
 QColor SettingsManager::getColor(const QString &key, const QColor &defaultColor) {
    return QColor::fromRgba(settings.value(key, defaultColor.rgba()).toUInt());
 }

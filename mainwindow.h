@@ -88,7 +88,7 @@ private slots:
     void sdDownloadFinished(QNetworkReply::NetworkError error, const QByteArray &data, const QUrl &url);
 
 private:
-    void loadGame(const QString &path);
+    bool loadGame(const QString &path);
     void setGameLoaded(bool loaded);
 
     void initialiseUi();

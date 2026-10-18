@@ -34,6 +34,7 @@
 #include <QShortcut>
 #include <QKeyEvent>
 #include <QMenu>
+#include <QDir>
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
@@ -155,15 +156,15 @@ void MainWindow::initialiseUi()
 
     settings->setupLanguageSelector(ui->languageSelector);
 
+    bool loadedLast = false;
+
     if (settings->get("loadLastOnStart", false).toBool() && !settings->getLastRomFSPath().isEmpty())
-    {
-        loadGame(settings->getLastRomFSPath());
+        loadedLast = loadGame(settings->getLastRomFSPath());
+
+    if (loadedLast)
         ui->actionShowROMFSDir->setEnabled(true);
-    }
     else
-    {
         setGameLoaded(false);
-    }
 
     connect(&fileSystemWatcher, &QFileSystemWatcher::directoryChanged, this, &MainWindow::handleWatchedDirectoryChanged);
 }
@@ -356,8 +357,11 @@ void MainWindow::showAboutDialog()
     msgBox.exec();
 }
 
-void MainWindow::loadGame(const QString& path)
+bool MainWindow::loadGame(const QString& path)
 {
+    if (!QDir(path).exists())
+        return false;
+
     settings->setLastRomFSPath(path);
     settings->addRecentROMFS(path);
     updateRecentMenu();
@@ -382,6 +386,8 @@ void MainWindow::loadGame(const QString& path)
         << path + "/Unit/";
 
     fileSystemWatcher.addPaths(watchPaths);
+
+    return true;
 }
 
 void MainWindow::updateRecentMenu()
@@ -392,7 +398,7 @@ void MainWindow::updateRecentMenu()
     recentMenu->clear();
     recentMenu->setTitle(tr("Recent"));
 
-    QStringList recents = settings->getRecentROMFS();
+    QStringList recents = settings->getExistingRecentROMFS();
 
     if (recents.isEmpty())
     {
@@ -424,7 +430,14 @@ void MainWindow::openRecentROMFS()
     if (path.isEmpty())
         return;
 
-    loadGame(path);
+    if (!loadGame(path))
+    {
+        QMessageBox::critical(this, "CoinKiller", tr("This directory does not exist."));
+        settings->removeRecentROMFS(path);
+        updateRecentMenu();
+        return;
+    }
+
     ui->actionShowROMFSDir->setEnabled(true);
 }
 
