@@ -12,6 +12,8 @@
 #include <QInputDialog>
 #include <QDialogButtonBox>
 #include <QListWidget>
+#include <QDataStream>
+#include <QTimer>
 
 TilesetEditorWindow::TilesetEditorWindow(WindowBase *parent, Tileset *tileset) :
     WindowBase(parent),
@@ -101,6 +103,12 @@ TilesetEditorWindow::TilesetEditorWindow(WindowBase *parent, Tileset *tileset) :
     hideVertEdits(true);
 
     editStatus->setText(tr("Ready!"));
+
+    savedTilesetState = tilesetState();
+
+    QTimer* statusTimer = new QTimer(this);
+    connect(statusTimer, &QTimer::timeout, this, &TilesetEditorWindow::updateUnsavedStatus);
+    statusTimer->start(250);
 }
 
 TilesetEditorWindow::~TilesetEditorWindow()
@@ -1166,7 +1174,101 @@ void TilesetEditorWindow::on_actionSetBackgroundColor_triggered()
 void TilesetEditorWindow::on_actionSave_triggered()
 {
     tileset->save();
+    savedTilesetState = tilesetState();
+    unsavedChanges = false;
     editStatus->setText(tr("Changes Saved"));
+}
+
+QByteArray TilesetEditorWindow::tilesetState()
+{
+    QByteArray state;
+    QDataStream stream(&state, QIODevice::WriteOnly);
+
+    stream << tileset->getSlot();
+
+    for (int i = 0; i < 441; i++)
+    {
+        for (int b = 0; b < 8; b++)
+            stream << (quint8)tileset->getBehaviorByte(i, b);
+
+        stream << (quint16)tileset->getOverlayTile(i) << (quint16)tileset->getOverlayTileSlot(i);
+    }
+
+    int numObjects = tileset->getNumObjects();
+    stream << numObjects;
+
+    for (int o = 0; o < numObjects; o++)
+    {
+        ObjectDef* obj = tileset->getObjectDef(o);
+
+        stream << obj->width << obj->height << obj->randomisation << obj->unkFlag
+               << obj->slopeY << obj->yRepeatStart << obj->yRepeatEnd;
+        stream << (quint32)obj->rows.size();
+
+        for (int r = 0; r < obj->rows.size(); r++)
+        {
+            ObjectRow& row = obj->rows[r];
+
+            stream << row.slopeFlags << row.xRepeatStart << row.xRepeatEnd;
+            stream << (quint32)row.data.size();
+
+            for (int d = 0; d < row.data.size(); d++)
+                stream << (quint8)row.data[d];
+        }
+    }
+
+    QImage& image = tileset->getImage();
+    stream << image.width() << image.height() << (quint32)image.format();
+    stream.writeRawData((const char*)image.constBits(), (int)image.sizeInBytes());
+
+    return state;
+}
+
+void TilesetEditorWindow::updateUnsavedStatus()
+{
+    if (!isVisible())
+        return;
+
+    bool unsaved = tilesetState() != savedTilesetState;
+
+    if (unsaved == unsavedChanges)
+        return;
+
+    unsavedChanges = unsaved;
+    editStatus->setText(unsaved ? tr("Unsaved Changes") : tr("Changes Saved"));
+}
+
+int TilesetEditorWindow::showSaveDialog()
+{
+    QMessageBox message(this);
+    message.setWindowTitle(tr("Unsaved Changes"));
+    message.setText(tr("Do you want to save your changes?"));
+    message.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
+
+    QSpacerItem* spacer = new QSpacerItem(400, 0, QSizePolicy::Minimum, QSizePolicy::Expanding);
+    QGridLayout* layout = qobject_cast<QGridLayout*>(message.layout());
+    layout->addItem(spacer, layout->rowCount(), 0, 1, layout->columnCount());
+
+    int exitCode = message.exec();
+
+    if (exitCode == QMessageBox::Save)
+        on_actionSave_triggered();
+
+    return exitCode;
+}
+
+void TilesetEditorWindow::closeEvent(QCloseEvent *event)
+{
+    if (tilesetState() != savedTilesetState)
+    {
+        if (showSaveDialog() == QMessageBox::Cancel)
+        {
+            event->ignore();
+            return;
+        }
+    }
+
+    WindowBase::closeEvent(event);
 }
 
 QWidget* hline()

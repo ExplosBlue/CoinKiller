@@ -1534,6 +1534,14 @@ We can not help you finding that file, but the filename should be enough to do s
         <source>Toolbar</source>
         <translation>Symbolleiste</translation>
     </message>
+    <message>
+        <source>Unsaved Changes</source>
+        <translation>Nicht gespeicherte Änderungen</translation>
+    </message>
+    <message>
+        <source>Do you want to save your changes?</source>
+        <translation>Willst du deine Änderungen speichern?</translation>
+    </message>
 </context>
 <context>
     <name>TilesetPalette</name>

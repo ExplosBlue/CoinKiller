@@ -26,6 +26,7 @@ class TilesetEditorWindow : public WindowBase
 public:
     explicit TilesetEditorWindow(WindowBase *parent, Tileset *tileset);
     ~TilesetEditorWindow();
+    void closeEvent(QCloseEvent *event);
 
 signals:
     void selectedObjectChanged(int objNbr);
@@ -169,6 +170,13 @@ private:
     SettingsManager* settings;
 
     QLabel* editStatus;
+
+    QByteArray savedTilesetState;
+    bool unsavedChanges = false;
+
+    void updateUnsavedStatus();
+    QByteArray tilesetState();
+    int showSaveDialog();
 
     void changeEvent(QEvent* event);
 };
