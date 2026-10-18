@@ -11,7 +11,7 @@
 		<tileset file="M_Chika" name="Underground"/>
 		<tileset file="M_Gake" name="Mountains"/>
 		<tileset file="M_Gake_Setsugen" name="Snowy Mountains"/>
-		<tileset file="M_Jungle" name="Forest"/>
+		<tileset file="M_Jungle" name="Jungle"/>
 		<tileset file="M_Kaigan" name="Beach"/>
 		<tileset file="M_Kaigan_Obake" name="Haunted Beach"/>
 		<tileset file="M_Kazan" name="Volcano"/>

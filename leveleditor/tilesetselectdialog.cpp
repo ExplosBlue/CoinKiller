@@ -124,7 +124,7 @@ TilesetSelectionDialog::TilesetSelectionDialog(Game* game, int slot, const QStri
     groupList->installEventFilter(this);
     tilesetList->installEventFilter(this);
 
-    int selectedGroup = 0;
+    int selectedGroup = -1;
     if (!currentTileset.isEmpty())
     {
         for (int g = 0; g < groups.size(); g++)
@@ -145,20 +145,12 @@ TilesetSelectionDialog::TilesetSelectionDialog(Game* game, int slot, const QStri
         }
     }
 
-    if (groups.isEmpty())
-    {
-        QListWidgetItem* noGroups = new QListWidgetItem(tr("No Groups"));
-        noGroups->setFlags(Qt::NoItemFlags);
-        groupList->addItem(noGroups);
-        populateTilesets();
-    }
-    else
-    {
-        for (const TilesetGroup& group : groups)
-            groupList->addItem(group.name);
+    groupList->addItem(tr("All"));
 
-        groupList->setCurrentRow(selectedGroup);
-    }
+    for (const TilesetGroup& group : groups)
+        groupList->addItem(group.name);
+
+    groupList->setCurrentRow(selectedGroup + 1);
 
     resize(860, 540);
 }
@@ -179,49 +171,60 @@ void TilesetSelectionDialog::populateTilesets()
     tilesetList->setSortingEnabled(false);
     tilesetList->clear();
 
-    int groupIndex = groupList->currentRow();
-    if (groupIndex >= 0 && groupIndex < groups.size())
+    int groupIndex = groupList->currentRow() - 1;
+
+    QTreeWidgetItem* noneItem = new QTreeWidgetItem(tilesetList);
+    noneItem->setText(0, tr("<none>"));
+    noneItem->setData(0, Qt::UserRole, QString());
+    noneItem->setToolTip(0, tr("No tileset"));
+
+    if (groupIndex < 0)
     {
-        QTreeWidgetItem* noneItem = new QTreeWidgetItem(tilesetList);
-        noneItem->setText(0, tr("<none>"));
-        noneItem->setData(0, Qt::UserRole, QString());
-        noneItem->setToolTip(0, tr("No tileset"));
+        for (const TilesetGroup& group : groups)
+            addTilesets(group.tilesets);
+    }
+    else if (groupIndex < groups.size())
+    {
+        addTilesets(groups[groupIndex].tilesets);
+    }
 
-        for (const TilesetEntry& entry : groups[groupIndex].tilesets)
+    tilesetList->setSortingEnabled(true);
+    tilesetList->sortItems(0, Qt::AscendingOrder);
+
+    QTreeWidgetItem* rowToSelect = tilesetList->topLevelItem(0);
+    if (!currentTileset.isEmpty())
+    {
+        for (int i = 0; i < tilesetList->topLevelItemCount(); i++)
         {
-            if (!TilesetList::matchesSlot(entry.fileName, slot))
-                continue;
-
-            QTreeWidgetItem* item = new QTreeWidgetItem(tilesetList);
-            item->setText(0, entry.name);
-            item->setData(0, Qt::UserRole, entry.fileName);
-            item->setToolTip(0, entry.fileName);
-        }
-
-        tilesetList->setSortingEnabled(true);
-        tilesetList->sortItems(0, Qt::AscendingOrder);
-
-        QTreeWidgetItem* rowToSelect = tilesetList->topLevelItem(0);
-        if (!currentTileset.isEmpty())
-        {
-            for (int i = 0; i < tilesetList->topLevelItemCount(); i++)
+            QTreeWidgetItem* item = tilesetList->topLevelItem(i);
+            if (item->data(0, Qt::UserRole).toString() == currentTileset)
             {
-                QTreeWidgetItem* item = tilesetList->topLevelItem(i);
-                if (item->data(0, Qt::UserRole).toString() == currentTileset)
-                {
-                    rowToSelect = item;
-                    break;
-                }
+                rowToSelect = item;
+                break;
             }
         }
-
-        tilesetList->setCurrentItem(rowToSelect);
     }
+
+    tilesetList->setCurrentItem(rowToSelect);
 
     tilesetList->blockSignals(false);
 
     tilesetChanged(tilesetList->currentItem(), nullptr);
     applyFilter();
+}
+
+void TilesetSelectionDialog::addTilesets(const QList<TilesetEntry>& entries)
+{
+    for (const TilesetEntry& entry : entries)
+    {
+        if (!TilesetList::matchesSlot(entry.fileName, slot))
+            continue;
+
+        QTreeWidgetItem* item = new QTreeWidgetItem(tilesetList);
+        item->setText(0, entry.name);
+        item->setData(0, Qt::UserRole, entry.fileName);
+        item->setToolTip(0, entry.fileName);
+    }
 }
 
 void TilesetSelectionDialog::applyFilter()

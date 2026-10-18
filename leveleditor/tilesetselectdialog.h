@@ -31,6 +31,7 @@ private slots:
 
 private:
     void populateTilesets();
+    void addTilesets(const QList<TilesetEntry>& entries);
     void loadPreview(const QString& fileName);
     void clearPreview();
 
