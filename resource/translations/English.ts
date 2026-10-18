@@ -122,6 +122,22 @@
         <source>Entrance %1: %2 (X: %3, Y: %4)</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Entrance ID</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Position</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>(X: %1, Y: %2)</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>EventEditorWidget</name>
@@ -505,7 +521,15 @@ The level will automatically save afterwards and therefore the deletion of this 
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Location %1: (X: %2, Y: %3) (W: %4, H: %5)</source>
+        <source>Location ID</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Position</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>(X: %1, Y: %2) (W: %3, H: %4)</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -847,6 +871,18 @@ Check the notes of whatever sprite is paired to this path to see how to use this
         <source>Node: %1</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Path ID</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Position</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>(X: %1, Y: %2)</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ProgressPathEditorWidget</name>
@@ -864,6 +900,18 @@ Check the notes of whatever sprite is paired to this path to see how to use this
             <numerusform>Progress Path %1: %n Node</numerusform>
             <numerusform>Progress Path %1: %n Nodes</numerusform>
         </translation>
+    </message>
+    <message>
+        <source>Progress Path ID</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Position</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>(X: %1, Y: %2)</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1086,6 +1134,18 @@ Check the notes of whatever sprite is paired to this path to see how to use this
     </message>
     <message>
         <source>Path ID: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Position</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>(X: %1, Y: %2)</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1669,6 +1729,18 @@ A value of 0 requires the player to be &gt;5 tiles away from the bottom before t
     </message>
     <message>
         <source>No Background With That ID Exists.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Zone ID</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Position</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>(X: %1, Y: %2) (W: %3, H: %4)</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

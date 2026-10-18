@@ -918,6 +918,7 @@ void EditManager::sortSelection()
     foreach (Entrance* entr, level->entrances) if (selectedObjects.contains(entr)) sortedObjects.append(entr);
     foreach (Location* loc, level->locations) if (selectedObjects.contains(loc)) sortedObjects.append(loc);
     foreach (Zone* zone, level->zones) if (selectedObjects.contains(zone)) sortedObjects.append(zone);
+    foreach (Path* path, level->paths) foreach (PathNode* node, path->getNodes()) if (selectedObjects.contains(node)) sortedObjects.append(node);
 
     selectedObjects = sortedObjects;
 }

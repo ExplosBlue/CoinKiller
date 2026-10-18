@@ -2,12 +2,12 @@
 #define ENTRANCEEDITOR_H
 
 #include "objects.h"
+#include "sortabletreewidget.h"
 
 #include <QWidget>
 #include <QComboBox>
 #include <QSpinBox>
 #include <QCheckBox>
-#include <QListWidget>
 #include <QUndoStack>
 
 class EntranceEditorWidget : public QWidget
@@ -23,7 +23,7 @@ signals:
     void selectedEntrChanged(Object* entr);
 
 private:
-    QListWidget *entrancesList;
+    SortableTreeWidget *entrancesList;
     QWidget *edits;
     QComboBox *type;
     QSpinBox *id;
@@ -54,7 +54,7 @@ private:
     QUndoStack *undoStack;
 
 private slots:
-    void handleEntranceListIndexChanged(QListWidgetItem* item);
+    void handleEntranceListIndexChanged(QTreeWidgetItem* item);
     void handleTypeChanged(int typeVal);
     void handleIDChanged(int idVal);
     void handleDestEntrChange(int destEntrVal);

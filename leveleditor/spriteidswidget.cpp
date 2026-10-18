@@ -4,6 +4,7 @@
 #include <QGridLayout>
 #include <QLabel>
 #include <QStringListModel>
+#include <cmath>
 
 SpriteIdWidget::SpriteIdWidget(QList<Sprite*> *sprites)
 {
@@ -37,13 +38,10 @@ SpriteIdWidget::SpriteIdWidget(QList<Sprite*> *sprites)
     topLayout->addWidget(searchLabel, 1, 0);
     topLayout->addWidget(searchEdit, 1, 1);
 
-    spriteTree = new QTreeWidget();
+    spriteTree = new SortableTreeWidget();
     spriteTree->setColumnCount(1);
-    spriteTree->setHeaderHidden(false);
-    spriteTree->setSortingEnabled(true);
-    spriteTree->setRootIsDecorated(false);
-    headerLables << tr("Sprite") << tr("ID");
-    spriteTree->setHeaderLabels(headerLables);
+    spriteTree->setHeaderLabels(QStringList() << tr("Sprite") << tr("ID"));
+    spriteTree->setSortableColumns({0});
 
     QVBoxLayout* layout = new QVBoxLayout();
     layout->addItem(topLayout);
@@ -66,6 +64,7 @@ void SpriteIdWidget::changeEvent(QEvent* event)
 
         viewComboBox->setCurrentIndex(currentView);
 
+        spriteTree->resetColumnSizing();
         updateList();
     }
 
@@ -114,18 +113,15 @@ void SpriteIdWidget::updateList()
                     QTreeWidgetItem* spriteItem = new QTreeWidgetItem();
                     spriteItem->setText(0, QString("%1: %2").arg(sprite->getid()).arg(spriteData.getSpriteDef(sprite->getid()).getName()));
                     spriteItem->setText(1, QString(tr("Triggering ID: %1")).arg(sprite->getNybbleData(field->startPos, field->endPos)));
-                    spriteItem->setData(0, Qt::UserRole, sprite->getid());
-                    spriteItem->setData(1, Qt::UserRole, sprite->getx());
-                    spriteItem->setData(2, Qt::UserRole, sprite->gety());
-                    spriteItem->setData(3, Qt::UserRole, sprite->getNybbleData(0, 23));
+                    spriteItem->setData(0, Qt::UserRole, QVariant::fromValue(static_cast<void*>(sprite)));
                     spriteTree->addTopLevelItem(spriteItem);
                 }
             }
         }
         spriteTree->setColumnCount(2);
-        spriteTree->setHeaderHidden(false);
-        for(int i = 0; i < 2; i++)
-            spriteTree->resizeColumnToContents(i);
+        spriteTree->setHeaderLabels(QStringList() << tr("Sprite") << tr("ID"));
+        spriteTree->setSortableColumns({0, 1});
+        spriteTree->setFlexibleColumn(0);
         break;
     }
     case 2: // Has Target ID
@@ -143,18 +139,15 @@ void SpriteIdWidget::updateList()
                     QTreeWidgetItem* spriteItem = new QTreeWidgetItem();
                     spriteItem->setText(0, QString("%1: %2").arg(sprite->getid()).arg(spriteData.getSpriteDef(sprite->getid()).getName()));
                     spriteItem->setText(1, QString(tr("Target ID: %1")).arg(sprite->getNybbleData(field->startPos, field->endPos)));
-                    spriteItem->setData(0, Qt::UserRole, sprite->getid());
-                    spriteItem->setData(1, Qt::UserRole, sprite->getx());
-                    spriteItem->setData(2, Qt::UserRole, sprite->gety());
-                    spriteItem->setData(3, Qt::UserRole, sprite->getNybbleData(0, 23));
+                    spriteItem->setData(0, Qt::UserRole, QVariant::fromValue(static_cast<void*>(sprite)));
                     spriteTree->addTopLevelItem(spriteItem);
                 }
             }
         }
         spriteTree->setColumnCount(2);
-        spriteTree->setHeaderHidden(false);
-        for(int i = 0; i < 2; i++)
-            spriteTree->resizeColumnToContents(i);
+        spriteTree->setHeaderLabels(QStringList() << tr("Sprite") << tr("ID"));
+        spriteTree->setSortableColumns({0, 1});
+        spriteTree->setFlexibleColumn(0);
         break;
     }
     case 3: // Has Rotation ID
@@ -172,18 +165,15 @@ void SpriteIdWidget::updateList()
                     QTreeWidgetItem* spriteItem = new QTreeWidgetItem();
                     spriteItem->setText(0, QString("%1: %2").arg(sprite->getid()).arg(spriteData.getSpriteDef(sprite->getid()).getName()));
                     spriteItem->setText(1, QString(tr("Rotation ID: %1")).arg(sprite->getNybbleData(field->startPos, field->endPos)));
-                    spriteItem->setData(0, Qt::UserRole, sprite->getid());
-                    spriteItem->setData(1, Qt::UserRole, sprite->getx());
-                    spriteItem->setData(2, Qt::UserRole, sprite->gety());
-                    spriteItem->setData(3, Qt::UserRole, sprite->getNybbleData(0, 23));
+                    spriteItem->setData(0, Qt::UserRole, QVariant::fromValue(static_cast<void*>(sprite)));
                     spriteTree->addTopLevelItem(spriteItem);
                 }
             }
         }
         spriteTree->setColumnCount(2);
-        spriteTree->setHeaderHidden(false);
-        for(int i = 0; i < 2; i++)
-            spriteTree->resizeColumnToContents(i);
+        spriteTree->setHeaderLabels(QStringList() << tr("Sprite") << tr("ID"));
+        spriteTree->setSortableColumns({0, 1});
+        spriteTree->setFlexibleColumn(0);
         break;
     }
     case 4: // Has Group ID
@@ -201,18 +191,15 @@ void SpriteIdWidget::updateList()
                     QTreeWidgetItem* spriteItem = new QTreeWidgetItem();
                     spriteItem->setText(0, QString("%1: %2").arg(sprite->getid()).arg(spriteData.getSpriteDef(sprite->getid()).getName()));
                     spriteItem->setText(1, QString(tr("Group ID: %1")).arg(sprite->getNybbleData(field->startPos, field->endPos)));
-                    spriteItem->setData(0, Qt::UserRole, sprite->getid());
-                    spriteItem->setData(1, Qt::UserRole, sprite->getx());
-                    spriteItem->setData(2, Qt::UserRole, sprite->gety());
-                    spriteItem->setData(3, Qt::UserRole, sprite->getNybbleData(0, 23));
+                    spriteItem->setData(0, Qt::UserRole, QVariant::fromValue(static_cast<void*>(sprite)));
                     spriteTree->addTopLevelItem(spriteItem);
                 }
             }
         }
         spriteTree->setColumnCount(2);
-        spriteTree->setHeaderHidden(false);
-        for(int i = 0; i < 2; i++)
-            spriteTree->resizeColumnToContents(i);
+        spriteTree->setHeaderLabels(QStringList() << tr("Sprite") << tr("ID"));
+        spriteTree->setSortableColumns({0, 1});
+        spriteTree->setFlexibleColumn(0);
         break;
     }
     case 5: // Has Movement ID
@@ -230,18 +217,15 @@ void SpriteIdWidget::updateList()
                     QTreeWidgetItem* spriteItem = new QTreeWidgetItem();
                     spriteItem->setText(0, QString("%1: %2").arg(sprite->getid()).arg(spriteData.getSpriteDef(sprite->getid()).getName()));
                     spriteItem->setText(1, QString(tr("Movement ID: %1")).arg(sprite->getNybbleData(field->startPos, field->endPos)));
-                    spriteItem->setData(0, Qt::UserRole, sprite->getid());
-                    spriteItem->setData(1, Qt::UserRole, sprite->getx());
-                    spriteItem->setData(2, Qt::UserRole, sprite->gety());
-                    spriteItem->setData(3, Qt::UserRole, sprite->getNybbleData(0, 23));
+                    spriteItem->setData(0, Qt::UserRole, QVariant::fromValue(static_cast<void*>(sprite)));
                     spriteTree->addTopLevelItem(spriteItem);
                 }
             }
         }
         spriteTree->setColumnCount(2);
-        spriteTree->setHeaderHidden(false);
-        for(int i = 0; i < 2; i++)
-            spriteTree->resizeColumnToContents(i);
+        spriteTree->setHeaderLabels(QStringList() << tr("Sprite") << tr("ID"));
+        spriteTree->setSortableColumns({0, 1});
+        spriteTree->setFlexibleColumn(0);
         break;
     }
     case 6: // Has Path ID
@@ -259,37 +243,39 @@ void SpriteIdWidget::updateList()
                     QTreeWidgetItem* spriteItem = new QTreeWidgetItem();
                     spriteItem->setText(0, QString("%1: %2").arg(sprite->getid()).arg(spriteData.getSpriteDef(sprite->getid()).getName()));
                     spriteItem->setText(1, QString(tr("Path ID: %1")).arg(sprite->getNybbleData(field->startPos, field->endPos)));
-                    spriteItem->setData(0, Qt::UserRole, sprite->getid());
-                    spriteItem->setData(1, Qt::UserRole, sprite->getx());
-                    spriteItem->setData(2, Qt::UserRole, sprite->gety());
-                    spriteItem->setData(3, Qt::UserRole, sprite->getNybbleData(0, 23));
+                    spriteItem->setData(0, Qt::UserRole, QVariant::fromValue(static_cast<void*>(sprite)));
                     spriteTree->addTopLevelItem(spriteItem);
                 }
             }
         }
         spriteTree->setColumnCount(2);
-        spriteTree->setHeaderHidden(false);
-        for(int i = 0; i < 2; i++)
-            spriteTree->resizeColumnToContents(i);
+        spriteTree->setHeaderLabels(QStringList() << tr("Sprite") << tr("ID"));
+        spriteTree->setSortableColumns({0, 1});
+        spriteTree->setFlexibleColumn(0);
         break;
     }
     default: // All in Level
     {
         foreach (Sprite* sprite, *sprites)
         {
-            QTreeWidgetItem* spriteItem = new QTreeWidgetItem();
-            spriteItem->setText(0, QString("%1: %2").arg(sprite->getid()).arg(spriteData.getSpriteDef(sprite->getid()).getName()));
-            spriteItem->setData(0, Qt::UserRole, sprite->getid());
-            spriteItem->setData(1, Qt::UserRole, sprite->getx());
-            spriteItem->setData(2, Qt::UserRole, sprite->gety());
-            spriteItem->setData(3, Qt::UserRole, sprite->getNybbleData(0, 23));
+            SortableTreeItem* spriteItem = new SortableTreeItem();
+            spriteItem->setData(0, Qt::DisplayRole, sprite->getid());
+            spriteItem->setSortKey(0, static_cast<double>(sprite->getid()));
+            spriteItem->setText(1, spriteData.getSpriteDef(sprite->getid()).getName());
+            spriteItem->setSortKey(1, spriteData.getSpriteDef(sprite->getid()).getName());
+            spriteItem->setText(2, tr("(X: %1, Y: %2)").arg(to16(sprite->getx())).arg(to16(sprite->gety())));
+            spriteItem->setSortKey(2, std::hypot(static_cast<double>(to16(sprite->getx())), static_cast<double>(to16(sprite->gety()))));
+            spriteItem->setData(0, Qt::UserRole, QVariant::fromValue(static_cast<void*>(sprite)));
             spriteTree->addTopLevelItem(spriteItem);
         }
-        spriteTree->setColumnCount(1);
-        spriteTree->setHeaderHidden(false);
+        spriteTree->setColumnCount(3);
+        spriteTree->setHeaderLabels(QStringList() << tr("ID") << tr("Name") << tr("Position"));
+        spriteTree->setSortableColumns({0, 1, 2});
+        spriteTree->setFlexibleColumn(1);
         break;
     }
     }
+    spriteTree->resort();
     spriteTree->setCurrentIndex(index);
 
     handleChanges = true;
@@ -326,23 +312,18 @@ void SpriteIdWidget::setView(int view)
         viewMode = 0;
         break;
     }
+    spriteTree->resetColumnSizing();
     deselect();
 }
 
 void SpriteIdWidget::handleIndexChange(QTreeWidgetItem *spriteItem)
 {
-    if (handleChanges)
-    {
-        foreach (Sprite* sprite, *sprites)
-        {
-            if ((spriteItem->data(0, Qt::UserRole) == sprite->getid())
-             && (spriteItem->data(1, Qt::UserRole) == sprite->getx())
-             && (spriteItem->data(2, Qt::UserRole) == sprite->gety())
-             && (spriteItem->data(3, Qt::UserRole) == sprite->getNybbleData(0, 23)))
-            {
-                emit selectedSpriteChanged(sprite);
-            }
-        }
-        emit updateLevelView();
-    }
+    if (!handleChanges || spriteItem == nullptr)
+        return;
+
+    Sprite* sprite = static_cast<Sprite*>(spriteItem->data(0, Qt::UserRole).value<void*>());
+    if (sprite != nullptr)
+        emit selectedSpriteChanged(sprite);
+
+    emit updateLevelView();
 }

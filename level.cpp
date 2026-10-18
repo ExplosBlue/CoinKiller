@@ -849,6 +849,26 @@ void Level::raise(Object* obj)
         Sprite* spr = dynamic_cast<Sprite*>(obj);
         sprites.move(sprites.indexOf(spr), sprites.size()-1);
     }
+    else if (is<Location*>(obj))
+    {
+        Location* loc = dynamic_cast<Location*>(obj);
+        locations.move(locations.indexOf(loc), locations.size()-1);
+    }
+    else if (is<Entrance*>(obj))
+    {
+        Entrance* entr = dynamic_cast<Entrance*>(obj);
+        entrances.move(entrances.indexOf(entr), entrances.size()-1);
+    }
+    else if (is<Zone*>(obj))
+    {
+        Zone* zone = dynamic_cast<Zone*>(obj);
+        zones.move(zones.indexOf(zone), zones.size()-1);
+    }
+    else if (is<PathNode*>(obj))
+    {
+        Path* path = dynamic_cast<PathNode*>(obj)->getParentPath();
+        paths.move(paths.indexOf(path), paths.size()-1);
+    }
 }
 
 void Level::lower(Object *obj)
@@ -862,6 +882,26 @@ void Level::lower(Object *obj)
     {
         Sprite* spr = dynamic_cast<Sprite*>(obj);
         sprites.move(sprites.indexOf(spr), 0);
+    }
+    else if (is<Location*>(obj))
+    {
+        Location* loc = dynamic_cast<Location*>(obj);
+        locations.move(locations.indexOf(loc), 0);
+    }
+    else if (is<Entrance*>(obj))
+    {
+        Entrance* entr = dynamic_cast<Entrance*>(obj);
+        entrances.move(entrances.indexOf(entr), 0);
+    }
+    else if (is<Zone*>(obj))
+    {
+        Zone* zone = dynamic_cast<Zone*>(obj);
+        zones.move(zones.indexOf(zone), 0);
+    }
+    else if (is<PathNode*>(obj))
+    {
+        Path* path = dynamic_cast<PathNode*>(obj)->getParentPath();
+        paths.move(paths.indexOf(path), 0);
     }
 }
 
@@ -936,7 +976,7 @@ Location* Level::newLocation(int x, int y)
     if (x < 0) x = 0;
     if (y < 0) y = 0;
 
-    quint8 id = 0;
+    quint8 id = 1;
     for(;; id++)
     {
         bool check = false;
@@ -945,7 +985,7 @@ Location* Level::newLocation(int x, int y)
         if (!check) break;
         else if (id == 255)
         {
-            id = 0;
+            id = 1;
             break;
         }
     }

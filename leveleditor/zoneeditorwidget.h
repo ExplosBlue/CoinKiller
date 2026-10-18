@@ -3,6 +3,7 @@
 
 #include "objects.h"
 #include "level.h"
+#include "sortabletreewidget.h"
 
 #include <QWidget>
 #include <QListWidget>
@@ -151,7 +152,7 @@ signals:
     void screenshot(QRect);
 
 private:
-    QListWidget* zoneList;
+    SortableTreeWidget* zoneList;
 
     QPushButton* selectContentsBtn;
     QPushButton* screenshotBtn;
@@ -198,7 +199,7 @@ private:
     Level *level;
 
 private slots:
-    void handleZoneListIndexChange(QListWidgetItem* item);
+    void handleZoneListIndexChange(QTreeWidgetItem* item);
     void handleIDChange(int idVal);
     void handleProgPathIDChange(int ppIDVal);
     void handleMusicIDChange(QString text);

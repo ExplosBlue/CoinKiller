@@ -5,12 +5,12 @@
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QGridLayout>
-#include <QListWidget>
 #include <QSpinBox>
 #include <QCheckBox>
 #include <QUndoStack>
 
 #include "objects.h"
+#include "sortabletreewidget.h"
 
 class ProgressPathEditorWidget : public QWidget
 {
@@ -34,17 +34,19 @@ private:
     QList<ProgressPath*> *paths;
 
     QWidget* edits;
-    QListWidget* pathList;
+    SortableTreeWidget* pathList;
     QSpinBox* id;
     QCheckBox* alternatePathFlag;
 
     QUndoStack *undoStack;
 
+    void changeEvent(QEvent* event) override;
+
     void updateList();
     void updateInfo();
 
 private slots:
-    void handlePathListIndexChanged(QListWidgetItem *item);
+    void handlePathListIndexChanged(QTreeWidgetItem *item);
     void handleIDChanged(int idVal);
     void handleAlternetePathFlagChanged(bool apfVal);
 };

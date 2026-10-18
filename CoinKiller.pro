@@ -81,6 +81,7 @@ SOURCES += \
     leveleditor/settingsdialog.cpp \
     leveleditor/spriteeditorwidget.cpp \
     leveleditor/spriteidswidget.cpp \
+    leveleditor/sortabletreewidget.cpp \
     leveleditor/tilesetpalette.cpp \
     leveleditor/tilesetselectdialog.cpp \
     leveleditor/zoneeditorwidget.cpp \
@@ -142,6 +143,7 @@ HEADERS += \
     leveleditor/settingsdialog.h \
     leveleditor/spriteeditorwidget.h \
     leveleditor/spriteidswidget.h \
+    leveleditor/sortabletreewidget.h \
     leveleditor/tilesetpalette.h \
     leveleditor/tilesetselectdialog.h \
     leveleditor/zoneeditorwidget.h \

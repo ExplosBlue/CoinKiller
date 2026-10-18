@@ -3,10 +3,10 @@
 
 #include "objects.h"
 #include "spritedata.h"
+#include "sortabletreewidget.h"
 
 #include <QWidget>
 #include <QLabel>
-#include <QTreeWidget>
 #include <QListWidget>
 #include <QComboBox>
 #include <QGridLayout>
@@ -36,11 +36,9 @@ private:
     bool handleChanges = false;
     SpriteData spriteData;
     QList<Sprite*> *sprites;
-    QTreeWidget* spriteTree;
+    SortableTreeWidget* spriteTree;
     QComboBox* viewComboBox;
     QLineEdit* searchEdit;
-
-    QStringList headerLables;
 
     void changeEvent(QEvent* event);
 

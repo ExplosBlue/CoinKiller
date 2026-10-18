@@ -2,9 +2,9 @@
 #define PATHEDITORWIDGET_H
 
 #include "objects.h"
+#include "sortabletreewidget.h"
 
 #include <QWidget>
-#include <QListWidget>
 #include <QSpinBox>
 #include <QDoubleSpinBox>
 #include <QCheckBox>
@@ -34,7 +34,7 @@ private:
 
     QWidget* edits;
     QGroupBox* nodeGroupbox;
-    QListWidget* pathList;
+    SortableTreeWidget* pathList;
 
     QSpinBox* id;
     QCheckBox* loop;
@@ -49,11 +49,13 @@ private:
 
     QUndoStack *undoStack;
 
+    void changeEvent(QEvent* event) override;
+
     void updateList();
     void updateInfo();
 
 private slots:
-    void handlePathListIndexChanged(QListWidgetItem *item);
+    void handlePathListIndexChanged(QTreeWidgetItem *item);
     void handleIDChanged(int idVal);
     void handleLoopChanged();
     void handleSpeedChanged(double speedVal);

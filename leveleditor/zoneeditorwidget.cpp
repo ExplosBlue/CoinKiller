@@ -10,6 +10,7 @@
 #include <QTabWidget>
 #include <QSpacerItem>
 #include <QMessageBox>
+#include <cmath>
 
 #include "commands/zonecommands.h"
 #include "commands/zonebgcommands.h"
@@ -35,9 +36,13 @@ ZoneEditorWidget::ZoneEditorWidget(QList<Zone*> *zones, QList<ZoneBackground*> *
     multiplayerTrackings.insert(8, tr("Right and Right"));
     loadMusicIDs();
 
-    zoneList = new QListWidget();
+    zoneList = new SortableTreeWidget();
     zoneList->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    connect(zoneList, &QListWidget::itemClicked, this, &ZoneEditorWidget::handleZoneListIndexChange);
+    zoneList->setColumnCount(2);
+    zoneList->setHeaderLabels(QStringList() << tr("Zone ID") << tr("Position"));
+    zoneList->setSortableColumns({0, 1});
+    zoneList->setFlexibleColumn(0);
+    connect(zoneList, &QTreeWidget::itemClicked, this, &ZoneEditorWidget::handleZoneListIndexChange);
 
     selectContentsBtn = new QPushButton(tr("Select Contents"), this);
     connect(selectContentsBtn, &QAbstractButton::clicked, this, &ZoneEditorWidget::handleSelectContentsClicked);
@@ -191,6 +196,8 @@ void ZoneEditorWidget::changeEvent(QEvent* event)
 {
     if (event->type() == QEvent::LanguageChange)
     {
+        zoneList->setHeaderLabels(QStringList() << tr("Zone ID") << tr("Position"));
+
         loadMusicIDs();
         for (auto iter = musicIds.begin(), end = musicIds.end(); iter != end; iter++) {
             musicId->addItem(iter->second);
@@ -213,7 +220,16 @@ void ZoneEditorWidget::select(Zone *zone)
     editZone = zone;
     editingAZone = true;
     updateInfo();
-    zoneList->setCurrentRow(static_cast<qint32>(zones->indexOf(zone)));
+
+    for (int i = 0; i < zoneList->topLevelItemCount(); i++)
+    {
+        QTreeWidgetItem* item = zoneList->topLevelItem(i);
+        if (static_cast<Zone*>(item->data(0, Qt::UserRole).value<void*>()) == zone)
+        {
+            zoneList->setCurrentItem(item);
+            break;
+        }
+    }
 }
 
 void ZoneEditorWidget::updateEditor()
@@ -271,14 +287,36 @@ void BgPreview::resizeEvent(QResizeEvent *)
 
 void ZoneEditorWidget::updateList()
 {
-    QModelIndex index;
-    if (zoneList->selectionModel()->selectedIndexes().size() != 0) index = zoneList->selectionModel()->selectedIndexes().at(0);
+    Zone* selected = nullptr;
+    if (!zoneList->selectedItems().isEmpty())
+        selected = static_cast<Zone*>(zoneList->selectedItems().first()->data(0, Qt::UserRole).value<void*>());
 
     zoneList->clear();
     foreach (Zone* zone, *zones)
-        zoneList->addItem(tr("Zone %1: (X: %2, Y: %3) (W: %4 H: %5)").arg(zone->getid()).arg(to16(zone->getx())).arg(to16(zone->gety())).arg(to16(zone->getwidth())).arg(to16(zone->getheight())));
+    {
+        SortableTreeItem* item = new SortableTreeItem();
+        item->setData(0, Qt::DisplayRole, zone->getid());
+        item->setSortKey(0, static_cast<double>(zone->getid()));
+        item->setText(1, tr("(X: %1, Y: %2) (W: %3, H: %4)").arg(to16(zone->getx())).arg(to16(zone->gety())).arg(to16(zone->getwidth())).arg(to16(zone->getheight())));
+        item->setSortKey(1, std::hypot(static_cast<double>(to16(zone->getx())), static_cast<double>(to16(zone->gety()))));
+        item->setData(0, Qt::UserRole, QVariant::fromValue(static_cast<void*>(zone)));
+        zoneList->addTopLevelItem(item);
+    }
 
-    zoneList->setCurrentIndex(index);
+    zoneList->resort();
+
+    if (selected == nullptr)
+        return;
+
+    for (int i = 0; i < zoneList->topLevelItemCount(); i++)
+    {
+        QTreeWidgetItem* item = zoneList->topLevelItem(i);
+        if (static_cast<Zone*>(item->data(0, Qt::UserRole).value<void*>()) == selected)
+        {
+            zoneList->setCurrentItem(item);
+            break;
+        }
+    }
 }
 
 void ZoneEditorWidget::updateInfo()
@@ -316,10 +354,10 @@ void ZoneEditorWidget::updateInfo()
     handleChanges = true;
 }
 
-void ZoneEditorWidget::handleZoneListIndexChange(QListWidgetItem *item)
+void ZoneEditorWidget::handleZoneListIndexChange(QTreeWidgetItem *item)
 {
     if (!handleChanges) return;
-    editZone = zones->at(zoneList->row(item));
+    editZone = static_cast<Zone*>(item->data(0, Qt::UserRole).value<void*>());
     editingAZone = true;
     updateInfo();
     emit selectedZoneChanged(editZone);
