@@ -82,6 +82,8 @@ public:
     void insertCameraLimit(Sprite* spr);
     void removeCameraLimit(Sprite* spr);
 
+    static bool cameraLimitCanPair(Sprite* limit, Sprite* partner);
+
     QList<Sprite*> leftCamLimits;
     QList<Sprite*> rightCamLimits;
     QList<Sprite*> bottomCamLimits;

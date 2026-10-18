@@ -1,15 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-	CoinKiller tileset name mappings.
-
-	Each <group> holds a set of <tileset> entries, where "file" is the name of
-	the tileset archive in /Unit (without the .sarc extension) and "name" is the
-	friendly name shown in the editor.
-
-	Only the "Retail" group is bundled with CoinKiller. You can add your own
-	groups to organise custom tilesets. Any tileset that is present in /Unit but
-	not listed here will automatically be placed in an "Other" group.
--->
 <tilesets>
 	<group name="Retail">
 		<tileset file="J_Kihon_Test" name="Overworld (BETA)"/>

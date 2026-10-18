@@ -43,6 +43,12 @@ private:
     void changeEvent(QEvent* event);
 
     void updateList();
+    void addIdView(const QString& match, const QString& header);
+    void addCameraLimitsView();
+    void addCameraLimitItem(Sprite* sprite, Sprite* partner, const QString& label);
+    void addDisconnectedCameraLimit(Sprite* sprite);
+    QString cameraLimitShortName(Sprite* sprite);
+    QString cameraLimitDirection(Sprite* sprite);
 
     int viewMode = 0;
 };

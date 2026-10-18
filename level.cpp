@@ -1038,6 +1038,39 @@ bool Level::isCameraLimit(Sprite *spr)
     return true;
 }
 
+bool Level::cameraLimitCanPair(Sprite *limit, Sprite *partner)
+{
+    int limitID = limit->getid();
+    int partnerID = partner->getid();
+
+    if (limitID == 156 && partnerID == 157)
+    {
+        if (partner->gety() != limit->gety())
+            return false;
+
+        if (partner->getx() <= limit->getx())
+            return false;
+    }
+    else if (limitID == 161 && partnerID == 160)
+    {
+        if (partner->getx() != limit->getx())
+            return false;
+
+        if (partner->gety() <= limit->gety())
+            return false;
+    }
+    else
+        return false;
+
+    if (partner->getNybble(9) != limit->getNybble(9))
+        return false;
+
+    if (partner->getNybble(4) != limit->getNybble(4))
+        return false;
+
+    return true;
+}
+
 void Level::insertCameraLimit(Sprite *spr)
 {
     if (!isCameraLimit(spr))

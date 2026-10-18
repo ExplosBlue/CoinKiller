@@ -456,31 +456,22 @@ void LevelView::paint(QPainter& painter, QRect rect, float zoomLvl, bool selecti
                 int yRenderOffset = 0;
                 foreach (Sprite* right, rightCamLimits)
                 {
-                    if (right->gety() != left->gety())
+                    if (!Level::cameraLimitCanPair(left, right))
                         continue;
 
-                    if (right->getNybble(9) != left->getNybble(9))
-                        continue;
+                    noPair = false;
+                    rightX = right->getx();
 
-                    if (right->getNybble(4) != left->getNybble(4))
-                        continue;
+                    if (right->getNybble(8) == 1 && left->getNybble(8) == 1)
+                        permiable = true;
 
-                    if (right->getx() > left->getx())
-                    {
-                        noPair = false;
-                        rightX = right->getx();
+                    if (right->getNybble(4) == 1 && left->getNybble(4) == 1)
+                        isBelow = true;
 
-                        if (right->getNybble(8) == 1 && left->getNybble(8) == 1)
-                            permiable = true;
+                    if (right->getNybbleData(10, 11) == left->getNybbleData(10, 11))
+                        yRenderOffset = to20(right->getNybbleData(10, 11));
 
-                        if (right->getNybble(4) == 1 && left->getNybble(4) == 1)
-                            isBelow = true;
-
-                        if (right->getNybbleData(10, 11) == left->getNybbleData(10, 11))
-                            yRenderOffset = to20(right->getNybbleData(10, 11));
-
-                        break;
-                    }
+                    break;
                 }
 
                 if (!noPair)
@@ -504,31 +495,22 @@ void LevelView::paint(QPainter& painter, QRect rect, float zoomLvl, bool selecti
                 int xRenderOffset = 0;
                 foreach (Sprite* bottom, bottomCamLimits)
                 {
-                    if (bottom->getx() != top->getx())
+                    if (!Level::cameraLimitCanPair(top, bottom))
                         continue;
 
-                    if (bottom->getNybble(9) != top->getNybble(9))
-                        continue;
+                    noPair = false;
+                    bottomY = bottom->gety();
 
-                    if (bottom->getNybble(4) != top->getNybble(4))
-                        continue;
+                    if (bottom->getNybble(8) == 1 && top->getNybble(8) == 1)
+                        permiable = true;
 
-                    if (bottom->gety() > top->gety())
-                    {
-                        noPair = false;
-                        bottomY = bottom->gety();
+                    if (bottom->getNybble(4) == 1 && top->getNybble(4) == 1)
+                        isRight = true;
 
-                        if (bottom->getNybble(8) == 1 && top->getNybble(8) == 1)
-                            permiable = true;
+                    if (bottom->getNybbleData(10, 11) == top->getNybbleData(10, 11))
+                        xRenderOffset = to20(bottom->getNybbleData(10, 11));
 
-                        if (bottom->getNybble(4) == 1 && top->getNybble(4) == 1)
-                            isRight = true;
-
-                        if (bottom->getNybbleData(10, 11) == top->getNybbleData(10, 11))
-                            xRenderOffset = to20(bottom->getNybbleData(10, 11));
-
-                        break;
-                    }
+                    break;
                 }
 
                 if (!noPair)
