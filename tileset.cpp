@@ -610,31 +610,32 @@ static void paintPaddedTile(QImage& dst, const QImage& sheet, int i, int tilew)
     p.end();
 }
 
-void Tileset::setImageRegion(QImage &sheet, int tileTL, int tileBR, uint quality, bool dither)
+void Tileset::setImageRegion(QImage &sheet, const QList<int> &tiles, uint quality, bool dither)
 {
-    if (tileTL < 0 || tileBR < 0)
-        return;
+    QSet<int> selected;
 
-    int x0Tile = tileTL % 21;
-    int y0Tile = tileTL / 21;
-    int x1Tile = tileBR % 21;
-    int y1Tile = tileBR / 21;
+    for (int tile : tiles)
+    {
+        if (tile >= 0 && tile < 441)
+            selected.insert(tile);
+    }
 
-    if (x1Tile < x0Tile) std::swap(x0Tile, x1Tile);
-    if (y1Tile < y0Tile) std::swap(y0Tile, y1Tile);
-
-    if (x0Tile < 0 || y0Tile < 0 || x1Tile > 20 || y1Tile > 20)
+    if (selected.isEmpty())
         return;
 
     QImage newImg = texImage.copy();
 
-    for (int y = y0Tile; y <= y1Tile; y++)
-        for (int x = x0Tile; x <= x1Tile; x++)
-            paintPaddedTile(newImg, sheet, y * 21 + x, 21);
+    QList<QRect> regions;
+    regions.reserve(selected.size());
 
-    QRect pxRect(x0Tile * 24, y0Tile * 24, (x1Tile - x0Tile + 1) * 24, (y1Tile - y0Tile + 1) * 24);
+    for (int tile : selected)
+    {
+        paintPaddedTile(newImg, sheet, tile, 21);
 
-    ctpk->setTextureEtc1Region(0, newImg, pxRect, quality, dither);
+        regions.append(QRect(tile % 21 * 24, tile / 21 * 24, 24, 24));
+    }
+
+    ctpk->setTextureEtc1Region(0, newImg, regions, quality, dither);
     texImage = ctpk->getTexture((quint32)0);
 }
 

@@ -1119,7 +1119,7 @@ void TilesetEditorWindow::on_actionImportImageWithPadding_triggered()
 
 void TilesetEditorWindow::on_actionImportImageReplaceSelection_triggered()
 {
-    if (selectedTileTL == -1 || selectedTileBR == -1)
+    if (selectedTiles.isEmpty())
     {
         QMessageBox::information(this, tr("CoinKiller"), tr("Select one or more tiles in the tileset picker first."), QMessageBox::Ok);
         return;
@@ -1152,7 +1152,7 @@ void TilesetEditorWindow::on_actionImportImageReplaceSelection_triggered()
 
     qApp->processEvents();
 
-    tileset->setImageRegion(inputImg, selectedTileTL, selectedTileBR, quality, dither);
+    tileset->setImageRegion(inputImg, selectedTiles.values(), quality, dither);
 
     tilesetPicker->setTilesetImage(tileset->getImage());
     setupObjectsModel(true);
