@@ -32,6 +32,7 @@ signals:
 
 public slots:
     void updateSelectedTile(int tileTL, int tileBR);
+    void updateSelectedTiles(QList<int> tiles);
     void updateSelectedOvTile(int ovTile);
     void setSelTileData(QString text);
     void updateObjectEditor();
@@ -129,6 +130,10 @@ private:
 
     int selectedTileTL;
     int selectedTileBR;
+
+    QSet<int> selectedTiles;
+
+    bool updatingSelection = false;
 
     int selectedSpecialBehavior;
     int selectedParameter;

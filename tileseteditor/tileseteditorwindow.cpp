@@ -43,6 +43,9 @@ TilesetEditorWindow::TilesetEditorWindow(WindowBase *parent, Tileset *tileset) :
     ui->actionSetTilesetSlot->setIcon(QIcon(basePath + "edit_slot.png"));
     ui->actionShowObjectMarkers->setIcon(QIcon(basePath + "marker_red.png"));
     ui->actionToggleCollision->setIcon(QIcon(basePath + "toggle_collision.png"));
+    ui->actionZoom_In->setIcon(QIcon(basePath + "zoomin.png"));
+    ui->actionZoom_Out->setIcon(QIcon(basePath + "zoomout.png"));
+    ui->actionZoom_100->setIcon(QIcon(basePath + "zoom100.png"));
 
     // Setup Status Bar
     editStatus = new QLabel(this);
@@ -52,10 +55,16 @@ TilesetEditorWindow::TilesetEditorWindow(WindowBase *parent, Tileset *tileset) :
     tilesetPicker = new TilesetPicker(tileset, this);
 
     ui->tilesetPicker->setWidget(tilesetPicker);
+    tilesetPicker->attachViewport(ui->tilesetPicker->viewport());
     tilesetPicker->setBGColor(settings->getColor("tspColor"));
 
     connect(tilesetPicker, SIGNAL(selectedTileChanged(int, int)), this, SLOT(updateSelectedTile(int, int)));
+    connect(tilesetPicker, SIGNAL(selectedTilesChanged(QList<int>)), this, SLOT(updateSelectedTiles(QList<int>)));
     connect(tilesetPicker, SIGNAL(selectedOvTileChanged(int)), this, SLOT(updateSelectedOvTile(int)));
+
+    connect(ui->actionZoom_In, &QAction::triggered, tilesetPicker, &TilesetPicker::zoomIn);
+    connect(ui->actionZoom_Out, &QAction::triggered, tilesetPicker, &TilesetPicker::zoomOut);
+    connect(ui->actionZoom_100, &QAction::triggered, tilesetPicker, &TilesetPicker::resetZoom);
 
     tilesetPicker->setTilesetImage(tileset->getImage());
 
@@ -71,7 +80,7 @@ TilesetEditorWindow::TilesetEditorWindow(WindowBase *parent, Tileset *tileset) :
     objectEditor = new ObjectEditor(tileset, this);
     connect(this, SIGNAL(selectedObjectChanged(int)), objectEditor, SLOT(selectedObjectChanged(int)));
     connect(objectEditor, SIGNAL(updateSelTileLabel(QString)), this, SLOT(setSelTileData(QString)));
-    connect(tilesetPicker, SIGNAL(selectedTileChanged(int, int)), objectEditor, SLOT(selectedPaintTileChanged(int, int)));
+    connect(tilesetPicker, SIGNAL(selectedTilesChanged(QList<int>)), objectEditor, SLOT(selectedPaintTilesChanged(QList<int>)));
     connect(objectEditor, SIGNAL(tilesetChanged()), this, SLOT(updateObjectEditor()));
     ui->objectEditor->insertWidget(1, objectEditor);
     ui->actionShowObjectMarkers->setChecked(true);
@@ -82,6 +91,11 @@ TilesetEditorWindow::TilesetEditorWindow(WindowBase *parent, Tileset *tileset) :
     updateObjectInfo();
 
     this->adjustSize();
+
+    ui->mainSplitter->setStretchFactor(0, 2);
+    ui->mainSplitter->setStretchFactor(1, 1);
+    ui->mainSplitter->setSizes(QList<int>() << 442 << 640);
+    ui->tabWidget->setMaximumWidth(760);
 
     hideHorizEdits(true);
     hideVertEdits(true);
@@ -167,9 +181,18 @@ void TilesetEditorWindow::updateSelectedTile(int tileTL, int tileBR)
 
     ui->selectedTileLabel->setText(tr("Selected Tile: (%1, %2) ID : (%3)").arg(xpos).arg(ypos).arg(tileID));
 
+    updatingSelection = true;
+
     updateHex();
     updateBehavior();
     updateComboBoxes();
+
+    updatingSelection = false;
+}
+
+void TilesetEditorWindow::updateSelectedTiles(QList<int> tiles)
+{
+    selectedTiles = QSet<int>(tiles.constBegin(), tiles.constEnd());
 }
 
 void TilesetEditorWindow::updateSelectedOvTile(int ovTile)
@@ -643,11 +666,11 @@ void TilesetEditorWindow::on_actionToggleCollision_toggled(bool value)
 
 void TilesetEditorWindow::setBehaviorByte(int byte, quint8 value)
 {
-    for (int i = selectedTileTL; i <= selectedTileBR; i++)
-    {
-        if (i % 21 >= selectedTileTL % 21  && i % 21 <= selectedTileBR % 21)
-            tileset->setBehaviorByte(i, byte, value);
-    }
+    if (updatingSelection)
+        return;
+
+    for (int i : selectedTiles)
+        tileset->setBehaviorByte(i, byte, value);
 }
 
 void TilesetEditorWindow::on_hexLineEdit_textEdited(const QString &text)

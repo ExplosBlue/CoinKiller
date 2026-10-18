@@ -1185,6 +1185,30 @@ Check the notes of whatever sprite is paired to this path to see how to use this
 <context>
     <name>TilesetEditorWindow</name>
     <message>
+        <source>Zoom In</source>
+        <translation>Vergrößern</translation>
+    </message>
+    <message>
+        <source>Ctrl++</source>
+        <translation></translation>
+    </message>
+    <message>
+        <source>Zoom Out</source>
+        <translation>Verkleinern</translation>
+    </message>
+    <message>
+        <source>Ctrl+-</source>
+        <translation></translation>
+    </message>
+    <message>
+        <source>Zoom 100%</source>
+        <translation></translation>
+    </message>
+    <message>
+        <source>Ctrl+0</source>
+        <translation></translation>
+    </message>
+    <message>
         <source>Selected Tile</source>
         <translation>Ausgewähltes Teil</translation>
     </message>
