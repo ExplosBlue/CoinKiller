@@ -16,6 +16,8 @@
 #include <QClipboard>
 #include <QDebug>
 
+static const int CYCLE_RADIUS = 10;
+
 EditManager::EditManager(Level *level, QUndoStack *undoStack) :
     level(level), undoStack(undoStack)
 {
@@ -81,39 +83,76 @@ void EditManager::mouseDown(int x, int y, Qt::MouseButtons buttons, Qt::Keyboard
         {
             QList<Object*> tempSelObjects = selectedObjects;
             bool shift = false;
+            bool cycled = false;
+            bool keepSelection = false;
 
-            if (modifiers != Qt::ShiftModifier) {
-                selectedObjects = getObjectsAtPos(dx, dy, dx, dy, true, drawrect);
-            }
-            else if (modifiers != Qt::ControlModifier)
+            if (hasLastClick && !selectedObjects.isEmpty())
             {
-                shift = true;
-                QList<Object*> newObjList = getObjectsAtPos(dx, dy, dx, dy, true, drawrect);
-                if (newObjList.size() == 1)
+                int clickDiffX = dx - lastClickX;
+                int clickDiffY = dy - lastClickY;
+
+                if (clickDiffX * clickDiffX + clickDiffY * clickDiffY <= CYCLE_RADIUS * CYCLE_RADIUS)
                 {
-                    if(!selectedObjects.contains(newObjList[0]))
-                        selectedObjects.append(newObjList[0]);
-                    else
-                        selectedObjects.removeOne(newObjList[0]);
+                    Object* nextObject = getNextClickedObjectAtPos(dx, dy, drawrect);
+
+                    if (nextObject != nullptr)
+                    {
+                        if (modifiers == Qt::NoModifier)
+                        {
+                            selectedObjects.clear();
+                            selectedObjects.append(nextObject);
+                            cycled = true;
+                        }
+                        else if (modifiers != Qt::ShiftModifier)
+                        {
+                            keepSelection = true;
+                        }
+                    }
                 }
             }
 
-            if (!shift && selectedObjects.size() != 0 && tempSelObjects.contains(selectedObjects[0]))
+            if (!cycled)
             {
-                selectedObjects = tempSelObjects;
+                if (!keepSelection)
+                {
+                    if (modifiers != Qt::ShiftModifier) {
+                        selectedObjects = getObjectsAtPos(dx, dy, dx, dy, true, drawrect);
+                    }
+                    else if (modifiers != Qt::ControlModifier)
+                    {
+                        shift = true;
+                        QList<Object*> newObjList = getObjectsAtPos(dx, dy, dx, dy, true, drawrect);
+                        if (newObjList.size() == 1)
+                        {
+                            if(!selectedObjects.contains(newObjList[0]))
+                                selectedObjects.append(newObjList[0]);
+                            else
+                                selectedObjects.removeOne(newObjList[0]);
+                        }
+                    }
+
+                    if (!shift && selectedObjects.size() != 0 && tempSelObjects.contains(selectedObjects[0]))
+                    {
+                        selectedObjects = tempSelObjects;
+                    }
+                }
+
+                if (selectedObjects.size() == 0)
+                {
+                    interactMode = InteractionMode::Selection;
+                }
+                else if (modifiers == Qt::ControlModifier)
+                {
+                    sortSelection();
+                    cloneObjects(selectedObjects);
+                    emit updateEditors();
+                    clone = true;
+                }
             }
 
-            if (selectedObjects.size() == 0)
-            {
-                interactMode = InteractionMode::Selection;
-            }
-            else if (modifiers == Qt::ControlModifier)
-            {
-                sortSelection();
-                cloneObjects(selectedObjects);
-                emit updateEditors();
-                clone = true;
-            }
+            hasLastClick = true;
+            lastClickX = dx;
+            lastClickY = dy;
 
             checkEmits();
         }
@@ -669,6 +708,30 @@ QList<Object*> EditManager::getObjectsAtPos(int x1, int y1, int x2, int y2, bool
 
 
     return objects;
+}
+
+Object* EditManager::getNextClickedObjectAtPos(int x, int y, QRect drawrect)
+{
+    QList<Object*> objects = getObjectsAtPos(x, y, x, y, false, drawrect);
+
+    if (objects.size() < 2)
+        return nullptr;
+
+    int index = -1;
+
+    for (int i = objects.size()-1; i >= 0; i--)
+    {
+        if (selectedObjects.contains(objects[i]))
+        {
+            index = i;
+            break;
+        }
+    }
+
+    if (index < 0)
+        return nullptr;
+
+    return objects[index == 0 ? objects.size()-1 : index-1];
 }
 
 void EditManager::cloneObjects(QList<Object *> objects)

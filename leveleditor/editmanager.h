@@ -136,6 +136,8 @@ private:
     mouseAction getActionAtPos(int x, int y);
     Qt::CursorShape getCursorAtPos(int x, int y);
 
+    Object* getNextClickedObjectAtPos(int x, int y, QRect drawrect);
+
     void cloneObjects(QList<Object*> objects);
 
     void updateSelectionBounds();
@@ -146,6 +148,10 @@ private:
     // Last Deltas. Needed to prevent wiggling of dragging objects
     int xDeltaL;
     int yDeltaL;
+
+    bool hasLastClick = false;
+    int lastClickX = 0;
+    int lastClickY = 0;
 
     void checkEmits();
 
