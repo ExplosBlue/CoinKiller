@@ -199,8 +199,31 @@ Tileset::Tileset(Game *game, QString name)
     objindex->close();
     delete objindex;
 
-    if (objectDefs.size() > 0)
-        slot = (objectDefs[0]->rows[0].data[2] & 6) >> 1;
+    slot = TilesetList::slotForFileName(name);
+
+    if (slot == -1)
+    {
+        slot = 0;
+        bool foundSlot = false;
+
+        for (int o = 0; o < objectDefs.size() && !foundSlot; o++)
+        {
+            ObjectDef& obj = *objectDefs[o];
+
+            for (int r = 0; r < obj.rows.size() && !foundSlot; r++)
+            {
+                for (int t = 0; t < obj.rows[r].data.size(); t += 3)
+                {
+                    if (obj.rows[r].data[t+1] == 0 && (obj.rows[r].data[t+2] & 6) == 0)
+                        continue;
+
+                    slot = (obj.rows[r].data[t+2] & 6) >> 1;
+                    foundSlot = true;
+                    break;
+                }
+            }
+        }
+    }
 
     // parse behaviors
     FileBase* behaviorsFile = archive->openFile("BG_chk/d_bgchk_" + name + ".bin");
@@ -822,6 +845,10 @@ void Tileset::setSlot(int slot)
                     obj.rows[r].data[t+2] = (obj.rows[r].data[t+2] & 249) | slot << 1;
         }
     }
+
+    for (int i = 0; i < 441; i++)
+        if (getOverlayTile(i) != 0)
+            overlays3D[i] = (overlays3D[i] & 61951) | (slot << 9);
 }
 
 quint16 Tileset::getOverlayTile(int selTile)
@@ -1141,6 +1168,17 @@ bool TilesetList::matchesSlot(const QString& fileName, int slot)
     }
 
     return true;
+}
+
+int TilesetList::slotForFileName(const QString& fileName)
+{
+    for (int slot = 0; slot < 4; slot++)
+    {
+        if (matchesSlot(fileName, slot))
+            return slot;
+    }
+
+    return -1;
 }
 
 QString TilesetList::stripExtension(const QString& fileName)

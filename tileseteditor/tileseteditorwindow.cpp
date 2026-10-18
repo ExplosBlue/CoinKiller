@@ -1173,6 +1173,10 @@ void TilesetEditorWindow::on_actionSetBackgroundColor_triggered()
 
 void TilesetEditorWindow::on_actionSave_triggered()
 {
+    int slot = TilesetList::slotForFileName(tileset->getName());
+    if (slot != -1)
+        tileset->setSlot(slot);
+
     tileset->save();
     savedTilesetState = tilesetState();
     unsavedChanges = false;

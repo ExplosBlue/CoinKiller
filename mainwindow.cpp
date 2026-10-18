@@ -713,7 +713,7 @@ void MainWindow::duplicateTileset()
 
     int sourceSlot = tilesetSlotFromPrefix(selTsName);
 
-    NewTilesetDialog ntd(this, settings, selTsName + "_copy", sourceSlot, tr("Duplicate Tileset..."));
+    NewTilesetDialog ntd(this, settings, stripTilesetPrefix(selTsName) + "_copy", sourceSlot, tr("Duplicate Tileset..."));
     int result = ntd.exec();
 
     if (result != QDialog::Accepted)

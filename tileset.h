@@ -103,7 +103,7 @@ public:
 private:
     QString name;
     bool drawOverrides = false;
-    int slot;
+    int slot = 0;
     SarcFilesystem* archive;
     Ctpk* ctpk;
 
@@ -143,6 +143,7 @@ public:
     QList<TilesetGroup> groups() const;
 
     static bool matchesSlot(const QString& fileName, int slot);
+    static int slotForFileName(const QString& fileName);
     static QString stripExtension(const QString& fileName);
 
     QString displayName(const QString& fileName) const;
