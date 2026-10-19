@@ -1627,11 +1627,19 @@ We can not help you finding that file, but the filename should be enough to do s
         <translation type="unfinished">Sfondo:</translation>
     </message>
     <message>
-        <source>Background %1</source>
+        <source>Background %1 - %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Background: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Toggle list and thumbnail view</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>CoinKiller - Select Background</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1713,6 +1721,10 @@ A value of 0 requires the player to be &gt;5 tiles away from the bottom before t
         <source>Bounding: %1</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>CoinKiller - Edit Boundings</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ZoneEditorWidget</name>
@@ -1765,11 +1777,19 @@ A value of 0 requires the player to be &gt;5 tiles away from the bottom before t
         <translation>Zona %1: (X: %2, Y: %3) (W: %4 H: %5)</translation>
     </message>
     <message>
-        <source>Open Bounding Editor</source>
+        <source>Edit Boundings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Open Background Editor</source>
+        <source>Edit Backgrounds</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>(%1, %2)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1: %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

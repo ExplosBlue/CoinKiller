@@ -69,6 +69,7 @@ SOURCES += \
     leveleditor/commands/zoneboundingcommands.cpp \
     leveleditor/commands/zonecommands.cpp \
     leveleditor/areaeditorwidget.cpp \
+    leveleditor/backgroundlist.cpp \
     leveleditor/editmanager.cpp \
     leveleditor/entranceeditorwidget.cpp \
     leveleditor/eventeditorwidget.cpp \
@@ -130,6 +131,7 @@ HEADERS += \
     leveleditor/commands/zoneboundingcommands.h \
     leveleditor/commands/zonecommands.h \
     leveleditor/areaeditorwidget.h \
+    leveleditor/backgroundlist.h \
     leveleditor/editmanager.h \
     leveleditor/entranceeditorwidget.h \
     leveleditor/eventeditorwidget.h \
