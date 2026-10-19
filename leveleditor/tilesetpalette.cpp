@@ -7,36 +7,9 @@
 #include <QPushButton>
 #include <QStandardItemModel>
 #include <QSpacerItem>
-#include <QStylePainter>
-#include <QStyleOptionComboBox>
-
-#include <algorithm>
 
 #include "tilesetselectdialog.h"
 #include "commands/levelcommands.h"
-
-namespace {
-
-class TilesetComboBox : public QComboBox
-{
-public:
-    using QComboBox::QComboBox;
-
-    QString displaySuffix;
-
-protected:
-    void paintEvent(QPaintEvent*) override
-    {
-        QStylePainter painter(this);
-        QStyleOptionComboBox opt;
-        initStyleOption(&opt);
-        painter.drawComplexControl(QStyle::CC_ComboBox, opt);
-        opt.currentText += displaySuffix;
-        painter.drawControl(QStyle::CE_ComboBoxLabel, opt);
-    }
-};
-
-}
 
 TilesetPalette::TilesetPalette(Level* level, EditManager* editManager, Game* game, QUndoStack *undoStack, QWidget *parent) :
     QWidget(parent),
@@ -77,7 +50,7 @@ TilesetPalette::TilesetPalette(Level* level, EditManager* editManager, Game* gam
         QLabel* tilesetLabel = new QLabel(tr("Tileset:"));
         tilesetLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 
-        QComboBox* tsPicker = new TilesetComboBox();
+        QComboBox* tsPicker = new QComboBox();
         tsPicker->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
         tilesetPickers.insert(tsSlot, tsPicker);
         connect(tsPicker, &QComboBox::currentIndexChanged, this, &TilesetPalette::tilesetComboChosen);
@@ -142,29 +115,47 @@ void TilesetPalette::populateTilesetCombo(int tsSlot)
     tsPicker->clear();
 
     QString current = level->tilesets[tsSlot] ? level->tilesets[tsSlot]->getName() : QString();
-    QString group = current.isEmpty() ? QString("Retail") : game->getTilesetList()->groupName(current);
+
+    QString group;
+    if (!current.isEmpty())
+        group = game->getTilesetList()->groupName(current);
+
+    if (group.isEmpty())
+        group = lastTilesetGroups[tsSlot];
+
+    if (group.isEmpty())
+    {
+        for (int i = 0; i < 4; i++)
+        {
+            if (!level->tilesets[i])
+                continue;
+
+            group = game->getTilesetList()->groupName(level->tilesets[i]->getName());
+            if (!group.isEmpty())
+                break;
+        }
+    }
 
     if (group.isEmpty())
         group = "Retail";
 
-    QList<TilesetEntry> entries;
+    lastTilesetGroups[tsSlot] = group;
+
+    tsPicker->addItem(tr("<none>"), QString());
+
     for (const TilesetGroup& tsGroup : game->getTilesetList()->groups())
     {
         if (tsGroup.name != group)
             continue;
 
-        for (const TilesetEntry& entry : tsGroup.tilesets)
-            if (TilesetList::matchesSlot(entry.fileName, tsSlot))
-                entries.append(entry);
+        for (const TilesetEntry& entry : tsGroup.allTilesets())
+        {
+            if (!TilesetList::matchesSlot(entry.fileName, tsSlot))
+                continue;
+
+            tsPicker->addItem(tr("%1 - %2").arg(tsGroup.name, entry.name), entry.fileName);
+        }
     }
-
-    std::sort(entries.begin(), entries.end(), [](const TilesetEntry& a, const TilesetEntry& b) {
-        return a.name.compare(b.name, Qt::CaseInsensitive) < 0;
-    });
-
-    tsPicker->addItem(tr("<none>"), QString());
-    for (const TilesetEntry& entry : entries)
-        tsPicker->addItem(entry.name, entry.fileName);
 
     int index = 0;
     if (!current.isEmpty())
@@ -180,9 +171,6 @@ void TilesetPalette::populateTilesetCombo(int tsSlot)
     }
 
     tsPicker->setCurrentIndex(index);
-
-    TilesetComboBox* tilesetCombo = static_cast<TilesetComboBox*>(tsPicker);
-    tilesetCombo->displaySuffix = (index > 0) ? QString(" (%1)").arg(group) : QString();
 
     tsPicker->blockSignals(false);
     tsPicker->update();

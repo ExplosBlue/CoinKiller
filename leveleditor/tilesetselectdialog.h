@@ -2,7 +2,7 @@
 #define TILESETSELECTDIALOG_H
 
 #include <QDialog>
-#include <QListWidget>
+#include <QComboBox>
 #include <QTreeWidget>
 #include <QListView>
 #include <QLabel>
@@ -31,7 +31,11 @@ private slots:
 
 private:
     void populateTilesets();
-    void addTilesets(const QList<TilesetEntry>& entries);
+    void addGroup(const TilesetGroup& group);
+    void addTilesets(QTreeWidgetItem* parent, const QList<TilesetEntry>& entries, const QString& groupName = QString());
+    QList<TilesetEntry> matchingEntries(const QList<TilesetEntry>& entries) const;
+    void sortTilesets(int column);
+    void applySort();
     void loadPreview(const QString& fileName);
     void clearPreview();
 
@@ -45,13 +49,14 @@ private:
 
     QList<TilesetGroup> groups;
 
-    QListWidget* groupList;
+    QComboBox* groupCombo;
     QTreeWidget* tilesetList;
     QLineEdit* filterBox;
     QLabel* filenameLabel;
     QListView* previewList;
     QStandardItemModel* previewModel;
     QWidget* warningWidget;
+    QTreeWidgetItem* noneItem = nullptr;
 };
 
 #endif // TILESETSELECTDIALOG_H

@@ -37,6 +37,7 @@ private:
     QList<QComboBox*> tilesetPickers;
     QList<QPushButton*> tilesetButtons;
     QList<QListView*> objectLists;
+    QString lastTilesetGroups[4];
 
     void loadTileset(int tilesetNbr);
     void updatePalettes(int actualPal);

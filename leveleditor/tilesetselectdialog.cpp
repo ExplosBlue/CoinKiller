@@ -8,6 +8,31 @@
 #include <QPainter>
 #include <QStyle>
 #include <QKeyEvent>
+#include <QHeaderView>
+
+namespace {
+
+QTreeWidgetItem* findTilesetItem(QTreeWidget* tree, const QString& fileName)
+{
+    QList<QTreeWidgetItem*> stack;
+    for (int i = 0; i < tree->topLevelItemCount(); i++)
+        stack.append(tree->topLevelItem(i));
+
+    while (!stack.isEmpty())
+    {
+        QTreeWidgetItem* item = stack.takeFirst();
+
+        if (item->data(0, Qt::UserRole).toString() == fileName)
+            return item;
+
+        for (int i = 0; i < item->childCount(); i++)
+            stack.append(item->child(i));
+    }
+
+    return nullptr;
+}
+
+}
 
 TilesetSelectionDialog::TilesetSelectionDialog(Game* game, int slot, const QString& currentTileset, int currentObjectCount, QWidget* parent) :
     QDialog(parent),
@@ -26,36 +51,34 @@ TilesetSelectionDialog::TilesetSelectionDialog(Game* game, int slot, const QStri
     splitter->setChildrenCollapsible(false);
     mainLayout->addWidget(splitter, 1);
 
-    QWidget* groupPane = new QWidget(splitter);
-    QVBoxLayout* groupLayout = new QVBoxLayout(groupPane);
-    groupLayout->setContentsMargins(0, 0, 0, 0);
-    groupLayout->addWidget(new QLabel(tr("Groups"), groupPane));
-
-    groupList = new QListWidget(groupPane);
-    groupList->setSelectionMode(QAbstractItemView::SingleSelection);
-    groupLayout->addWidget(groupList, 1);
-
-    groupPane->setMinimumWidth(110);
-    splitter->addWidget(groupPane);
-
     QWidget* tilesetPane = new QWidget(splitter);
     QVBoxLayout* tilesetLayout = new QVBoxLayout(tilesetPane);
     tilesetLayout->setContentsMargins(0, 0, 0, 0);
 
+    QHBoxLayout* filterRow = new QHBoxLayout();
+    filterRow->setContentsMargins(0, 0, 0, 0);
+
     filterBox = new QLineEdit(tilesetPane);
     filterBox->setPlaceholderText(tr("Filter tilesets..."));
     filterBox->setClearButtonEnabled(true);
-    tilesetLayout->addWidget(filterBox);
+    filterRow->addWidget(filterBox, 1);
+
+    groupCombo = new QComboBox(tilesetPane);
+    groupCombo->setMinimumWidth(100);
+    filterRow->addWidget(groupCombo);
+
+    tilesetLayout->addLayout(filterRow);
 
     tilesetList = new QTreeWidget(tilesetPane);
     tilesetList->setHeaderLabels(QStringList{tr("Tilesets")});
-    tilesetList->setRootIsDecorated(false);
+    tilesetList->setRootIsDecorated(true);
     tilesetList->setUniformRowHeights(true);
     tilesetList->setSelectionMode(QAbstractItemView::SingleSelection);
     tilesetList->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
+    tilesetList->header()->setSectionsClickable(true);
     tilesetLayout->addWidget(tilesetList, 1);
 
-    tilesetPane->setMinimumWidth(160);
+    tilesetPane->setMinimumWidth(220);
     splitter->addWidget(tilesetPane);
 
     QWidget* previewPane = new QWidget(splitter);
@@ -84,10 +107,9 @@ TilesetSelectionDialog::TilesetSelectionDialog(Game* game, int slot, const QStri
     previewPane->setMinimumWidth(200);
     splitter->addWidget(previewPane);
 
-    splitter->setStretchFactor(0, 0);
-    splitter->setStretchFactor(1, 1);
-    splitter->setStretchFactor(2, 3);
-    splitter->setSizes({160, 280, 440});
+    splitter->setStretchFactor(0, 1);
+    splitter->setStretchFactor(1, 2);
+    splitter->setSizes({320, 540});
 
     QDialogButtonBox* buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, this);
 
@@ -116,41 +138,20 @@ TilesetSelectionDialog::TilesetSelectionDialog(Game* game, int slot, const QStri
     connect(buttonBox, &QDialogButtonBox::accepted, this, &QDialog::accept);
     connect(buttonBox, &QDialogButtonBox::rejected, this, &QDialog::reject);
 
-    connect(groupList, &QListWidget::currentRowChanged, this, &TilesetSelectionDialog::groupChanged);
+    connect(groupCombo, &QComboBox::currentIndexChanged, this, &TilesetSelectionDialog::groupChanged);
+    connect(tilesetList->header(), &QHeaderView::sectionClicked, this, &TilesetSelectionDialog::sortTilesets);
     connect(tilesetList, &QTreeWidget::currentItemChanged, this, &TilesetSelectionDialog::tilesetChanged);
     connect(tilesetList, &QTreeWidget::itemDoubleClicked, this, &TilesetSelectionDialog::tilesetDoubleClicked);
     connect(filterBox, &QLineEdit::textChanged, this, &TilesetSelectionDialog::applyFilter);
 
-    groupList->installEventFilter(this);
     tilesetList->installEventFilter(this);
 
-    int selectedGroup = -1;
-    if (!currentTileset.isEmpty())
-    {
-        for (int g = 0; g < groups.size(); g++)
-        {
-            bool found = false;
-            for (const TilesetEntry& entry : groups[g].tilesets)
-            {
-                if (entry.fileName == currentTileset)
-                {
-                    selectedGroup = g;
-                    found = true;
-                    break;
-                }
-            }
-
-            if (found)
-                break;
-        }
-    }
-
-    groupList->addItem(tr("All"));
+    groupCombo->addItem(tr("All"));
 
     for (const TilesetGroup& group : groups)
-        groupList->addItem(group.name);
+        groupCombo->addItem(group.name);
 
-    groupList->setCurrentRow(selectedGroup + 1);
+    groupCombo->setCurrentIndex(0);
 
     resize(860, 540);
 }
@@ -171,9 +172,9 @@ void TilesetSelectionDialog::populateTilesets()
     tilesetList->setSortingEnabled(false);
     tilesetList->clear();
 
-    int groupIndex = groupList->currentRow() - 1;
+    int groupIndex = groupCombo->currentIndex() - 1;
 
-    QTreeWidgetItem* noneItem = new QTreeWidgetItem(tilesetList);
+    noneItem = new QTreeWidgetItem(tilesetList);
     noneItem->setText(0, tr("<none>"));
     noneItem->setData(0, Qt::UserRole, QString());
     noneItem->setToolTip(0, tr("No tileset"));
@@ -181,28 +182,19 @@ void TilesetSelectionDialog::populateTilesets()
     if (groupIndex < 0)
     {
         for (const TilesetGroup& group : groups)
-            addTilesets(group.tilesets);
+            addTilesets(nullptr, matchingEntries(group.allTilesets()), group.name);
     }
     else if (groupIndex < groups.size())
     {
-        addTilesets(groups[groupIndex].tilesets);
+        addGroup(groups[groupIndex]);
     }
-
-    tilesetList->setSortingEnabled(true);
-    tilesetList->sortItems(0, Qt::AscendingOrder);
 
     QTreeWidgetItem* rowToSelect = tilesetList->topLevelItem(0);
     if (!currentTileset.isEmpty())
     {
-        for (int i = 0; i < tilesetList->topLevelItemCount(); i++)
-        {
-            QTreeWidgetItem* item = tilesetList->topLevelItem(i);
-            if (item->data(0, Qt::UserRole).toString() == currentTileset)
-            {
-                rowToSelect = item;
-                break;
-            }
-        }
+        QTreeWidgetItem* found = findTilesetItem(tilesetList, currentTileset);
+        if (found != nullptr)
+            rowToSelect = found;
     }
 
     tilesetList->setCurrentItem(rowToSelect);
@@ -211,18 +203,86 @@ void TilesetSelectionDialog::populateTilesets()
 
     tilesetChanged(tilesetList->currentItem(), nullptr);
     applyFilter();
+    applySort();
 }
 
-void TilesetSelectionDialog::addTilesets(const QList<TilesetEntry>& entries)
+void TilesetSelectionDialog::sortTilesets(int column)
+{
+    Q_UNUSED(column);
+
+    QHeaderView* header = tilesetList->header();
+
+    Qt::SortOrder order = Qt::AscendingOrder;
+    if (header->isSortIndicatorShown() && header->sortIndicatorOrder() == Qt::AscendingOrder)
+        order = Qt::DescendingOrder;
+
+    header->setSortIndicatorShown(true);
+    header->setSortIndicator(0, order);
+
+    applySort();
+}
+
+void TilesetSelectionDialog::applySort()
+{
+    QHeaderView* header = tilesetList->header();
+    if (!header->isSortIndicatorShown())
+        return;
+
+    Qt::SortOrder order = header->sortIndicatorOrder();
+
+    int noneIndex = noneItem ? tilesetList->indexOfTopLevelItem(noneItem) : -1;
+    QTreeWidgetItem* none = noneIndex >= 0 ? tilesetList->takeTopLevelItem(noneIndex) : nullptr;
+
+    for (int i = 0; i < tilesetList->topLevelItemCount(); i++)
+    {
+        QTreeWidgetItem* item = tilesetList->topLevelItem(i);
+        if (item->childCount() > 0)
+            item->sortChildren(0, order);
+    }
+
+    tilesetList->sortItems(0, order);
+
+    if (none != nullptr)
+        tilesetList->insertTopLevelItem(0, none);
+}
+
+void TilesetSelectionDialog::addGroup(const TilesetGroup& group)
+{
+    for (const TilesetSubgroup& subgroup : group.subgroups)
+    {
+        QList<TilesetEntry> entries = matchingEntries(subgroup.tilesets);
+        if (entries.isEmpty())
+            continue;
+
+        QTreeWidgetItem* subgroupItem = new QTreeWidgetItem(tilesetList);
+        subgroupItem->setText(0, subgroup.name);
+        subgroupItem->setFlags(subgroupItem->flags() & ~Qt::ItemIsSelectable);
+
+        addTilesets(subgroupItem, entries);
+        subgroupItem->setExpanded(true);
+    }
+
+    addTilesets(nullptr, matchingEntries(group.tilesets));
+}
+
+QList<TilesetEntry> TilesetSelectionDialog::matchingEntries(const QList<TilesetEntry>& entries) const
+{
+    QList<TilesetEntry> slotEntries;
+    for (const TilesetEntry& entry : entries)
+        if (TilesetList::matchesSlot(entry.fileName, slot))
+            slotEntries.append(entry);
+
+    return slotEntries;
+}
+
+void TilesetSelectionDialog::addTilesets(QTreeWidgetItem* parent, const QList<TilesetEntry>& entries, const QString& groupName)
 {
     for (const TilesetEntry& entry : entries)
     {
-        if (!TilesetList::matchesSlot(entry.fileName, slot))
-            continue;
-
-        QTreeWidgetItem* item = new QTreeWidgetItem(tilesetList);
-        item->setText(0, entry.name);
+        QTreeWidgetItem* item = parent ? new QTreeWidgetItem(parent) : new QTreeWidgetItem(tilesetList);
+        item->setText(0, groupName.isEmpty() ? entry.name : tr("%1 - %2").arg(groupName, entry.name));
         item->setData(0, Qt::UserRole, entry.fileName);
+        item->setData(0, Qt::UserRole + 1, entry.name);
         item->setToolTip(0, entry.fileName);
     }
 }
@@ -234,8 +294,39 @@ void TilesetSelectionDialog::applyFilter()
     for (int i = 0; i < tilesetList->topLevelItemCount(); i++)
     {
         QTreeWidgetItem* item = tilesetList->topLevelItem(i);
-        bool match = filter.isEmpty() || item->text(0).contains(filter, Qt::CaseInsensitive);
-        item->setHidden(!match);
+
+        QString itemName = item->data(0, Qt::UserRole + 1).toString();
+        if (itemName.isEmpty())
+            itemName = item->text(0);
+
+        bool selfMatch = filter.isEmpty() || itemName.contains(filter, Qt::CaseInsensitive);
+
+        if (item->childCount() > 0)
+        {
+            bool anyVisible = false;
+
+            for (int c = 0; c < item->childCount(); c++)
+            {
+                QTreeWidgetItem* child = item->child(c);
+
+                QString childName = child->data(0, Qt::UserRole + 1).toString();
+                if (childName.isEmpty())
+                    childName = child->text(0);
+
+                bool childMatch = filter.isEmpty() || childName.contains(filter, Qt::CaseInsensitive);
+                child->setHidden(!childMatch);
+                anyVisible = anyVisible || childMatch;
+            }
+
+            item->setHidden(!anyVisible);
+
+            if (!filter.isEmpty() && anyVisible)
+                item->setExpanded(true);
+        }
+        else
+        {
+            item->setHidden(!selfMatch);
+        }
     }
 }
 
@@ -255,7 +346,7 @@ void TilesetSelectionDialog::tilesetChanged(QTreeWidgetItem* current, QTreeWidge
 
 bool TilesetSelectionDialog::eventFilter(QObject* watched, QEvent* event)
 {
-    if (event->type() == QEvent::KeyPress && (watched == groupList || watched == tilesetList))
+    if (event->type() == QEvent::KeyPress && watched == tilesetList)
     {
         QKeyEvent* keyEvent = static_cast<QKeyEvent*>(event);
 
@@ -291,6 +382,13 @@ void TilesetSelectionDialog::tilesetDoubleClicked(QTreeWidgetItem* item, int col
         return;
 
     tilesetList->setCurrentItem(item);
+
+    if (item->childCount() > 0)
+    {
+        item->setExpanded(!item->isExpanded());
+        return;
+    }
+
     accept();
 }
 

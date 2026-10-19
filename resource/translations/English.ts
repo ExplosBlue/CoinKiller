@@ -1547,6 +1547,10 @@ We can not help you finding that file, but the filename should be enough to do s
         <source>Object: %1</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>%1 - %2</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>TilesetPicker</name>

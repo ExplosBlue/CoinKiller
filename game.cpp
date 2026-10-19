@@ -204,7 +204,7 @@ QStandardItemModel* Game::getTilesetModel()
         {
             QStandardItem* suiteItem = new QStandardItem(suiteNames[slot]);
 
-            for (const TilesetEntry& entry : group.tilesets)
+            for (const TilesetEntry& entry : group.allTilesets())
             {
                 if (!TilesetList::matchesSlot(entry.fileName, slot))
                     continue;
@@ -264,7 +264,7 @@ QStandardItemModel* Game::getTilesetModel(int id, bool includeNoneItem)
 
     QHash<QString, QString> defaultNames;
     for (const TilesetGroup& group : tilesetList->groups())
-        for (const TilesetEntry& entry : group.tilesets)
+        for (const TilesetEntry& entry : group.allTilesets())
             defaultNames.insert(entry.fileName, entry.name);
 
     QList<QString> tilesetfiles;

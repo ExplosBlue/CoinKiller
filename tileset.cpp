@@ -1036,16 +1036,39 @@ bool parseTilesetsXml(const QString& path, QList<TilesetGroup>& groups)
         TilesetGroup group;
         group.name = groupElement.attribute("name");
 
-        for (QDomElement tsElement = groupElement.firstChildElement("tileset"); !tsElement.isNull(); tsElement = tsElement.nextSiblingElement("tileset"))
+        for (QDomElement child = groupElement.firstChildElement(); !child.isNull(); child = child.nextSiblingElement())
         {
-            TilesetEntry entry;
-            entry.fileName = tsElement.attribute("file");
-            entry.name = tsElement.attribute("name", entry.fileName);
+            if (child.tagName() == "tileset")
+            {
+                TilesetEntry entry;
+                entry.fileName = child.attribute("file");
+                entry.name = child.attribute("name", entry.fileName);
 
-            if (entry.fileName.isEmpty())
-                continue;
+                if (entry.fileName.isEmpty())
+                    continue;
 
-            group.tilesets.append(entry);
+                group.tilesets.append(entry);
+            }
+            else if (child.tagName() == "subgroup")
+            {
+                TilesetSubgroup subgroup;
+                subgroup.name = child.attribute("name");
+
+                for (QDomElement tsElement = child.firstChildElement("tileset"); !tsElement.isNull(); tsElement = tsElement.nextSiblingElement("tileset"))
+                {
+                    TilesetEntry entry;
+                    entry.fileName = tsElement.attribute("file");
+                    entry.name = tsElement.attribute("name", entry.fileName);
+
+                    if (entry.fileName.isEmpty())
+                        continue;
+
+                    subgroup.tilesets.append(entry);
+                }
+
+                if (!subgroup.tilesets.isEmpty())
+                    group.subgroups.append(subgroup);
+            }
         }
 
         groups.append(group);
@@ -1054,6 +1077,30 @@ bool parseTilesetsXml(const QString& path, QList<TilesetGroup>& groups)
     return true;
 }
 
+}
+
+QList<TilesetEntry> TilesetGroup::allTilesets() const
+{
+    QList<TilesetEntry> entries = tilesets;
+
+    for (const TilesetSubgroup& subgroup : subgroups)
+        entries.append(subgroup.tilesets);
+
+    return entries;
+}
+
+TilesetEntry* TilesetGroup::findTileset(const QString& fileName)
+{
+    for (TilesetEntry& entry : tilesets)
+        if (entry.fileName == fileName)
+            return &entry;
+
+    for (TilesetSubgroup& subgroup : subgroups)
+        for (TilesetEntry& entry : subgroup.tilesets)
+            if (entry.fileName == fileName)
+                return &entry;
+
+    return nullptr;
 }
 
 TilesetList::TilesetList(FilesystemBase* fs) :
@@ -1094,19 +1141,39 @@ QList<TilesetGroup> TilesetList::groups() const
 
                 for (const TilesetEntry& translatedEntry : translatedGroup.tilesets)
                 {
-                    bool found = false;
-                    for (TilesetEntry& entry : targetGroup->tilesets)
+                    TilesetEntry* entry = targetGroup->findTileset(translatedEntry.fileName);
+                    if (entry)
+                        entry->name = translatedEntry.name;
+                    else
+                        targetGroup->tilesets.append(translatedEntry);
+                }
+
+                for (const TilesetSubgroup& translatedSubgroup : translatedGroup.subgroups)
+                {
+                    TilesetSubgroup* targetSubgroup = nullptr;
+                    for (TilesetSubgroup& subgroup : targetGroup->subgroups)
                     {
-                        if (entry.fileName == translatedEntry.fileName)
+                        if (subgroup.name == translatedSubgroup.name)
                         {
-                            entry.name = translatedEntry.name;
-                            found = true;
+                            targetSubgroup = &subgroup;
                             break;
                         }
                     }
 
-                    if (!found)
-                        targetGroup->tilesets.append(translatedEntry);
+                    if (targetSubgroup == nullptr)
+                    {
+                        targetGroup->subgroups.append(translatedSubgroup);
+                        continue;
+                    }
+
+                    for (const TilesetEntry& translatedEntry : translatedSubgroup.tilesets)
+                    {
+                        TilesetEntry* entry = targetGroup->findTileset(translatedEntry.fileName);
+                        if (entry)
+                            entry->name = translatedEntry.name;
+                        else
+                            targetSubgroup->tilesets.append(translatedEntry);
+                    }
                 }
             }
         }
@@ -1132,10 +1199,28 @@ QList<TilesetGroup> TilesetList::groups() const
 
             mapped.insert(group.tilesets[i].fileName);
         }
+
+        for (TilesetSubgroup& subgroup : group.subgroups)
+        {
+            for (int i = subgroup.tilesets.size() - 1; i >= 0; i--)
+            {
+                if (!existingFiles.contains(subgroup.tilesets[i].fileName))
+                {
+                    subgroup.tilesets.removeAt(i);
+                    continue;
+                }
+
+                mapped.insert(subgroup.tilesets[i].fileName);
+            }
+        }
+
+        for (int i = group.subgroups.size() - 1; i >= 0; i--)
+            if (group.subgroups[i].tilesets.isEmpty())
+                group.subgroups.removeAt(i);
     }
 
     for (int i = groups.size() - 1; i >= 0; i--)
-        if (groups[i].tilesets.isEmpty())
+        if (groups[i].allTilesets().isEmpty())
             groups.removeAt(i);
 
     TilesetGroup otherGroup;
@@ -1194,7 +1279,7 @@ QString TilesetList::stripExtension(const QString& fileName)
 QString TilesetList::displayName(const QString& fileName) const
 {
     for (const TilesetGroup& group : groups())
-        for (const TilesetEntry& entry : group.tilesets)
+        for (const TilesetEntry& entry : group.allTilesets())
             if (entry.fileName == fileName)
                 return entry.name;
 
@@ -1204,7 +1289,7 @@ QString TilesetList::displayName(const QString& fileName) const
 QString TilesetList::groupName(const QString& fileName) const
 {
     for (const TilesetGroup& group : groups())
-        for (const TilesetEntry& entry : group.tilesets)
+        for (const TilesetEntry& entry : group.allTilesets())
             if (entry.fileName == fileName)
                 return group.name;
 

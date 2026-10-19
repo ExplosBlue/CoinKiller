@@ -129,10 +129,20 @@ struct TilesetEntry
     QString name;
 };
 
+struct TilesetSubgroup
+{
+    QString name;
+    QList<TilesetEntry> tilesets;
+};
+
 struct TilesetGroup
 {
     QString name;
     QList<TilesetEntry> tilesets;
+    QList<TilesetSubgroup> subgroups;
+
+    QList<TilesetEntry> allTilesets() const;
+    TilesetEntry* findTileset(const QString& fileName);
 };
 
 class TilesetList
