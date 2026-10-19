@@ -95,11 +95,12 @@ private:
     void createContextMenus();
     void checkSpriteDataVersion();
     void updateRecentMenu();
+    void populateTilesetGroupFilter();
 
     void loadLevelList();
     void loadTilesetList();
 
-    bool applyTreeFilter(QTreeView *view, const QModelIndex &parent, const QString &filter, bool parentMatched);
+    bool applyTreeFilter(QTreeView *view, const QModelIndex &parent, const QString &filter, bool parentMatched, bool matchOnlyLeaves = false);
 
     void changeEvent(QEvent *event) override;
     bool eventFilter(QObject *watched, QEvent *event) override;

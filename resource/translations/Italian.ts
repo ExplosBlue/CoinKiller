@@ -724,6 +724,10 @@ Connecssione a %1 fallita!</translation>
         <source>Spritedata.xml is outdated, CoinKiller will now attempt to update it.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>All</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>NewLevelDialog</name>

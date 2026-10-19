@@ -123,6 +123,9 @@ void MainWindow::initialiseUi()
 
     connect(ui->levelFilterEdit,   &QLineEdit::textChanged, this, &MainWindow::filterLevelList);
     connect(ui->tilesetFilterEdit, &QLineEdit::textChanged, this, &MainWindow::filterTilesetList);
+    connect(ui->tilesetGroupCombo, &QComboBox::currentIndexChanged, this, [this](int) {
+        filterTilesetList(ui->tilesetFilterEdit->text());
+    });
 
     ui->levelFilterEdit->setVisible(false);
     ui->levelList->installEventFilter(this);
@@ -219,6 +222,8 @@ void MainWindow::loadTilesetList()
     ui->tilesetList->setModel(tilesetModel);
     ui->tilesetList->expandAll();
 
+    populateTilesetGroupFilter();
+
     filterTilesetList(ui->tilesetFilterEdit->text());
 }
 
@@ -232,13 +237,51 @@ void MainWindow::filterLevelList(const QString &text)
 
 void MainWindow::filterTilesetList(const QString &text)
 {
-    applyTreeFilter(ui->tilesetList, QModelIndex(), text, false);
+    applyTreeFilter(ui->tilesetList, QModelIndex(), text, false, true);
 
-    if (!text.isEmpty())
+    const QString group = ui->tilesetGroupCombo->currentData().toString();
+    QAbstractItemModel *model = ui->tilesetList->model();
+
+    if (!group.isEmpty() && model != nullptr)
+    {
+        for (int row = 0; row < model->rowCount(QModelIndex()); row++)
+        {
+            QModelIndex index = model->index(row, 0, QModelIndex());
+
+            if (index.data(Qt::DisplayRole).toString() != group)
+                ui->tilesetList->setRowHidden(row, QModelIndex(), true);
+        }
+    }
+
+    if (!text.isEmpty() || !group.isEmpty())
         ui->tilesetList->expandAll();
 }
 
-bool MainWindow::applyTreeFilter(QTreeView *view, const QModelIndex &parent, const QString &filter, bool parentMatched)
+void MainWindow::populateTilesetGroupFilter()
+{
+    const QString currentGroup = ui->tilesetGroupCombo->currentData().toString();
+
+    ui->tilesetGroupCombo->blockSignals(true);
+    ui->tilesetGroupCombo->clear();
+    ui->tilesetGroupCombo->addItem(tr("All"), QString());
+
+    QAbstractItemModel *model = ui->tilesetList->model();
+
+    if (model != nullptr)
+    {
+        for (int row = 0; row < model->rowCount(QModelIndex()); row++)
+        {
+            QString name = model->index(row, 0, QModelIndex()).data(Qt::DisplayRole).toString();
+            ui->tilesetGroupCombo->addItem(name, name);
+        }
+    }
+
+    int index = ui->tilesetGroupCombo->findData(currentGroup);
+    ui->tilesetGroupCombo->setCurrentIndex(index > 0 ? index : 0);
+    ui->tilesetGroupCombo->blockSignals(false);
+}
+
+bool MainWindow::applyTreeFilter(QTreeView *view, const QModelIndex &parent, const QString &filter, bool parentMatched, bool matchOnlyLeaves)
 {
     QAbstractItemModel *model = view->model();
 
@@ -250,10 +293,29 @@ bool MainWindow::applyTreeFilter(QTreeView *view, const QModelIndex &parent, con
     for (int row = 0; row < model->rowCount(parent); row++)
     {
         QModelIndex index = model->index(row, 0, parent);
-        bool selfMatch = filter.isEmpty() || index.data(Qt::DisplayRole).toString().contains(filter, Qt::CaseInsensitive);
+
+        bool selfMatch;
+        if (filter.isEmpty())
+        {
+            selfMatch = true;
+        }
+        else if (matchOnlyLeaves)
+        {
+            bool isLeaf = model->rowCount(index) == 0;
+            QModelIndex filenameIndex = model->index(row, 1, parent);
+
+            selfMatch = isLeaf
+                    && (index.data(Qt::DisplayRole).toString().contains(filter, Qt::CaseInsensitive)
+                        || filenameIndex.data(Qt::DisplayRole).toString().contains(filter, Qt::CaseInsensitive));
+        }
+        else
+        {
+            selfMatch = index.data(Qt::DisplayRole).toString().contains(filter, Qt::CaseInsensitive);
+        }
+
         bool force = parentMatched || selfMatch;
 
-        bool childVisible = applyTreeFilter(view, index, filter, force);
+        bool childVisible = applyTreeFilter(view, index, filter, force, matchOnlyLeaves);
         bool visible = force || childVisible;
 
         view->setRowHidden(row, parent, !visible);

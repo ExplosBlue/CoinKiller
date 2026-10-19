@@ -113,14 +113,28 @@
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_3">
         <item>
-         <widget class="QLineEdit" name="tilesetFilterEdit">
-          <property name="placeholderText">
-           <string>Filter tilesets...</string>
-          </property>
-          <property name="clearButtonEnabled">
-           <bool>true</bool>
-          </property>
-         </widget>
+         <layout class="QHBoxLayout" name="tilesetFilterLayout">
+          <item>
+           <widget class="QLineEdit" name="tilesetFilterEdit">
+            <property name="placeholderText">
+             <string>Filter tilesets...</string>
+            </property>
+            <property name="clearButtonEnabled">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QComboBox" name="tilesetGroupCombo">
+            <property name="minimumSize">
+             <size>
+              <width>100</width>
+              <height>0</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </item>
         <item>
          <widget class="QTreeView" name="tilesetList">
