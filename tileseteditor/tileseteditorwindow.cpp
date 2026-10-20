@@ -83,7 +83,8 @@ TilesetEditorWindow::TilesetEditorWindow(WindowBase *parent, Tileset *tileset) :
     connect(this, SIGNAL(selectedObjectChanged(int)), objectEditor, SLOT(selectedObjectChanged(int)));
     connect(objectEditor, SIGNAL(updateSelTileLabel(QString)), this, SLOT(setSelTileData(QString)));
     connect(tilesetPicker, SIGNAL(selectedTilesChanged(QList<int>)), objectEditor, SLOT(selectedPaintTilesChanged(QList<int>)));
-    connect(objectEditor, SIGNAL(tilesetChanged()), this, SLOT(updateObjectEditor()));
+    connect(objectEditor, &ObjectEditor::tilesetChanged, this, &TilesetEditorWindow::updateUnsavedStatus);
+    connect(objectEditor, &ObjectEditor::tilesetChanged, this, &TilesetEditorWindow::updateObjectEditor);
     ui->objectEditor->insertWidget(1, objectEditor);
     ui->actionShowObjectMarkers->setChecked(true);
 
@@ -574,11 +575,11 @@ void TilesetEditorWindow::setObectBehavior()
 
     if (obj.rows[0].slopeFlags != 0 && slopeFlag)
     {
-        quint8 slopeType = obj.rows[0].slopeFlags & 15;
-        if (slopeType == 0) ui->oBehaviorComboBox->setCurrentIndex(4);
-        else if (slopeType == 1) ui->oBehaviorComboBox->setCurrentIndex(5);
-        else if (slopeType == 2) ui->oBehaviorComboBox->setCurrentIndex(6);
-        else if (slopeType == 3) ui->oBehaviorComboBox->setCurrentIndex(7);
+        quint8 slopeType = obj.rows[0].slopeFlags & SlopeDirectionMask;
+        if (slopeType == SlopeDirectionUp) ui->oBehaviorComboBox->setCurrentIndex(4);
+        else if (slopeType == SlopeDirectionDown) ui->oBehaviorComboBox->setCurrentIndex(5);
+        else if (slopeType == SlopeDirectionUpsideDown) ui->oBehaviorComboBox->setCurrentIndex(6);
+        else if (slopeType == SlopeDirectionUpsideUp) ui->oBehaviorComboBox->setCurrentIndex(7);
         return;
     }
 
@@ -1206,7 +1207,7 @@ QByteArray TilesetEditorWindow::tilesetState()
         ObjectDef* obj = tileset->getObjectDef(o);
 
         stream << obj->width << obj->height << obj->randomisation << obj->unkFlag
-               << obj->slopeY << obj->yRepeatStart << obj->yRepeatEnd;
+               << obj->yRepeatStart << obj->yRepeatEnd;
         stream << (quint32)obj->rows.size();
 
         for (int r = 0; r < obj->rows.size(); r++)

@@ -634,7 +634,7 @@ void ObjectEditor::paintEvent(QPaintEvent* evt)
 
             int y = tileSize;
 
-            if ((obj->rows[0].slopeFlags & 15) > 1)
+            if ((obj->rows[0].slopeFlags & SlopeDirectionMask) >= SlopeDirectionUpsideDown)
                 y = obj->height*tileSize - tileSize;
 
             painter.setPen(black);
@@ -642,15 +642,15 @@ void ObjectEditor::paintEvent(QPaintEvent* evt)
             painter.setPen(blackDashed);
             painter.drawLine(currX, currY+y, currX+currW, currY+y);
 
-            if ((obj->rows[0].slopeFlags & 15) < 2)
+            if ((obj->rows[0].slopeFlags & SlopeDirectionMask) < SlopeDirectionUpsideDown)
             {
                 painter.drawText(QRect(currX-65, currY, 65, y), tr("Slope Top"), Qt::AlignLeft | Qt::AlignVCenter);
                 painter.drawText(QRect(currX-65, currY+y, 65, currH-y), tr("Slope Base"), Qt::AlignLeft | Qt::AlignVCenter);
             }
             else
             {
-                painter.drawText(QRect(currX-65, currY, 65, y), tr("Slope Bottom"), Qt::AlignLeft | Qt::AlignVCenter);
-                painter.drawText(QRect(currX-65, currY+y, 65, currH-y), tr("Slope Base"), Qt::AlignLeft | Qt::AlignVCenter);
+                painter.drawText(QRect(currX-65, currY, 65, y), tr("Slope Base"), Qt::AlignLeft | Qt::AlignVCenter);
+                painter.drawText(QRect(currX-65, currY+y, 65, currH-y), tr("Slope Bottom"), Qt::AlignLeft | Qt::AlignVCenter);
             }
         }
     }

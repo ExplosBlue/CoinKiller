@@ -28,10 +28,37 @@ typedef QHash<quint32,quint8> TileGrid;
 
 class Game;
 
+enum SlopeFlag : quint8
+{
+    SlopeNone           = 0x00,
+
+    SlopeUpSide         = 0x80,
+    SlopeDownSide       = 0x81,
+    SlopeUpsideDownSide = 0x82,
+    SlopeUpsideUpSide   = 0x83,
+    SlopeSection1       = 0x84,
+    SlopeSection2       = 0x85,
+
+    SlopeUpBase         = 0x90,
+    SlopeDownBase       = 0x91,
+    SlopeUpsideDownBase = 0x92,
+    SlopeUpsideUpBase   = 0x93,
+};
+
+enum SlopeDirection : quint8
+{
+    SlopeDirectionUp         = 0,
+    SlopeDirectionDown       = 1,
+    SlopeDirectionUpsideDown = 2,
+    SlopeDirectionUpsideUp   = 3,
+};
+
+static constexpr quint8 SlopeDirectionMask = 0x0F;
+
 struct ObjectRow
 {
-    quint8 slopeFlags;
-    quint8 xRepeatStart, xRepeatEnd;
+    quint8 slopeFlags = 0;
+    quint8 xRepeatStart = 0xFF, xRepeatEnd = 0;
 
     QList<quint8> data;
 };
@@ -42,7 +69,6 @@ struct ObjectDef
     quint8 randomisation;
     quint8 unkFlag; // whatever this is
 
-    quint8 slopeY; // where the second slope block starts
     quint8 yRepeatStart, yRepeatEnd;
 
     QList<ObjectRow> rows;
@@ -101,6 +127,8 @@ public:
     static QImage padTilesetImage(const QImage& img, quint32 outWidth = 512, quint32 outHeight = 512);
 
 private:
+    bool getObjectCell(int objNbr, int x, int y, int& row, int& col);
+
     QString name;
     bool drawOverrides = false;
     int slot = 0;
@@ -113,7 +141,7 @@ private:
     QList<ObjectDef*> objectDefs;
 
 
-    void drawRow(QPainter& painter, TileGrid& grid, ObjectDef& def, ObjectRow& row, int x, int y, int w, float zoom);
+    void drawRow(QPainter& painter, TileGrid& grid, const ObjectRow& row, int x, int y, int w, float zoom);
 
 
     quint8 behaviors[441][8];
