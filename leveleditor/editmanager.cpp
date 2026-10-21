@@ -34,6 +34,31 @@ void EditManager::clearClickCycle()
     movedSincePress = false;
 }
 
+void EditManager::snapDeltas(int &xDelta, int &yDelta, Qt::KeyboardModifiers modifiers, bool resizing, int &snap)
+{
+    snap = 0;
+
+    if (selectionHasBGDats)
+    {
+        xDelta = toNext20(xDelta);
+        yDelta = toNext20(yDelta);
+
+        if (!resizing)
+            snap = 20;
+    }
+    else if (modifiers == Qt::AltModifier)
+    {
+        xDelta = toNext16Compatible(xDelta);
+        yDelta = toNext16Compatible(yDelta);
+    }
+    else
+    {
+        xDelta = toNext10(xDelta);
+        yDelta = toNext10(yDelta);
+        snap = 10;
+    }
+}
+
 void EditManager::mouseDown(int x, int y, Qt::MouseButtons buttons, Qt::KeyboardModifiers modifiers, QRect drawrect)
 {
     dx = x;
@@ -257,23 +282,7 @@ void EditManager::mouseDrag(int x, int y, Qt::KeyboardModifiers modifiers, QRect
             if (xDelta == 0 && yDelta == 0) return;
 
             int snap = 0;
-            if (selectionHasBGDats)
-            {
-                xDelta = toNext20(xDelta);
-                yDelta = toNext20(yDelta);
-                snap = 20;
-            }
-            else if (modifiers == Qt::AltModifier)
-            {
-                xDelta = toNext16Compatible(xDelta);
-                xDelta = toNext16Compatible(xDelta);
-            }
-            else
-            {
-                xDelta = toNext10(xDelta);
-                yDelta = toNext10(yDelta);
-                snap = 10;
-            }
+            snapDeltas(xDelta, yDelta, modifiers, false, snap);
 
             if (xDelta == 0 && yDelta == 0) return;
 
@@ -301,27 +310,10 @@ void EditManager::mouseDrag(int x, int y, Qt::KeyboardModifiers modifiers, QRect
         {
             int xDelta = x-lx;
             int yDelta = y-ly;
-            int minSize = 0;
+            int minSize = selectionHasBGDats ? 20 : 0;
 
             int snap = 0;
-            if (selectionHasBGDats)
-            {
-                xDelta = toNext20(xDelta);
-                yDelta = toNext20(yDelta);
-                minSize = 20;
-                snap = 0;
-            }
-            else if (modifiers == Qt::AltModifier)
-            {
-                xDelta = toNext16Compatible(xDelta);
-                xDelta = toNext16Compatible(xDelta);
-            }
-            else
-            {
-                xDelta = toNext10(xDelta);
-                yDelta = toNext10(yDelta);
-                snap = 10;
-            }
+            snapDeltas(xDelta, yDelta, modifiers, true, snap);
 
             int xMoveDelta = 0;
             int xResizeDelta = 0;
@@ -948,98 +940,17 @@ EditManager::mouseAction EditManager::getActionAtPos(int x, int y)
 
         if (is<PathNode*>(node))
         {
-            if (QRect(node->getx()-30, node->gety()-10, 20, 20).contains(x, y))
-            {
-                PathNode* n = dynamic_cast<PathNode*>(node);
-
-                int nodeID = n->getParentPath()->getIndexOfNode(n);
-
-                if (nodeID == 0 && n->getParentPath()->getNumberOfNodes() > nodeID+1)
-                {
-                    if (n->getx() >= n->getParentPath()->getNode(nodeID+1)->getx())
-                        act.pAdd = AddAfter;
-                    else
-                        act.pAdd = AddBefore;
-                }
-                else if (nodeID == 0)
-                    act.pAdd = AddBefore;
-                else if (n->getx() >= n->getParentPath()->getNode(nodeID-1)->getx())
-                    act.pAdd = AddBefore;
-                else
-                    act.pAdd = AddAfter;
-            }
-            else if (QRect(node->getx()+10, node->gety()-10, 20, 20).contains(x, y))
-            {
-                PathNode* n = dynamic_cast<PathNode*>(node);
-                int nodeID = n->getParentPath()->getIndexOfNode(n);
-
-                if (nodeID == 0 && n->getParentPath()->getNumberOfNodes() > nodeID+1)
-                {
-                    if (n->getx() >= n->getParentPath()->getNode(nodeID+1)->getx())
-                        act.pAdd = AddBefore;
-                    else
-                        act.pAdd = AddAfter;
-                }
-                else if (nodeID == 0)
-                    act.pAdd = AddAfter;
-                else if (n->getx() >= n->getParentPath()->getNode(nodeID-1)->getx())
-                    act.pAdd = AddAfter;
-                else
-                    act.pAdd = AddBefore;
-            }
+            updatePathInsertAction(dynamic_cast<PathNode*>(node), x, y, act);
 
             if (act.pAdd != AddNone)
                 return act;
         }
         else if (is<ProgressPathNode*>(node))
         {
-            Object* node = selectedObjects[0];
+            updatePathInsertAction(dynamic_cast<ProgressPathNode*>(node), x, y, act);
 
-            if (is<ProgressPathNode*>(node))
-            {
-                if (QRect(node->getx()-30, node->gety()-10, 20, 20).contains(x, y))
-                {
-                    ProgressPathNode* n = dynamic_cast<ProgressPathNode*>(node);
-
-                    int nodeID = n->getParentPath()->getIndexOfNode(n);
-
-                    if (nodeID == 0 && n->getParentPath()->getNumberOfNodes() > nodeID+1)
-                    {
-                        if (n->getx() >= n->getParentPath()->getNode(nodeID+1)->getx())
-                            act.pAdd = AddAfter;
-                        else
-                            act.pAdd = AddBefore;
-                    }
-                    else if (nodeID == 0)
-                        act.pAdd = AddBefore;
-                    else if (n->getx() >= n->getParentPath()->getNode(nodeID-1)->getx())
-                        act.pAdd = AddBefore;
-                    else
-                        act.pAdd = AddAfter;
-                }
-                else if (QRect(node->getx()+10, node->gety()-10, 20, 20).contains(x, y))
-                {
-                    ProgressPathNode* n = dynamic_cast<ProgressPathNode*>(node);
-                    int nodeID = n->getParentPath()->getIndexOfNode(n);
-
-                    if (nodeID == 0 && n->getParentPath()->getNumberOfNodes() > nodeID+1)
-                    {
-                        if (n->getx() >= n->getParentPath()->getNode(nodeID+1)->getx())
-                            act.pAdd = AddBefore;
-                        else
-                            act.pAdd = AddAfter;
-                    }
-                    else if (nodeID == 0)
-                        act.pAdd = AddAfter;
-                    else if (n->getx() >= n->getParentPath()->getNode(nodeID-1)->getx())
-                        act.pAdd = AddAfter;
-                    else
-                        act.pAdd = AddBefore;
-                }
-
-                if (act.pAdd != AddNone)
-                    return act;
-            }
+            if (act.pAdd != AddNone)
+                return act;
         }
     }
 

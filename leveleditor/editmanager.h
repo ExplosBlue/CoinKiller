@@ -164,6 +164,32 @@ private:
 
     void clearClickCycle();
 
+    void snapDeltas(int &xDelta, int &yDelta, Qt::KeyboardModifiers modifiers, bool resizing, int &snap);
+
+    template <typename NodeType>
+    static void updatePathInsertAction(NodeType* node, int x, int y, mouseAction& act)
+    {
+        const bool leftHandle = QRect(node->getx()-30, node->gety()-10, 20, 20).contains(x, y);
+
+        if (!leftHandle && !QRect(node->getx()+10, node->gety()-10, 20, 20).contains(x, y))
+            return;
+
+        auto* path = node->getParentPath();
+        const int nodeID = path->getIndexOfNode(node);
+
+        bool insertAfter;
+
+        if (nodeID == 0)
+            insertAfter = path->getNumberOfNodes() > nodeID+1 && node->getx() >= path->getNode(nodeID+1)->getx();
+        else
+            insertAfter = node->getx() < path->getNode(nodeID-1)->getx();
+
+        if (!leftHandle)
+            insertAfter = !insertAfter;
+
+        act.pAdd = insertAfter ? AddAfter : AddBefore;
+    }
+
     void checkEmits();
 
     void drawPlus(QPainter* painter, int x, int y);

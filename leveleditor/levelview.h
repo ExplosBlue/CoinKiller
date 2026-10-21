@@ -88,6 +88,7 @@ public slots:
     void screenshot(QRect rect);
 
     void requestUpdate();
+    void onLevelScrolled();
 
 protected:
     bool event(QEvent *) Q_DECL_OVERRIDE;
@@ -100,12 +101,14 @@ protected:
 
 private:
 
-    void paint(QPainter& painter, QRect rect, float zoomLvl, bool selections);
+    void paint(QPainter& painter, QRect rect, QRect viewport, float zoomLvl, bool selections);
     void handleWheelZoom(QWheelEvent* evt);
     void handleWheelScroll(QWheelEvent* evt);
     void handlePinchZoom(QPinchGesture* gesture);
     void handleNativeZoom(QNativeGestureEvent* evt);
     void invalidateRenderCaches();
+    QRect visibleRect() const;
+    QList<QRect> pinnedZoneLabelRects() const;
 
     void applyZoom(float newZoom, const QPointF& focalPoint);
     QPointF viewportCenter() const;
@@ -115,6 +118,7 @@ private:
     QUndoStack *undoStack;
 
     QRect drawrect;
+    QList<QRect> lastPinnedLabelRects;
     float zoom;
 
     int dragX;

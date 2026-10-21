@@ -37,6 +37,8 @@
 #include <utility>
 #include <QScreen>
 #include <QTimer>
+#include <QFontMetrics>
+#include <QRegion>
 
 
 static int refreshIntervalMs(const QWidget* widget)
@@ -140,6 +142,7 @@ void LevelView::setZoom(float zoom)
     setMinimumSize(canvasSize, canvasSize);
     setMaximumSize(canvasSize, canvasSize);
 
+    lastPinnedLabelRects.clear();
     update();
 }
 
@@ -202,11 +205,27 @@ void LevelView::invalidateRenderCaches()
     SpriteRenderer::invalidateCache();
 }
 
+static const QFont& zoneLabelFont()
+{
+    static const QFont font("Arial", 8, QFont::Normal);
+
+    return font;
+}
+
+static QPoint zoneLabelAnchor(const QRect& zonerect, const QRect& viewport)
+{
+    return zonerect.intersected(viewport).topLeft() + QPoint(3, 3);
+}
+
 void LevelView::paintEvent(QPaintEvent* evt)
 {
+    const QRect viewport = visibleRect();
+
     QPainter painter(this);
-    paint(painter, evt->rect().adjusted(0,0,20,20), zoom, true);
-    emit updateMinimap(drawrect);
+    paint(painter, evt->rect().adjusted(0,0,20,20), viewport, zoom, true);
+    emit updateMinimap(viewport);
+
+    lastPinnedLabelRects = pinnedZoneLabelRects();
 }
 
 void LevelView::screenshot(QRect rect)
@@ -214,14 +233,114 @@ void LevelView::screenshot(QRect rect)
     QPixmap pix(rect.size());
     QPainter painter(&pix);
     painter.translate(-rect.x(), -rect.y());
-    paint(painter, rect, 1.0f, false);
+    paint(painter, rect, rect, 1.0f, false);
     QApplication::clipboard()->setPixmap(pix);
 }
 
-void LevelView::paint(QPainter& painter, QRect rect, float zoomLvl, bool selections)
+QRect LevelView::visibleRect() const
+{
+    const QRect visible = visibleRegion().boundingRect();
+
+    return QRect(visible.x()/zoom, visible.y()/zoom, visible.width()/zoom, visible.height()/zoom);
+}
+
+QList<QRect> LevelView::pinnedZoneLabelRects() const
+{
+    QList<QRect> rects;
+
+    if (zoom < 0.5f)
+        return rects;
+
+    const QRect viewport = visibleRect();
+    const QFontMetrics metrics(zoneLabelFont());
+
+    for (const Zone* zone : level->zones)
+    {
+        const QRect zonerect(zone->getx(), zone->gety(), zone->getwidth(), zone->getheight());
+
+        if (!zonerect.intersects(viewport) || viewport.contains(zonerect.topLeft()))
+            continue;
+
+        const QPoint anchor = zoneLabelAnchor(zonerect, viewport);
+        const int width = metrics.horizontalAdvance(QString("Zone %1").arg(zone->getid()));
+
+        rects.append(QRect(QPoint(int(anchor.x()*zoom), int(anchor.y()*zoom)),
+                           QSize(int(width*zoom) + 2, int(metrics.height()*zoom) + 2))
+                     .adjusted(-2, -2, 2, 2));
+    }
+
+    return rects;
+}
+
+void LevelView::onLevelScrolled()
+{
+    const QList<QRect> currentRects = pinnedZoneLabelRects();
+
+    if (lastPinnedLabelRects.isEmpty() && currentRects.isEmpty())
+        return;
+
+    QRegion dirty;
+
+    for (const QRect& rect : lastPinnedLabelRects)
+        dirty += rect;
+
+    for (const QRect& rect : currentRects)
+        dirty += rect;
+
+    update(dirty);
+}
+
+template <typename PathType>
+static void drawPathOverlay(QPainter& painter, const PathType* path, const QRect& drawrect,
+                            float zoomLvl, const QColor& color, const QFont& font, bool closeLoop)
+{
+    const auto nodes = path->getNodes();
+
+    for (int j = 0; j < nodes.size() - 1; j++)
+    {
+        const QLine line(QPoint(nodes[j]->getx(), nodes[j]->gety()),
+                         QPoint(nodes[j+1]->getx(), nodes[j+1]->gety()));
+
+        if (!drawrect.intersects(QRect(line.x1(), line.y1(), line.x2()-line.x1(), line.y2()-line.y1())))
+            continue;
+
+        painter.setPen(QPen(color, 2));
+        painter.drawLine(line);
+    }
+
+    if (closeLoop && nodes.size() > 2)
+    {
+        painter.setPen(QPen(color, 2));
+        painter.drawLine(QPoint(nodes[0]->getx(), nodes[0]->gety()),
+                         QPoint(nodes[nodes.size()-1]->getx(), nodes[nodes.size()-1]->gety()));
+    }
+
+    for (int j = 0; j < nodes.size(); j++)
+    {
+        const QRect nodeRect(nodes[j]->getx()-10, nodes[j]->gety()-10, 20, 20);
+
+        if (!drawrect.intersects(nodeRect))
+            continue;
+
+        painter.setPen(QColor(0,0,0));
+
+        QPainterPath nodePath;
+        nodePath.addRoundedRect(nodeRect, 2.0, 2.0);
+        painter.fillPath(nodePath, QColor(color.red(), color.green(), color.blue(), 200));
+        painter.drawPath(nodePath);
+
+        if (zoomLvl >= 0.5f)
+        {
+            painter.setFont(font);
+            painter.drawText(nodeRect, QString("%1-%2").arg(path->getid()).arg(j),
+                             Qt::AlignHCenter | Qt::AlignVCenter);
+        }
+    }
+}
+
+void LevelView::paint(QPainter& painter, QRect rect, QRect viewport, float zoomLvl, bool selections)
 {
     static const QFont locationFont("Arial", 10, QFont::Bold);
-    static const QFont zoneFont("Arial", 8, QFont::Normal);
     static const QFont pathFont("Arial", 7, QFont::Normal);
 
     painter.scale(zoomLvl,zoomLvl);
@@ -667,102 +786,12 @@ void LevelView::paint(QPainter& painter, QRect rect, float zoomLvl, bool selecti
     {
         painter.save();
         painter.setRenderHint(QPainter::Antialiasing, zoomLvl >= 0.5f);
-        for (int i = 0; i < level->paths.size(); i++)
-        {
-            const Path* path = level->paths.at(i);
-            QList<PathNode*> nodes  = path->getNodes();
 
-            for (int j = 0; j < nodes.size() - 1; j++)
-            {
-                QLine pathLine(QPoint(nodes[j]->getx(), nodes[j]->gety()), QPoint(nodes[j+1]->getx(), nodes[j+1]->gety()));
+        for (const Path* path : level->paths)
+            drawPathOverlay(painter, path, drawrect, zoomLvl, QColor(0,255,20), pathFont, (path->getLoop() & 2) != 0);
 
-                if (!drawrect.intersects(QRect(pathLine.x1(), pathLine.y1(), pathLine.x2()-pathLine.x1(), pathLine.y2()-pathLine.y1())))
-                    continue;
-
-                QPen pen(QColor(0,255,20));
-                pen.setWidth(2);
-                painter.setPen(pen);
-                painter.drawLine(pathLine);
-            }
-
-            // Connect path end to start if loop flag is enabled
-            if (((path->getLoop() & 2) != 0) && (nodes.size() > 2))
-            {
-                QLine pathLine(QPoint(nodes[0]->getx(), nodes[0]->gety()), QPoint(nodes[nodes.size()-1]->getx(), nodes[nodes.size()-1]->gety()));
-
-                QPen pen(QColor(0,255,20));
-                pen.setWidth(2);
-                painter.setPen(pen);
-                painter.drawLine(pathLine);
-            }
-
-            for (int j = 0; j < nodes.size(); j++)
-            {
-                QRect pathrect(nodes[j]->getx()-10, nodes[j]->gety()-10, 20, 20);
-
-                if (!drawrect.intersects(pathrect))
-                    continue;
-
-                painter.setPen(QColor(0,0,0));
-
-                QPainterPath painterPath;
-                painterPath.addRoundedRect(pathrect, 2.0, 2.0);
-                QColor color(0,255,20,200);
-                painter.fillPath(painterPath, color);
-                painter.drawPath(painterPath);
-
-                if (zoomLvl >= 0.5f)
-                {
-                    QString pathText = QString("%1-%2").arg(path->getid()).arg(j);
-                    painter.setFont(pathFont);
-                    painter.drawText(pathrect, pathText, Qt::AlignHCenter | Qt::AlignVCenter);
-                }
-            }
-        }
-
-
-        // Render Progress Paths
-        for (int i = 0; i < level->progressPaths.size(); i++)
-        {
-            const ProgressPath* pPath = level->progressPaths.at(i);
-            QList<ProgressPathNode*> nodes  = pPath->getNodes();
-
-            for (int j = 0; j < nodes.size() - 1; j++)
-            {
-                QLine ppathLine(QPoint(nodes[j]->getx(), nodes[j]->gety()), QPoint(nodes[j+1]->getx(), nodes[j+1]->gety()));
-
-                if (!drawrect.intersects(QRect(ppathLine.x1(), ppathLine.y1(), ppathLine.x2()-ppathLine.x1(), ppathLine.y2()-ppathLine.y1())))
-                    continue;
-
-                QPen pen(QColor(220,255,0));
-                pen.setWidth(2);
-                painter.setPen(pen);
-                painter.drawLine(ppathLine);
-            }
-
-            for (int j = 0; j < nodes.size(); j++)
-            {
-                QRect ppathrect(nodes[j]->getx()-10, nodes[j]->gety()-10, 20, 20);
-
-                if (!drawrect.intersects(ppathrect))
-                    continue;
-
-                painter.setPen(QColor(0,0,0));
-
-                QPainterPath path;
-                path.addRoundedRect(ppathrect, 2.0, 2.0);
-                QColor color(220,255,0,200);
-                painter.fillPath(path, color);
-                painter.drawPath(path);
-
-                if (zoomLvl >= 0.5f)
-                {
-                    QString pPathText = QString("%1-%2").arg(pPath->getid()).arg(j);
-                    painter.setFont(pathFont);
-                    painter.drawText(ppathrect, pPathText, Qt::AlignHCenter | Qt::AlignVCenter);
-                }
-            }
-        }
+        for (const ProgressPath* pPath : level->progressPaths)
+            drawPathOverlay(painter, pPath, drawrect, zoomLvl, QColor(220,255,0), pathFont, false);
 
         painter.restore();
     }
@@ -785,17 +814,11 @@ void LevelView::paint(QPainter& painter, QRect rect, float zoomLvl, bool selecti
 
         if (zoomLvl >= 0.5f)
         {
-            QString zoneText = QString("Zone %1").arg(zone->getid());
-            painter.setFont(zoneFont);
+            painter.setFont(zoneLabelFont());
 
-            int adjustX = 3;
-            int adjustY = 3;
-            if (zonerect.x() < drawrect.x())
-                adjustX += drawrect.x()-zonerect.x();
-            if (zonerect.y() < drawrect.y())
-                adjustY += drawrect.y()-zonerect.y();
-
-            painter.drawText(zonerect.adjusted(adjustX,adjustY,100,20), zoneText);
+            const QPoint anchor = zoneLabelAnchor(zonerect, viewport);
+            painter.drawText(QPoint(anchor.x(), anchor.y() + painter.fontMetrics().ascent()),
+                             QString("Zone %1").arg(zone->getid()));
         }
     }
     painter.restore();
@@ -883,7 +906,7 @@ void LevelView::mousePressEvent(QMouseEvent* evt)
     if (editManager != NULL)
     {
         if (evt->buttons() == Qt::LeftButton || evt->buttons() == Qt::RightButton)
-            editManager->mouseDown(evt->position().x()/zoom, evt->position().y()/zoom, evt->buttons(), evt->modifiers(), drawrect);
+            editManager->mouseDown(evt->position().x()/zoom, evt->position().y()/zoom, evt->buttons(), evt->modifiers(), visibleRect());
         setCursor(QCursor(editManager->getActualCursor()));
     }
     requestUpdate();
@@ -918,7 +941,7 @@ void LevelView::mouseMoveEvent(QMouseEvent* evt)
         if (evt->buttons() == Qt::LeftButton || evt->buttons() == Qt::RightButton)
         {
             SpriteRenderer::invalidateCache();
-            editManager->mouseDrag(x, y, evt->modifiers(), drawrect);
+            editManager->mouseDrag(x, y, evt->modifiers(), visibleRect());
         }
         else
             editManager->mouseMove(x, y);

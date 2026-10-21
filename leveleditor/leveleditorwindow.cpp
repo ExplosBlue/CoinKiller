@@ -730,6 +730,9 @@ void LevelEditorWindow::loadArea(int id, bool closeLevel, bool init)
     levelView->setMinimumSize(4096*20, 4096*20);
     levelView->setMaximumSize(4096*20, 4096*20);
 
+    connect(ui->levelViewArea->horizontalScrollBar(), &QScrollBar::valueChanged, levelView, &LevelView::onLevelScrolled);
+    connect(ui->levelViewArea->verticalScrollBar(), &QScrollBar::valueChanged, levelView, &LevelView::onLevelScrolled);
+
     levelView->editManagerPtr()->setLayerMask(LAYER_MASK::ALL, true);
     ui->actionToggleLayer1->setChecked(true);
     ui->actionToggleLayer2->setChecked(true);

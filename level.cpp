@@ -27,6 +27,23 @@
 #include <QMessageBox>
 #include <algorithm>
 
+template <typename ObjectType>
+static quint8 nextFreeId(const QList<ObjectType*>& objects, quint8 firstId)
+{
+    for (quint8 id = firstId ;; id++)
+    {
+        bool used = false;
+        foreach (ObjectType* obj, objects)
+            if (obj->getid() == id) used = true;
+
+        if (!used)
+            return id;
+
+        if (id == 255)
+            return firstId;
+    }
+}
+
 Level::Level(Game *game, SarcFilesystem* archive, int area, QString lvlName)
 {
     this->game = game;
@@ -934,19 +951,7 @@ Entrance* Level::newEntrance(int x, int y)
     if (x < 0) x = 0;
     if (y < 0) y = 0;
 
-    quint8 id = 0;
-    for(;; id++)
-    {
-        bool check = false;
-        foreach (Entrance* entr, entrances)
-            if (entr->getid() == id) check = true;
-        if (!check) break;
-        else if (id == 255)
-        {
-            id = 0;
-            break;
-        }
-    }
+    quint8 id = nextFreeId(entrances, 0);
     return new Entrance(toNext16Compatible(x), toNext16Compatible(y), 0, 0, id, 0, 0, 0, 0, 0, 0);
 }
 
@@ -955,19 +960,7 @@ Zone* Level::newZone(int x, int y)
     if (x < 0) x = 0;
     if (y < 0) y = 0;
 
-    quint8 id = 0;
-    for(;; id++)
-    {
-        bool check = false;
-        foreach (Zone* zone, zones)
-            if (zone->getid() == id) check = true;
-        if (!check) break;
-        else if (id == 255)
-        {
-            id = 0;
-            break;
-        }
-    }
+    quint8 id = nextFreeId(zones, 0);
     return new Zone(toNext16Compatible(x), toNext16Compatible(y), 400, 240, id, 0, 0, 0, 0, 0, 0, 0);
 }
 
@@ -976,55 +969,19 @@ Location* Level::newLocation(int x, int y)
     if (x < 0) x = 0;
     if (y < 0) y = 0;
 
-    quint8 id = 1;
-    for(;; id++)
-    {
-        bool check = false;
-        foreach (Location* loc, locations)
-            if (loc->getid() == id) check = true;
-        if (!check) break;
-        else if (id == 255)
-        {
-            id = 1;
-            break;
-        }
-    }
+    quint8 id = nextFreeId(locations, 1);
     return new Location(toNext16Compatible(x), toNext16Compatible(y), 40, 40, id);
 }
 
 Path* Level::newPath()
 {
-    quint8 id = 0;
-    for(;; id++)
-    {
-        bool check = false;
-        foreach (Path* path, paths)
-            if (path->getid() == id) check = true;
-        if (!check) break;
-        else if (id == 255)
-        {
-            id = 0;
-            break;
-        }
-    }
+    quint8 id = nextFreeId(paths, 0);
     return new Path(id, 0);
 }
 
 ProgressPath* Level::newProgressPath()
 {
-    quint8 id = 0;
-    for(;; id++)
-    {
-        bool check = false;
-        foreach (ProgressPath* path, progressPaths)
-            if (path->getid() == id) check = true;
-        if (!check) break;
-        else if (id == 255)
-        {
-            id = 0;
-            break;
-        }
-    }
+    quint8 id = nextFreeId(progressPaths, 0);
     return new ProgressPath(id, 0);
 }
 
