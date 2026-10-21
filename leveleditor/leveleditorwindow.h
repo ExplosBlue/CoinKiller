@@ -188,8 +188,6 @@ private:
 
     void updateAreaSelector(int index = -1);
 
-    float zoom;
-
     void loadArea(int id, bool closeLevel = true, bool init = false);
     bool closeLvlOnClose = true;
 

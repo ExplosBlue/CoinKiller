@@ -162,6 +162,8 @@ private:
     QRect pressDrawrect;
     float zoom = 1.0f;
 
+    void clearClickCycle();
+
     void checkEmits();
 
     void drawPlus(QPainter* painter, int x, int y);

@@ -138,8 +138,9 @@ QStandardItemModel* Game::getCourseModel()
             if (!re.match(filename, 0, QRegularExpression::NormalMatch).hasMatch())
                 continue;
 
-            QString worldNum = filename.split(".")[0].split("-")[0];
-            QString levelNum = filename.split(".")[0].split("-")[1];
+            const QStringList nameParts = filename.split(".")[0].split("-");
+            const QString worldNum = nameParts.at(0);
+            const QString levelNum = nameParts.at(1);
 
             QString worldName = worldNames.value(worldNum.toInt());
 

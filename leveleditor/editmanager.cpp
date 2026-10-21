@@ -26,6 +26,14 @@ EditManager::EditManager(Level *level, QUndoStack *undoStack) :
 {
     this->selectAfterPlacement = SettingsManager::getInstance()->get("SelectAfterPlacement").toBool();
 }
+
+void EditManager::clearClickCycle()
+{
+    clickTracking = false;
+    clickPending = false;
+    movedSincePress = false;
+}
+
 void EditManager::mouseDown(int x, int y, Qt::MouseButtons buttons, Qt::KeyboardModifiers modifiers, QRect drawrect)
 {
     dx = x;
@@ -33,9 +41,7 @@ void EditManager::mouseDown(int x, int y, Qt::MouseButtons buttons, Qt::Keyboard
     lx = x;
     ly = y;
 
-    clickTracking = false;
-    clickPending = false;
-    movedSincePress = false;
+    clearClickCycle();
     pressX = x;
     pressY = y;
     pressDrawrect = drawrect;
@@ -432,7 +438,7 @@ void EditManager::keyPress(QKeyEvent *evt)
     undoStack->endMacro();
 
     hasLastClick = false;
-    clickPending = false;
+    clearClickCycle();
 
     minBoundX += dx;
     minBoundY += dy;
@@ -472,9 +478,7 @@ void EditManager::mouseUp(int x, int y, Qt::MouseButton button)
         }
     }
 
-    clickTracking = false;
-    clickPending = false;
-    movedSincePress = false;
+    clearClickCycle();
 
     mouseAct = getActionAtPos(x, y);
     actualCursor = getCursorAtPos(x, y);

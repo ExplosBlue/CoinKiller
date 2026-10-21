@@ -43,7 +43,16 @@ public:
     explicit LevelView(QWidget *parent, Level *level, QUndoStack *undoStack);
     ~LevelView();
 
-    void setZoom(float zoom) { this->zoom = zoom; if (editManager) editManager->setZoom(zoom); setMinimumSize(4096*20*zoom, 4096*20*zoom); setMaximumSize(4096*20*zoom, 4096*20*zoom); update(); }
+    static constexpr float MinZoom = 0.3f;
+    static constexpr float MaxZoom = 4.0f;
+
+    float getZoom() const { return zoom; }
+    void setZoom(float zoom);
+
+    void zoomTo(float newZoom);
+    void zoomBy(int steps);
+    static float steppedZoom(float from, int steps);
+
     void toggleGrid(bool toggle) { grid = toggle; update(); }
     void toggleCheckerboard(bool toggle) { checkerboard = toggle; update(); }
     void toggleRenderLiquids(bool toggle) { renderLiquids = toggle; update(); }
@@ -72,7 +81,6 @@ signals:
     void updateMinimap(QRect drawrect);
     void updateMinimapBounds();
     void updateCtrlabel(QString text);
-    void zoomLevelChanged(float zoom);
 
 public slots:
     void selectObj(Object* obj);
@@ -98,6 +106,9 @@ private:
     void handlePinchZoom(QPinchGesture* gesture);
     void handleNativeZoom(QNativeGestureEvent* evt);
     void invalidateRenderCaches();
+
+    void applyZoom(float newZoom, const QPointF& focalPoint);
+    QPointF viewportCenter() const;
 
     Level* level;
 
