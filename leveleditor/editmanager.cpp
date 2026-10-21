@@ -19,6 +19,7 @@
 #include <algorithm>
 
 static const int CYCLE_RADIUS = 10;
+static const int DRAG_THRESHOLD_PX = 3;
 
 EditManager::EditManager(Level *level, QUndoStack *undoStack) :
     level(level), undoStack(undoStack)
@@ -31,6 +32,13 @@ void EditManager::mouseDown(int x, int y, Qt::MouseButtons buttons, Qt::Keyboard
     dy = y;
     lx = x;
     ly = y;
+
+    clickTracking = false;
+    clickPending = false;
+    movedSincePress = false;
+    pressX = x;
+    pressY = y;
+    pressDrawrect = drawrect;
 
     if (buttons == Qt::RightButton)
     {
@@ -83,9 +91,10 @@ void EditManager::mouseDown(int x, int y, Qt::MouseButtons buttons, Qt::Keyboard
 
         else if (!mouseAct.drag || (mouseAct.hor == ResizeNone && mouseAct.vert == ResizeNone))
         {
+            clickTracking = true;
+
             QList<Object*> tempSelObjects = selectedObjects;
             bool shift = false;
-            bool cycled = false;
             bool keepSelection = false;
 
             if (hasLastClick && !selectedObjects.isEmpty())
@@ -101,9 +110,7 @@ void EditManager::mouseDown(int x, int y, Qt::MouseButtons buttons, Qt::Keyboard
                     {
                         if (modifiers == Qt::NoModifier)
                         {
-                            selectedObjects.clear();
-                            selectedObjects.append(nextObject);
-                            cycled = true;
+                            clickPending = true;
                         }
                         else if (modifiers != Qt::ShiftModifier)
                         {
@@ -113,7 +120,7 @@ void EditManager::mouseDown(int x, int y, Qt::MouseButtons buttons, Qt::Keyboard
                 }
             }
 
-            if (!cycled)
+            if (!clickPending)
             {
                 if (!keepSelection)
                 {
@@ -152,10 +159,6 @@ void EditManager::mouseDown(int x, int y, Qt::MouseButtons buttons, Qt::Keyboard
                 }
             }
 
-            hasLastClick = true;
-            lastClickX = dx;
-            lastClickY = dy;
-
             checkEmits();
         }
 
@@ -168,6 +171,18 @@ void EditManager::mouseDown(int x, int y, Qt::MouseButtons buttons, Qt::Keyboard
 
 void EditManager::mouseDrag(int x, int y, Qt::KeyboardModifiers modifiers, QRect drawrect)
 {
+    if (!movedSincePress)
+    {
+        int movedX = x - pressX;
+        int movedY = y - pressY;
+        int threshold = qMax(1, qRound(DRAG_THRESHOLD_PX / zoom));
+        if (movedX * movedX + movedY * movedY > threshold * threshold)
+        {
+            movedSincePress = true;
+            clickPending = false;
+        }
+    }
+
     if (interactMode == InteractionMode::Creation)
     {
         lx = x;
@@ -254,6 +269,10 @@ void EditManager::mouseDrag(int x, int y, Qt::KeyboardModifiers modifiers, QRect
                 snap = 10;
             }
 
+            if (xDelta == 0 && yDelta == 0) return;
+
+            movedSincePress = true;
+
             if (!movingObjects) {
                 undoStack->beginMacro(tr("Moved Selection"));
                 movingObjects = true;
@@ -331,6 +350,8 @@ void EditManager::mouseDrag(int x, int y, Qt::KeyboardModifiers modifiers, QRect
             }
 
             if (xMoveDelta == 0 && yMoveDelta == 0 && xResizeDelta == 0 && yResizeDelta == 0) return;
+
+            movedSincePress = true;
 
             minBoundX += xMoveDelta;
             minBoundY += yMoveDelta;
@@ -410,6 +431,9 @@ void EditManager::keyPress(QKeyEvent *evt)
     }
     undoStack->endMacro();
 
+    hasLastClick = false;
+    clickPending = false;
+
     minBoundX += dx;
     minBoundY += dy;
     lx += dx;
@@ -420,8 +444,38 @@ void EditManager::keyPress(QKeyEvent *evt)
     emit updateLevelView();
 }
 
-void EditManager::mouseUp(int x, int y)
+void EditManager::mouseUp(int x, int y, Qt::MouseButton button)
 {
+    if (button == Qt::LeftButton)
+    {
+        if (clickTracking && !movedSincePress)
+        {
+            if (clickPending)
+            {
+                Object* nextObject = getNextClickedObjectAtPos(pressX, pressY, pressDrawrect);
+
+                if (nextObject != nullptr)
+                {
+                    selectedObjects.clear();
+                    selectedObjects.append(nextObject);
+                    updateSelectionBounds();
+                }
+            }
+
+            hasLastClick = true;
+            lastClickX = pressX;
+            lastClickY = pressY;
+        }
+        else
+        {
+            hasLastClick = false;
+        }
+    }
+
+    clickTracking = false;
+    clickPending = false;
+    movedSincePress = false;
+
     mouseAct = getActionAtPos(x, y);
     actualCursor = getCursorAtPos(x, y);
 

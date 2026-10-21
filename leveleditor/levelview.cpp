@@ -98,6 +98,7 @@ LevelView::LevelView(QWidget *parent, Level *level, QUndoStack *undoStack) :
     connect(undoStack, &QUndoStack::indexChanged, this, [](int) { SpriteRenderer::invalidateCache(); });
 
     zoom = 1;
+    editManager->setZoom(zoom);
     grid = false;
     checkerboard = false;
     renderLiquids = true;
@@ -878,7 +879,7 @@ void LevelView::mouseReleaseEvent(QMouseEvent *evt)
         }
     }
 
-    editManager->mouseUp(evt->position().x()/zoom, evt->position().y()/zoom);
+    editManager->mouseUp(evt->position().x()/zoom, evt->position().y()/zoom, evt->button());
 
     if (evt->button() == Qt::LeftButton || evt->button() == Qt::RightButton)
         emit updateMinimapBounds();

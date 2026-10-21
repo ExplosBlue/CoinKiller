@@ -43,7 +43,7 @@ public:
     explicit LevelView(QWidget *parent, Level *level, QUndoStack *undoStack);
     ~LevelView();
 
-    void setZoom(float zoom) { this->zoom = zoom; setMinimumSize(4096*20*zoom, 4096*20*zoom); setMaximumSize(4096*20*zoom, 4096*20*zoom); update(); }
+    void setZoom(float zoom) { this->zoom = zoom; if (editManager) editManager->setZoom(zoom); setMinimumSize(4096*20*zoom, 4096*20*zoom); setMaximumSize(4096*20*zoom, 4096*20*zoom); update(); }
     void toggleGrid(bool toggle) { grid = toggle; update(); }
     void toggleCheckerboard(bool toggle) { checkerboard = toggle; update(); }
     void toggleRenderLiquids(bool toggle) { renderLiquids = toggle; update(); }

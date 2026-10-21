@@ -18,7 +18,7 @@ public:
     void mouseDown(int x, int y, Qt::MouseButtons buttons, Qt::KeyboardModifiers modifiers, QRect drawrect);
     void mouseDrag(int x, int y, Qt::KeyboardModifiers modifiers, QRect drawrect);
     void mouseMove(int x, int y);
-    void mouseUp(int x, int y);
+    void mouseUp(int x, int y, Qt::MouseButton button = Qt::NoButton);
 
     void keyPress(QKeyEvent *);
     bool hasSelection() const { return !selectedObjects.isEmpty(); }
@@ -59,6 +59,7 @@ public:
     void setObject(int selObject, int selTileset);
     void setLayer(int selLayer) { this->selLayer = selLayer; }
     void setSprite(int selSprite);
+    void setZoom(float zoom) { this->zoom = zoom; }
 
     void toggleSelectAfterPlacement(bool toggle) { this->selectAfterPlacement = toggle; }
 
@@ -152,6 +153,14 @@ private:
     bool hasLastClick = false;
     int lastClickX = 0;
     int lastClickY = 0;
+
+    bool clickTracking = false;
+    bool clickPending = false;
+    bool movedSincePress = false;
+    int pressX = 0;
+    int pressY = 0;
+    QRect pressDrawrect;
+    float zoom = 1.0f;
 
     void checkEmits();
 
