@@ -27,11 +27,14 @@
 #include <QGestureEvent>
 #include <QPinchGesture>
 #include <QNativeGestureEvent>
+#include <QPoint>
 
 #include "filesystem/filesystem.h"
 #include "level.h"
 #include "tileset.h"
 #include "editmanager.h"
+
+class QTimer;
 
 class LevelView : public QWidget
 {
@@ -46,8 +49,8 @@ public:
     void toggleRenderLiquids(bool toggle) { renderLiquids = toggle; update(); }
     void toggleRenderControllers(bool toggle) { renderControllers = toggle; update(); }
     void toggleRenderCameraLimits(bool toggle) { renderCameraLimits = toggle; update(); }
-    void toggle3DOverlay(bool toggle) { render3DOverlay = toggle; update(); }
-    void toggle2DTile(bool toggle) { render2DTile = toggle; update(); }
+    void toggle3DOverlay(bool toggle) { render3DOverlay = toggle; invalidateRenderCaches(); update(); }
+    void toggle2DTile(bool toggle) { render2DTile = toggle; invalidateRenderCaches(); update(); }
 
     qint8 saveLevel();
     void copy();
@@ -84,7 +87,6 @@ protected:
     void mousePressEvent(QMouseEvent *) Q_DECL_OVERRIDE;
     void mouseReleaseEvent(QMouseEvent *) Q_DECL_OVERRIDE;
     void mouseMoveEvent(QMouseEvent *) Q_DECL_OVERRIDE;
-    void moveEvent(QMoveEvent *) Q_DECL_OVERRIDE;
     void keyPressEvent(QKeyEvent *) Q_DECL_OVERRIDE;
     void wheelEvent(QWheelEvent *) Q_DECL_OVERRIDE;
 
@@ -95,6 +97,7 @@ private:
     void handleWheelScroll(QWheelEvent* evt);
     void handlePinchZoom(QPinchGesture* gesture);
     void handleNativeZoom(QNativeGestureEvent* evt);
+    void invalidateRenderCaches();
 
     Level* level;
 
@@ -122,6 +125,10 @@ private:
     QColor backgroundColor;
 
     bool updatePending = false;
+
+    QTimer* panTimer;
+    QPoint panTarget;
+    bool panDirty;
 
     int scrollAccumulator;
 };

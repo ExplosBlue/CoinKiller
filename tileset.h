@@ -85,7 +85,7 @@ public:
     int getSlot() { return slot; }
 
     void drawTile(QPainter& painter, TileGrid& grid, int num, int x, int y, float zoom, int item);
-    void drawObject(QPainter& painter, TileGrid& grid, int num, int x, int y, int w, int h, float zoom);
+    void drawObject(QPainter& painter, TileGrid& grid, int num, int x, int y, int w, int h, float zoom, const QRect& clip = QRect());
     quint8 getBehaviorByte(int tile, int byte);
     void setBehaviorByte(int tile, int byte, quint8 value);
 
@@ -136,12 +136,19 @@ private:
     Ctpk* ctpk;
 
     QImage texImage;
+    QPixmap texPixmap;
+
+    QHash<quint32, QPixmap> scaledTiles;
+    qreal scaledTilesScale = 1.0;
+    const QPixmap& getScaledTile(int num, qreal scale);
+    void clearScaledTiles();
 
 
     QList<ObjectDef*> objectDefs;
 
 
-    void drawRow(QPainter& painter, TileGrid& grid, const ObjectRow& row, int x, int y, int w, float zoom);
+    void drawTile(QPainter& painter, TileGrid& grid, int num, int x, int y, float zoom, int item, quint8 gridLayer);
+    void drawRow(QPainter& painter, TileGrid& grid, const ObjectRow& row, int x, int y, int w, float zoom, quint8 gridLayer, const QRect& clip);
 
 
     quint8 behaviors[441][8];

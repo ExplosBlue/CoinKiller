@@ -38,6 +38,7 @@ Tileset::Tileset(Game *game, QString name)
     ctpk = new Ctpk(archive->openFile("/BG_tex/"+name+".ctpk"));
 
     texImage = ctpk->getTexture((quint32)0);
+    texPixmap = QPixmap::fromImage(texImage);
 
     if (name.startsWith("J_"))
         drawOverrides = true;
@@ -250,11 +251,44 @@ Tileset::~Tileset()
 }
 
 
+void Tileset::clearScaledTiles()
+{
+    scaledTiles.clear();
+    scaledTilesScale = 1.0;
+}
+
+const QPixmap& Tileset::getScaledTile(int num, qreal scale)
+{
+    if (qAbs(scale - scaledTilesScale) > 0.001)
+    {
+        scaledTiles.clear();
+        scaledTilesScale = scale;
+    }
+
+    auto it = scaledTiles.constFind(num);
+    if (it != scaledTiles.constEnd())
+        return it.value();
+
+    QRect rsrc(2 + ((num%21)*24), 2 + ((num/21)*24), 20, 20);
+    int size = qMax(1, qRound(20.0 * scale));
+    QImage tile = texImage.copy(rsrc).scaled(size, size, Qt::IgnoreAspectRatio, Qt::FastTransformation);
+    QPixmap pixmap = QPixmap::fromImage(tile);
+    pixmap.setDevicePixelRatio(size / 20.0);
+
+    return scaledTiles.insert(num, pixmap).value();
+}
+
 // x and y in tile coords
 void Tileset::drawTile(QPainter& painter, TileGrid& grid, int num, int x, int y, float zoom, int item)
 {
+    drawTile(painter, grid, num, x, y, zoom, item, grid.value(0xFFFFFFFF));
+}
+
+void Tileset::drawTile(QPainter& painter, TileGrid& grid, int num, int x, int y, float zoom, int item, quint8 gridLayer)
+{
     quint32 gridid = x | (y<<16);
-    if (grid[gridid] == grid[0xFFFFFFFF])
+    auto gridIt = grid.constFind(gridid);
+    if (gridIt != grid.constEnd() && gridIt.value() == gridLayer)
         return;
 
     int tsize = (int)(20*zoom);
@@ -262,6 +296,16 @@ void Tileset::drawTile(QPainter& painter, TileGrid& grid, int num, int x, int y,
     y *= tsize;
 
     QRect rdst(x, y, tsize, tsize);
+
+    qreal tileScale = 1.0;
+    if (tsize == 20)
+    {
+        QTransform trans = painter.transform();
+        if (trans.m11() > 0.0 && qAbs(trans.m11() - trans.m22()) < 0.001 &&
+            qAbs(trans.m12()) < 0.001 && qAbs(trans.m21()) < 0.001)
+            tileScale = trans.m11() * painter.device()->devicePixelRatioF();
+    }
+    bool useScaled = tileScale > 1.001;
 
     if (drawOverrides)
     {
@@ -276,17 +320,28 @@ void Tileset::drawTile(QPainter& painter, TileGrid& grid, int num, int x, int y,
 
     if (draw2D)
     {
-        QRect rsrc(2 + ((num%21)*24), 2 + ((num/21)*24), 20, 20);
-        painter.drawImage(rdst, texImage, rsrc);
+        if (useScaled)
+            painter.drawPixmap(rdst, getScaledTile(num, tileScale));
+        else
+        {
+            QRect rsrc(2 + ((num%21)*24), 2 + ((num/21)*24), 20, 20);
+            painter.drawPixmap(rdst, texPixmap, rsrc);
+        }
     }
 
     if (draw3D && (getOverlayTile(num) !=0))
     {
-        QRect overlaysrc(2 + ((getOverlayTile(num)%21)*24), 2 + ((getOverlayTile(num)/21)*24), 20, 20);
-        painter.drawImage(rdst, texImage, overlaysrc);
+        int overlay = getOverlayTile(num);
+        if (useScaled)
+            painter.drawPixmap(rdst, getScaledTile(overlay, tileScale));
+        else
+        {
+            QRect overlaysrc(2 + ((overlay%21)*24), 2 + ((overlay/21)*24), 20, 20);
+            painter.drawPixmap(rdst, texPixmap, overlaysrc);
+        }
     }
 
-    grid[gridid] = grid[0xFFFFFFFF];
+    grid.insert(gridid, gridLayer);
 
     // Draw Overlays
     if (behaviors[num][0] == 0 && behaviors[num][2] == 1) // Beanstalk Stopper
@@ -403,6 +458,56 @@ static void forEachRowCell(const ObjectRow& row, int w, F fn)
             dx++;
             sx++;
             if (sx >= end)
+                sx = 0;
+        }
+    }
+}
+
+template<typename F>
+static void forEachRowCellRange(const ObjectRow& row, int w, int dxStart, int dxEnd, F fn)
+{
+    int end = row.data.length()/3;
+    if (end <= 0 || w <= 0)
+        return;
+
+    dxStart = qMax(dxStart, 0);
+    dxEnd = qMin(dxEnd, w);
+    if (dxStart >= dxEnd)
+        return;
+
+    if (row.xRepeatStart != 0xFF && row.xRepeatStart < end)
+    {
+        int rstart = row.xRepeatStart;
+        int repeatEnd = qMin((int)row.xRepeatEnd, end);
+        if (repeatEnd <= rstart)
+            repeatEnd = end;
+        int rend = w - (end - repeatEnd);
+        int thirdStart = qMax(rstart, rend);
+
+        for (int dx = dxStart; dx < dxEnd; dx++)
+        {
+            int sx;
+            if (dx < rstart)
+                sx = dx;
+            else if (dx < rend)
+                sx = rstart + (dx-rstart) % (repeatEnd-rstart);
+            else
+                sx = repeatEnd + (dx-thirdStart) % (end-repeatEnd);
+            fn(sx, dx);
+        }
+    }
+    else
+    {
+        int drawEnd = (row.data[0] == 4) ? qMin(w, end) : w;
+        dxEnd = qMin(dxEnd, drawEnd);
+        if (dxStart >= dxEnd)
+            return;
+
+        int sx = dxStart % end;
+        for (int dx = dxStart; dx < dxEnd; dx++)
+        {
+            fn(sx, dx);
+            if (++sx >= end)
                 sx = 0;
         }
     }
@@ -827,21 +932,41 @@ static void forEachSlopeTile(const ObjectDef& def, int w, int h, F fn)
     }
 }
 
-void Tileset::drawRow(QPainter& painter, TileGrid& grid, const ObjectRow& row, int x, int y, int w, float zoom)
+void Tileset::drawRow(QPainter& painter, TileGrid& grid, const ObjectRow& row, int x, int y, int w, float zoom, quint8 gridLayer, const QRect& clip)
 {
-    forEachRowCell(row, w, [&](int col, int dx)
+    if (clip.isValid() && (y < clip.top() || y > clip.bottom()))
+        return;
+
+    int dxStart = 0;
+    int dxEnd = w;
+    if (clip.isValid())
+    {
+        dxStart = qMax(0, clip.left() - x);
+        dxEnd = qMin(w, clip.right() - x + 1);
+    }
+
+    forEachRowCellRange(row, w, dxStart, dxEnd, [&](int col, int dx)
     {
         if (row.data[col*3 + 1] || (row.data[col*3 + 2] & 6) >> 1) // skip empty tiles
-            drawTile(painter, grid, row.data[col*3 + 1], x+dx, y, zoom, (row.data[col*3 + 2] & 120) >> 3);
+            drawTile(painter, grid, row.data[col*3 + 1], x + dx, y, zoom, (row.data[col*3 + 2] & 120) >> 3, gridLayer);
     });
 }
 
-void Tileset::drawObject(QPainter& painter, TileGrid& grid, int num, int x, int y, int w, int h, float zoom)
+void Tileset::drawObject(QPainter& painter, TileGrid& grid, int num, int x, int y, int w, int h, float zoom, const QRect& clip)
 {
     if (num >= objectDefs.size())
     {
-        for (int xx = 0; xx < w; xx++)
-            for (int yy = 0; yy < h; yy++)
+        int xStart = 0, xEnd = w, yStart = 0, yEnd = h;
+        if (clip.isValid())
+        {
+            xStart = qMax(0, clip.left() - x);
+            xEnd = qMin(w, clip.right() - x + 1);
+            yStart = qMax(0, clip.top() - y);
+            yEnd = qMin(h, clip.bottom() - y + 1);
+        }
+
+        for (int xx = xStart; xx < xEnd; xx++)
+            for (int yy = yStart; yy < yEnd; yy++)
                 painter.drawPixmap(QRect((x+xx)*20, (y+yy)*20, 20, 20), ImageCache::getInstance()->get(TileOverride, "error.png"));
 
         return;
@@ -852,15 +977,22 @@ void Tileset::drawObject(QPainter& painter, TileGrid& grid, int num, int x, int 
     if (def.rows.isEmpty())
         return;
 
+    quint8 gridLayer = grid.value(0xFFFFFFFF);
+
     quint8 slopeflag = def.rows[0].slopeFlags;
     if ((slopeflag & 0x80) && slopeflag != SlopeSection1 && slopeflag != SlopeSection2)
     {
         forEachSlopeTile(def, w, h, [&](int rowIdx, int col, int px, int py)
         {
+            int tx = x + px;
+            int ty = y + py;
+            if (clip.isValid() && (tx < clip.left() || tx > clip.right() || ty < clip.top() || ty > clip.bottom()))
+                return;
+
             ObjectRow& row = def.rows[rowIdx];
 
             if (row.data[col*3 + 1] || (row.data[col*3 + 2] & 6) >> 1)
-                drawTile(painter, grid, row.data[col*3 + 1], x + px, y + py, zoom, (row.data[col*3 + 2] & 120) >> 3);
+                drawTile(painter, grid, row.data[col*3 + 1], tx, ty, zoom, (row.data[col*3 + 2] & 120) >> 3, gridLayer);
         });
 
         return;
@@ -869,6 +1001,17 @@ void Tileset::drawObject(QPainter& painter, TileGrid& grid, int num, int x, int 
     int sy = 0, dy = 0;
     int end = def.rows.length();
 
+    int dyStart = 0;
+    int dyEnd = h;
+    if (clip.isValid())
+    {
+        dyStart = qMax(0, clip.top() - y);
+        dyEnd = qMin(h, clip.bottom() - y + 1);
+    }
+
+    if (dyStart >= dyEnd)
+        return;
+
     if (def.yRepeatStart != 0xFF)
     {
         // with repeat
@@ -876,56 +1019,84 @@ void Tileset::drawObject(QPainter& painter, TileGrid& grid, int num, int x, int 
         int rstart = def.yRepeatStart;
         int rend = h - (def.height - def.yRepeatEnd);
 
-        sy = 0;
-        while (dy < rstart)
+        dy = dyStart;
+        if (dy < rstart)
         {
-            ObjectRow& row = def.rows[sy];
-            drawRow(painter, grid, row, x, y+dy, w, zoom);
-
-            dy++;
-            sy++;
-            if (sy >= def.yRepeatStart)
-                sy = 0;
+            sy = dy % (def.yRepeatStart > 0 ? def.yRepeatStart : 1);
+            while (dy < rstart && dy < dyEnd)
+            {
+                if (sy < def.rows.length() && sy < def.yRepeatStart)
+                {
+                    ObjectRow& row = def.rows[sy];
+                    drawRow(painter, grid, row, x, y+dy, w, zoom, gridLayer, clip);
+                }
+                dy++;
+                sy++;
+                if (sy >= def.yRepeatStart)
+                    sy = 0;
+            }
         }
 
-        sy = def.yRepeatStart;
-        while (dy < rend)
+        dy = qMax(dy, rstart);
+        if (dy < rend && dy < dyEnd)
         {
-            ObjectRow& row = def.rows[sy];
-            drawRow(painter, grid, row, x, y+dy, w, zoom);
-
-            dy++;
-            sy++;
-            if (sy >= def.yRepeatEnd)
+            sy = def.yRepeatStart + (dy - rstart) % (def.yRepeatEnd > def.yRepeatStart ? (def.yRepeatEnd - def.yRepeatStart) : 1);
+            if (sy >= def.yRepeatEnd && def.yRepeatEnd > def.yRepeatStart)
                 sy = def.yRepeatStart;
+            while (dy < rend && dy < dyEnd)
+            {
+                if (sy < def.rows.length() && sy >= def.yRepeatStart && sy < def.yRepeatEnd)
+                {
+                    ObjectRow& row = def.rows[sy];
+                    drawRow(painter, grid, row, x, y+dy, w, zoom, gridLayer, clip);
+                }
+                dy++;
+                sy++;
+                if (sy >= def.yRepeatEnd)
+                    sy = def.yRepeatStart;
+            }
         }
 
-        sy = def.yRepeatEnd;
-        while (dy < h)
+        dy = qMax(dy, rend);
+        if (dy < h && dy < dyEnd)
         {
-            ObjectRow& row = def.rows[sy];
-            drawRow(painter, grid, row, x, y+dy, w, zoom);
-
-            dy++;
-            sy++;
+            sy = def.yRepeatEnd + (dy - rend) % (end > def.yRepeatEnd ? (end - def.yRepeatEnd) : 1);
             if (sy >= end)
                 sy = def.yRepeatEnd;
+            while (dy < h && dy < dyEnd)
+            {
+                if (sy < def.rows.length())
+                {
+                    ObjectRow& row = def.rows[sy];
+                    drawRow(painter, grid, row, x, y+dy, w, zoom, gridLayer, clip);
+                }
+                dy++;
+                sy++;
+                if (sy >= end)
+                    sy = def.yRepeatEnd;
+            }
         }
     }
     else
     {
         // without repeat
 
-        sy = 0;
-        while (dy < h)
+        if (dyStart < dyEnd)
         {
-            ObjectRow& row = def.rows[sy];
-            drawRow(painter, grid, row, x, y+dy, w, zoom);
-
-            dy++;
-            sy++;
-            if (sy >= end)
-                sy = 0;
+            dy = dyStart;
+            sy = end > 0 ? dyStart % end : 0;
+            while (dy < dyEnd)
+            {
+                if (sy < def.rows.length())
+                {
+                    ObjectRow& row = def.rows[sy];
+                    drawRow(painter, grid, row, x, y+dy, w, zoom, gridLayer, clip);
+                }
+                dy++;
+                sy++;
+                if (sy >= end)
+                    sy = 0;
+            }
         }
     }
 }
@@ -1009,6 +1180,8 @@ void Tileset::setImage(QImage &img, uint quality, bool dither)
 {
     ctpk->setTextureEtc1(0, img, true, quality, dither);
     texImage = ctpk->getTexture((quint32)0);
+    texPixmap = QPixmap::fromImage(texImage);
+    clearScaledTiles();
 }
 
 static void paintPaddedTile(QImage& dst, const QImage& sheet, int i, int tilew)
@@ -1064,6 +1237,8 @@ void Tileset::setImageRegion(QImage &sheet, const QList<int> &tiles, uint qualit
 
     ctpk->setTextureEtc1Region(0, newImg, regions, quality, dither);
     texImage = ctpk->getTexture((quint32)0);
+    texPixmap = QPixmap::fromImage(texImage);
+    clearScaledTiles();
 }
 
 void Tileset::save()

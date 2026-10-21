@@ -3,6 +3,7 @@
 
 #include "level.h"
 
+#include <QPixmap>
 #include <QWidget>
 
 class LevelMiniMap : public QWidget
@@ -15,6 +16,7 @@ public:
 public slots:
     void update_(QRect drawRect);
     void updateBounds();
+    void invalidateCache();
 
 protected:
     void paintEvent(QPaintEvent *evt) Q_DECL_OVERRIDE;
@@ -26,6 +28,8 @@ private:
     int maxX, maxY;
     float zoom;
     QRect drawRect = QRect();
+    QPixmap cache;
+    bool cacheDirty = true;
 
     void checkBounds(Object* obj);
 

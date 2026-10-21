@@ -23,7 +23,7 @@ public:
     void keyPress(QKeyEvent *);
     bool hasSelection() const { return !selectedObjects.isEmpty(); }
 
-    void render(QPainter *painter);
+    void render(QPainter *painter, const QRect &clip);
 
     void deleteSelection();
     void copy();
@@ -155,7 +155,6 @@ private:
 
     void checkEmits();
 
-    void drawResizeKnob(int x, int y, QPainter *painter);
     void drawPlus(QPainter* painter, int x, int y);
 
     quint8 layerMask;

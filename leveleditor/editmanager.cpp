@@ -16,6 +16,8 @@
 #include <QClipboard>
 #include <QDebug>
 
+#include <algorithm>
+
 static const int CYCLE_RADIUS = 10;
 
 EditManager::EditManager(Level *level, QUndoStack *undoStack) :
@@ -565,43 +567,152 @@ void EditManager::CreateObject(quint32 x, quint32 y)
     }
 }
 
-void EditManager::render(QPainter *painter)
+static QVector<QLineF> mergeSelectionLines(const QVector<QLineF> &lines)
 {
+    QHash<qint64, QVector<QLineF>> horizontalGroups;
+    QHash<qint64, QVector<QLineF>> verticalGroups;
+    horizontalGroups.reserve(lines.size());
+    verticalGroups.reserve(lines.size());
+
+    foreach (const QLineF &line, lines)
+    {
+        if (line.y1() == line.y2())
+            horizontalGroups[qint64(line.y1())].append(line);
+        else
+            verticalGroups[qint64(line.x1())].append(line);
+    }
+
+    QVector<QLineF> merged;
+    merged.reserve(lines.size());
+
+    const auto mergeGroup = [&](QVector<QLineF> group, bool horizontal) {
+        std::sort(group.begin(), group.end(), [horizontal](const QLineF &a, const QLineF &b) {
+            return horizontal ? a.x1() < b.x1() : a.y1() < b.y1();
+        });
+
+        QLineF current = group.first();
+        for (int i = 1; i < group.size(); i++)
+        {
+            const QLineF &line = group.at(i);
+            const qreal currentEnd = horizontal ? current.x2() : current.y2();
+            const qreal lineStart = horizontal ? line.x1() : line.y1();
+
+            if (lineStart <= currentEnd + 0.0001)
+            {
+                if (horizontal)
+                    current.setP2(QPointF(qMax(current.x2(), line.x2()), current.y2()));
+                else
+                    current.setP2(QPointF(current.x2(), qMax(current.y2(), line.y2())));
+            }
+            else
+            {
+                merged.append(current);
+                current = line;
+            }
+        }
+        merged.append(current);
+    };
+
+    for (auto it = horizontalGroups.constBegin(); it != horizontalGroups.constEnd(); ++it)
+        mergeGroup(it.value(), true);
+    for (auto it = verticalGroups.constBegin(); it != verticalGroups.constEnd(); ++it)
+        mergeGroup(it.value(), false);
+
+    return merged;
+}
+
+void EditManager::render(QPainter *painter, const QRect &clip)
+{
+    const qreal deviceScale = qMax(0.0001, painter->transform().m11() * painter->device()->devicePixelRatioF());
+    const QPen selectionPen(QColor(255,255,255,200), qMax(1.0, 1.0 / deviceScale), Qt::DotLine);
+    const int knobSize = 2 * qMax(2, qRound(2.0 / deviceScale));
+    const int knobHalf = knobSize / 2;
+    static const QBrush selectionBrush(QColor(255,255,255,75));
+
+    painter->save();
+    painter->setClipRect(clip);
+    painter->setRenderHint(QPainter::Antialiasing, false);
+
+    QVector<QLineF> selectionLines;
+    QVector<QRect> selectionFillRects;
+    QVector<QRect> knobRects;
+
+    const auto addSelectionRect = [&](const QRect &rect) {
+        const QRect visibleRect = rect.intersected(clip);
+        if (visibleRect.isEmpty())
+            return;
+
+        selectionFillRects.append(visibleRect);
+
+        if (rect.top() >= clip.top() && rect.top() <= clip.bottom())
+            selectionLines.append(QLineF(visibleRect.left(), rect.top(), visibleRect.right(), rect.top()));
+        if (rect.bottom() >= clip.top() && rect.bottom() <= clip.bottom())
+            selectionLines.append(QLineF(visibleRect.left(), rect.bottom(), visibleRect.right(), rect.bottom()));
+        if (rect.left() >= clip.left() && rect.left() <= clip.right())
+            selectionLines.append(QLineF(rect.left(), visibleRect.top(), rect.left(), visibleRect.bottom()));
+        if (rect.right() >= clip.left() && rect.right() <= clip.right())
+            selectionLines.append(QLineF(rect.right(), visibleRect.top(), rect.right(), visibleRect.bottom()));
+    };
+
     foreach (Object* obj, selectedObjects)
     {
+        const QRect objectRect(obj->getx()+obj->getOffsetX(), obj->gety()+obj->getOffsetY(), obj->getwidth(), obj->getheight());
+
         if (is<Sprite*>(obj) && !static_cast<Sprite*>(obj)->getSelectionRects()->empty())
         {
             Sprite* spr = static_cast<Sprite*>(obj);
 
             foreach (QRect rect, *spr->getSelectionRects())
-            {
-                QRect objrect(obj->getx() + rect.x(), obj->gety() + rect.y(), rect.width(), rect.height());
-
-                painter->setPen(QPen(QColor(255,255,255,200), 1, Qt::DotLine));
-                painter->drawRect(objrect);
-                painter->fillRect(objrect, QColor(255,255,255,75));
-            }
+                addSelectionRect(QRect(obj->getx() + rect.x(), obj->gety() + rect.y(), rect.width(), rect.height()));
         }
         else
         {
-            QRect objrect(obj->getx()+obj->getOffsetX(), obj->gety()+obj->getOffsetY(), obj->getwidth(), obj->getheight());
-
-            painter->setPen(QPen(QColor(255,255,255,200), 1, Qt::DotLine));
-            painter->drawRect(objrect);
-            painter->fillRect(objrect, QColor(255,255,255,75));
+            addSelectionRect(objectRect);
         }
 
-        if (obj->isResizable())
+        if (obj->isResizable() && objectRect.intersects(clip))
         {
-            drawResizeKnob(obj->getx(), obj->gety(), painter);
-            drawResizeKnob(obj->getx() + obj->getwidth(), obj->gety(), painter);
-            drawResizeKnob(obj->getx(), obj->gety() + obj->getheight(), painter);
-            drawResizeKnob(obj->getx() + obj->getwidth(), obj->gety() + obj->getheight(), painter);
-            drawResizeKnob(obj->getx() + obj->getwidth()/2, obj->gety(), painter);
-            drawResizeKnob(obj->getx(), obj->gety() + obj->getheight()/2, painter);
-            drawResizeKnob(obj->getx() + obj->getwidth()/2, obj->gety() + obj->getheight(), painter);
-            drawResizeKnob(obj->getx() + obj->getwidth(), obj->gety() + obj->getheight()/2, painter);
+            const int x = obj->getx();
+            const int y = obj->gety();
+            const int w = obj->getwidth();
+            const int h = obj->getheight();
+
+            knobRects.append(QRect(x-knobHalf,     y-knobHalf,     knobSize, knobSize));
+            knobRects.append(QRect(x+w-knobHalf,   y-knobHalf,     knobSize, knobSize));
+            knobRects.append(QRect(x-knobHalf,     y+h-knobHalf,   knobSize, knobSize));
+            knobRects.append(QRect(x+w-knobHalf,   y+h-knobHalf,   knobSize, knobSize));
+            knobRects.append(QRect(x+w/2-knobHalf, y-knobHalf,     knobSize, knobSize));
+            knobRects.append(QRect(x-knobHalf,     y+h/2-knobHalf, knobSize, knobSize));
+            knobRects.append(QRect(x+w/2-knobHalf, y+h-knobHalf,   knobSize, knobSize));
+            knobRects.append(QRect(x+w-knobHalf,   y+h/2-knobHalf, knobSize, knobSize));
         }
+    }
+
+    if (!selectionFillRects.isEmpty())
+    {
+        painter->save();
+        painter->setPen(Qt::NoPen);
+        painter->setBrush(selectionBrush);
+        painter->drawRects(selectionFillRects.constData(), selectionFillRects.size());
+        painter->restore();
+    }
+
+    if (!selectionLines.isEmpty())
+    {
+        if (selectionLines.size() > 256)
+            selectionLines = mergeSelectionLines(selectionLines);
+
+        painter->setPen(selectionPen);
+        painter->drawLines(selectionLines);
+    }
+
+    if (!knobRects.isEmpty())
+    {
+        painter->save();
+        painter->setPen(Qt::NoPen);
+        painter->setBrush(Qt::white);
+        painter->drawRects(knobRects.constData(), knobRects.size());
+        painter->restore();
     }
 
     if (selectedObjects.count() == 1)
@@ -610,6 +721,7 @@ void EditManager::render(QPainter *painter)
 
         if (is<PathNode*>(node) || is<ProgressPathNode*>(node))
         {
+            painter->setRenderHint(QPainter::Antialiasing, true);
             painter->setPen(QPen(Qt::black));
 
             QPainterPath path1;
@@ -638,6 +750,8 @@ void EditManager::render(QPainter *painter)
         painter->fillRect(selArea, QColor(160,222,255,50));
         painter->drawRect(selArea);
     }
+
+    painter->restore();
 }
 
 void EditManager::drawPlus(QPainter *painter, int x, int y)
@@ -648,11 +762,6 @@ void EditManager::drawPlus(QPainter *painter, int x, int y)
     QPainterPath path2;
     path2.addRoundedRect(x+4, y+9, 12, 2 , 2.0, 2.0);
     painter->fillPath(path2, Qt::white);
-}
-
-void EditManager::drawResizeKnob(int x, int y, QPainter *painter)
-{
-    painter->fillRect(x-2, y-2, 4, 4, QBrush(Qt::white));
 }
 
 QList<Object*> EditManager::getObjectsAtPos(int x1, int y1, int x2, int y2, bool firstOnly, QRect drawrect)

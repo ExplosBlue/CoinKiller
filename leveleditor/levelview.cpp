@@ -36,7 +36,53 @@
 #include <QGesture>
 #include <QScrollArea>
 #include <QScrollBar>
+#include <QScreen>
+#include <QTimer>
 
+
+static int refreshIntervalMs(const QWidget* widget)
+{
+    QScreen* screen = widget ? widget->screen() : nullptr;
+    if (!screen)
+        screen = QGuiApplication::primaryScreen();
+    qreal hz = screen ? screen->refreshRate() : 60.0;
+    if (hz <= 0.0)
+        hz = 60.0;
+    return qMax(1, qRound(1000.0 / hz));
+}
+
+static const QPixmap& checkerboardPattern(bool smallSquares)
+{
+    static QPixmap patterns[2];
+    QPixmap& pattern = patterns[smallSquares ? 1 : 0];
+    if (pattern.isNull())
+    {
+        pattern = QPixmap(160, 160);
+        pattern.fill(Qt::transparent);
+
+        QPainter painter(&pattern);
+        painter.setRenderHint(QPainter::Antialiasing, false);
+        painter.setPen(Qt::NoPen);
+        painter.setBrush(QColor(50, 50, 50));
+        painter.setOpacity(0.2);
+        for (int j = 0; j < 2; j++)
+        {
+            for (int i = j % 2; i < 2; i += 2)
+                painter.drawRect(i * 80, j * 80, 80, 80);
+        }
+
+        if (smallSquares)
+        {
+            painter.setOpacity(0.1);
+            for (int j = 0; j < 8; j++)
+            {
+                for (int i = j % 2; i < 8; i += 2)
+                    painter.drawRect(i * 20, j * 20, 20, 20);
+            }
+        }
+    }
+    return pattern;
+}
 
 LevelView::LevelView(QWidget *parent, Level *level, QUndoStack *undoStack) :
     QWidget(parent), level(level), undoStack(undoStack)
@@ -49,6 +95,7 @@ LevelView::LevelView(QWidget *parent, Level *level, QUndoStack *undoStack) :
 
     editManager = new EditManager(level, undoStack);
     connect(editManager, SIGNAL(updateLevelView()), this, SLOT(requestUpdate()));
+    connect(undoStack, &QUndoStack::indexChanged, this, [](int) { SpriteRenderer::invalidateCache(); });
 
     zoom = 1;
     grid = false;
@@ -59,6 +106,18 @@ LevelView::LevelView(QWidget *parent, Level *level, QUndoStack *undoStack) :
     render2DTile = true;
     render3DOverlay = true;
 
+    panDirty = false;
+
+    panTimer = new QTimer(this);
+    panTimer->setTimerType(Qt::PreciseTimer);
+    panTimer->setInterval(refreshIntervalMs(this));
+    connect(panTimer, &QTimer::timeout, this, [this] {
+        if (!panDirty)
+            return;
+        panDirty = false;
+        emit scrollTo(panTarget.x(), panTarget.y());
+    });
+
 #ifdef USE_KDE_BLUR
     setBackgroundColor(QColor(0,0,0,0));
 #endif
@@ -66,7 +125,13 @@ LevelView::LevelView(QWidget *parent, Level *level, QUndoStack *undoStack) :
 
 LevelView::~LevelView()
 {
+    SpriteRenderer::invalidateCache();
     delete editManager;
+}
+
+void LevelView::invalidateRenderCaches()
+{
+    SpriteRenderer::invalidateCache();
 }
 
 void LevelView::paintEvent(QPaintEvent* evt)
@@ -87,6 +152,10 @@ void LevelView::screenshot(QRect rect)
 
 void LevelView::paint(QPainter& painter, QRect rect, float zoomLvl, bool selections)
 {
+    static const QFont locationFont("Arial", 10, QFont::Bold);
+    static const QFont zoneFont("Arial", 8, QFont::Normal);
+    static const QFont pathFont("Arial", 7, QFont::Normal);
+
     painter.scale(zoomLvl,zoomLvl);
 
     drawrect = QRect(rect.x()/zoomLvl, rect.y()/zoomLvl, rect.width()/zoomLvl, rect.height()/zoomLvl);
@@ -98,51 +167,17 @@ void LevelView::paint(QPainter& painter, QRect rect, float zoomLvl, bool selecti
     // Render Checkerboard
     if (checkerboard)
     {
-        painter.setRenderHint(QPainter::Antialiasing, false);
-
         const int startx = drawrect.x() - drawrect.x() % 160;
         const int endx = startx + drawrect.width() + 160;
 
         const int starty = drawrect.y() - drawrect.y() % 160;
         const int endy = starty + drawrect.height() + 160;
 
-        painter.setPen(Qt::NoPen);
-        QBrush brush(Qt::SolidPattern);
-        brush.setColor(QColor(50,50,50));
-        painter.setBrush(brush);
-
-        // Big Squares
-        const int cellCountX = 1 + (endx - startx) / 80;
-        const int cellCountY = 1 + (endy - starty) / 80;
-
-        for(int j = 0; j < cellCountY; j++)
-        {
-            for(int i = j % 2; i < cellCountX; i+=2)
-            {
-                painter.setOpacity(0.2);
-                painter.drawRect(startx + (i * 80), starty + (j * 80), 80, 80);
-            }
-        }
-
-        // Small Squares
-        if (zoom > 0.5)
-        {
-            const int cellCountX = 1 + (endx - startx) / 20;
-            const int cellCountY = 1 + (endy - starty) / 20;
-
-            for(int j = 0; j < cellCountY; j++)
-            {
-                for(int i = j % 2; i < cellCountX; i+=2)
-                {
-                    painter.setOpacity(0.1);
-                    painter.drawRect(startx + (i * 20), starty + (j * 20), 20, 20);
-                }
-            }
-        }
-
-        painter.setRenderHint(QPainter::Antialiasing);
-        painter.setBrush(Qt::NoBrush);
-        painter.setOpacity(1);
+        painter.save();
+        painter.setRenderHint(QPainter::Antialiasing, false);
+        painter.setOpacity(1.0);
+        painter.drawTiledPixmap(QRect(startx, starty, endx - startx, endy - starty), checkerboardPattern(zoom > 0.5f));
+        painter.restore();
     }
 
     // Render Translucent Liquid Indicators (if set to appear under tiles)
@@ -172,6 +207,7 @@ void LevelView::paint(QPainter& painter, QRect rect, float zoomLvl, bool selecti
     }
 
     // Render Tiles
+    QRect tileClip(drawrect.x()/20 - 1, drawrect.y()/20 - 1, drawrect.width()/20 + 3, drawrect.height()/20 + 3);
     for (int l = 1; l >= 0; l--)
     {
         if (!(editManager->getLayerMask() & (1<<l)))
@@ -184,7 +220,6 @@ void LevelView::paint(QPainter& painter, QRect rect, float zoomLvl, bool selecti
             const BgdatObject* obj = level->objects[l].at(i);
 
             // don't draw shit that is outside of the view
-            // (TODO: also eliminate individual out-of-view tiles)
             if (!drawrect.intersects(QRect(obj->getx(), obj->gety(), obj->getwidth(), obj->getheight())))
                 continue;
 
@@ -193,7 +228,7 @@ void LevelView::paint(QPainter& painter, QRect rect, float zoomLvl, bool selecti
             {
                 level->tilesets[tsid]->Render2DTiles(render2DTile);
                 level->tilesets[tsid]->Render3DOverlay(render3DOverlay);
-                level->tilesets[tsid]->drawObject(painter, tileGrid, obj->getid()&0x0FFF, obj->getx()/20, obj->gety()/20, obj->getwidth()/20, obj->getheight()/20, 1);
+                level->tilesets[tsid]->drawObject(painter, tileGrid, obj->getid()&0x0FFF, obj->getx()/20, obj->gety()/20, obj->getwidth()/20, obj->getheight()/20, 1, tileClip);
             }
             else
             {
@@ -209,6 +244,7 @@ void LevelView::paint(QPainter& painter, QRect rect, float zoomLvl, bool selecti
     if (editManager->locationInteractionEnabled())
     {
         painter.save();
+        painter.setRenderHint(QPainter::Antialiasing, zoomLvl >= 0.5f);
         for (int i = 0; i < level->locations.size(); i++)
         {
             const Location* loc = level->locations.at(i);
@@ -223,10 +259,13 @@ void LevelView::paint(QPainter& painter, QRect rect, float zoomLvl, bool selecti
             painter.setPen(QColor(0,0,0));
             painter.drawRect(locrect);
 
-            QString locText = QString("%1").arg(loc->getid());
-            painter.setFont(QFont("Arial", 10, QFont::Bold));
-            painter.setPen(QColor(255,255,255));
-            painter.drawText(locrect.adjusted(5,5,0,0), locText);
+            if (zoomLvl >= 0.5f)
+            {
+                QString locText = QString("%1").arg(loc->getid());
+                painter.setFont(locationFont);
+                painter.setPen(QColor(255,255,255));
+                painter.drawText(locrect.adjusted(5,5,0,0), locText);
+            }
         }
         painter.restore();
     }
@@ -361,6 +400,8 @@ void LevelView::paint(QPainter& painter, QRect rect, float zoomLvl, bool selecti
         }
 
         // Render Movement Controller - Back & Forth Indicators
+        painter.save();
+        painter.setRenderHint(QPainter::Antialiasing, zoomLvl >= 0.5f);
         static const QSet<int> supportsMovBackForth{28, 60, 101, 204, 293};
         for (int i = 0; renderControllers && i < level->zones.size(); i++)
         {
@@ -403,27 +444,36 @@ void LevelView::paint(QPainter& painter, QRect rect, float zoomLvl, bool selecti
                 int x = s->getx() + s->getOffsetX();
                 int y = s->gety() + s->getOffsetY();
 
-                MovIndicatorRenderer *indicator;
                 switch (direction)
                 {
                 case 0: // Right
-                    indicator = new MovIndicatorRenderer(x + s->getwidth(), y + s->getheight()/2, x + s->getwidth() + distance, y + s->getheight()/2, 2, 6, false, color);
-                    break;
-                case 1: // Left
-                    indicator = new MovIndicatorRenderer(x, y + s->getheight()/2, x - distance, y + s->getheight()/2, 2, 6, false, color);
-                    break;
-                case 2: // Up
-                    indicator = new MovIndicatorRenderer(x + s->getwidth()/2, y, x + s->getwidth()/2, y - distance, 2, 6, true, color);
-                    break;
-                default: // Down
-                    indicator = new MovIndicatorRenderer(x + s->getwidth()/2, y + s->getheight(), x + s->getwidth()/2, y + s->getheight() + distance, 2, 6, true, color);
+                {
+                    MovIndicatorRenderer indicator(x + s->getwidth(), y + s->getheight()/2, x + s->getwidth() + distance, y + s->getheight()/2, 2, 6, false, color);
+                    indicator.render(&painter);
                     break;
                 }
-
-                indicator->render(&painter);
-                delete indicator;
+                case 1: // Left
+                {
+                    MovIndicatorRenderer indicator(x, y + s->getheight()/2, x - distance, y + s->getheight()/2, 2, 6, false, color);
+                    indicator.render(&painter);
+                    break;
+                }
+                case 2: // Up
+                {
+                    MovIndicatorRenderer indicator(x + s->getwidth()/2, y, x + s->getwidth()/2, y - distance, 2, 6, true, color);
+                    indicator.render(&painter);
+                    break;
+                }
+                default: // Down
+                {
+                    MovIndicatorRenderer indicator(x + s->getwidth()/2, y + s->getheight(), x + s->getwidth()/2, y + s->getheight() + distance, 2, 6, true, color);
+                    indicator.render(&painter);
+                    break;
+                }
+                }
             }
         }
+        painter.restore();
 
         // Render Sprites
         for (int i = 0; i < level->sprites.size(); i++)
@@ -438,6 +488,8 @@ void LevelView::paint(QPainter& painter, QRect rect, float zoomLvl, bool selecti
         }
 
         // Render Camera Limit Boundries
+        painter.save();
+        painter.setRenderHint(QPainter::Antialiasing, zoomLvl >= 0.5f);
         if (renderCameraLimits)
         {
             QList<Sprite*> leftCamLimits = level->leftCamLimits;
@@ -523,6 +575,7 @@ void LevelView::paint(QPainter& painter, QRect rect, float zoomLvl, bool selecti
                 }
             }
         }
+        painter.restore();
     }
 
     // Render Entrances
@@ -544,6 +597,8 @@ void LevelView::paint(QPainter& painter, QRect rect, float zoomLvl, bool selecti
     // Render Paths
     if (editManager->pathInteractionEnabled())
     {
+        painter.save();
+        painter.setRenderHint(QPainter::Antialiasing, zoomLvl >= 0.5f);
         for (int i = 0; i < level->paths.size(); i++)
         {
             const Path* path = level->paths.at(i);
@@ -588,9 +643,12 @@ void LevelView::paint(QPainter& painter, QRect rect, float zoomLvl, bool selecti
                 painter.fillPath(painterPath, color);
                 painter.drawPath(painterPath);
 
-                QString pathText = QString("%1-%2").arg(path->getid()).arg(j);
-                painter.setFont(QFont("Arial", 7, QFont::Normal));
-                painter.drawText(pathrect, pathText, Qt::AlignHCenter | Qt::AlignVCenter);
+                if (zoomLvl >= 0.5f)
+                {
+                    QString pathText = QString("%1-%2").arg(path->getid()).arg(j);
+                    painter.setFont(pathFont);
+                    painter.drawText(pathrect, pathText, Qt::AlignHCenter | Qt::AlignVCenter);
+                }
             }
         }
 
@@ -629,14 +687,21 @@ void LevelView::paint(QPainter& painter, QRect rect, float zoomLvl, bool selecti
                 painter.fillPath(path, color);
                 painter.drawPath(path);
 
-                QString pPathText = QString("%1-%2").arg(pPath->getid()).arg(j);
-                painter.setFont(QFont("Arial", 7, QFont::Normal));
-                painter.drawText(ppathrect, pPathText, Qt::AlignHCenter | Qt::AlignVCenter);
+                if (zoomLvl >= 0.5f)
+                {
+                    QString pPathText = QString("%1-%2").arg(pPath->getid()).arg(j);
+                    painter.setFont(pathFont);
+                    painter.drawText(ppathrect, pPathText, Qt::AlignHCenter | Qt::AlignVCenter);
+                }
             }
         }
+
+        painter.restore();
     }
 
     // Render Zones
+    painter.save();
+    painter.setRenderHint(QPainter::Antialiasing, zoomLvl >= 0.5f);
     for (int i = 0; i < level->zones.size(); i++)
     {
         const Zone* zone = level->zones.at(i);
@@ -650,22 +715,26 @@ void LevelView::paint(QPainter& painter, QRect rect, float zoomLvl, bool selecti
 
         painter.drawRect(zonerect);
 
-        QString zoneText = QString("Zone %1").arg(zone->getid());
-        painter.setFont(QFont("Arial", 8, QFont::Normal));
+        if (zoomLvl >= 0.5f)
+        {
+            QString zoneText = QString("Zone %1").arg(zone->getid());
+            painter.setFont(zoneFont);
 
-        int adjustX = 3;
-        int adjustY = 3;
-        if (zonerect.x() < drawrect.x())
-            adjustX += drawrect.x()-zonerect.x();
-        if (zonerect.y() < drawrect.y())
-            adjustY += drawrect.y()-zonerect.y();
+            int adjustX = 3;
+            int adjustY = 3;
+            if (zonerect.x() < drawrect.x())
+                adjustX += drawrect.x()-zonerect.x();
+            if (zonerect.y() < drawrect.y())
+                adjustY += drawrect.y()-zonerect.y();
 
-        painter.drawText(zonerect.adjusted(adjustX,adjustY,100,20), zoneText);
+            painter.drawText(zonerect.adjusted(adjustX,adjustY,100,20), zoneText);
+        }
     }
+    painter.restore();
 
     // Render Stuff
     if (selections)
-        editManager->render(&painter);
+        editManager->render(&painter, drawrect);
 
     // Render Grid
     if (grid)
@@ -737,6 +806,10 @@ void LevelView::mousePressEvent(QMouseEvent* evt)
     {
         dragX = evt->position().x();
         dragY = evt->position().y();
+        panDirty = false;
+        panTarget = QPoint(-1, -1);
+        panTimer->setInterval(refreshIntervalMs(this));
+        panTimer->start();
     }
 
     if (editManager != NULL)
@@ -753,21 +826,30 @@ void LevelView::mousePressEvent(QMouseEvent* evt)
 
 void LevelView::mouseMoveEvent(QMouseEvent* evt)
 {
-    if (evt->buttons() & Qt::MiddleButton)
+    bool panning = evt->buttons() & Qt::MiddleButton;
+
+    if (panning)
     {
         int x = evt->position().x();
         int y = evt->position().y();
 
-        emit scrollTo((visibleRegion().boundingRect().x() - x + dragX)/zoom, (visibleRegion().boundingRect().y() - y + dragY)/zoom);
+        QPoint target((visibleRegion().boundingRect().x() - x + dragX)/zoom,
+                      (visibleRegion().boundingRect().y() - y + dragY)/zoom);
+        if (target != panTarget)
+        {
+            panTarget = target;
+            panDirty = true;
+        }
     }
 
-    if (editManager != nullptr)
+    if (editManager != nullptr && !panning)
     {
         int x = evt->position().x()/zoom;
         int y = evt->position().y()/zoom;
 
         if (evt->buttons() == Qt::LeftButton || evt->buttons() == Qt::RightButton)
         {
+            SpriteRenderer::invalidateCache();
             editManager->mouseDrag(x, y, evt->modifiers(), drawrect);
         }
         else
@@ -776,19 +858,32 @@ void LevelView::mouseMoveEvent(QMouseEvent* evt)
         setCursor(QCursor(editManager->getActualCursor()));
     }
 
-    requestUpdate();
-    emit updateMinimapBounds();
+    if (!panning)
+    {
+        requestUpdate();
+        if (evt->buttons() & (Qt::LeftButton | Qt::RightButton))
+            emit updateMinimapBounds();
+    }
 }
 
 void LevelView::mouseReleaseEvent(QMouseEvent *evt)
 {
-    editManager->mouseUp(evt->position().x()/zoom, evt->position().y()/zoom);
-    setCursor(QCursor(editManager->getActualCursor()));
-    requestUpdate();
-}
+    if (evt->button() == Qt::MiddleButton)
+    {
+        panTimer->stop();
+        if (panDirty)
+        {
+            panDirty = false;
+            emit scrollTo(panTarget.x(), panTarget.y());
+        }
+    }
 
-void LevelView::moveEvent(QMoveEvent *)
-{
+    editManager->mouseUp(evt->position().x()/zoom, evt->position().y()/zoom);
+
+    if (evt->button() == Qt::LeftButton || evt->button() == Qt::RightButton)
+        emit updateMinimapBounds();
+
+    setCursor(QCursor(editManager->getActualCursor()));
     requestUpdate();
 }
 
@@ -798,6 +893,7 @@ void LevelView::keyPressEvent(QKeyEvent* evt)
         (evt->key() == Qt::Key_Up || evt->key() == Qt::Key_Down ||
          evt->key() == Qt::Key_Left || evt->key() == Qt::Key_Right))
     {
+        SpriteRenderer::invalidateCache();
         editManager->keyPress(evt);
         return;
     }
@@ -810,6 +906,7 @@ void LevelView::keyPressEvent(QKeyEvent* evt)
         return;
     }
 
+    SpriteRenderer::invalidateCache();
     editManager->keyPress(evt);
 }
 
@@ -1037,16 +1134,12 @@ void LevelView::requestUpdate()
     if (!updatePending)
     {
         updatePending = true;
-        QTimer::singleShot([=]() -> int {
-            QScreen *scr = QGuiApplication::primaryScreen();
-            qreal hz = scr ? scr->refreshRate() : 60.0;
-            return static_cast<int>(1000.0 / hz);
-        }(), this, [this] {
-           update();
-           updatePending = false;
+        QTimer::singleShot(refreshIntervalMs(this), this, [this] {
+            update();
+            updatePending = false;
 
-           scrollAccumulator = 0;
-       });
+            scrollAccumulator = 0;
+        });
     }
 }
 

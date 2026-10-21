@@ -4,7 +4,9 @@
 #include "objects.h"
 #include "tileset.h"
 
+#include <QHash>
 #include <QPainter>
+#include <QPixmap>
 
 class ObjectRenderer
 {
@@ -21,9 +23,12 @@ public:
     SpriteRenderer() {}
     SpriteRenderer(const Sprite *spr, Tileset *tilesets[]);
     void render(QPainter *painter, QRect *drawrect);
+    static void invalidateCache();
 protected:
     const Sprite *spr;
     ObjectRenderer *ret;
+private:
+    static QHash<const Sprite*, ObjectRenderer*> rendererCache;
 };
 
 class LiquidRenderer: public ObjectRenderer
@@ -52,6 +57,9 @@ public:
 protected:
     QRect rect;
     QString name;
+    QPixmap scaledCache;
+    QSize scaledCacheSize;
+    qreal scaledCacheScale = 0;
 };
 
 class RoundedRectRenderer: public ObjectRenderer
@@ -65,6 +73,8 @@ protected:
     QString text;
     QColor color;
     QTextOption align;
+    QPixmap cache;
+    qreal cacheDpr = 0;
 };
 
 class CircleRenderer: public ObjectRenderer

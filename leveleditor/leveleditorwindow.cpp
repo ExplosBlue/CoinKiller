@@ -911,6 +911,7 @@ void LevelEditorWindow::loadArea(int id, bool closeLevel, bool init)
     miniMap = new LevelMiniMap(this, level);
     connect(levelView, &LevelView::updateMinimap, miniMap, &LevelMiniMap::update_);
     connect(levelView, &LevelView::updateMinimapBounds, miniMap, &LevelMiniMap::updateBounds);
+    connect(undoStack, &QUndoStack::indexChanged, miniMap, &LevelMiniMap::invalidateCache);
     connect(miniMap, &LevelMiniMap::scrollTo, this, &LevelEditorWindow::scrollTo);
     minimapDock->setWidget(miniMap);
 
@@ -988,10 +989,16 @@ void LevelEditorWindow::handleAreaIndexChange(int index)
 
 void LevelEditorWindow::scrollTo(int x, int y)
 {
-    qMax(0.0f, x*zoom);
-    qMax(0.0f, y*zoom);
-    ui->levelViewArea->horizontalScrollBar()->setValue(x*zoom);
-    ui->levelViewArea->verticalScrollBar()->setValue(y*zoom);
+    int scrollX = qMax(0, int(x * zoom));
+    int scrollY = qMax(0, int(y * zoom));
+
+    QScrollBar* hBar = ui->levelViewArea->horizontalScrollBar();
+    QScrollBar* vBar = ui->levelViewArea->verticalScrollBar();
+
+    if (hBar->value() != scrollX)
+        hBar->setValue(scrollX);
+    if (vBar->value() != scrollY)
+        vBar->setValue(scrollY);
 }
 
 void LevelEditorWindow::closeEvent(QCloseEvent *event)

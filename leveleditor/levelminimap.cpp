@@ -10,69 +10,81 @@ LevelMiniMap::LevelMiniMap(QWidget *parent, Level *level) : QWidget(parent)
     updateBounds();
 }
 
-void LevelMiniMap::paintEvent(QPaintEvent* evt)
+void LevelMiniMap::paintEvent(QPaintEvent*)
 {
-    QPainter painter(this);
-
     float zoomX = this->width()/(float)maxX;
     float zoomY = this->height()/(float)maxY;
 
     zoom = qMin(zoomX, zoomY);
 
-    painter.scale(zoom,zoom);
-    QRect drawrect = QRect(evt->rect().x()/zoom, evt->rect().y()/zoom, evt->rect().width()/zoom, evt->rect().height()/zoom);
+    qreal dpr = devicePixelRatioF();
+    QSize cachePixels(qRound(width()*dpr), qRound(height()*dpr));
 
-    painter.fillRect(drawrect, QColor(119,136,153));
-
-    foreach (BgdatObject* obj, level->objects[1])
-        painter.fillRect(QRect(obj->getx(), obj->gety(), obj->getwidth(), obj->getheight()), QColor(200,200,200));
-
-    foreach (BgdatObject* obj, level->objects[0])
-        painter.fillRect(QRect(obj->getx(), obj->gety(), obj->getwidth(), obj->getheight()), Qt::white);
-
-    foreach (Location* loc, level->locations)
+    if (cacheDirty || cache.size() != cachePixels || cache.devicePixelRatio() != dpr)
     {
-        QRect locrect(loc->getx(), loc->gety(), loc->getwidth(), loc->getheight());
+        cache = QPixmap(cachePixels);
+        cache.setDevicePixelRatio(dpr);
+        cache.fill(QColor(119,136,153));
 
-        painter.fillRect(locrect, QBrush(QColor(85,80,185,120)));
+        QPainter cachePainter(&cache);
+        cachePainter.scale(zoom,zoom);
 
-        QPen pen(Qt::black);
-        pen.setWidth(5);
+        foreach (BgdatObject* obj, level->objects[1])
+            cachePainter.fillRect(QRect(obj->getx(), obj->gety(), obj->getwidth(), obj->getheight()), QColor(200,200,200));
 
-        painter.setPen(pen);
-        painter.drawRect(locrect);
-    }
+        foreach (BgdatObject* obj, level->objects[0])
+            cachePainter.fillRect(QRect(obj->getx(), obj->gety(), obj->getwidth(), obj->getheight()), Qt::white);
 
-    foreach (Sprite* spr, level->sprites)
-    {
-        if (!spr->getSelectionRects()->empty())
+        foreach (Location* loc, level->locations)
         {
-            foreach (QRect rect, *spr->getSelectionRects())
-            {
-                painter.fillRect(QRect(spr->getx()+rect.x(), spr->gety()+rect.y(), rect.width(), rect.height()), QColor(0,90,150,150));
-            }
-            continue;
+            QRect locrect(loc->getx(), loc->gety(), loc->getwidth(), loc->getheight());
+
+            cachePainter.fillRect(locrect, QBrush(QColor(85,80,185,120)));
+
+            QPen pen(Qt::black);
+            pen.setWidth(5);
+
+            cachePainter.setPen(pen);
+            cachePainter.drawRect(locrect);
         }
 
-        painter.fillRect(QRect(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight()), QColor(0,90,150,150));
+        foreach (Sprite* spr, level->sprites)
+        {
+            if (!spr->getSelectionRects()->empty())
+            {
+                foreach (QRect rect, *spr->getSelectionRects())
+                {
+                    cachePainter.fillRect(QRect(spr->getx()+rect.x(), spr->gety()+rect.y(), rect.width(), rect.height()), QColor(0,90,150,150));
+                }
+                continue;
+            }
+
+            cachePainter.fillRect(QRect(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight()), QColor(0,90,150,150));
+        }
+
+        foreach (Entrance* entr, level->entrances)
+             cachePainter.fillRect(QRect(entr->getx()+entr->getOffsetX(), entr->gety()+entr->getOffsetY(), entr->getwidth(), entr->getheight()), QColor(255,0,0,150));
+
+        foreach (Zone* zone, level->zones)
+        {
+            QRect zonerect(zone->getx(), zone->gety(), zone->getwidth(), zone->getheight());
+
+            cachePainter.fillRect(zonerect, QBrush(QColor(0,220,255,25)));
+
+            QPen pen(Qt::black);
+            pen.setWidth(5);
+
+            cachePainter.setPen(pen);
+            cachePainter.drawRect(zonerect);
+        }
+
+        cacheDirty = false;
     }
 
-    foreach (Entrance* entr, level->entrances)
-         painter.fillRect(QRect(entr->getx()+entr->getOffsetX(), entr->gety()+entr->getOffsetY(), entr->getwidth(), entr->getheight()), QColor(255,0,0,150));
+    QPainter painter(this);
+    painter.drawPixmap(0, 0, cache);
 
-    foreach (Zone* zone, level->zones)
-    {
-        QRect zonerect(zone->getx(), zone->gety(), zone->getwidth(), zone->getheight());
-
-        painter.fillRect(zonerect, QBrush(QColor(0,220,255,25)));
-
-        QPen pen(Qt::black);
-        pen.setWidth(5);
-
-        painter.setPen(pen);
-        painter.drawRect(zonerect);
-    }
-
+    painter.scale(zoom,zoom);
     QPen pen(Qt::blue);
     pen.setWidth(8);
     painter.setPen(pen);
@@ -92,6 +104,13 @@ void LevelMiniMap::updateBounds()
 
     maxX += 400;
     maxY += 400;
+    cacheDirty = true;
+}
+
+void LevelMiniMap::invalidateCache()
+{
+    cacheDirty = true;
+    update();
 }
 
 void LevelMiniMap::checkBounds(Object* obj)
