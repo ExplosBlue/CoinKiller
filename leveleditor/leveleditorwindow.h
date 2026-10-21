@@ -63,7 +63,7 @@ public slots:
     void handleSelectionChanged(Object* obj);
     void deselect();
     void updateEditors();
-    void scrollTo(int x, int y);
+    void scrollTo(float x, float y);
 
 private slots:
     void toggleLayer(bool toggle);

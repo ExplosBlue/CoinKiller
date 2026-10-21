@@ -34,7 +34,7 @@ private:
     void checkBounds(Object* obj);
 
 signals:
-    void scrollTo(int x, int y);
+    void scrollTo(float x, float y);
 };
 
 #endif // LEVELMINIMAP_H

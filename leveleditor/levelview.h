@@ -28,6 +28,8 @@
 #include <QPinchGesture>
 #include <QNativeGestureEvent>
 #include <QPoint>
+#include <QPointF>
+#include <QElapsedTimer>
 
 #include "filesystem/filesystem.h"
 #include "level.h"
@@ -77,7 +79,7 @@ public:
     EditManager* editManagerPtr() { return editManager; }
 
 signals:
-    void scrollTo(int x, int y);
+    void scrollTo(float x, float y);
     void updateMinimap(QRect drawrect);
     void updateMinimapBounds();
     void updateCtrlabel(QString text);
@@ -109,6 +111,18 @@ private:
     void invalidateRenderCaches();
     QRect visibleRect() const;
     QList<QRect> pinnedZoneLabelRects() const;
+    QPointF viewportTopLeft() const;
+    void scrollToPos(const QPointF& pos);
+    void startAnimationTimer(QTimer* timer);
+    void stopScrollAnimations();
+    QPointF clampScroll(const QPointF& pos) const;
+    void startSmoothScroll(float dx, float dy);
+    void smoothScrollStep();
+    void startMomentum();
+    void startInertia(const QPointF& velocity, qreal decel, qreal damping);
+    void inertiaStep();
+    void startSmoothZoom(float targetZoom, const QPointF& focalPoint);
+    void smoothZoomStep();
 
     void applyZoom(float newZoom, const QPointF& focalPoint);
     QPointF viewportCenter() const;
@@ -121,8 +135,7 @@ private:
     QList<QRect> lastPinnedLabelRects;
     float zoom;
 
-    int dragX;
-    int dragY;
+    QPointF panLastGlobal;
 
     EditManager* editManager;
 
@@ -141,9 +154,31 @@ private:
 
     bool updatePending = false;
 
-    QTimer* panTimer;
-    QPoint panTarget;
-    bool panDirty;
+    QPointF panTarget;
+
+    QTimer* smoothScrollTimer;
+    QPointF smoothScrollTarget;
+    QPointF lastSmoothScrollPos;
+
+    QTimer* inertiaTimer;
+    QPointF inertiaVelocity;
+    QPointF inertiaPos;
+    qreal inertiaDecel;
+    qreal inertiaDamping;
+    QElapsedTimer inertiaClock;
+
+    QPointF panFastVelocity;
+    QPointF panSlowVelocity;
+    QElapsedTimer panClock;
+
+    QTimer* scrollMomentumTimer;
+    QPointF scrollVelocity;
+    bool scrollFromTouchpad = false;
+    QElapsedTimer scrollEventClock;
+
+    QTimer* smoothZoomTimer;
+    float smoothZoomTarget;
+    QPointF smoothZoomFocalOffset;
 
     int scrollAccumulator;
 };

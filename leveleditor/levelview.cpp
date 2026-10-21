@@ -39,7 +39,21 @@
 #include <QTimer>
 #include <QFontMetrics>
 #include <QRegion>
+#include <cmath>
 
+
+static qreal elapsedSeconds(QElapsedTimer& clock)
+{
+    const qreal dt = clock.isValid() ? clock.nsecsElapsed() / 1000000000.0 : -1.0;
+    clock.restart();
+
+    return dt;
+}
+
+static qreal easeFactor(qreal dt, qreal duration)
+{
+    return 1.0 - std::exp(-dt / duration);
+}
 
 static int refreshIntervalMs(const QWidget* widget)
 {
@@ -108,17 +122,27 @@ LevelView::LevelView(QWidget *parent, Level *level, QUndoStack *undoStack) :
     render2DTile = true;
     render3DOverlay = true;
 
-    panDirty = false;
+    panTarget = QPointF(-1, -1);
+    panClock.start();
 
-    panTimer = new QTimer(this);
-    panTimer->setTimerType(Qt::PreciseTimer);
-    panTimer->setInterval(refreshIntervalMs(this));
-    connect(panTimer, &QTimer::timeout, this, [this] {
-        if (!panDirty)
-            return;
-        panDirty = false;
-        emit scrollTo(panTarget.x(), panTarget.y());
-    });
+    const auto makeTimer = [this](void (LevelView::*step)()) {
+        QTimer* timer = new QTimer(this);
+        timer->setTimerType(Qt::PreciseTimer);
+        connect(timer, &QTimer::timeout, this, step);
+        return timer;
+    };
+
+    smoothScrollTimer = makeTimer(&LevelView::smoothScrollStep);
+    smoothZoomTimer = makeTimer(&LevelView::smoothZoomStep);
+    inertiaTimer = makeTimer(&LevelView::inertiaStep);
+
+    smoothZoomTarget = zoom;
+
+    scrollMomentumTimer = new QTimer(this);
+    scrollMomentumTimer->setSingleShot(true);
+    scrollMomentumTimer->setTimerType(Qt::PreciseTimer);
+    scrollMomentumTimer->setInterval(30);
+    connect(scrollMomentumTimer, &QTimer::timeout, this, &LevelView::startMomentum);
 
 #ifdef USE_KDE_BLUR
     setBackgroundColor(QColor(0,0,0,0));
@@ -164,6 +188,7 @@ float LevelView::steppedZoom(float from, int steps)
 
 void LevelView::zoomTo(float newZoom)
 {
+    smoothZoomTimer->stop();
     applyZoom(newZoom, viewportCenter());
 }
 
@@ -182,15 +207,16 @@ QPointF LevelView::viewportCenter() const
 
 void LevelView::applyZoom(float newZoom, const QPointF& focalPoint)
 {
+    stopScrollAnimations();
+
     newZoom = qBound(MinZoom, newZoom, MaxZoom);
 
     const float oldZoom = zoom;
     if (qFuzzyCompare(newZoom, oldZoom))
         return;
 
-    const QPointF visibleTopLeft(visibleRegion().boundingRect().topLeft());
     const QPointF levelPoint = focalPoint / oldZoom;
-    const QPointF focalOffset = focalPoint - visibleTopLeft;
+    const QPointF focalOffset = focalPoint - viewportTopLeft();
 
     setZoom(newZoom);
 
@@ -892,15 +918,17 @@ void LevelView::paint(QPainter& painter, QRect rect, QRect viewport, float zoomL
 void LevelView::mousePressEvent(QMouseEvent* evt)
 {
     setFocus();
+    stopScrollAnimations();
+    smoothZoomTimer->stop();
 
     if (evt->buttons() & Qt::MiddleButton)
     {
-        dragX = evt->position().x();
-        dragY = evt->position().y();
-        panDirty = false;
-        panTarget = QPoint(-1, -1);
-        panTimer->setInterval(refreshIntervalMs(this));
-        panTimer->start();
+        panLastGlobal = evt->globalPosition();
+        panTarget = QPointF(-1, -1);
+
+        panFastVelocity = QPointF();
+        panSlowVelocity = QPointF();
+        panClock.start();
     }
 
     if (editManager != NULL)
@@ -921,16 +949,21 @@ void LevelView::mouseMoveEvent(QMouseEvent* evt)
 
     if (panning)
     {
-        int x = evt->position().x();
-        int y = evt->position().y();
+        const QPointF screenDelta = evt->globalPosition() - panLastGlobal;
+        panLastGlobal = evt->globalPosition();
 
-        QPoint target((visibleRegion().boundingRect().x() - x + dragX)/zoom,
-                      (visibleRegion().boundingRect().y() - y + dragY)/zoom);
+        const QPointF target = viewportTopLeft() - screenDelta;
         if (target != panTarget)
         {
             panTarget = target;
-            panDirty = true;
+            scrollToPos(target);
         }
+
+        const qreal dt = qBound(0.001, elapsedSeconds(panClock), 0.06);
+        const QPointF instVelocity = -screenDelta / dt;
+
+        panFastVelocity += (instVelocity - panFastVelocity) * easeFactor(dt, 0.03);
+        panSlowVelocity += (instVelocity - panSlowVelocity) * easeFactor(dt, 0.12);
     }
 
     if (editManager != nullptr && !panning)
@@ -961,12 +994,19 @@ void LevelView::mouseReleaseEvent(QMouseEvent *evt)
 {
     if (evt->button() == Qt::MiddleButton)
     {
-        panTimer->stop();
-        if (panDirty)
+        const qreal fastSpeed = panFastVelocity.manhattanLength();
+        const qreal slowSpeed = panSlowVelocity.manhattanLength();
+
+        if (panClock.nsecsElapsed() < 80000000 && fastSpeed > 200.0)
         {
-            panDirty = false;
-            emit scrollTo(panTarget.x(), panTarget.y());
+            const qreal flick = qBound(0.0, (fastSpeed - slowSpeed) / fastSpeed * 3.0, 1.0);
+
+            if (flick > 0.1)
+                startInertia(panFastVelocity * (0.2 + 0.8 * flick),
+                             3200.0 + 4800.0 * (1.0 - flick), 0.0);
         }
+
+        panTarget = QPointF(-1, -1);
     }
 
     editManager->mouseUp(evt->position().x()/zoom, evt->position().y()/zoom, evt->button());
@@ -1065,7 +1105,11 @@ void LevelView::handleWheelZoom(QWheelEvent* evt)
     scrollAccumulator %= 120;
 
     if (steps != 0)
-        applyZoom(steppedZoom(zoom, steps), evt->position());
+    {
+        const float from = smoothZoomTimer->isActive() ? smoothZoomTarget : zoom;
+
+        startSmoothZoom(steppedZoom(from, steps), evt->position());
+    }
 }
 
 void LevelView::handleWheelScroll(QWheelEvent* evt)
@@ -1075,10 +1119,25 @@ void LevelView::handleWheelScroll(QWheelEvent* evt)
 
     const QPoint pixelDelta = evt->pixelDelta();
     const QPoint angleDelta = evt->angleDelta();
+    const bool hasPixelDelta = !pixelDelta.isNull() && pixelDelta != QPoint(0, 0);
+    const bool fractionalAngle = angleDelta.x() % 120 != 0 || angleDelta.y() % 120 != 0;
+    const bool touchpad = evt->source() == Qt::MouseEventSynthesizedBySystem
+            || (hasPixelDelta && fractionalAngle);
+
+    if (evt->phase() == Qt::ScrollEnd)
+    {
+        startMomentum();
+        return;
+    }
+
+    scrollFromTouchpad = touchpad;
+
+    inertiaTimer->stop();
+    smoothZoomTimer->stop();
 
     float dx = 0.0f, dy = 0.0f;
 
-    if (!pixelDelta.isNull() && pixelDelta != QPoint(0, 0))
+    if (hasPixelDelta)
     {
         dx = static_cast<float>(-pixelDelta.x());
         dy = static_cast<float>(-pixelDelta.y());
@@ -1105,16 +1164,184 @@ void LevelView::handleWheelScroll(QWheelEvent* evt)
     if (dx == 0.0f && dy == 0.0f)
         return;
 
-    const QPointF currentScroll(visibleRegion().boundingRect().topLeft());
+    if (touchpad)
+    {
+        smoothScrollTimer->stop();
 
-    emit scrollTo(qMax(0.0f, float(currentScroll.x()) + dx) / zoom,
-                  qMax(0.0f, float(currentScroll.y()) + dy) / zoom);
+        const qreal gap = elapsedSeconds(scrollEventClock);
+        const qreal dt = gap > 0.0 ? qBound(0.004, gap, 0.05) : 0.008;
+
+        if (gap <= 0.0 || gap > 0.2)
+            scrollVelocity = QPointF();
+
+        scrollVelocity = scrollVelocity * 0.5 + QPointF(dx, dy) / dt * 0.5;
+        scrollMomentumTimer->start();
+
+        scrollToPos(clampScroll(viewportTopLeft() + QPointF(dx, dy)));
+    }
+    else
+    {
+        scrollMomentumTimer->stop();
+
+        startSmoothScroll(dx, dy);
+    }
+}
+
+QPointF LevelView::viewportTopLeft() const
+{
+    return visibleRegion().boundingRect().topLeft();
+}
+
+void LevelView::scrollToPos(const QPointF& pos)
+{
+    emit scrollTo(pos.x() / zoom, pos.y() / zoom);
+}
+
+void LevelView::startAnimationTimer(QTimer* timer)
+{
+    timer->setInterval(refreshIntervalMs(this));
+    timer->start();
+}
+
+void LevelView::stopScrollAnimations()
+{
+    smoothScrollTimer->stop();
+    inertiaTimer->stop();
+    scrollMomentumTimer->stop();
+}
+
+QPointF LevelView::clampScroll(const QPointF& pos) const
+{
+    const QSize viewport = visibleRegion().boundingRect().size();
+    const qreal maxX = qMax(0, size().width() - viewport.width());
+    const qreal maxY = qMax(0, size().height() - viewport.height());
+
+    return QPointF(qBound(0.0, pos.x(), maxX), qBound(0.0, pos.y(), maxY));
+}
+
+void LevelView::startSmoothScroll(float dx, float dy)
+{
+    inertiaTimer->stop();
+
+    const QPointF origin = smoothScrollTimer->isActive() ? smoothScrollTarget : viewportTopLeft();
+
+    smoothScrollTarget = clampScroll(origin + QPointF(dx, dy));
+
+    if (!smoothScrollTimer->isActive())
+    {
+        lastSmoothScrollPos = QPointF(-1, -1);
+        startAnimationTimer(smoothScrollTimer);
+    }
+}
+
+void LevelView::smoothScrollStep()
+{
+    const QPointF current(viewportTopLeft());
+    const QPointF remaining = smoothScrollTarget - current;
+
+    if ((qAbs(remaining.x()) <= 1.0 && qAbs(remaining.y()) <= 1.0) || current == lastSmoothScrollPos)
+    {
+        smoothScrollTimer->stop();
+        smoothScrollTarget = current;
+        scrollToPos(current);
+        return;
+    }
+
+    QPointF next = current + remaining * 0.35;
+
+    if (qAbs(next.x() - current.x()) < 1.0 && qAbs(next.y() - current.y()) < 1.0)
+        next = smoothScrollTarget;
+
+    lastSmoothScrollPos = current;
+    scrollToPos(next);
+}
+
+void LevelView::startMomentum()
+{
+    scrollMomentumTimer->stop();
+
+    if (scrollFromTouchpad && !inertiaTimer->isActive() && scrollVelocity.manhattanLength() > 80.0)
+        startInertia(scrollVelocity, 0.0, 2.4);
+}
+
+void LevelView::startInertia(const QPointF& velocity, qreal decel, qreal damping)
+{
+    const qreal speed = velocity.manhattanLength();
+    if (speed < 50.0)
+        return;
+
+    stopScrollAnimations();
+    smoothZoomTimer->stop();
+
+    inertiaVelocity = speed > 4000.0 ? velocity * (4000.0 / speed) : velocity;
+    inertiaDecel = decel;
+    inertiaDamping = damping;
+    inertiaPos = viewportTopLeft();
+
+    inertiaClock.start();
+    startAnimationTimer(inertiaTimer);
+}
+
+void LevelView::inertiaStep()
+{
+    const qreal dt = qBound(0.001, elapsedSeconds(inertiaClock), 0.05);
+    const qreal speed = inertiaVelocity.manhattanLength();
+    const qreal newSpeed = speed - (inertiaDecel + inertiaDamping * speed) * dt;
+
+    if (newSpeed <= 15.0)
+    {
+        inertiaTimer->stop();
+        return;
+    }
+
+    const QPointF next = clampScroll(inertiaPos + inertiaVelocity * (dt * (speed + newSpeed) * 0.5 / speed));
+
+    if (next == inertiaPos)
+    {
+        inertiaTimer->stop();
+        return;
+    }
+
+    inertiaPos = next;
+    inertiaVelocity *= newSpeed / speed;
+    scrollToPos(next);
+}
+
+void LevelView::startSmoothZoom(float targetZoom, const QPointF& focalPoint)
+{
+    stopScrollAnimations();
+
+    smoothZoomTarget = qBound(MinZoom, targetZoom, MaxZoom);
+    smoothZoomFocalOffset = focalPoint - viewportTopLeft();
+
+    if (smoothZoomTimer->isActive() || qFuzzyCompare(smoothZoomTarget, zoom))
+        return;
+
+    startAnimationTimer(smoothZoomTimer);
+}
+
+void LevelView::smoothZoomStep()
+{
+    const float remaining = smoothZoomTarget - zoom;
+    const QPointF focalPoint = viewportTopLeft() + smoothZoomFocalOffset;
+
+    if (qAbs(remaining) < 0.002f * qMax(1.0f, smoothZoomTarget))
+    {
+        smoothZoomTimer->stop();
+        applyZoom(smoothZoomTarget, focalPoint);
+        return;
+    }
+
+    applyZoom(zoom + remaining * 0.35f, focalPoint);
 }
 
 void LevelView::handlePinchZoom(QPinchGesture* gesture)
 {
     if (gesture->changeFlags() & QPinchGesture::ScaleFactorChanged)
+    {
+        smoothZoomTimer->stop();
         applyZoom(zoom * static_cast<float>(gesture->scaleFactor()), viewportCenter());
+    }
 }
 
 void LevelView::handleNativeZoom(QNativeGestureEvent* evt)
@@ -1122,6 +1349,7 @@ void LevelView::handleNativeZoom(QNativeGestureEvent* evt)
     if (evt->gestureType() != Qt::ZoomNativeGesture)
         return;
 
+    smoothZoomTimer->stop();
     applyZoom(zoom * (1.0f + static_cast<float>(evt->value())), viewportCenter());
     evt->accept();
 }
@@ -1131,7 +1359,7 @@ void LevelView::requestUpdate()
     if (!updatePending)
     {
         updatePending = true;
-        QTimer::singleShot(refreshIntervalMs(this), this, [this] {
+        QTimer::singleShot(refreshIntervalMs(this), Qt::PreciseTimer, this, [this] {
             update();
             updatePending = false;
 

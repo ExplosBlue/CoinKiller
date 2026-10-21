@@ -896,7 +896,7 @@ void LevelEditorWindow::handleAreaIndexChange(int index)
    }
 }
 
-void LevelEditorWindow::scrollTo(int x, int y)
+void LevelEditorWindow::scrollTo(float x, float y)
 {
     QScrollBar* hBar = ui->levelViewArea->horizontalScrollBar();
     QScrollBar* vBar = ui->levelViewArea->verticalScrollBar();
