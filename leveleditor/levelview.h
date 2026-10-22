@@ -30,6 +30,7 @@
 #include <QPoint>
 #include <QPointF>
 #include <QElapsedTimer>
+#include <QVector>
 
 #include "filesystem/filesystem.h"
 #include "level.h"
@@ -136,8 +137,6 @@ private:
     QList<QRect> lastPinnedLabelRects;
     float zoom;
 
-    QPointF panLastGlobal;
-
     EditManager* editManager;
 
     bool grid;
@@ -168,8 +167,15 @@ private:
     qreal inertiaDamping;
     QElapsedTimer inertiaClock;
 
-    QPointF panFastVelocity;
-    QPointF panSlowVelocity;
+    struct PanSample
+    {
+        qint64 time;
+        QPointF position;
+    };
+
+    QPointF panLastGlobal;
+    QVector<PanSample> panSamples;
+    qint64 panLastMoveTime = 0;
     QElapsedTimer panClock;
 
     QTimer* scrollMomentumTimer;

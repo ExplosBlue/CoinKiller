@@ -53,11 +53,6 @@ static qreal elapsedSeconds(QElapsedTimer& clock)
     return dt;
 }
 
-static qreal easeFactor(qreal dt, qreal duration)
-{
-    return 1.0 - std::exp(-dt / duration);
-}
-
 static int refreshIntervalMs(const QWidget* widget)
 {
     QScreen* screen = widget ? widget->screen() : nullptr;
@@ -112,9 +107,7 @@ static const QPixmap& scaledCheckerboardPattern(bool smallSquares, int cellPixel
 
     if (sizes[index] != cellPixels)
     {
-        pattern = checkerboardPattern(smallSquares).scaled(cellPixels, cellPixels,
-                                                           Qt::IgnoreAspectRatio,
-                                                           Qt::FastTransformation);
+        pattern = checkerboardPattern(smallSquares).scaled(cellPixels, cellPixels, Qt::IgnoreAspectRatio, Qt::FastTransformation);
         sizes[index] = cellPixels;
     }
 
@@ -137,8 +130,7 @@ static TiledPatternLayout tiledPatternLayout(const QPainter& painter, const QRec
 
     const TiledPatternLayout layout = {
         visible,
-        QPointF(std::fmod(visible.left() - levelOrigin.x(), cell),
-                std::fmod(visible.top() - levelOrigin.y(), cell))
+        QPointF(std::fmod(visible.left() - levelOrigin.x(), cell), std::fmod(visible.top() - levelOrigin.y(), cell))
     };
 
     return layout;
@@ -482,9 +474,7 @@ void LevelView::paint(QPainter& painter, QRect rect, QRect viewport, float zoomL
         painter.setOpacity(1.0);
         painter.resetTransform();
 
-        painter.drawTiledPixmap(layout.visible,
-                                scaledCheckerboardPattern(zoomLvl > 0.5f, cellPixels, cell),
-                                layout.origin);
+        painter.drawTiledPixmap(layout.visible, scaledCheckerboardPattern(zoomLvl > 0.5f, cellPixels, cell), layout.origin);
         painter.restore();
     }
 
@@ -964,9 +954,7 @@ void LevelView::paint(QPainter& painter, QRect rect, QRect viewport, float zoomL
         painter.setRenderHint(QPainter::SmoothPixmapTransform, false);
         painter.resetTransform();
 
-        painter.drawTiledPixmap(layout.visible,
-                                gridPattern(zoomLvl, painter.device()->devicePixelRatioF()),
-                                layout.origin);
+        painter.drawTiledPixmap(layout.visible, gridPattern(zoomLvl, painter.device()->devicePixelRatioF()), layout.origin);
         painter.restore();
     }
 }
@@ -983,8 +971,9 @@ void LevelView::mousePressEvent(QMouseEvent* evt)
         panLastGlobal = evt->globalPosition();
         panTarget = QPointF(-1, -1);
 
-        panFastVelocity = QPointF();
-        panSlowVelocity = QPointF();
+        panSamples.clear();
+        panSamples.append({0, panLastGlobal});
+        panLastMoveTime = 0;
         panClock.start();
     }
 
@@ -1002,6 +991,8 @@ void LevelView::mousePressEvent(QMouseEvent* evt)
 
 void LevelView::mouseMoveEvent(QMouseEvent* evt)
 {
+    constexpr qint64 PanSampleHistoryNs = 250'000'000;
+
     bool panning = evt->buttons() & Qt::MiddleButton;
 
     if (panning)
@@ -1016,11 +1007,19 @@ void LevelView::mouseMoveEvent(QMouseEvent* evt)
             scrollToPos(target);
         }
 
-        const qreal dt = qBound(0.001, elapsedSeconds(panClock), 0.06);
-        const QPointF instVelocity = -screenDelta / dt;
+        panLastMoveTime = panClock.nsecsElapsed();
+        panSamples.append({panLastMoveTime, panLastGlobal});
 
-        panFastVelocity += (instVelocity - panFastVelocity) * easeFactor(dt, 0.03);
-        panSlowVelocity += (instVelocity - panSlowVelocity) * easeFactor(dt, 0.12);
+        if (panSamples.size() > 256)
+        {
+            const qint64 cutoff = panLastMoveTime - PanSampleHistoryNs;
+            int drop = 0;
+            while (drop < panSamples.size() && panSamples[drop].time < cutoff)
+                ++drop;
+
+            if (drop > 0)
+                panSamples.remove(0, drop);
+        }
     }
 
     if (editManager != nullptr && !panning)
@@ -1051,16 +1050,41 @@ void LevelView::mouseReleaseEvent(QMouseEvent *evt)
 {
     if (evt->button() == Qt::MiddleButton)
     {
-        const qreal fastSpeed = panFastVelocity.manhattanLength();
-        const qreal slowSpeed = panSlowVelocity.manhattanLength();
+        constexpr qint64 PanVelocityWindowNs = 120'000'000;
+        constexpr qint64 FlickRecentWindowNs = 30'000'000;
+        constexpr qint64 FlickMinRecentNs = 20'000'000;
+        constexpr qint64 PanMinWindowNs = 30'000'000;
+        constexpr qint64 FlickReleaseGapNs = 30'000'000;
+        constexpr qreal FlickMinSpeed = 700.0;
+        constexpr qreal FlickMinRetain = 0.8;
 
-        if (panClock.nsecsElapsed() < 80000000 && fastSpeed > 200.0)
+        const qint64 now = panClock.nsecsElapsed();
+
+        if (!panSamples.isEmpty() && now - panLastMoveTime <= FlickReleaseGapNs)
         {
-            const qreal flick = qBound(0.0, (fastSpeed - slowSpeed) / fastSpeed * 3.0, 1.0);
+            int first = panSamples.size() - 1;
+            while (first > 0 && panLastMoveTime - panSamples[first - 1].time <= PanVelocityWindowNs)
+                --first;
 
-            if (flick > 0.1)
-                startInertia(panFastVelocity * (0.2 + 0.8 * flick),
-                             3200.0 + 4800.0 * (1.0 - flick), 0.0);
+            int recentFirst = panSamples.size() - 1;
+            while (recentFirst > first && panLastMoveTime - panSamples[recentFirst].time < FlickRecentWindowNs)
+                --recentFirst;
+
+            const qint64 windowNs = panLastMoveTime - panSamples[first].time;
+            const qint64 recentNs = panLastMoveTime - panSamples[recentFirst].time;
+            if (windowNs >= PanMinWindowNs && recentNs >= FlickMinRecentNs)
+            {
+                const QPointF velocity = (panSamples[first].position - panLastGlobal) * (1000000000.0 / windowNs);
+                const QPointF recentVelocity = (panSamples[recentFirst].position - panLastGlobal) * (1000000000.0 / recentNs);
+
+                const qreal speed = velocity.manhattanLength();
+                const qreal recentSpeed = recentVelocity.manhattanLength();
+
+                if (speed >= FlickMinSpeed && recentSpeed >= FlickMinSpeed && recentSpeed >= speed * FlickMinRetain)
+                {
+                    startInertia(recentVelocity, 3200.0, 0.0);
+                }
+            }
         }
 
         panTarget = QPointF(-1, -1);
