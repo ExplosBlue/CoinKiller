@@ -123,6 +123,73 @@ static const QPixmap& scaledCheckerboardPattern(bool smallSquares, int cellPixel
     return pattern;
 }
 
+struct TiledPatternLayout
+{
+    QRect visible;
+    QPointF origin;
+};
+
+static TiledPatternLayout tiledPatternLayout(const QPainter& painter, const QRect& drawrect, qreal cell)
+{
+    const QTransform transform = painter.worldTransform();
+    const QRect visible = transform.mapRect(QRectF(drawrect)).toAlignedRect();
+    const QPointF levelOrigin = transform.map(QPointF(0, 0));
+
+    const TiledPatternLayout layout = {
+        visible,
+        QPointF(std::fmod(visible.left() - levelOrigin.x(), cell),
+                std::fmod(visible.top() - levelOrigin.y(), cell))
+    };
+
+    return layout;
+}
+
+static const QPixmap& gridPattern(float zoomLvl, qreal devicePixelRatio)
+{
+    static QPixmap pattern;
+    static float patternZoom = -1.0f;
+    static qreal patternRatio = -1.0;
+
+    if (!pattern.isNull() && patternZoom == zoomLvl && patternRatio == devicePixelRatio)
+        return pattern;
+
+    const qreal cell = 160.0 * zoomLvl;
+    const int cellPixels = qMax(8, qRound(cell * devicePixelRatio));
+
+    pattern = QPixmap(cellPixels, cellPixels);
+    pattern.setDevicePixelRatio(cellPixels / cell);
+    pattern.fill(Qt::transparent);
+
+    QPainter painter(&pattern);
+    painter.setRenderHint(QPainter::Antialiasing, false);
+    painter.scale(zoomLvl, zoomLvl);
+
+    const QColor color(255, 255, 255, 75);
+    const QPen majorPen(color, 2, Qt::DashLine);
+    const QPen midPen(color, 1, Qt::DashLine);
+    const QPen minorPen(color, 1, Qt::DotLine);
+
+    for (int i = 0; i <= 8; i++)
+    {
+        const bool major = i == 0 || i == 8;
+        const bool mid = i % 4 == 0;
+
+        if (!major && zoomLvl < 0.5f)
+            continue;
+        if (mid && zoomLvl < 0.3f)
+            continue;
+
+        painter.setPen(major ? majorPen : mid ? midPen : minorPen);
+        painter.drawLine(0, i * 20, 160, i * 20);
+        painter.drawLine(i * 20, 0, i * 20, 160);
+    }
+
+    patternZoom = zoomLvl;
+    patternRatio = devicePixelRatio;
+
+    return pattern;
+}
+
 LevelView::LevelView(QWidget *parent, Level *level, QUndoStack *undoStack) :
     QWidget(parent), level(level), undoStack(undoStack)
 {
@@ -405,12 +472,9 @@ void LevelView::paint(QPainter& painter, QRect rect, QRect viewport, float zoomL
     // Render Checkerboard
     if (checkerboard)
     {
-        const QTransform toDevice = painter.worldTransform();
-        const QRect visible = toDevice.mapRect(QRectF(drawrect)).toAlignedRect();
-        const QPointF levelOrigin = toDevice.map(QPointF(0, 0));
         const qreal cell = 160.0 * zoomLvl;
-        const bool small = zoomLvl > 0.5f;
         const int cellPixels = qMax(2, qRound(cell * painter.device()->devicePixelRatioF()));
+        const TiledPatternLayout layout = tiledPatternLayout(painter, drawrect, cell);
 
         painter.save();
         painter.setRenderHint(QPainter::Antialiasing, false);
@@ -418,10 +482,9 @@ void LevelView::paint(QPainter& painter, QRect rect, QRect viewport, float zoomL
         painter.setOpacity(1.0);
         painter.resetTransform();
 
-        const QPointF origin(std::fmod(visible.left() - levelOrigin.x(), cell),
-                             std::fmod(visible.top() - levelOrigin.y(), cell));
-
-        painter.drawTiledPixmap(visible, scaledCheckerboardPattern(small, cellPixels, cell), origin);
+        painter.drawTiledPixmap(layout.visible,
+                                scaledCheckerboardPattern(zoomLvl > 0.5f, cellPixels, cell),
+                                layout.origin);
         painter.restore();
     }
 
@@ -893,61 +956,18 @@ void LevelView::paint(QPainter& painter, QRect rect, QRect viewport, float zoomL
     // Render Grid
     if (grid)
     {
+        const qreal cell = 160.0 * zoomLvl;
+        const TiledPatternLayout layout = tiledPatternLayout(painter, drawrect, cell);
+
+        painter.save();
         painter.setRenderHint(QPainter::Antialiasing, false);
+        painter.setRenderHint(QPainter::SmoothPixmapTransform, false);
+        painter.resetTransform();
 
-        int startx = drawrect.x() - drawrect.x() % 20;
-        int endx = startx + drawrect.width() + 20;
-
-        int starty = drawrect.y() - drawrect.y() % 20;
-        int endy = starty + drawrect.height() + 20;
-
-        int x = startx - 20;
-        while (x <= endx)
-        {
-            x += 20;
-            if (x % 160 == 0)
-            {
-                painter.setPen(QPen(QColor(255,255,255,75), 2, Qt::DashLine));
-                painter.drawLine(x, starty, x, endy);
-            }
-            else if (x % 80 == 0)
-            {
-                if (zoom  < 0.3) continue;
-                painter.setPen(QPen(QColor(255,255,255,75), 1, Qt::DashLine));
-                painter.drawLine(x, starty, x, endy);
-            }
-            else
-            {
-                if (zoom  < 0.5) continue;
-                painter.setPen(QPen(QColor(255,255,255,75), 1, Qt::DotLine));
-                painter.drawLine(x, starty, x, endy);
-            }
-        }
-
-        int y = starty - 20;
-        while (y <= endy)
-        {
-            y += 20;
-            if (y % 160 == 0)
-            {
-                painter.setPen(QPen(QColor(255,255,255,75), 2, Qt::DashLine));
-                painter.drawLine(startx, y, endx, y);
-            }
-            else if (y % 80 == 0)
-            {
-                if (zoom  < 0.3) continue;
-                painter.setPen(QPen(QColor(255,255,255,75), 1, Qt::DashLine));
-                painter.drawLine(startx, y, endx, y);
-            }
-            else
-            {
-                if (zoom  < 0.5) continue;
-                painter.setPen(QPen(QColor(255,255,255,75), 1, Qt::DotLine));
-                painter.drawLine(startx, y, endx, y);
-            }
-        }
-
-        painter.setRenderHint(QPainter::Antialiasing);
+        painter.drawTiledPixmap(layout.visible,
+                                gridPattern(zoomLvl, painter.device()->devicePixelRatioF()),
+                                layout.origin);
+        painter.restore();
     }
 }
 
