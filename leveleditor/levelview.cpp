@@ -39,8 +39,11 @@
 #include <QTimer>
 #include <QFontMetrics>
 #include <QRegion>
+#include <QHash>
 #include <cmath>
 
+
+bool RenderState::smoothZooming = false;
 
 static qreal elapsedSeconds(QElapsedTimer& clock)
 {
@@ -99,6 +102,27 @@ static const QPixmap& checkerboardPattern(bool smallSquares)
     return pattern;
 }
 
+static const QPixmap& scaledCheckerboardPattern(bool smallSquares, int cellPixels, qreal cell)
+{
+    static QPixmap patterns[2];
+    static int sizes[2] = {-1, -1};
+
+    const int index = smallSquares ? 1 : 0;
+    QPixmap& pattern = patterns[index];
+
+    if (sizes[index] != cellPixels)
+    {
+        pattern = checkerboardPattern(smallSquares).scaled(cellPixels, cellPixels,
+                                                           Qt::IgnoreAspectRatio,
+                                                           Qt::FastTransformation);
+        sizes[index] = cellPixels;
+    }
+
+    pattern.setDevicePixelRatio(cellPixels / cell);
+
+    return pattern;
+}
+
 LevelView::LevelView(QWidget *parent, Level *level, QUndoStack *undoStack) :
     QWidget(parent), level(level), undoStack(undoStack)
 {
@@ -151,6 +175,7 @@ LevelView::LevelView(QWidget *parent, Level *level, QUndoStack *undoStack) :
 
 LevelView::~LevelView()
 {
+    RenderState::smoothZooming = false;
     SpriteRenderer::invalidateCache();
     delete editManager;
 }
@@ -188,7 +213,7 @@ float LevelView::steppedZoom(float from, int steps)
 
 void LevelView::zoomTo(float newZoom)
 {
-    smoothZoomTimer->stop();
+    finishSmoothZoom();
     applyZoom(newZoom, viewportCenter());
 }
 
@@ -380,16 +405,23 @@ void LevelView::paint(QPainter& painter, QRect rect, QRect viewport, float zoomL
     // Render Checkerboard
     if (checkerboard)
     {
-        const int startx = drawrect.x() - drawrect.x() % 160;
-        const int endx = startx + drawrect.width() + 160;
-
-        const int starty = drawrect.y() - drawrect.y() % 160;
-        const int endy = starty + drawrect.height() + 160;
+        const QTransform toDevice = painter.worldTransform();
+        const QRect visible = toDevice.mapRect(QRectF(drawrect)).toAlignedRect();
+        const QPointF levelOrigin = toDevice.map(QPointF(0, 0));
+        const qreal cell = 160.0 * zoomLvl;
+        const bool small = zoomLvl > 0.5f;
+        const int cellPixels = qMax(2, qRound(cell * painter.device()->devicePixelRatioF()));
 
         painter.save();
         painter.setRenderHint(QPainter::Antialiasing, false);
+        painter.setRenderHint(QPainter::SmoothPixmapTransform, false);
         painter.setOpacity(1.0);
-        painter.drawTiledPixmap(QRect(startx, starty, endx - startx, endy - starty), checkerboardPattern(zoom > 0.5f));
+        painter.resetTransform();
+
+        const QPointF origin(std::fmod(visible.left() - levelOrigin.x(), cell),
+                             std::fmod(visible.top() - levelOrigin.y(), cell));
+
+        painter.drawTiledPixmap(visible, scaledCheckerboardPattern(small, cellPixels, cell), origin);
         painter.restore();
     }
 
@@ -616,6 +648,11 @@ void LevelView::paint(QPainter& painter, QRect rect, QRect viewport, float zoomL
         painter.save();
         painter.setRenderHint(QPainter::Antialiasing, zoomLvl >= 0.5f);
         static const QSet<int> supportsMovBackForth{28, 60, 101, 204, 293};
+        QHash<int, QList<Sprite*>> movControllers;
+        for (Sprite* spr : level->sprites)
+            if (spr->getid() == 166)
+                movControllers[spr->getNybbleData(20, 21)].append(spr);
+
         for (int i = 0; renderControllers && i < level->zones.size(); i++)
         {
             const Zone* zone = level->zones.at(i);
@@ -632,21 +669,21 @@ void LevelView::paint(QPainter& painter, QRect rect, QRect viewport, float zoomL
                 if (!supportsMovBackForth.contains(s->getid()))
                     continue;
 
-                int distance;
+                int distance = 0;
                 int direction = -1;
 
-                // Find the correct associated Back & Forth movement controller & note its data
-                foreach (Sprite* m, level->sprites)
+                const auto controllers = movControllers.constFind(s->getNybbleData(20, 21));
+                if (controllers != movControllers.constEnd())
                 {
-                    if (!zonerect.contains(m->getx(), m->gety(), false))
-                        continue;
+                    for (Sprite* m : *controllers)
+                    {
+                        if (!zonerect.contains(m->getx(), m->gety(), false))
+                            continue;
 
-                    if (m->getid() != 166 || m->getNybbleData(20, 21) != s->getNybbleData(20, 21))
-                        continue;
-
-                    distance = m->getNybble(14) * 20;
-                    direction = m->getNybble(7) % 4;
-                    break;
+                        distance = m->getNybble(14) * 20;
+                        direction = m->getNybble(7) % 4;
+                        break;
+                    }
                 }
 
                 if (direction == -1 || distance == 0)
@@ -919,7 +956,7 @@ void LevelView::mousePressEvent(QMouseEvent* evt)
 {
     setFocus();
     stopScrollAnimations();
-    smoothZoomTimer->stop();
+    finishSmoothZoom();
 
     if (evt->buttons() & Qt::MiddleButton)
     {
@@ -1133,7 +1170,7 @@ void LevelView::handleWheelScroll(QWheelEvent* evt)
     scrollFromTouchpad = touchpad;
 
     inertiaTimer->stop();
-    smoothZoomTimer->stop();
+    finishSmoothZoom();
 
     float dx = 0.0f, dy = 0.0f;
 
@@ -1271,7 +1308,7 @@ void LevelView::startInertia(const QPointF& velocity, qreal decel, qreal damping
         return;
 
     stopScrollAnimations();
-    smoothZoomTimer->stop();
+    finishSmoothZoom();
 
     inertiaVelocity = speed > 4000.0 ? velocity * (4000.0 / speed) : velocity;
     inertiaDecel = decel;
@@ -1307,6 +1344,25 @@ void LevelView::inertiaStep()
     scrollToPos(next);
 }
 
+void LevelView::finishSmoothZoom()
+{
+    smoothZoomTimer->stop();
+
+    if (!RenderState::smoothZooming)
+        return;
+
+    RenderState::smoothZooming = false;
+
+    for (Tileset* tileset : level->tilesets)
+    {
+        if (tileset)
+            tileset->clearScaledTiles();
+    }
+
+    SpriteRenderer::invalidateCache();
+    requestUpdate();
+}
+
 void LevelView::startSmoothZoom(float targetZoom, const QPointF& focalPoint)
 {
     stopScrollAnimations();
@@ -1317,6 +1373,7 @@ void LevelView::startSmoothZoom(float targetZoom, const QPointF& focalPoint)
     if (smoothZoomTimer->isActive() || qFuzzyCompare(smoothZoomTarget, zoom))
         return;
 
+    RenderState::smoothZooming = true;
     startAnimationTimer(smoothZoomTimer);
 }
 
@@ -1327,8 +1384,8 @@ void LevelView::smoothZoomStep()
 
     if (qAbs(remaining) < 0.002f * qMax(1.0f, smoothZoomTarget))
     {
-        smoothZoomTimer->stop();
         applyZoom(smoothZoomTarget, focalPoint);
+        finishSmoothZoom();
         return;
     }
 
@@ -1339,7 +1396,7 @@ void LevelView::handlePinchZoom(QPinchGesture* gesture)
 {
     if (gesture->changeFlags() & QPinchGesture::ScaleFactorChanged)
     {
-        smoothZoomTimer->stop();
+        finishSmoothZoom();
         applyZoom(zoom * static_cast<float>(gesture->scaleFactor()), viewportCenter());
     }
 }
@@ -1349,7 +1406,7 @@ void LevelView::handleNativeZoom(QNativeGestureEvent* evt)
     if (evt->gestureType() != Qt::ZoomNativeGesture)
         return;
 
-    smoothZoomTimer->stop();
+    finishSmoothZoom();
     applyZoom(zoom * (1.0f + static_cast<float>(evt->value())), viewportCenter());
     evt->accept();
 }

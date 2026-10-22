@@ -115,6 +115,7 @@ public:
 
     void Render2DTiles(bool toggle) { draw2D = toggle; }
     void Render3DOverlay(bool toggle) { draw3D = toggle; }
+    void clearScaledTiles();
 
     Game* game;
 
@@ -141,7 +142,6 @@ private:
     QHash<quint32, QPixmap> scaledTiles;
     qreal scaledTilesScale = 1.0;
     const QPixmap& getScaledTile(int num, qreal scale);
-    void clearScaledTiles();
 
 
     QList<ObjectDef*> objectDefs;

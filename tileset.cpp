@@ -16,6 +16,7 @@
 */
 
 #include "tileset.h"
+#include "is.h"
 #include "game.h"
 #include "imagecache.h"
 #include "settingsmanager.h"
@@ -259,7 +260,8 @@ void Tileset::clearScaledTiles()
 
 const QPixmap& Tileset::getScaledTile(int num, qreal scale)
 {
-    if (qAbs(scale - scaledTilesScale) > 0.001)
+    const qreal tolerance = RenderState::smoothZooming ? 0.35 : 0.001;
+    if (qAbs(scale / scaledTilesScale - 1.0) > tolerance)
     {
         scaledTiles.clear();
         scaledTilesScale = scale;

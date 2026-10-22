@@ -122,6 +122,7 @@ private:
     void startInertia(const QPointF& velocity, qreal decel, qreal damping);
     void inertiaStep();
     void startSmoothZoom(float targetZoom, const QPointF& focalPoint);
+    void finishSmoothZoom();
     void smoothZoomStep();
 
     void applyZoom(float newZoom, const QPointF& focalPoint);

@@ -1,4 +1,5 @@
 #include "objectrenderer.h"
+#include "is.h"
 #include "objects.h"
 #include "imagecache.h"
 
@@ -892,8 +893,10 @@ void NormalImageRenderer::render(QPainter* painter, QRect *)
     }
 
     QSize cacheSize(qRound(rect.width()*scale), qRound(rect.height()*scale));
-    if (scaledCache.isNull() || scaledCacheSize != cacheSize ||
-        qAbs(scaledCacheScale - scale) > 0.001)
+    const bool zooming = RenderState::smoothZooming;
+    const qreal tolerance = zooming ? 0.25 : 0.001;
+    if (scaledCache.isNull() || qAbs(scaledCacheScale - scale) > tolerance ||
+        (scaledCacheSize != cacheSize && !zooming))
     {
         scaledCache = QPixmap(cacheSize);
         scaledCache.setDevicePixelRatio(cacheSize.width() / qreal(rect.width()));
