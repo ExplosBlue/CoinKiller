@@ -187,11 +187,36 @@
            <widget class="QListWidget" name="languageSelector"/>
           </item>
           <item>
-           <widget class="QPushButton" name="updateSpriteData">
-            <property name="text">
-             <string>Update Spritedata</string>
-            </property>
-           </widget>
+           <layout class="QHBoxLayout" name="spriteDataLayout">
+            <item>
+             <widget class="QPushButton" name="updateSpriteData">
+              <property name="text">
+               <string>Update Spritedata</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QToolButton" name="spriteDataSettingsButton">
+              <property name="minimumSize">
+               <size>
+                <width>28</width>
+                <height>28</height>
+               </size>
+              </property>
+              <property name="font">
+               <font>
+                <pointsize>14</pointsize>
+               </font>
+              </property>
+              <property name="toolTip">
+               <string>Spritedata settings</string>
+              </property>
+              <property name="text">
+               <string>⚙</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </item>
          </layout>
         </item>

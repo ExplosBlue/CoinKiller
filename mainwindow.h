@@ -66,6 +66,7 @@ private slots:
     void renameTileset();
 
     void updateSpriteData();
+    void showSpriteDataSettings();
 
     void setDarkMode(bool isDarkMode);
     void setShouldStartMaximized(bool shouldMaximize);

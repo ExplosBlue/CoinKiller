@@ -46,6 +46,7 @@
 #include "newtilesetdialog.h"
 #include "newleveldialog.h"
 #include "spritedata.h"
+#include "spritedatadialog.h"
 #include "filedownloader.h"
 
 MainWindow::MainWindow(WindowBase *parent) :
@@ -141,6 +142,7 @@ void MainWindow::initialiseUi()
     connect(ui->removeTilesetBtn, &QPushButton::clicked, this, &MainWindow::removeTileset);
 
     connect(ui->updateSpriteData, &QPushButton::clicked, this, &MainWindow::updateSpriteData);
+    connect(ui->spriteDataSettingsButton, &QToolButton::clicked, this, &MainWindow::showSpriteDataSettings);
 
     connect(ui->darkModeCheckbox,  &QCheckBox::toggled, this, &MainWindow::setDarkMode);
     connect(ui->maximisedCheckbox, &QCheckBox::toggled, this, &MainWindow::setShouldStartMaximized);
@@ -191,7 +193,7 @@ void MainWindow::checkSpriteDataVersion()
         message.exec();
 
         this->setEnabled(false);
-        FileDownloader::download(QUrl("https://smbnext.net/spritedb/spritexml.php"), this, SLOT(sdDownloadFinished(QNetworkReply::NetworkError, const QByteArray&, const QUrl&)));
+        FileDownloader::download(QUrl(settings->getSpriteDataUrl()), this, SLOT(sdDownloadFinished(QNetworkReply::NetworkError, const QByteArray&, const QUrl&)));
     }
 }
 
@@ -615,7 +617,13 @@ void MainWindow::updateSpriteData()
 
     this->setEnabled(false);
 
-    FileDownloader::download(QUrl("https://smbnext.net/spritedb/spritexml.php"), this, SLOT(sdDownloadFinished(QNetworkReply::NetworkError, const QByteArray&, const QUrl&)));
+    FileDownloader::download(QUrl(settings->getSpriteDataUrl()), this, SLOT(sdDownloadFinished(QNetworkReply::NetworkError, const QByteArray&, const QUrl&)));
+}
+
+void MainWindow::showSpriteDataSettings()
+{
+    SpriteDataDialog dialog(this);
+    dialog.exec();
 }
 
 void MainWindow::sdDownloadFinished(QNetworkReply::NetworkError error, const QByteArray& data, const QUrl& url)
