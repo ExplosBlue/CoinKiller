@@ -18,12 +18,12 @@ public:
     void mouseDown(int x, int y, Qt::MouseButtons buttons, Qt::KeyboardModifiers modifiers, QRect drawrect);
     void mouseDrag(int x, int y, Qt::KeyboardModifiers modifiers, QRect drawrect);
     void mouseMove(int x, int y);
-    void mouseUp(int x, int y);
+    void mouseUp(int x, int y, Qt::MouseButton button = Qt::NoButton);
 
     void keyPress(QKeyEvent *);
     bool hasSelection() const { return !selectedObjects.isEmpty(); }
 
-    void render(QPainter *painter);
+    void render(QPainter *painter, const QRect &clip);
 
     void deleteSelection();
     void copy();
@@ -59,6 +59,7 @@ public:
     void setObject(int selObject, int selTileset);
     void setLayer(int selLayer) { this->selLayer = selLayer; }
     void setSprite(int selSprite);
+    void setZoom(float zoom) { this->zoom = zoom; }
 
     void toggleSelectAfterPlacement(bool toggle) { this->selectAfterPlacement = toggle; }
 
@@ -136,6 +137,8 @@ private:
     mouseAction getActionAtPos(int x, int y);
     Qt::CursorShape getCursorAtPos(int x, int y);
 
+    Object* getNextClickedObjectAtPos(int x, int y, QRect drawrect);
+
     void cloneObjects(QList<Object*> objects);
 
     void updateSelectionBounds();
@@ -147,9 +150,48 @@ private:
     int xDeltaL;
     int yDeltaL;
 
+    bool hasLastClick = false;
+    int lastClickX = 0;
+    int lastClickY = 0;
+
+    bool clickTracking = false;
+    bool clickPending = false;
+    bool movedSincePress = false;
+    int pressX = 0;
+    int pressY = 0;
+    QRect pressDrawrect;
+    float zoom = 1.0f;
+
+    void clearClickCycle();
+
+    void snapDeltas(int &xDelta, int &yDelta, Qt::KeyboardModifiers modifiers, bool resizing, int &snap);
+
+    template <typename NodeType>
+    static void updatePathInsertAction(NodeType* node, int x, int y, mouseAction& act)
+    {
+        const bool leftHandle = QRect(node->getx()-30, node->gety()-10, 20, 20).contains(x, y);
+
+        if (!leftHandle && !QRect(node->getx()+10, node->gety()-10, 20, 20).contains(x, y))
+            return;
+
+        auto* path = node->getParentPath();
+        const int nodeID = path->getIndexOfNode(node);
+
+        bool insertAfter;
+
+        if (nodeID == 0)
+            insertAfter = path->getNumberOfNodes() > nodeID+1 && node->getx() >= path->getNode(nodeID+1)->getx();
+        else
+            insertAfter = node->getx() < path->getNode(nodeID-1)->getx();
+
+        if (!leftHandle)
+            insertAfter = !insertAfter;
+
+        act.pAdd = insertAfter ? AddAfter : AddBefore;
+    }
+
     void checkEmits();
 
-    void drawResizeKnob(int x, int y, QPainter *painter);
     void drawPlus(QPainter* painter, int x, int y);
 
     quint8 layerMask;

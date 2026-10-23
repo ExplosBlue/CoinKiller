@@ -94,7 +94,8 @@ void SettingsManager::loadTranslations(QString languageName) {
                    << "spritecategories.xml"
                    << "spritedata.xml"
                    << "tilebehaviors.xml"
-                   << "tilesetnames.txt";
+                   << "tilesets.xml"
+                   << "backgrounds.xml";
 
     foreach (QString transFile, translateFiles) {
         QString path = dataPath("languages/"+languageName+"/"+transFile);
@@ -146,6 +147,43 @@ QVariant SettingsManager::get(const QString &key, const QVariant &defaultValue) 
 
 void SettingsManager::set(const QString &key, const QVariant &value) {
     settings.setValue(key, value);
+}
+
+void SettingsManager::addRecentROMFS(const QString& dirpath) {
+    if (dirpath.isEmpty())
+        return;
+
+    QStringList recents = settings.value("RecentROMFS").toStringList();
+    recents.removeAll(dirpath);
+    recents.prepend(dirpath);
+
+    while (recents.size() > 5)
+        recents.removeLast();
+
+    settings.setValue("RecentROMFS", recents);
+}
+
+QStringList SettingsManager::getExistingRecentROMFS() {
+    QStringList recents = settings.value("RecentROMFS").toStringList();
+    QStringList existing;
+
+    for (const QString& path : recents)
+    {
+        if (QDir(path).exists())
+            existing.append(path);
+    }
+
+    if (existing != recents)
+        settings.setValue("RecentROMFS", existing);
+
+    return existing;
+}
+
+void SettingsManager::removeRecentROMFS(const QString& dirpath) {
+    QStringList recents = settings.value("RecentROMFS").toStringList();
+
+    if (recents.removeAll(dirpath) > 0)
+        settings.setValue("RecentROMFS", recents);
 }
 
 QColor SettingsManager::getColor(const QString &key, const QColor &defaultColor) {

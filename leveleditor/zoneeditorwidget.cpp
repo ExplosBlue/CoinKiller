@@ -1,4 +1,5 @@
 #include "zoneeditorwidget.h"
+#include "backgroundlist.h"
 #include "unitsconvert.h"
 #include "settingsmanager.h"
 
@@ -10,6 +11,11 @@
 #include <QTabWidget>
 #include <QSpacerItem>
 #include <QMessageBox>
+#include <QScrollBar>
+#include <QTimer>
+#include <QSplitter>
+#include <algorithm>
+#include <cmath>
 
 #include "commands/zonecommands.h"
 #include "commands/zonebgcommands.h"
@@ -35,9 +41,13 @@ ZoneEditorWidget::ZoneEditorWidget(QList<Zone*> *zones, QList<ZoneBackground*> *
     multiplayerTrackings.insert(8, tr("Right and Right"));
     loadMusicIDs();
 
-    zoneList = new QListWidget();
+    zoneList = new SortableTreeWidget();
     zoneList->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    connect(zoneList, &QListWidget::itemClicked, this, &ZoneEditorWidget::handleZoneListIndexChange);
+    zoneList->setColumnCount(2);
+    zoneList->setHeaderLabels(QStringList() << tr("Zone ID") << tr("Position"));
+    zoneList->setSortableColumns({0, 1});
+    zoneList->setFlexibleColumn(0);
+    connect(zoneList, &QTreeWidget::itemClicked, this, &ZoneEditorWidget::handleZoneListIndexChange);
 
     selectContentsBtn = new QPushButton(tr("Select Contents"), this);
     connect(selectContentsBtn, &QAbstractButton::clicked, this, &ZoneEditorWidget::handleSelectContentsClicked);
@@ -74,15 +84,16 @@ ZoneEditorWidget::ZoneEditorWidget(QList<Zone*> *zones, QList<ZoneBackground*> *
     unk1->setRange(0, 255);
     connect(unk1, &QSpinBox::valueChanged, this, &ZoneEditorWidget::handleUnk1Change);
 
-    boundingId = new QSpinBox();
-    boundingId->setRange(0, 255);
-    boundingId->setReadOnly(true);
-    boundingId->setEnabled(false);
+    boundingId = new QComboBox();
+    boundingId->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    connect(boundingId, &QComboBox::currentIndexChanged, this, &ZoneEditorWidget::handleBoundingIdComboChange);
 
-    backgroundId = new QSpinBox();
-    backgroundId->setRange(0, 255);
-    backgroundId->setReadOnly(true);
-    backgroundId->setEnabled(false);
+    backgroundId = new QComboBox();
+    backgroundId->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    connect(backgroundId, &QComboBox::currentIndexChanged, this, &ZoneEditorWidget::handleBackgroundIdComboChange);
+
+    foreach (const BackgroundEntry& entry, BackgroundList().entries())
+        backgroundNames.insert(entry.fileName, entry.name);
 
     cameraFlagGroup = new QGroupBox();
     cameraFlagGroup->setSizePolicy(policy);
@@ -107,11 +118,17 @@ ZoneEditorWidget::ZoneEditorWidget(QList<Zone*> *zones, QList<ZoneBackground*> *
     camFlag4->setProperty("flag", 8);
     connect(camFlag4, &QCheckBox::toggled, this, &ZoneEditorWidget::handleCameraFlagsChange);
 
-    editBounding = new QPushButton(tr("Open Bounding Editor"), this);
+    editBounding = new QPushButton(tr("Edit Boundings"), this);
+    editBounding->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     connect(editBounding, &QPushButton::clicked, this, &ZoneEditorWidget::handleEditBoundingClicked);
 
-    editBackground = new QPushButton(tr("Open Background Editor"), this);
+    editBackground = new QPushButton(tr("Edit Backgrounds"), this);
+    editBackground->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     connect(editBackground, &QAbstractButton::clicked, this, &ZoneEditorWidget::handleEditBackgroundClicked);
+
+    const int editorButtonWidth = qMax(editBounding->sizeHint().width(), editBackground->sizeHint().width()) + 14;
+    editBounding->setFixedWidth(editorButtonWidth);
+    editBackground->setFixedWidth(editorButtonWidth);
 
     boundingWidget = new ZoneBoundingWidget(bounds, undoStack, level);
     connect(boundingWidget, &ZoneBoundingWidget::selectedBoundingChanged, this, &ZoneEditorWidget::handleBoundingIDChange);
@@ -191,6 +208,8 @@ void ZoneEditorWidget::changeEvent(QEvent* event)
 {
     if (event->type() == QEvent::LanguageChange)
     {
+        zoneList->setHeaderLabels(QStringList() << tr("Zone ID") << tr("Position"));
+
         loadMusicIDs();
         for (auto iter = musicIds.begin(), end = musicIds.end(); iter != end; iter++) {
             musicId->addItem(iter->second);
@@ -213,7 +232,16 @@ void ZoneEditorWidget::select(Zone *zone)
     editZone = zone;
     editingAZone = true;
     updateInfo();
-    zoneList->setCurrentRow(static_cast<qint32>(zones->indexOf(zone)));
+
+    for (int i = 0; i < zoneList->topLevelItemCount(); i++)
+    {
+        QTreeWidgetItem* item = zoneList->topLevelItem(i);
+        if (static_cast<Zone*>(item->data(0, Qt::UserRole).value<void*>()) == zone)
+        {
+            zoneList->setCurrentItem(item);
+            break;
+        }
+    }
 }
 
 void ZoneEditorWidget::updateEditor()
@@ -252,6 +280,17 @@ BgPreview::BgPreview(QWidget *parent) :
     setMinimumWidth(100);
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
     setMaximumWidth(300);
+    setAlignment(Qt::AlignCenter);
+}
+
+QSize BgPreview::sizeHint() const
+{
+    return QSize(maximumWidth(), maximumWidth() * 240 / 400);
+}
+
+QSize BgPreview::minimumSizeHint() const
+{
+    return QSize(minimumWidth(), minimumWidth() * 240 / 400);
 }
 
 void BgPreview::setBg(QPixmap bg)
@@ -271,14 +310,36 @@ void BgPreview::resizeEvent(QResizeEvent *)
 
 void ZoneEditorWidget::updateList()
 {
-    QModelIndex index;
-    if (zoneList->selectionModel()->selectedIndexes().size() != 0) index = zoneList->selectionModel()->selectedIndexes().at(0);
+    Zone* selected = nullptr;
+    if (!zoneList->selectedItems().isEmpty())
+        selected = static_cast<Zone*>(zoneList->selectedItems().first()->data(0, Qt::UserRole).value<void*>());
 
     zoneList->clear();
     foreach (Zone* zone, *zones)
-        zoneList->addItem(tr("Zone %1: (X: %2, Y: %3) (W: %4 H: %5)").arg(zone->getid()).arg(to16(zone->getx())).arg(to16(zone->gety())).arg(to16(zone->getwidth())).arg(to16(zone->getheight())));
+    {
+        SortableTreeItem* item = new SortableTreeItem();
+        item->setData(0, Qt::DisplayRole, zone->getid());
+        item->setSortKey(0, static_cast<double>(zone->getid()));
+        item->setText(1, tr("(X: %1, Y: %2) (W: %3, H: %4)").arg(to16(zone->getx())).arg(to16(zone->gety())).arg(to16(zone->getwidth())).arg(to16(zone->getheight())));
+        item->setSortKey(1, std::hypot(static_cast<double>(to16(zone->getx())), static_cast<double>(to16(zone->gety()))));
+        item->setData(0, Qt::UserRole, QVariant::fromValue(static_cast<void*>(zone)));
+        zoneList->addTopLevelItem(item);
+    }
 
-    zoneList->setCurrentIndex(index);
+    zoneList->resort();
+
+    if (selected == nullptr)
+        return;
+
+    for (int i = 0; i < zoneList->topLevelItemCount(); i++)
+    {
+        QTreeWidgetItem* item = zoneList->topLevelItem(i);
+        if (static_cast<Zone*>(item->data(0, Qt::UserRole).value<void*>()) == selected)
+        {
+            zoneList->setCurrentItem(item);
+            break;
+        }
+    }
 }
 
 void ZoneEditorWidget::updateInfo()
@@ -302,12 +363,8 @@ void ZoneEditorWidget::updateInfo()
     multiplayerTracking->setCurrentText(multiplayerTrackings.value(editZone->getMultiplayerTracking()));
     progPathId->setValue(editZone->getProgPathId());
     unk1->setValue(editZone->getUnk1());
-    boundingId->setDisabled(true);
-    boundingId->setStyleSheet("color: gray");
-    boundingId->setValue(editZone->getBoundingId());
-    backgroundId->setDisabled(true);
-    backgroundId->setStyleSheet("color: gray");
-    backgroundId->setValue(editZone->getBackgroundId());
+    populateBoundingIds();
+    populateBackgroundIds();
     camFlag1->setChecked(editZone->getCameraFlags() & 1);
     camFlag2->setChecked(editZone->getCameraFlags() & 2);
     camFlag3->setChecked(editZone->getCameraFlags() & 4);
@@ -316,10 +373,102 @@ void ZoneEditorWidget::updateInfo()
     handleChanges = true;
 }
 
-void ZoneEditorWidget::handleZoneListIndexChange(QListWidgetItem *item)
+void ZoneEditorWidget::populateBoundingIds()
+{
+    QList<int> ids;
+    QMap<int, ZoneBounding*> bounds;
+
+    foreach (ZoneBounding* bound, *zoneBoundings)
+    {
+        ids.append(bound->getId());
+        bounds.insert(bound->getId(), bound);
+    }
+
+    std::sort(ids.begin(), ids.end());
+    ids.erase(std::unique(ids.begin(), ids.end()), ids.end());
+
+    const int current = editZone ? editZone->getBoundingId() : 0;
+
+    if (!ids.isEmpty() && !ids.contains(current))
+        ids.append(current);
+
+    boundingId->blockSignals(true);
+    boundingId->clear();
+
+    foreach (int id, ids)
+    {
+        ZoneBounding* bounding = bounds.value(id, nullptr);
+
+        if (bounding)
+            boundingId->addItem(tr("%1: %2").arg(id).arg(tr("(%1, %2)").arg(bounding->getPrimaryUpperBound()).arg(bounding->getPrimaryLowerBound())), id);
+        else
+            boundingId->addItem(QString::number(id), id);
+    }
+
+    if (ids.isEmpty())
+    {
+        boundingId->addItem(tr("None"));
+        boundingId->setEnabled(false);
+    }
+    else
+    {
+        boundingId->setEnabled(true);
+        boundingId->setCurrentIndex(ids.indexOf(current));
+    }
+
+    boundingId->blockSignals(false);
+}
+
+void ZoneEditorWidget::populateBackgroundIds()
+{
+    QList<int> ids;
+    QMap<int, QString> names;
+
+    foreach (ZoneBackground* bg, *zoneBgs)
+    {
+        ids.append(bg->getId());
+        names.insert(bg->getId(), backgroundNames.value(bg->getName(), bg->getName()));
+    }
+
+    std::sort(ids.begin(), ids.end());
+    ids.erase(std::unique(ids.begin(), ids.end()), ids.end());
+
+    const int current = editZone ? editZone->getBackgroundId() : 0;
+
+    if (!ids.isEmpty() && !ids.contains(current))
+        ids.append(current);
+
+    backgroundId->blockSignals(true);
+    backgroundId->clear();
+
+    foreach (int id, ids)
+    {
+        const QString name = names.value(id);
+
+        if (name.isEmpty())
+            backgroundId->addItem(QString::number(id), id);
+        else
+            backgroundId->addItem(tr("%1: %2").arg(id).arg(name), id);
+    }
+
+    if (ids.isEmpty())
+    {
+        backgroundId->addItem(tr("None"));
+        backgroundId->setEnabled(false);
+    }
+    else
+    {
+        backgroundId->setEnabled(true);
+        backgroundId->setCurrentIndex(ids.indexOf(current));
+    }
+
+    backgroundId->blockSignals(false);
+}
+
+void ZoneEditorWidget::handleZoneListIndexChange(QTreeWidgetItem *item)
 {
     if (!handleChanges) return;
-    editZone = zones->at(zoneList->row(item));
+    editZone = static_cast<Zone*>(item->data(0, Qt::UserRole).value<void*>());
     editingAZone = true;
     updateInfo();
     emit selectedZoneChanged(editZone);
@@ -408,12 +557,39 @@ void ZoneEditorWidget::handleBackgroundIDChange(int val)
     updateList();
 }
 
+void ZoneEditorWidget::handleBoundingIdComboChange()
+{
+    if (!handleChanges) return;
+    if (editZone == nullptr) return;
+
+    const int val = boundingId->currentData().toInt();
+
+    if (val == editZone->getBoundingId())
+        return;
+
+    handleBoundingIDChange(val);
+}
+
+void ZoneEditorWidget::handleBackgroundIdComboChange()
+{
+    if (!handleChanges) return;
+    if (editZone == nullptr) return;
+
+    const int val = backgroundId->currentData().toInt();
+
+    if (val == editZone->getBackgroundId())
+        return;
+
+    handleBackgroundIDChange(val);
+}
+
 void ZoneEditorWidget::handleEditBoundingClicked()
 {
     if (!handleChanges) return;
     boundingWidget->updateWidget();
     boundingWidget->setSelectedIndex(editZone->getBoundingId());
     boundingWidget->exec();
+    updateInfo();
 }
 
 void ZoneEditorWidget::handleEditBackgroundClicked()
@@ -422,10 +598,60 @@ void ZoneEditorWidget::handleEditBackgroundClicked()
     backgroundWidget->updateWidget();
     backgroundWidget->setSelectedIndex(editZone->getBackgroundId());
     backgroundWidget->exec();
+    updateInfo();
 }
 
 
 // Zone Background Widget
+
+bool ZoneBackgroundWidget::thumbnailView = true;
+
+BackgroundThumbnailDelegate::BackgroundThumbnailDelegate(QObject *parent) :
+    QStyledItemDelegate(parent)
+{
+}
+
+void BackgroundThumbnailDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
+{
+    if (option.state & QStyle::State_Selected)
+    {
+        const bool enabled = option.state & QStyle::State_Enabled;
+        const QColor highlight = option.palette.color(enabled ? QPalette::Active : QPalette::Disabled, QPalette::Highlight);
+
+        painter->fillRect(option.rect, highlight);
+    }
+
+    QStyledItemDelegate::paint(painter, option, index);
+}
+
+BackgroundThumbnailList::BackgroundThumbnailList(QWidget *parent) :
+    QListWidget(parent)
+{
+}
+
+void BackgroundThumbnailList::relayoutItems()
+{
+    doItemsLayout();
+    scheduleDelayedItemsLayout();
+}
+
+void BackgroundThumbnailList::setContentMargins(int left, int right)
+{
+    setViewportMargins(left, 0, right, 0);
+}
+
+QMargins BackgroundThumbnailList::contentMargins() const
+{
+    return viewportMargins();
+}
+
+void BackgroundThumbnailList::resizeEvent(QResizeEvent *event)
+{
+    QListWidget::resizeEvent(event);
+
+    doItemsLayout();
+}
+
 ZoneBackgroundWidget::ZoneBackgroundWidget(QList<ZoneBackground*> *backgrounds, QUndoStack *undoStack, Level *level, QWidget *parent) :
     QDialog(parent),
     zoneBgs(backgrounds),
@@ -463,22 +689,53 @@ ZoneBackgroundWidget::ZoneBackgroundWidget(QList<ZoneBackground*> *backgrounds, 
     parallaxMode->addItem(tr("Y Offset On, X Parallax Off"));
     connect(parallaxMode, &QComboBox::currentIndexChanged, this, &ZoneBackgroundWidget::handleParallaxModeChange);
 
-    background = new QComboBox();
-    background->setSizeAdjustPolicy(QComboBox::SizeAdjustPolicy::AdjustToMinimumContentsLengthWithIcon);
-    loadBackgrounds();
-    connect(background, &QComboBox::currentTextChanged, this, &ZoneBackgroundWidget::handleBackgroundChange);
-
     backgroundPreview = new BgPreview();
 
-    QVBoxLayout* layout = new QVBoxLayout();
-    setLayout(layout);
+    groupCombo = new QComboBox();
+    connect(groupCombo, &QComboBox::currentIndexChanged, this, &ZoneBackgroundWidget::handleGroupChange);
 
-    layout->addWidget(backgroundList);
+    thumbnailToggleBtn = new QToolButton(this);
+    thumbnailToggleBtn->setIcon(style()->standardIcon(QStyle::SP_FileDialogDetailedView));
+    thumbnailToggleBtn->setToolTip(tr("Toggle list and thumbnail view"));
+    connect(thumbnailToggleBtn, &QToolButton::clicked, this, &ZoneBackgroundWidget::handleViewToggle);
 
-    QHBoxLayout* btnsLayout = new QHBoxLayout();
-    btnsLayout->addWidget(addBackgroundBtn);
-    btnsLayout->addWidget(removeBackgroundBtn);
-    layout->addLayout(btnsLayout);
+    selectFilter = new QLineEdit();
+    selectFilter->setPlaceholderText(tr("Filter backgrounds..."));
+    selectFilter->setClearButtonEnabled(true);
+    connect(selectFilter, &QLineEdit::textChanged, this, &ZoneBackgroundWidget::handleSelectFilterChange);
+
+    selectList = new QTreeWidget();
+    selectList->setHeaderLabels(QStringList{tr("Backgrounds")});
+    selectList->setRootIsDecorated(false);
+    selectList->setUniformRowHeights(true);
+    selectList->setSelectionMode(QAbstractItemView::SingleSelection);
+    selectList->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
+    connect(selectList, &QTreeWidget::itemClicked, this, &ZoneBackgroundWidget::handleSelectListClicked);
+
+    thumbnailList = new BackgroundThumbnailList();
+    thumbnailList->setViewMode(QListView::IconMode);
+    thumbnailList->setResizeMode(QListView::Adjust);
+    thumbnailList->setMovement(QListView::Static);
+    thumbnailList->setFlow(QListView::LeftToRight);
+    thumbnailList->setWrapping(true);
+    thumbnailList->setIconSize(QSize(120, 72));
+    thumbnailList->setSpacing(0);
+    thumbnailList->setItemAlignment(Qt::AlignCenter);
+    thumbnailList->setWordWrap(true);
+    thumbnailList->setSelectionMode(QAbstractItemView::SingleSelection);
+    thumbnailList->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
+    thumbnailList->viewport()->installEventFilter(this);
+    thumbnailList->setItemDelegate(new BackgroundThumbnailDelegate(this));
+    connect(thumbnailList, &QListWidget::itemClicked, this, &ZoneBackgroundWidget::handleThumbnailClicked);
+
+    QPalette listPalette = thumbnailList->palette();
+    listPalette.setColor(QPalette::Window, listPalette.color(QPalette::Base));
+    thumbnailList->setPalette(listPalette);
+    thumbnailList->setAutoFillBackground(true);
+
+    selectStack = new QStackedWidget();
+    selectStack->addWidget(selectList);
+    selectStack->addWidget(thumbnailList);
 
     settingsGroup = new QGroupBox();
     settingsGroup->setTitle(tr("Background: None"));
@@ -500,34 +757,90 @@ ZoneBackgroundWidget::ZoneBackgroundWidget(QList<ZoneBackground*> *backgrounds, 
     settingsLayout->addWidget(new QLabel(tr("Parallax Mode:")), 3, 0, 1, 1, Qt::AlignRight);
     settingsLayout->addWidget(parallaxMode, 3, 1);
 
-    settingsLayout->addWidget(new QLabel(tr("Background:")), 4, 0, 1, 1, Qt::AlignRight);
-    settingsLayout->addWidget(background, 4, 1);
-
-    QHBoxLayout* bgAlign = new QHBoxLayout();
-    QWidget* spacer = new QWidget();
-    spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
-    bgAlign->addWidget(spacer);
-    bgAlign->addWidget(backgroundPreview, 1);
-    settingsLayout->addLayout(bgAlign, 5, 0, 1, 2);
+    settingsLayout->addWidget(backgroundPreview, 4, 0, 1, 2);
 
     settingsGroup->setLayout(settingsLayout);
 
-    layout->addWidget(settingsGroup);
+    QVBoxLayout* layout = new QVBoxLayout();
+    setLayout(layout);
+
+    QSplitter* mainSplitter = new QSplitter(Qt::Horizontal, this);
+    mainSplitter->setChildrenCollapsible(false);
+    layout->addWidget(mainSplitter);
+
+    QWidget* editorPane = new QWidget(mainSplitter);
+    QVBoxLayout* editorLayout = new QVBoxLayout(editorPane);
+    editorLayout->setContentsMargins(0, 0, 0, 0);
+    editorLayout->addWidget(backgroundList, 1);
+
+    QHBoxLayout* btnsLayout = new QHBoxLayout();
+    btnsLayout->addWidget(addBackgroundBtn);
+    btnsLayout->addWidget(removeBackgroundBtn);
+    editorLayout->addLayout(btnsLayout);
+
+    editorLayout->addWidget(settingsGroup);
+    mainSplitter->addWidget(editorPane);
+
+    QWidget* selectPane = new QWidget(mainSplitter);
+    selectPane->setMinimumWidth(180);
+    QVBoxLayout* selectLayout = new QVBoxLayout(selectPane);
+    selectLayout->setContentsMargins(0, 0, 0, 0);
+    QHBoxLayout* filterRow = new QHBoxLayout();
+    filterRow->addWidget(selectFilter, 1);
+    filterRow->addWidget(thumbnailToggleBtn);
+    filterRow->addWidget(groupCombo);
+    selectLayout->addLayout(filterRow);
+    selectLayout->addWidget(selectStack, 1);
+    mainSplitter->addWidget(selectPane);
+
+    mainSplitter->setStretchFactor(0, 0);
+    mainSplitter->setStretchFactor(1, 1);
+    mainSplitter->setSizes({314, 421});
+
+    loadBackgrounds();
+    setSelectionEnabled(false);
+
+    setThumbnailView(thumbnailView);
 
     updateList();
     updateInfo();
+
+    setWindowTitle(tr("CoinKiller - Select Background"));
+
+    resize(765, 540);
 }
 
 void ZoneBackgroundWidget::updateList()
 {
-    QModelIndex index;
-    if (backgroundList->selectionModel()->selectedIndexes().size() != 0) index = backgroundList->selectionModel()->selectedIndexes().at(0);
+    const int currentRow = backgroundList->currentRow();
 
     backgroundList->clear();
     foreach (ZoneBackground* bg, *zoneBgs)
-        backgroundList->addItem(tr("Background %1").arg(bg->getId()));
+    {
+        const QString name = backgroundNames.value(bg->getName(), bg->getName());
 
-    backgroundList->setCurrentIndex(index);
+        backgroundList->addItem(tr("Background %1 - %2").arg(bg->getId()).arg(name));
+        backgroundList->item(backgroundList->count() - 1)->setData(Qt::UserRole, bg->getId());
+    }
+
+    if (currentRow >= 0 && currentRow < backgroundList->count())
+    {
+        backgroundList->setCurrentRow(currentRow);
+        backgroundList->item(currentRow)->setSelected(true);
+    }
+}
+
+QListWidgetItem* ZoneBackgroundWidget::backgroundItemById(int id) const
+{
+    for (int i = 0; i < backgroundList->count(); i++)
+    {
+        QListWidgetItem* item = backgroundList->item(i);
+
+        if (item->data(Qt::UserRole).toInt() == id)
+            return item;
+    }
+
+    return nullptr;
 }
 
 void ZoneBackgroundWidget::updateInfo()
@@ -541,9 +854,11 @@ void ZoneBackgroundWidget::updateInfo()
     settingsGroup->setTitle(tr("Background: %1").arg(editBg->getId()));
     xPos->setValue(editBg->getXPos());
     yPos->setValue(editBg->getYPos());
-    background->setCurrentText(backgrounds.value(editBg->getName()));
     parallaxMode->setCurrentIndex(editBg->getParallaxMode());
+
     updateBgPreview();
+
+    populateChoices();
 
     handleChanges = true;
 }
@@ -559,33 +874,272 @@ void ZoneBackgroundWidget::handleBackgroundListIndexChange(QListWidgetItem *item
     if (!handleChanges) return;
     editBg = zoneBgs->at(backgroundList->row(item));
     settingsGroup->setEnabled(true);
+    setSelectionEnabled(true);
     editingABg = true;
     updateInfo();
 }
 
 void ZoneBackgroundWidget::loadBackgrounds()
 {
-    QFile file(SettingsManager::getInstance()->dataPath("backgrounds/backgroundnames.txt"));
-    if(!file.open(QIODevice::ReadOnly))
-        return;
+    backgroundGroups = BackgroundList().groups();
 
-    QTextStream in(&file);
+    for (const BackgroundEntry& entry : BackgroundList().entries())
+        backgroundNames.insert(entry.fileName, entry.name);
 
-    while(!in.atEnd())
+    populateGroups();
+    populateChoices();
+}
+
+void ZoneBackgroundWidget::populateGroups()
+{
+    groupCombo->blockSignals(true);
+    groupCombo->clear();
+    groupCombo->addItem(tr("All"));
+
+    for (const BackgroundGroup& group : backgroundGroups)
+        groupCombo->addItem(group.name);
+
+    groupCombo->blockSignals(false);
+    groupCombo->setCurrentIndex(0);
+}
+
+QList<BackgroundEntry> ZoneBackgroundWidget::currentGroupEntries() const
+{
+    QList<BackgroundEntry> entries;
+
+    int groupIndex = groupCombo->currentIndex() - 1;
+
+    if (groupIndex < 0)
     {
-        QStringList nameStrings = in.readLine().split(":");
-        background->addItem(nameStrings[1]);
-        backgrounds.insert(nameStrings[0], nameStrings[1]);
+        for (const BackgroundGroup& group : backgroundGroups)
+            entries.append(group.entries);
+    }
+    else if (groupIndex < backgroundGroups.size())
+    {
+        entries = backgroundGroups[groupIndex].entries;
     }
 
-    file.close();
+    return entries;
+}
+
+void ZoneBackgroundWidget::populateChoices()
+{
+    const QList<BackgroundEntry> entries = currentGroupEntries();
+    const QString current = editBg ? editBg->getName() : QString();
+
+    selectList->blockSignals(true);
+    selectList->setSortingEnabled(false);
+    selectList->clear();
+
+    for (const BackgroundEntry& entry : entries)
+    {
+        QTreeWidgetItem* item = new QTreeWidgetItem(selectList);
+        item->setText(0, entry.name);
+        item->setData(0, Qt::UserRole, entry.fileName);
+        item->setToolTip(0, entry.fileName);
+    }
+
+    selectList->setSortingEnabled(true);
+    selectList->sortItems(0, Qt::AscendingOrder);
+
+    QTreeWidgetItem* rowToSelect = nullptr;
+
+    for (int i = 0; i < selectList->topLevelItemCount(); i++)
+    {
+        QTreeWidgetItem* item = selectList->topLevelItem(i);
+
+        if (item->data(0, Qt::UserRole).toString() == current)
+        {
+            rowToSelect = item;
+            break;
+        }
+    }
+
+    selectList->setCurrentItem(rowToSelect);
+    selectList->blockSignals(false);
+
+    populateThumbnails();
+
+    applyFilter();
+}
+
+QSize ZoneBackgroundWidget::thumbnailTileSize() const
+{
+    const QSize iconSize = thumbnailList->iconSize();
+    const QFontMetrics fm(font());
+
+    return QSize(iconSize.width() + 10, iconSize.height() + fm.height() * 2 + 10);
+}
+
+void ZoneBackgroundWidget::updateThumbnailGrid()
+{
+    const QSize tileSize = thumbnailTileSize();
+    const bool gridChanged = tileSize != thumbnailList->gridSize();
+
+    if (gridChanged)
+        thumbnailList->setGridSize(tileSize);
+
+    for (int i = 0; i < thumbnailList->count(); i++)
+        thumbnailList->item(i)->setSizeHint(tileSize);
+
+    const int frame = thumbnailList->frameWidth();
+    const int scrollbar = style()->pixelMetric(QStyle::PM_ScrollBarExtent, nullptr, thumbnailList);
+    const int available = thumbnailList->width() - frame * 2 - scrollbar;
+    const int columns = qMax(1, available / tileSize.width());
+    const int used = columns * tileSize.width();
+
+    const int content = used + 4;
+    const int margin = qMax(0, (available - content) / 2);
+    const int right = qMax(0, available - content - margin);
+
+    const bool marginsChanged = thumbnailList->contentMargins().left() != margin || thumbnailList->contentMargins().right() != right;
+
+    if (marginsChanged)
+        thumbnailList->setContentMargins(margin, right);
+
+    thumbnailList->relayoutItems();
+
+    if (gridChanged || marginsChanged)
+        QTimer::singleShot(0, this, &ZoneBackgroundWidget::updateThumbnailGrid);
+}
+
+bool ZoneBackgroundWidget::eventFilter(QObject* watched, QEvent* event)
+{
+    if (watched == thumbnailList->viewport() && event->type() == QEvent::Resize)
+        updateThumbnailGrid();
+
+    return QDialog::eventFilter(watched, event);
+}
+
+void ZoneBackgroundWidget::populateThumbnails()
+{
+    const QList<BackgroundEntry> entries = currentGroupEntries();
+    const QString current = editBg ? editBg->getName() : QString();
+
+    const QSize iconSize = thumbnailList->iconSize();
+
+    thumbnailList->blockSignals(true);
+    thumbnailList->clear();
+
+    QListWidgetItem* itemToSelect = nullptr;
+
+    for (const BackgroundEntry& entry : entries)
+    {
+        QPixmap preview(BackgroundList::previewPath(entry.fileName));
+
+        if (!preview.isNull())
+            preview = preview.scaled(iconSize, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+
+        QListWidgetItem* item = new QListWidgetItem(thumbnailList);
+        item->setIcon(QIcon(preview));
+        item->setText(entry.name);
+        item->setTextAlignment(Qt::AlignCenter);
+        item->setSizeHint(thumbnailList->gridSize());
+        item->setData(Qt::UserRole, entry.fileName);
+        item->setToolTip(entry.fileName);
+
+        if (entry.fileName == current)
+            itemToSelect = item;
+    }
+
+    thumbnailList->sortItems(Qt::AscendingOrder);
+    thumbnailList->setCurrentItem(itemToSelect);
+    thumbnailList->blockSignals(false);
+
+    updateThumbnailGrid();
+}
+
+void ZoneBackgroundWidget::applyFilter()
+{
+    const QString filter = selectFilter->text().trimmed();
+
+    for (int i = 0; i < selectList->topLevelItemCount(); i++)
+    {
+        QTreeWidgetItem* item = selectList->topLevelItem(i);
+        item->setHidden(!filter.isEmpty() && !item->text(0).contains(filter, Qt::CaseInsensitive));
+    }
+
+    for (int i = 0; i < thumbnailList->count(); i++)
+    {
+        QListWidgetItem* item = thumbnailList->item(i);
+        item->setHidden(!filter.isEmpty() && !item->text().contains(filter, Qt::CaseInsensitive));
+    }
+
+    updateThumbnailGrid();
 }
 
 void ZoneBackgroundWidget::updateBgPreview()
 {
-    QFileInfo checkFile(SettingsManager::getInstance()->dataPath("backgrounds/" + editBg->getName() + ".png"));
-    if (checkFile.exists() && checkFile.isFile()) backgroundPreview->setBg(SettingsManager::getInstance()->dataPath("backgrounds/" + editBg->getName() + ".png"));
-    else backgroundPreview->setBg(SettingsManager::getInstance()->dataPath("backgrounds/Invalid.png"));
+    if (editBg == nullptr)
+        return;
+
+    backgroundPreview->setBg(QPixmap(BackgroundList::previewPath(editBg->getName())));
+}
+
+void ZoneBackgroundWidget::handleGroupChange()
+{
+    populateChoices();
+}
+
+void ZoneBackgroundWidget::handleSelectListClicked(QTreeWidgetItem* item, int column)
+{
+    Q_UNUSED(column);
+
+    if (!handleChanges) return;
+    if (editingABg == false) return;
+    if (item == nullptr) return;
+
+    QString name = item->data(0, Qt::UserRole).toString();
+
+    if (name.isEmpty() || name == editBg->getName())
+        return;
+
+    undoStack->push(new Commands::ZoneBgCmd::SetName(editBg, name));
+    updateList();
+    updateInfo();
+}
+
+void ZoneBackgroundWidget::handleThumbnailClicked(QListWidgetItem* item)
+{
+    if (!handleChanges) return;
+    if (editingABg == false) return;
+    if (item == nullptr) return;
+
+    const QString name = item->data(Qt::UserRole).toString();
+
+    if (name.isEmpty() || name == editBg->getName())
+        return;
+
+    undoStack->push(new Commands::ZoneBgCmd::SetName(editBg, name));
+    updateList();
+    updateInfo();
+}
+
+void ZoneBackgroundWidget::handleViewToggle()
+{
+    setThumbnailView(!thumbnailView);
+}
+
+void ZoneBackgroundWidget::setThumbnailView(bool enabled)
+{
+    thumbnailView = enabled;
+
+    selectStack->setCurrentIndex(enabled ? 1 : 0);
+}
+
+void ZoneBackgroundWidget::handleSelectFilterChange(const QString& text)
+{
+    Q_UNUSED(text);
+
+    applyFilter();
+}
+
+void ZoneBackgroundWidget::setSelectionEnabled(bool enabled)
+{
+    groupCombo->setEnabled(enabled);
+    selectList->setEnabled(enabled);
+    selectFilter->setEnabled(enabled);
+    thumbnailList->setEnabled(enabled);
 }
 
 void ZoneBackgroundWidget::handleParallaxModeChange(int val)
@@ -614,13 +1168,6 @@ void ZoneBackgroundWidget::handleBackgroundIDChanged(int val)
     updateInfo();
 }
 
-void ZoneBackgroundWidget::handleBackgroundChange(QString text)
-{
-    if (!handleChanges) return;
-    undoStack->push(new Commands::ZoneBgCmd::SetName(editBg, backgrounds.key(text, "Nohara")));
-    updateBgPreview();
-}
-
 void ZoneBackgroundWidget::handleAddBackgroundClicked()
 {
     if (!handleChanges) return;
@@ -640,6 +1187,20 @@ void ZoneBackgroundWidget::handleAddBackgroundClicked()
     undoStack->push(new Commands::LevelCmd::InsertZoneBackground(level, bg));
 
     updateList();
+
+    QListWidgetItem* item = backgroundItemById(id);
+
+    if (item == nullptr)
+        return;
+
+    backgroundList->setCurrentItem(item);
+
+    editBg = zoneBgs->at(backgroundList->row(item));
+    settingsGroup->setEnabled(true);
+    setSelectionEnabled(true);
+    editingABg = true;
+
+    updateInfo();
 }
 
 void ZoneBackgroundWidget::handleRemoveBackgroundClicked()
@@ -652,7 +1213,9 @@ void ZoneBackgroundWidget::handleRemoveBackgroundClicked()
     undoStack->push(new Commands::LevelCmd::DeleteZoneBackground(level, editBg));
 
     editingABg = false;
+    editBg = nullptr;
     settingsGroup->setDisabled(true);
+    setSelectionEnabled(false);
 
     updateList();
 }
@@ -667,17 +1230,18 @@ void ZoneBackgroundWidget::handleBackgroundListDoubleClick(QListWidgetItem *item
 
 void ZoneBackgroundWidget::setSelectedIndex(int index)
 {
-    QList items = backgroundList->findItems(tr("Background %1").arg(index), Qt::MatchExactly);
+    QListWidgetItem* item = backgroundItemById(index);
 
-    if (items.isEmpty())
+    if (item == nullptr)
         return;
 
-    backgroundList->setCurrentIndex(backgroundList->indexFromItem(items.at(0)));
+    backgroundList->setCurrentItem(item);
     backgroundList->setFocus();
-    editBg = zoneBgs->at(backgroundList->row(items.at(0)));
+    editBg = zoneBgs->at(backgroundList->row(item));
     editingABg = true;
     updateInfo();
     settingsGroup->setEnabled(true);
+    setSelectionEnabled(true);
 }
 
 
@@ -785,6 +1349,8 @@ ZoneBoundingWidget::ZoneBoundingWidget(QList<ZoneBounding*> *boundings, QUndoSta
 
     updateList();
     updateInfo();
+
+    setWindowTitle(tr("CoinKiller - Edit Boundings"));
 }
 
 void ZoneBoundingWidget::updateList()

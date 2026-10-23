@@ -19,13 +19,29 @@
 #include "game.h"
 #include "objects.h"
 #include "unitsconvert.h"
-#include "is.h"
 
 #include <QFile>
 #include <QMessageBox>
 #include <limits>
 #include <QMessageBox>
 #include <algorithm>
+
+template <typename ObjectType>
+static quint8 nextFreeId(const QList<ObjectType*>& objects, quint8 firstId)
+{
+    for (quint8 id = firstId ;; id++)
+    {
+        bool used = false;
+        foreach (ObjectType* obj, objects)
+            if (obj->getid() == id) used = true;
+
+        if (!used)
+            return id;
+
+        if (id == 255)
+            return firstId;
+    }
+}
 
 Level::Level(Game *game, SarcFilesystem* archive, int area, QString lvlName)
 {
@@ -792,21 +808,17 @@ void Level::add(QList<Object *> objs)
 
 void Level::add(Object *obj)
 {
-    if (is<BgdatObject*>(obj))
-    {
-        BgdatObject* bgdatobj = dynamic_cast<BgdatObject*>(obj);
+    if (auto* bgdatobj = dynamic_cast<BgdatObject*>(obj))
         objects[bgdatobj->getLayer()].append(bgdatobj);
-    }
-    else if (is<Sprite*>(obj))
-        sprites.append(dynamic_cast<Sprite*>(obj));
-    else if (is<Entrance*>(obj))
-        entrances.append(dynamic_cast<Entrance*>(obj));
-    else if (is<Zone*>(obj))
-        zones.append(dynamic_cast<Zone*>(obj));
-    else if (is<Location*>(obj))
-        locations.append(dynamic_cast<Location*>(obj));
+    else if (auto* sprite = dynamic_cast<Sprite*>(obj))
+        sprites.append(sprite);
+    else if (auto* entrance = dynamic_cast<Entrance*>(obj))
+        entrances.append(entrance);
+    else if (auto* zone = dynamic_cast<Zone*>(obj))
+        zones.append(zone);
+    else if (auto* location = dynamic_cast<Location*>(obj))
+        locations.append(location);
 }
-
 
 void Level::move(QList<Object*> objs, int deltax, int deltay)
 {
@@ -839,29 +851,39 @@ void Level::move(QList<Object*> objs, int deltax, int deltay)
 }
 void Level::raise(Object* obj)
 {
-    if (is<BgdatObject*>(obj))
-    {
-        BgdatObject* bgdat = dynamic_cast<BgdatObject*>(obj);
+    if (auto* bgdat = dynamic_cast<BgdatObject*>(obj))
         objects[bgdat->getLayer()].move(objects[bgdat->getLayer()].indexOf(bgdat), objects[bgdat->getLayer()].size()-1);
-    }
-    else if (is<Sprite*>(obj))
-    {
-        Sprite* spr = dynamic_cast<Sprite*>(obj);
+    else if (auto* spr = dynamic_cast<Sprite*>(obj))
         sprites.move(sprites.indexOf(spr), sprites.size()-1);
+    else if (auto* loc = dynamic_cast<Location*>(obj))
+        locations.move(locations.indexOf(loc), locations.size()-1);
+    else if (auto* entr = dynamic_cast<Entrance*>(obj))
+        entrances.move(entrances.indexOf(entr), entrances.size()-1);
+    else if (auto* zone = dynamic_cast<Zone*>(obj))
+        zones.move(zones.indexOf(zone), zones.size()-1);
+    else if (auto* pathNode = dynamic_cast<PathNode*>(obj))
+    {
+        Path* path = pathNode->getParentPath();
+        paths.move(paths.indexOf(path), paths.size()-1);
     }
 }
 
 void Level::lower(Object *obj)
 {
-    if (is<BgdatObject*>(obj))
-    {
-        BgdatObject* bgdat = dynamic_cast<BgdatObject*>(obj);
+    if (auto* bgdat = dynamic_cast<BgdatObject*>(obj))
         objects[bgdat->getLayer()].move(objects[bgdat->getLayer()].indexOf(bgdat), 0);
-    }
-    else if (is<Sprite*>(obj))
-    {
-        Sprite* spr = dynamic_cast<Sprite*>(obj);
+    else if (auto* spr = dynamic_cast<Sprite*>(obj))
         sprites.move(sprites.indexOf(spr), 0);
+    else if (auto* loc = dynamic_cast<Location*>(obj))
+        locations.move(locations.indexOf(loc), 0);
+    else if (auto* entr = dynamic_cast<Entrance*>(obj))
+        entrances.move(entrances.indexOf(entr), 0);
+    else if (auto* zone = dynamic_cast<Zone*>(obj))
+        zones.move(zones.indexOf(zone), 0);
+    else if (auto* pathNode = dynamic_cast<PathNode*>(obj))
+    {
+        Path* path = pathNode->getParentPath();
+        paths.move(paths.indexOf(path), 0);
     }
 }
 
@@ -894,19 +916,7 @@ Entrance* Level::newEntrance(int x, int y)
     if (x < 0) x = 0;
     if (y < 0) y = 0;
 
-    quint8 id = 0;
-    for(;; id++)
-    {
-        bool check = false;
-        foreach (Entrance* entr, entrances)
-            if (entr->getid() == id) check = true;
-        if (!check) break;
-        else if (id == 255)
-        {
-            id = 0;
-            break;
-        }
-    }
+    quint8 id = nextFreeId(entrances, 0);
     return new Entrance(toNext16Compatible(x), toNext16Compatible(y), 0, 0, id, 0, 0, 0, 0, 0, 0);
 }
 
@@ -915,19 +925,7 @@ Zone* Level::newZone(int x, int y)
     if (x < 0) x = 0;
     if (y < 0) y = 0;
 
-    quint8 id = 0;
-    for(;; id++)
-    {
-        bool check = false;
-        foreach (Zone* zone, zones)
-            if (zone->getid() == id) check = true;
-        if (!check) break;
-        else if (id == 255)
-        {
-            id = 0;
-            break;
-        }
-    }
+    quint8 id = nextFreeId(zones, 0);
     return new Zone(toNext16Compatible(x), toNext16Compatible(y), 400, 240, id, 0, 0, 0, 0, 0, 0, 0);
 }
 
@@ -936,55 +934,19 @@ Location* Level::newLocation(int x, int y)
     if (x < 0) x = 0;
     if (y < 0) y = 0;
 
-    quint8 id = 0;
-    for(;; id++)
-    {
-        bool check = false;
-        foreach (Location* loc, locations)
-            if (loc->getid() == id) check = true;
-        if (!check) break;
-        else if (id == 255)
-        {
-            id = 0;
-            break;
-        }
-    }
+    quint8 id = nextFreeId(locations, 1);
     return new Location(toNext16Compatible(x), toNext16Compatible(y), 40, 40, id);
 }
 
 Path* Level::newPath()
 {
-    quint8 id = 0;
-    for(;; id++)
-    {
-        bool check = false;
-        foreach (Path* path, paths)
-            if (path->getid() == id) check = true;
-        if (!check) break;
-        else if (id == 255)
-        {
-            id = 0;
-            break;
-        }
-    }
+    quint8 id = nextFreeId(paths, 0);
     return new Path(id, 0);
 }
 
 ProgressPath* Level::newProgressPath()
 {
-    quint8 id = 0;
-    for(;; id++)
-    {
-        bool check = false;
-        foreach (ProgressPath* path, progressPaths)
-            if (path->getid() == id) check = true;
-        if (!check) break;
-        else if (id == 255)
-        {
-            id = 0;
-            break;
-        }
-    }
+    quint8 id = nextFreeId(progressPaths, 0);
     return new ProgressPath(id, 0);
 }
 
@@ -993,6 +955,39 @@ bool Level::isCameraLimit(Sprite *spr)
     int id = spr->getid();
 
     if (id != 156 && id != 157 && id != 160 && id != 161)
+        return false;
+
+    return true;
+}
+
+bool Level::cameraLimitCanPair(Sprite *limit, Sprite *partner)
+{
+    int limitID = limit->getid();
+    int partnerID = partner->getid();
+
+    if (limitID == 156 && partnerID == 157)
+    {
+        if (partner->gety() != limit->gety())
+            return false;
+
+        if (partner->getx() <= limit->getx())
+            return false;
+    }
+    else if (limitID == 161 && partnerID == 160)
+    {
+        if (partner->getx() != limit->getx())
+            return false;
+
+        if (partner->gety() <= limit->gety())
+            return false;
+    }
+    else
+        return false;
+
+    if (partner->getNybble(9) != limit->getNybble(9))
+        return false;
+
+    if (partner->getNybble(4) != limit->getNybble(4))
         return false;
 
     return true;

@@ -28,10 +28,37 @@ typedef QHash<quint32,quint8> TileGrid;
 
 class Game;
 
+enum SlopeFlag : quint8
+{
+    SlopeNone           = 0x00,
+
+    SlopeUpSide         = 0x80,
+    SlopeDownSide       = 0x81,
+    SlopeUpsideDownSide = 0x82,
+    SlopeUpsideUpSide   = 0x83,
+    SlopeSection1       = 0x84,
+    SlopeSection2       = 0x85,
+
+    SlopeUpBase         = 0x90,
+    SlopeDownBase       = 0x91,
+    SlopeUpsideDownBase = 0x92,
+    SlopeUpsideUpBase   = 0x93,
+};
+
+enum SlopeDirection : quint8
+{
+    SlopeDirectionUp         = 0,
+    SlopeDirectionDown       = 1,
+    SlopeDirectionUpsideDown = 2,
+    SlopeDirectionUpsideUp   = 3,
+};
+
+static constexpr quint8 SlopeDirectionMask = 0x0F;
+
 struct ObjectRow
 {
-    quint8 slopeFlags;
-    quint8 xRepeatStart, xRepeatEnd;
+    quint8 slopeFlags = 0;
+    quint8 xRepeatStart = 0xFF, xRepeatEnd = 0;
 
     QList<quint8> data;
 };
@@ -42,7 +69,6 @@ struct ObjectDef
     quint8 randomisation;
     quint8 unkFlag; // whatever this is
 
-    quint8 slopeY; // where the second slope block starts
     quint8 yRepeatStart, yRepeatEnd;
 
     QList<ObjectRow> rows;
@@ -59,7 +85,7 @@ public:
     int getSlot() { return slot; }
 
     void drawTile(QPainter& painter, TileGrid& grid, int num, int x, int y, float zoom, int item);
-    void drawObject(QPainter& painter, TileGrid& grid, int num, int x, int y, int w, int h, float zoom);
+    void drawObject(QPainter& painter, TileGrid& grid, int num, int x, int y, int w, int h, float zoom, const QRect& clip = QRect());
     quint8 getBehaviorByte(int tile, int byte);
     void setBehaviorByte(int tile, int byte, quint8 value);
 
@@ -89,31 +115,40 @@ public:
 
     void Render2DTiles(bool toggle) { draw2D = toggle; }
     void Render3DOverlay(bool toggle) { draw3D = toggle; }
+    void clearScaledTiles();
 
     Game* game;
 
     QImage& getImage();
     void setImage(QImage& img, uint quality = 1, bool dither = false);
-    void setImageRegion(QImage& sheet, int tileTL, int tileBR, uint quality = 1, bool dither = false);
+    void setImageRegion(QImage& sheet, const QList<int>& tiles, uint quality = 1, bool dither = false);
 
     void save();
 
     static QImage padTilesetImage(const QImage& img, quint32 outWidth = 512, quint32 outHeight = 512);
 
 private:
+    bool getObjectCell(int objNbr, int x, int y, int& row, int& col);
+
     QString name;
     bool drawOverrides = false;
-    int slot;
+    int slot = 0;
     SarcFilesystem* archive;
     Ctpk* ctpk;
 
     QImage texImage;
+    QPixmap texPixmap;
+
+    QHash<quint32, QPixmap> scaledTiles;
+    qreal scaledTilesScale = 1.0;
+    const QPixmap& getScaledTile(int num, qreal scale);
 
 
     QList<ObjectDef*> objectDefs;
 
 
-    void drawRow(QPainter& painter, TileGrid& grid, ObjectDef& def, ObjectRow& row, int x, int y, int w, float zoom);
+    void drawTile(QPainter& painter, TileGrid& grid, int num, int x, int y, float zoom, int item, quint8 gridLayer);
+    void drawRow(QPainter& painter, TileGrid& grid, const ObjectRow& row, int x, int y, int w, float zoom, quint8 gridLayer, const QRect& clip);
 
 
     quint8 behaviors[441][8];

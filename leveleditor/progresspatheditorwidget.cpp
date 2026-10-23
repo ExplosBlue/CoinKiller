@@ -1,6 +1,8 @@
 #include "progresspatheditorwidget.h"
+#include "unitsconvert.h"
 
 #include <QLabel>
+#include <cmath>
 
 #include "commands/progresspathcommands.h"
 
@@ -11,7 +13,11 @@ ProgressPathEditorWidget::ProgressPathEditorWidget(QList<ProgressPath*> *paths, 
 
     QVBoxLayout* layout = new QVBoxLayout();
 
-    pathList = new QListWidget();
+    pathList = new SortableTreeWidget();
+    pathList->setColumnCount(2);
+    pathList->setHeaderLabels(QStringList() << tr("Progress Path ID") << tr("Position"));
+    pathList->setSortableColumns({0, 1});
+    pathList->setFlexibleColumn(0);
     layout->addWidget(pathList);
 
     edits = new QWidget();
@@ -31,12 +37,20 @@ ProgressPathEditorWidget::ProgressPathEditorWidget(QList<ProgressPath*> *paths, 
     layout->addWidget(edits);
     setLayout(layout);
 
-    connect(pathList, &QListWidget::itemClicked, this, &ProgressPathEditorWidget::handlePathListIndexChanged);
+    connect(pathList, &QTreeWidget::itemClicked, this, &ProgressPathEditorWidget::handlePathListIndexChanged);
     connect(id, &QSpinBox::valueChanged, this, &ProgressPathEditorWidget::handleIDChanged);
     connect(alternatePathFlag, &QAbstractButton::toggled, this, &ProgressPathEditorWidget::handleAlternetePathFlagChanged);
 
     updateList();
     updateInfo();
+}
+
+void ProgressPathEditorWidget::changeEvent(QEvent* event)
+{
+    if (event->type() == QEvent::LanguageChange)
+        pathList->setHeaderLabels(QStringList() << tr("Progress Path ID") << tr("Position"));
+
+    QWidget::changeEvent(event);
 }
 
 void ProgressPathEditorWidget::updateEditor()
@@ -47,16 +61,45 @@ void ProgressPathEditorWidget::updateEditor()
 
 void ProgressPathEditorWidget::updateList()
 {
-    QModelIndex index;
-    if (pathList->selectionModel()->selectedIndexes().size() != 0) index = pathList->selectionModel()->selectedIndexes().at(0);
+    ProgressPath* selected = nullptr;
+    if (!pathList->selectedItems().isEmpty())
+        selected = static_cast<ProgressPath*>(pathList->selectedItems().first()->data(0, Qt::UserRole).value<void*>());
+
     pathList->clear();
     foreach (ProgressPath* path, *paths)
     {
-        QListWidgetItem* pathItem = new QListWidgetItem();
-        pathItem->setText(tr("Progress Path %1: %n Node(s)", nullptr, path->getNumberOfNodes()).arg(path->getid()));
-        pathList->addItem(pathItem);
+        double x = 0.0;
+        double y = 0.0;
+        if (path->getNumberOfNodes() > 0)
+        {
+            ProgressPathNode* node = path->getNode(0);
+            x = static_cast<double>(to16(node->getx()));
+            y = static_cast<double>(to16(node->gety()));
+        }
+
+        SortableTreeItem* item = new SortableTreeItem();
+        item->setData(0, Qt::DisplayRole, path->getid());
+        item->setSortKey(0, static_cast<double>(path->getid()));
+        item->setText(1, tr("(X: %1, Y: %2)").arg(static_cast<int>(x)).arg(static_cast<int>(y)));
+        item->setSortKey(1, std::hypot(x, y));
+        item->setData(0, Qt::UserRole, QVariant::fromValue(static_cast<void*>(path)));
+        pathList->addTopLevelItem(item);
     }
-    pathList->setCurrentIndex(index);
+
+    pathList->resort();
+
+    if (selected == nullptr)
+        return;
+
+    for (int i = 0; i < pathList->topLevelItemCount(); i++)
+    {
+        QTreeWidgetItem* item = pathList->topLevelItem(i);
+        if (static_cast<ProgressPath*>(item->data(0, Qt::UserRole).value<void*>()) == selected)
+        {
+            pathList->setCurrentItem(item);
+            break;
+        }
+    }
 }
 
 void ProgressPathEditorWidget::updateInfo()
@@ -80,7 +123,17 @@ void ProgressPathEditorWidget::select(ProgressPathNode* node)
     editingAPath = true;
     updateInfo();
     handleChanges = false;
-    pathList->setCurrentRow(static_cast<int>(paths->indexOf(editPath)));
+
+    for (int i = 0; i < pathList->topLevelItemCount(); i++)
+    {
+        QTreeWidgetItem* item = pathList->topLevelItem(i);
+        if (static_cast<ProgressPath*>(item->data(0, Qt::UserRole).value<void*>()) == editPath)
+        {
+            pathList->setCurrentItem(item);
+            break;
+        }
+    }
+
     handleChanges = true;
 }
 
@@ -91,10 +144,10 @@ void ProgressPathEditorWidget::deselect()
     pathList->clearSelection();
 }
 
-void ProgressPathEditorWidget::handlePathListIndexChanged(QListWidgetItem *item)
+void ProgressPathEditorWidget::handlePathListIndexChanged(QTreeWidgetItem *item)
 {
     if (!handleChanges) return;
-    editPath = paths->at(pathList->row(item));
+    editPath = static_cast<ProgressPath*>(item->data(0, Qt::UserRole).value<void*>());
     editingAPath = true;
     updateInfo();
     emit selectedProgPathChanged(editPath->getNode(0));

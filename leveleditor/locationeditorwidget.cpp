@@ -3,6 +3,7 @@
 
 #include <QVBoxLayout>
 #include <QLabel>
+#include <cmath>
 
 #include "commands/locationcommands.h"
 
@@ -14,8 +15,12 @@ LocationEditorWidget::LocationEditorWidget(QList<Location *> *locations, QUndoSt
     QVBoxLayout* layout = new QVBoxLayout();
     setLayout(layout);
 
-    locationList = new QListWidget();
-    connect(locationList, &QListWidget::itemClicked, this, &LocationEditorWidget::handleLocationListIndexChange);
+    locationList = new SortableTreeWidget();
+    locationList->setColumnCount(2);
+    locationList->setHeaderLabels(QStringList() << tr("Location ID") << tr("Position"));
+    locationList->setSortableColumns({0, 1});
+    locationList->setFlexibleColumn(0);
+    connect(locationList, &QTreeWidget::itemClicked, this, &LocationEditorWidget::handleLocationListIndexChange);
     layout->addWidget(locationList);
 
     edits = new QWidget();
@@ -35,6 +40,14 @@ LocationEditorWidget::LocationEditorWidget(QList<Location *> *locations, QUndoSt
     updateInfo();
 }
 
+void LocationEditorWidget::changeEvent(QEvent* event)
+{
+    if (event->type() == QEvent::LanguageChange)
+        locationList->setHeaderLabels(QStringList() << tr("Location ID") << tr("Position"));
+
+    QWidget::changeEvent(event);
+}
+
 void LocationEditorWidget::deselect()
 {
     editingALocation = false;
@@ -47,19 +60,51 @@ void LocationEditorWidget::select(Location *loc)
     editLocation = loc;
     editingALocation = true;
     updateInfo();
-    locationList->setCurrentRow(locations->indexOf(loc));
+
+    for (int i = 0; i < locationList->topLevelItemCount(); i++)
+    {
+        QTreeWidgetItem* item = locationList->topLevelItem(i);
+        if (static_cast<Location*>(item->data(0, Qt::UserRole).value<void*>()) == loc)
+        {
+            locationList->setCurrentItem(item);
+            break;
+        }
+    }
 }
 
 void LocationEditorWidget::updateList()
 {
-    QModelIndex index;
-    if (locationList->selectionModel()->selectedIndexes().size() != 0) index = locationList->selectionModel()->selectedIndexes().at(0);
+    Location* selected = nullptr;
+    if (!locationList->selectedItems().isEmpty())
+        selected = static_cast<Location*>(locationList->selectedItems().first()->data(0, Qt::UserRole).value<void*>());
 
     locationList->clear();
-    foreach (Location* location, *locations)
-        locationList->addItem(tr("Location %1: (X: %2, Y: %3) (W: %4, H: %5)").arg(location->getid()).arg(to16(location->getx())).arg(to16(location->gety())).arg(to16(location->getwidth())).arg(to16(location->getheight())));
 
-    locationList->setCurrentIndex(index);
+    foreach (Location* location, *locations)
+    {
+        SortableTreeItem* item = new SortableTreeItem();
+        item->setData(0, Qt::DisplayRole, location->getid());
+        item->setSortKey(0, static_cast<double>(location->getid()));
+        item->setText(1, tr("(X: %1, Y: %2) (W: %3, H: %4)").arg(to16(location->getx())).arg(to16(location->gety())).arg(to16(location->getwidth())).arg(to16(location->getheight())));
+        item->setSortKey(1, std::hypot(static_cast<double>(to16(location->getx())), static_cast<double>(to16(location->gety()))));
+        item->setData(0, Qt::UserRole, QVariant::fromValue(static_cast<void*>(location)));
+        locationList->addTopLevelItem(item);
+    }
+
+    locationList->resort();
+
+    if (selected == nullptr)
+        return;
+
+    for (int i = 0; i < locationList->topLevelItemCount(); i++)
+    {
+        QTreeWidgetItem* item = locationList->topLevelItem(i);
+        if (static_cast<Location*>(item->data(0, Qt::UserRole).value<void*>()) == selected)
+        {
+            locationList->setCurrentItem(item);
+            break;
+        }
+    }
 }
 
 void LocationEditorWidget::updateInfo()
@@ -88,10 +133,10 @@ void LocationEditorWidget::handleIDChange(int id)
     updateList();
 }
 
-void LocationEditorWidget::handleLocationListIndexChange(QListWidgetItem *item)
+void LocationEditorWidget::handleLocationListIndexChange(QTreeWidgetItem *item)
 {
     if (!handleChanges) return;
-    editLocation = locations->at(locationList->row(item));
+    editLocation = static_cast<Location*>(item->data(0, Qt::UserRole).value<void*>());
     editingALocation = true;
     updateInfo();
     emit selectedLocChanged(editLocation);

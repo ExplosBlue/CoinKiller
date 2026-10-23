@@ -1,7 +1,6 @@
 #include "editmanager.h"
 #include "unitsconvert.h"
 #include "settingsmanager.h"
-#include "is.h"
 
 #include "commands/editorcommands.h"
 #include "commands/spritecommands.h"
@@ -16,17 +15,60 @@
 #include <QClipboard>
 #include <QDebug>
 
+#include <algorithm>
+
+static const int CYCLE_RADIUS = 10;
+static const int DRAG_THRESHOLD_PX = 3;
+
 EditManager::EditManager(Level *level, QUndoStack *undoStack) :
     level(level), undoStack(undoStack)
 {
     this->selectAfterPlacement = SettingsManager::getInstance()->get("SelectAfterPlacement").toBool();
 }
+
+void EditManager::clearClickCycle()
+{
+    clickTracking = false;
+    clickPending = false;
+    movedSincePress = false;
+}
+
+void EditManager::snapDeltas(int &xDelta, int &yDelta, Qt::KeyboardModifiers modifiers, bool resizing, int &snap)
+{
+    snap = 0;
+
+    if (selectionHasBGDats)
+    {
+        xDelta = toNext20(xDelta);
+        yDelta = toNext20(yDelta);
+
+        if (!resizing)
+            snap = 20;
+    }
+    else if (modifiers == Qt::AltModifier)
+    {
+        xDelta = toNext16Compatible(xDelta);
+        yDelta = toNext16Compatible(yDelta);
+    }
+    else
+    {
+        xDelta = toNext10(xDelta);
+        yDelta = toNext10(yDelta);
+        snap = 10;
+    }
+}
+
 void EditManager::mouseDown(int x, int y, Qt::MouseButtons buttons, Qt::KeyboardModifiers modifiers, QRect drawrect)
 {
     dx = x;
     dy = y;
     lx = x;
     ly = y;
+
+    clearClickCycle();
+    pressX = x;
+    pressY = y;
+    pressDrawrect = drawrect;
 
     if (buttons == Qt::RightButton)
     {
@@ -43,9 +85,8 @@ void EditManager::mouseDown(int x, int y, Qt::MouseButtons buttons, Qt::Keyboard
             Object* oldNode = selectedObjects[0];
             selectedObjects.clear();
 
-            if (is<PathNode*>(oldNode))
+            if (auto* oldPNode = dynamic_cast<PathNode*>(oldNode))
             {
-                PathNode* oldPNode = dynamic_cast<PathNode*>(oldNode);
                 Path* parentPath = oldPNode->getParentPath();
                 PathNode* newNode = new PathNode(toNext10(x), toNext10(y), parentPath);
                 quint32 index = parentPath->getIndexOfNode(oldPNode);
@@ -59,10 +100,10 @@ void EditManager::mouseDown(int x, int y, Qt::MouseButtons buttons, Qt::Keyboard
             }
             else
             {
-                ProgressPathNode* oldPNode = dynamic_cast<ProgressPathNode*>(oldNode);
-                ProgressPath* parentPath = oldPNode->getParentPath();
+                ProgressPathNode* oldProgressNode = dynamic_cast<ProgressPathNode*>(oldNode);
+                ProgressPath* parentPath = oldProgressNode->getParentPath();
                 ProgressPathNode* newNode = new ProgressPathNode(toNext10(x), toNext10(y), parentPath);
-                quint32 index = parentPath->getIndexOfNode(oldPNode);
+                quint32 index = parentPath->getIndexOfNode(oldProgressNode);
 
                 if (mouseAct.pAdd == AddAfter) {
                     index += 1;
@@ -79,40 +120,72 @@ void EditManager::mouseDown(int x, int y, Qt::MouseButtons buttons, Qt::Keyboard
 
         else if (!mouseAct.drag || (mouseAct.hor == ResizeNone && mouseAct.vert == ResizeNone))
         {
+            clickTracking = true;
+
             QList<Object*> tempSelObjects = selectedObjects;
             bool shift = false;
+            bool keepSelection = false;
 
-            if (modifiers != Qt::ShiftModifier) {
-                selectedObjects = getObjectsAtPos(dx, dy, dx, dy, true, drawrect);
-            }
-            else if (modifiers != Qt::ControlModifier)
+            if (hasLastClick && !selectedObjects.isEmpty())
             {
-                shift = true;
-                QList<Object*> newObjList = getObjectsAtPos(dx, dy, dx, dy, true, drawrect);
-                if (newObjList.size() == 1)
+                int clickDiffX = dx - lastClickX;
+                int clickDiffY = dy - lastClickY;
+
+                if (clickDiffX * clickDiffX + clickDiffY * clickDiffY <= CYCLE_RADIUS * CYCLE_RADIUS)
                 {
-                    if(!selectedObjects.contains(newObjList[0]))
-                        selectedObjects.append(newObjList[0]);
-                    else
-                        selectedObjects.removeOne(newObjList[0]);
+                    Object* nextObject = getNextClickedObjectAtPos(dx, dy, drawrect);
+
+                    if (nextObject != nullptr)
+                    {
+                        if (modifiers == Qt::NoModifier)
+                        {
+                            clickPending = true;
+                        }
+                        else if (modifiers != Qt::ShiftModifier)
+                        {
+                            keepSelection = true;
+                        }
+                    }
                 }
             }
 
-            if (!shift && selectedObjects.size() != 0 && tempSelObjects.contains(selectedObjects[0]))
+            if (!clickPending)
             {
-                selectedObjects = tempSelObjects;
-            }
+                if (!keepSelection)
+                {
+                    if (modifiers != Qt::ShiftModifier) {
+                        selectedObjects = getObjectsAtPos(dx, dy, dx, dy, true, drawrect);
+                    }
+                    else if (modifiers != Qt::ControlModifier)
+                    {
+                        shift = true;
+                        QList<Object*> newObjList = getObjectsAtPos(dx, dy, dx, dy, true, drawrect);
+                        if (newObjList.size() == 1)
+                        {
+                            if(!selectedObjects.contains(newObjList[0]))
+                                selectedObjects.append(newObjList[0]);
+                            else
+                                selectedObjects.removeOne(newObjList[0]);
+                        }
+                    }
 
-            if (selectedObjects.size() == 0)
-            {
-                interactMode = InteractionMode::Selection;
-            }
-            else if (modifiers == Qt::ControlModifier)
-            {
-                sortSelection();
-                cloneObjects(selectedObjects);
-                emit updateEditors();
-                clone = true;
+                    if (!shift && selectedObjects.size() != 0 && tempSelObjects.contains(selectedObjects[0]))
+                    {
+                        selectedObjects = tempSelObjects;
+                    }
+                }
+
+                if (selectedObjects.size() == 0)
+                {
+                    interactMode = InteractionMode::Selection;
+                }
+                else if (modifiers == Qt::ControlModifier)
+                {
+                    sortSelection();
+                    cloneObjects(selectedObjects);
+                    emit updateEditors();
+                    clone = true;
+                }
             }
 
             checkEmits();
@@ -127,6 +200,18 @@ void EditManager::mouseDown(int x, int y, Qt::MouseButtons buttons, Qt::Keyboard
 
 void EditManager::mouseDrag(int x, int y, Qt::KeyboardModifiers modifiers, QRect drawrect)
 {
+    if (!movedSincePress)
+    {
+        int movedX = x - pressX;
+        int movedY = y - pressY;
+        int threshold = qMax(1, qRound(DRAG_THRESHOLD_PX / zoom));
+        if (movedX * movedX + movedY * movedY > threshold * threshold)
+        {
+            movedSincePress = true;
+            clickPending = false;
+        }
+    }
+
     if (interactMode == InteractionMode::Creation)
     {
         lx = x;
@@ -195,23 +280,11 @@ void EditManager::mouseDrag(int x, int y, Qt::KeyboardModifiers modifiers, QRect
             if (xDelta == 0 && yDelta == 0) return;
 
             int snap = 0;
-            if (selectionHasBGDats)
-            {
-                xDelta = toNext20(xDelta);
-                yDelta = toNext20(yDelta);
-                snap = 20;
-            }
-            else if (modifiers == Qt::AltModifier)
-            {
-                xDelta = toNext16Compatible(xDelta);
-                xDelta = toNext16Compatible(xDelta);
-            }
-            else
-            {
-                xDelta = toNext10(xDelta);
-                yDelta = toNext10(yDelta);
-                snap = 10;
-            }
+            snapDeltas(xDelta, yDelta, modifiers, false, snap);
+
+            if (xDelta == 0 && yDelta == 0) return;
+
+            movedSincePress = true;
 
             if (!movingObjects) {
                 undoStack->beginMacro(tr("Moved Selection"));
@@ -235,27 +308,10 @@ void EditManager::mouseDrag(int x, int y, Qt::KeyboardModifiers modifiers, QRect
         {
             int xDelta = x-lx;
             int yDelta = y-ly;
-            int minSize = 0;
+            int minSize = selectionHasBGDats ? 20 : 0;
 
             int snap = 0;
-            if (selectionHasBGDats)
-            {
-                xDelta = toNext20(xDelta);
-                yDelta = toNext20(yDelta);
-                minSize = 20;
-                snap = 0;
-            }
-            else if (modifiers == Qt::AltModifier)
-            {
-                xDelta = toNext16Compatible(xDelta);
-                xDelta = toNext16Compatible(xDelta);
-            }
-            else
-            {
-                xDelta = toNext10(xDelta);
-                yDelta = toNext10(yDelta);
-                snap = 10;
-            }
+            snapDeltas(xDelta, yDelta, modifiers, true, snap);
 
             int xMoveDelta = 0;
             int xResizeDelta = 0;
@@ -290,6 +346,8 @@ void EditManager::mouseDrag(int x, int y, Qt::KeyboardModifiers modifiers, QRect
             }
 
             if (xMoveDelta == 0 && yMoveDelta == 0 && xResizeDelta == 0 && yResizeDelta == 0) return;
+
+            movedSincePress = true;
 
             minBoundX += xMoveDelta;
             minBoundY += yMoveDelta;
@@ -369,6 +427,9 @@ void EditManager::keyPress(QKeyEvent *evt)
     }
     undoStack->endMacro();
 
+    hasLastClick = false;
+    clearClickCycle();
+
     minBoundX += dx;
     minBoundY += dy;
     lx += dx;
@@ -379,8 +440,36 @@ void EditManager::keyPress(QKeyEvent *evt)
     emit updateLevelView();
 }
 
-void EditManager::mouseUp(int x, int y)
+void EditManager::mouseUp(int x, int y, Qt::MouseButton button)
 {
+    if (button == Qt::LeftButton)
+    {
+        if (clickTracking && !movedSincePress)
+        {
+            if (clickPending)
+            {
+                Object* nextObject = getNextClickedObjectAtPos(pressX, pressY, pressDrawrect);
+
+                if (nextObject != nullptr)
+                {
+                    selectedObjects.clear();
+                    selectedObjects.append(nextObject);
+                    updateSelectionBounds();
+                }
+            }
+
+            hasLastClick = true;
+            lastClickX = pressX;
+            lastClickY = pressY;
+        }
+        else
+        {
+            hasLastClick = false;
+        }
+    }
+
+    clearClickCycle();
+
     mouseAct = getActionAtPos(x, y);
     actualCursor = getCursorAtPos(x, y);
 
@@ -526,51 +615,159 @@ void EditManager::CreateObject(quint32 x, quint32 y)
     }
 }
 
-void EditManager::render(QPainter *painter)
+static QVector<QLineF> mergeSelectionLines(const QVector<QLineF> &lines)
 {
+    QHash<qint64, QVector<QLineF>> horizontalGroups;
+    QHash<qint64, QVector<QLineF>> verticalGroups;
+    horizontalGroups.reserve(lines.size());
+    verticalGroups.reserve(lines.size());
+
+    foreach (const QLineF &line, lines)
+    {
+        if (line.y1() == line.y2())
+            horizontalGroups[qint64(line.y1())].append(line);
+        else
+            verticalGroups[qint64(line.x1())].append(line);
+    }
+
+    QVector<QLineF> merged;
+    merged.reserve(lines.size());
+
+    const auto mergeGroup = [&](QVector<QLineF> group, bool horizontal) {
+        std::sort(group.begin(), group.end(), [horizontal](const QLineF &a, const QLineF &b) {
+            return horizontal ? a.x1() < b.x1() : a.y1() < b.y1();
+        });
+
+        QLineF current = group.first();
+        for (int i = 1; i < group.size(); i++)
+        {
+            const QLineF &line = group.at(i);
+            const qreal currentEnd = horizontal ? current.x2() : current.y2();
+            const qreal lineStart = horizontal ? line.x1() : line.y1();
+
+            if (lineStart <= currentEnd + 0.0001)
+            {
+                if (horizontal)
+                    current.setP2(QPointF(qMax(current.x2(), line.x2()), current.y2()));
+                else
+                    current.setP2(QPointF(current.x2(), qMax(current.y2(), line.y2())));
+            }
+            else
+            {
+                merged.append(current);
+                current = line;
+            }
+        }
+        merged.append(current);
+    };
+
+    for (auto it = horizontalGroups.constBegin(); it != horizontalGroups.constEnd(); ++it)
+        mergeGroup(it.value(), true);
+    for (auto it = verticalGroups.constBegin(); it != verticalGroups.constEnd(); ++it)
+        mergeGroup(it.value(), false);
+
+    return merged;
+}
+
+void EditManager::render(QPainter *painter, const QRect &clip)
+{
+    const qreal deviceScale = qMax(0.0001, painter->transform().m11() * painter->device()->devicePixelRatioF());
+    const QPen selectionPen(QColor(255,255,255,200), qMax(1.0, 1.0 / deviceScale), Qt::DotLine);
+    const int knobSize = 2 * qMax(2, qRound(2.0 / deviceScale));
+    const int knobHalf = knobSize / 2;
+    static const QBrush selectionBrush(QColor(255,255,255,75));
+
+    painter->save();
+    painter->setClipRect(clip);
+    painter->setRenderHint(QPainter::Antialiasing, false);
+
+    QVector<QLineF> selectionLines;
+    QVector<QRect> selectionFillRects;
+    QVector<QRect> knobRects;
+
+    const auto addSelectionRect = [&](const QRect &rect) {
+        const QRect visibleRect = rect.intersected(clip);
+        if (visibleRect.isEmpty())
+            return;
+
+        selectionFillRects.append(visibleRect);
+
+        if (rect.top() >= clip.top() && rect.top() <= clip.bottom())
+            selectionLines.append(QLineF(visibleRect.left(), rect.top(), visibleRect.right(), rect.top()));
+        if (rect.bottom() >= clip.top() && rect.bottom() <= clip.bottom())
+            selectionLines.append(QLineF(visibleRect.left(), rect.bottom(), visibleRect.right(), rect.bottom()));
+        if (rect.left() >= clip.left() && rect.left() <= clip.right())
+            selectionLines.append(QLineF(rect.left(), visibleRect.top(), rect.left(), visibleRect.bottom()));
+        if (rect.right() >= clip.left() && rect.right() <= clip.right())
+            selectionLines.append(QLineF(rect.right(), visibleRect.top(), rect.right(), visibleRect.bottom()));
+    };
+
     foreach (Object* obj, selectedObjects)
     {
-        if (is<Sprite*>(obj) && !static_cast<Sprite*>(obj)->getSelectionRects()->empty())
+        const QRect objectRect(obj->getx()+obj->getOffsetX(), obj->gety()+obj->getOffsetY(), obj->getwidth(), obj->getheight());
+
+        if (auto* spr = dynamic_cast<Sprite*>(obj); spr && !spr->getSelectionRects()->empty())
         {
-            Sprite* spr = static_cast<Sprite*>(obj);
-
             foreach (QRect rect, *spr->getSelectionRects())
-            {
-                QRect objrect(obj->getx() + rect.x(), obj->gety() + rect.y(), rect.width(), rect.height());
-
-                painter->setPen(QPen(QColor(255,255,255,200), 1, Qt::DotLine));
-                painter->drawRect(objrect);
-                painter->fillRect(objrect, QColor(255,255,255,75));
-            }
+                addSelectionRect(QRect(obj->getx() + rect.x(), obj->gety() + rect.y(), rect.width(), rect.height()));
         }
         else
         {
-            QRect objrect(obj->getx()+obj->getOffsetX(), obj->gety()+obj->getOffsetY(), obj->getwidth(), obj->getheight());
-
-            painter->setPen(QPen(QColor(255,255,255,200), 1, Qt::DotLine));
-            painter->drawRect(objrect);
-            painter->fillRect(objrect, QColor(255,255,255,75));
+            addSelectionRect(objectRect);
         }
 
-        if (obj->isResizable())
+        if (obj->isResizable() && objectRect.intersects(clip))
         {
-            drawResizeKnob(obj->getx(), obj->gety(), painter);
-            drawResizeKnob(obj->getx() + obj->getwidth(), obj->gety(), painter);
-            drawResizeKnob(obj->getx(), obj->gety() + obj->getheight(), painter);
-            drawResizeKnob(obj->getx() + obj->getwidth(), obj->gety() + obj->getheight(), painter);
-            drawResizeKnob(obj->getx() + obj->getwidth()/2, obj->gety(), painter);
-            drawResizeKnob(obj->getx(), obj->gety() + obj->getheight()/2, painter);
-            drawResizeKnob(obj->getx() + obj->getwidth()/2, obj->gety() + obj->getheight(), painter);
-            drawResizeKnob(obj->getx() + obj->getwidth(), obj->gety() + obj->getheight()/2, painter);
+            const int x = obj->getx();
+            const int y = obj->gety();
+            const int w = obj->getwidth();
+            const int h = obj->getheight();
+
+            knobRects.append(QRect(x-knobHalf,     y-knobHalf,     knobSize, knobSize));
+            knobRects.append(QRect(x+w-knobHalf,   y-knobHalf,     knobSize, knobSize));
+            knobRects.append(QRect(x-knobHalf,     y+h-knobHalf,   knobSize, knobSize));
+            knobRects.append(QRect(x+w-knobHalf,   y+h-knobHalf,   knobSize, knobSize));
+            knobRects.append(QRect(x+w/2-knobHalf, y-knobHalf,     knobSize, knobSize));
+            knobRects.append(QRect(x-knobHalf,     y+h/2-knobHalf, knobSize, knobSize));
+            knobRects.append(QRect(x+w/2-knobHalf, y+h-knobHalf,   knobSize, knobSize));
+            knobRects.append(QRect(x+w-knobHalf,   y+h/2-knobHalf, knobSize, knobSize));
         }
+    }
+
+    if (!selectionFillRects.isEmpty())
+    {
+        painter->save();
+        painter->setPen(Qt::NoPen);
+        painter->setBrush(selectionBrush);
+        painter->drawRects(selectionFillRects.constData(), selectionFillRects.size());
+        painter->restore();
+    }
+
+    if (!selectionLines.isEmpty())
+    {
+        if (selectionLines.size() > 256)
+            selectionLines = mergeSelectionLines(selectionLines);
+
+        painter->setPen(selectionPen);
+        painter->drawLines(selectionLines);
+    }
+
+    if (!knobRects.isEmpty())
+    {
+        painter->save();
+        painter->setPen(Qt::NoPen);
+        painter->setBrush(Qt::white);
+        painter->drawRects(knobRects.constData(), knobRects.size());
+        painter->restore();
     }
 
     if (selectedObjects.count() == 1)
     {
         Object* node = selectedObjects[0];
 
-        if (is<PathNode*>(node) || is<ProgressPathNode*>(node))
+        if (dynamic_cast<PathNode*>(node) || dynamic_cast<ProgressPathNode*>(node))
         {
+            painter->setRenderHint(QPainter::Antialiasing, true);
             painter->setPen(QPen(Qt::black));
 
             QPainterPath path1;
@@ -599,6 +796,8 @@ void EditManager::render(QPainter *painter)
         painter->fillRect(selArea, QColor(160,222,255,50));
         painter->drawRect(selArea);
     }
+
+    painter->restore();
 }
 
 void EditManager::drawPlus(QPainter *painter, int x, int y)
@@ -609,11 +808,6 @@ void EditManager::drawPlus(QPainter *painter, int x, int y)
     QPainterPath path2;
     path2.addRoundedRect(x+4, y+9, 12, 2 , 2.0, 2.0);
     painter->fillPath(path2, Qt::white);
-}
-
-void EditManager::drawResizeKnob(int x, int y, QPainter *painter)
-{
-    painter->fillRect(x-2, y-2, 4, 4, QBrush(Qt::white));
 }
 
 QList<Object*> EditManager::getObjectsAtPos(int x1, int y1, int x2, int y2, bool firstOnly, QRect drawrect)
@@ -671,6 +865,30 @@ QList<Object*> EditManager::getObjectsAtPos(int x1, int y1, int x2, int y2, bool
     return objects;
 }
 
+Object* EditManager::getNextClickedObjectAtPos(int x, int y, QRect drawrect)
+{
+    QList<Object*> objects = getObjectsAtPos(x, y, x, y, false, drawrect);
+
+    if (objects.size() < 2)
+        return nullptr;
+
+    int index = -1;
+
+    for (int i = objects.size()-1; i >= 0; i--)
+    {
+        if (selectedObjects.contains(objects[i]))
+        {
+            index = i;
+            break;
+        }
+    }
+
+    if (index < 0)
+        return nullptr;
+
+    return objects[index == 0 ? objects.size()-1 : index-1];
+}
+
 void EditManager::cloneObjects(QList<Object *> objects)
 {
     selectedObjects.clear();
@@ -678,30 +896,30 @@ void EditManager::cloneObjects(QList<Object *> objects)
 
     foreach (Object* o, objects)
     {
-        if (is<BgdatObject*>(o)) {
-            BgdatObject *obj = new BgdatObject(dynamic_cast<BgdatObject*>(o));
+        if (auto* bgdat = dynamic_cast<BgdatObject*>(o)) {
+            BgdatObject* obj = new BgdatObject(bgdat);
             undoStack->push(new Commands::LevelCmd::InsertBgdatObj(level, obj));
             selectedObjects.append(obj);
         }
-        if (is<Sprite*>(o)) {
-            Sprite *spr = new Sprite(dynamic_cast<Sprite*>(o));
+        else if (auto* sprite = dynamic_cast<Sprite*>(o)) {
+            Sprite* spr = new Sprite(sprite);
             undoStack->push(new Commands::LevelCmd::InsertSprite(level, spr));
             selectedObjects.append(spr);
         }
-        if (is<Entrance*>(o)) {
-            Entrance *entr = new Entrance(dynamic_cast<Entrance*>(o));
+        else if (auto* entrance = dynamic_cast<Entrance*>(o)) {
+            Entrance* entr = new Entrance(entrance);
             undoStack->push(new Commands::LevelCmd::InsertEntrance(level, entr));
             selectedObjects.append(entr);
         }
-        if (is<Location*>(o)) {
-            Location *loc = new Location(dynamic_cast<Location*>(o));
+        else if (auto* location = dynamic_cast<Location*>(o)) {
+            Location* loc = new Location(location);
             undoStack->push(new Commands::LevelCmd::InsertLocation(level, loc));
             selectedObjects.append(loc);
         }
-        if (is<Zone*>(o)) {
-            Zone *zone = new Zone(dynamic_cast<Zone*>(o));
-            undoStack->push(new Commands::LevelCmd::InsertZone(level, zone));
-            selectedObjects.append(zone);
+        else if (auto* zone = dynamic_cast<Zone*>(o)) {
+            Zone* z = new Zone(zone);
+            undoStack->push(new Commands::LevelCmd::InsertZone(level, z));
+            selectedObjects.append(z);
         }
     }
 
@@ -716,100 +934,19 @@ EditManager::mouseAction EditManager::getActionAtPos(int x, int y)
     {
         Object* node = selectedObjects[0];
 
-        if (is<PathNode*>(node))
+        if (auto* pathNode = dynamic_cast<PathNode*>(node))
         {
-            if (QRect(node->getx()-30, node->gety()-10, 20, 20).contains(x, y))
-            {
-                PathNode* n = dynamic_cast<PathNode*>(node);
-
-                int nodeID = n->getParentPath()->getIndexOfNode(n);
-
-                if (nodeID == 0 && n->getParentPath()->getNumberOfNodes() > nodeID+1)
-                {
-                    if (n->getx() >= n->getParentPath()->getNode(nodeID+1)->getx())
-                        act.pAdd = AddAfter;
-                    else
-                        act.pAdd = AddBefore;
-                }
-                else if (nodeID == 0)
-                    act.pAdd = AddBefore;
-                else if (n->getx() >= n->getParentPath()->getNode(nodeID-1)->getx())
-                    act.pAdd = AddBefore;
-                else
-                    act.pAdd = AddAfter;
-            }
-            else if (QRect(node->getx()+10, node->gety()-10, 20, 20).contains(x, y))
-            {
-                PathNode* n = dynamic_cast<PathNode*>(node);
-                int nodeID = n->getParentPath()->getIndexOfNode(n);
-
-                if (nodeID == 0 && n->getParentPath()->getNumberOfNodes() > nodeID+1)
-                {
-                    if (n->getx() >= n->getParentPath()->getNode(nodeID+1)->getx())
-                        act.pAdd = AddBefore;
-                    else
-                        act.pAdd = AddAfter;
-                }
-                else if (nodeID == 0)
-                    act.pAdd = AddAfter;
-                else if (n->getx() >= n->getParentPath()->getNode(nodeID-1)->getx())
-                    act.pAdd = AddAfter;
-                else
-                    act.pAdd = AddBefore;
-            }
+            updatePathInsertAction(pathNode, x, y, act);
 
             if (act.pAdd != AddNone)
                 return act;
         }
-        else if (is<ProgressPathNode*>(node))
+        else if (auto* progressPathNode = dynamic_cast<ProgressPathNode*>(node))
         {
-            Object* node = selectedObjects[0];
+            updatePathInsertAction(progressPathNode, x, y, act);
 
-            if (is<ProgressPathNode*>(node))
-            {
-                if (QRect(node->getx()-30, node->gety()-10, 20, 20).contains(x, y))
-                {
-                    ProgressPathNode* n = dynamic_cast<ProgressPathNode*>(node);
-
-                    int nodeID = n->getParentPath()->getIndexOfNode(n);
-
-                    if (nodeID == 0 && n->getParentPath()->getNumberOfNodes() > nodeID+1)
-                    {
-                        if (n->getx() >= n->getParentPath()->getNode(nodeID+1)->getx())
-                            act.pAdd = AddAfter;
-                        else
-                            act.pAdd = AddBefore;
-                    }
-                    else if (nodeID == 0)
-                        act.pAdd = AddBefore;
-                    else if (n->getx() >= n->getParentPath()->getNode(nodeID-1)->getx())
-                        act.pAdd = AddBefore;
-                    else
-                        act.pAdd = AddAfter;
-                }
-                else if (QRect(node->getx()+10, node->gety()-10, 20, 20).contains(x, y))
-                {
-                    ProgressPathNode* n = dynamic_cast<ProgressPathNode*>(node);
-                    int nodeID = n->getParentPath()->getIndexOfNode(n);
-
-                    if (nodeID == 0 && n->getParentPath()->getNumberOfNodes() > nodeID+1)
-                    {
-                        if (n->getx() >= n->getParentPath()->getNode(nodeID+1)->getx())
-                            act.pAdd = AddBefore;
-                        else
-                            act.pAdd = AddAfter;
-                    }
-                    else if (nodeID == 0)
-                        act.pAdd = AddAfter;
-                    else if (n->getx() >= n->getParentPath()->getNode(nodeID-1)->getx())
-                        act.pAdd = AddAfter;
-                    else
-                        act.pAdd = AddBefore;
-                }
-
-                if (act.pAdd != AddNone)
-                    return act;
-            }
+            if (act.pAdd != AddNone)
+                return act;
         }
     }
 
@@ -837,8 +974,11 @@ EditManager::mouseAction EditManager::getActionAtPos(int x, int y)
                 act.vert = ResizeNone;
             else act.drag = false;
 
-            if (act.hor == ResizeNone && act.vert == ResizeNone && is<Zone*>(o) && !dynamic_cast<Zone*>(o)->clickDetection(x, y))
-                act.drag = false;
+            if (act.hor == ResizeNone && act.vert == ResizeNone)
+            {
+                if (auto* zone = dynamic_cast<Zone*>(o); zone && !zone->clickDetection(x, y))
+                    act.drag = false;
+            }
         }
         else
         {
@@ -892,7 +1032,7 @@ void EditManager::updateSelectionBounds()
 
         if (o->isResizable())
         {
-            if (is<Zone*>(o))
+            if (dynamic_cast<Zone*>(o))
             {
                 if (o->getwidth() - 400 < minSizeX) minSizeX = o->getwidth() - 400;
                 if (o->getheight() - 240 < minSizeY) minSizeY = o->getheight() - 240;
@@ -904,7 +1044,7 @@ void EditManager::updateSelectionBounds()
             }
         }
 
-        if (is<BgdatObject*>(o))
+        if (dynamic_cast<BgdatObject*>(o))
             selectionHasBGDats = true;
     }
 }
@@ -918,6 +1058,7 @@ void EditManager::sortSelection()
     foreach (Entrance* entr, level->entrances) if (selectedObjects.contains(entr)) sortedObjects.append(entr);
     foreach (Location* loc, level->locations) if (selectedObjects.contains(loc)) sortedObjects.append(loc);
     foreach (Zone* zone, level->zones) if (selectedObjects.contains(zone)) sortedObjects.append(zone);
+    foreach (Path* path, level->paths) foreach (PathNode* node, path->getNodes()) if (selectedObjects.contains(node)) sortedObjects.append(node);
 
     selectedObjects = sortedObjects;
 }
@@ -970,34 +1111,20 @@ void EditManager::deleteSelection()
     undoStack->beginMacro(tr("Deleted %1 Object(s)").arg(selectedObjects.count()));
     foreach (Object* obj, selectedObjects)
     {
-        if (is<BgdatObject*>(obj))
-        {
-            undoStack->push(new Commands::LevelCmd::DeleteBgdatObject(level, dynamic_cast<BgdatObject*>(obj)));
-        }
-        else if (is<Sprite*>(obj))
-        {
-            undoStack->push(new Commands::LevelCmd::DeleteSprite(level, dynamic_cast<Sprite*>(obj)));
-        }
-        else if (is<Entrance*>(obj))
-        {
-            undoStack->push(new Commands::LevelCmd::DeleteEntrance(level, dynamic_cast<Entrance*>(obj)));
-        }
-        else if (is<Zone*>(obj))
-        {
-            undoStack->push(new Commands::LevelCmd::DeleteZone(level, dynamic_cast<Zone*>(obj)));
-        }
-        else if (is<Location*>(obj))
-        {
-            undoStack->push(new Commands::LevelCmd::DeleteLocation(level, dynamic_cast<Location*>(obj)));
-        }
-        else if (is<PathNode*>(obj))
-        {
-            undoStack->push(new Commands::LevelCmd::DeletePathNode(level, dynamic_cast<PathNode*>(obj)));
-        }
-        else if (is<ProgressPathNode*>(obj))
-        {
-            undoStack->push(new Commands::LevelCmd::DeleteProgressPathNode(level, dynamic_cast<ProgressPathNode*>(obj)));
-        }
+        if (auto* bgdat = dynamic_cast<BgdatObject*>(obj))
+            undoStack->push(new Commands::LevelCmd::DeleteBgdatObject(level, bgdat));
+        else if (auto* sprite = dynamic_cast<Sprite*>(obj))
+            undoStack->push(new Commands::LevelCmd::DeleteSprite(level, sprite));
+        else if (auto* entrance = dynamic_cast<Entrance*>(obj))
+            undoStack->push(new Commands::LevelCmd::DeleteEntrance(level, entrance));
+        else if (auto* zone = dynamic_cast<Zone*>(obj))
+            undoStack->push(new Commands::LevelCmd::DeleteZone(level, zone));
+        else if (auto* location = dynamic_cast<Location*>(obj))
+            undoStack->push(new Commands::LevelCmd::DeleteLocation(level, location));
+        else if (auto* pathNode = dynamic_cast<PathNode*>(obj))
+            undoStack->push(new Commands::LevelCmd::DeletePathNode(level, pathNode));
+        else if (auto* progressPathNode = dynamic_cast<ProgressPathNode*>(obj))
+            undoStack->push(new Commands::LevelCmd::DeleteProgressPathNode(level, progressPathNode));
     }
     undoStack->endMacro();
 
@@ -1049,9 +1176,8 @@ void EditManager::copy()
 
     foreach (Object* obj, selectedObjects)
     {
-        if (is<PathNode*>(obj))
+        if (auto* pathNode = dynamic_cast<PathNode*>(obj))
         {
-            PathNode* pathNode = dynamic_cast<PathNode*>(obj);
             Path* parentPath = pathNode->getParentPath();
 
             if (paths.empty())
@@ -1080,9 +1206,8 @@ void EditManager::copy()
                 }
             }
         }
-        else if (is<ProgressPathNode*>(obj))
+        else if (auto* progPathNode = dynamic_cast<ProgressPathNode*>(obj))
         {
-            ProgressPathNode* progPathNode = dynamic_cast<ProgressPathNode*>(obj);
             ProgressPath* parentPath = progPathNode->getParentPath();
 
             if (progPaths.empty())
@@ -1285,11 +1410,8 @@ void EditManager::raiseLayer()
     undoStack->beginMacro(tr("Raised Layer of %1 Object(s)").arg(selectedObjects.count()));
     foreach (Object* obj, selectedObjects)
     {
-        if (!is<BgdatObject*>(obj)) {
-            continue;
-        }
-
-        undoStack->push(new Commands::LevelCmd::RaiseBgdatLayer(level, dynamic_cast<BgdatObject*>(obj)));
+        if (auto* bgdat = dynamic_cast<BgdatObject*>(obj))
+            undoStack->push(new Commands::LevelCmd::RaiseBgdatLayer(level, bgdat));
     }
     undoStack->endMacro();
 }
@@ -1305,11 +1427,8 @@ void EditManager::lowerLayer()
     undoStack->beginMacro(tr("Lowered Layer of %1 Object(s)").arg(selectedObjects.count()));
     foreach (Object* obj, selectedObjects)
     {
-        if (!is<BgdatObject*>(obj)) {
-            continue;
-        }
-
-        undoStack->push(new Commands::LevelCmd::LowerBgdatLayer(level, dynamic_cast<BgdatObject*>(obj)));
+        if (auto* bgdat = dynamic_cast<BgdatObject*>(obj))
+            undoStack->push(new Commands::LevelCmd::LowerBgdatLayer(level, bgdat));
     }
     undoStack->endMacro();
 }
@@ -1341,8 +1460,7 @@ void EditManager::swapSelectedBgdatObjects()
     QList<BgdatObject*> swappableObjects;
 
     foreach (Object* o, selectedObjects) {
-        if(is<BgdatObject*>(o)) {
-            BgdatObject* obj = dynamic_cast<BgdatObject*>(o);
+        if (auto* obj = dynamic_cast<BgdatObject*>(o)) {
             if (obj->getObjID() != selObject || obj->getTsID() != selTileset) {
                 swappableObjects.append(obj);
             }
@@ -1372,8 +1490,7 @@ void EditManager::swapSelectedSprites()
     QList<Sprite*> swappableSprites;
 
     foreach (Object* o, selectedObjects) {
-        if(is<Sprite*>(o)) {
-            Sprite* spr = dynamic_cast<Sprite*>(o);
+        if (auto* spr = dynamic_cast<Sprite*>(o)) {
             if (spr->getid() != selSprite) {
                 swappableSprites.append(spr);
             }

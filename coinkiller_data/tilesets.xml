@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tilesets>
+	<group name="Retail">
+		<tileset file="J_Kihon_Test" name="Overworld (BETA)"/>
+		<tileset file="J_Kihon" name="Overworld"/>
+		<tileset file="J_Chika" name="Underground"/>
+		<tileset file="J_Setsugen" name="Snow"/>
+		<tileset file="J_Suichu" name="Underwater"/>
+		<tileset file="J_Yougan" name="Lava"/>
+		<tileset file="J_Gold" name="Gold"/>
+		<tileset file="M_Chika" name="Underground"/>
+		<tileset file="M_Gake" name="Mountains"/>
+		<tileset file="M_Gake_Setsugen" name="Snowy Mountains"/>
+		<tileset file="M_Jungle" name="Jungle"/>
+		<tileset file="M_Kaigan" name="Beach"/>
+		<tileset file="M_Kaigan_Obake" name="Haunted Beach"/>
+		<tileset file="M_Kazan" name="Volcano"/>
+		<tileset file="M_Kinopio_Normal" name="Toad House"/>
+		<tileset file="M_Koopa" name="Final Castle"/>
+		<tileset file="M_Nohara" name="Overworld"/>
+		<tileset file="M_Nohara_BigTree" name="Overworld w/ Trees"/>
+		<tileset file="M_Nohara_Onpu" name="Overworld w/ Note Blocks"/>
+		<tileset file="M_Nohara2" name="Sky"/>
+		<tileset file="M_Obake" name="Ghosthouse Interior"/>
+		<tileset file="M_Obake_Soto" name="Ghosthouse Exterior"/>
+		<tileset file="M_Rainbow" name="Rainbow Bonus"/>
+		<tileset file="M_Sabaku" name="Desert"/>
+		<tileset file="M_Sabaku_Chika" name="Desert Underground"/>
+		<tileset file="M_Setsugen" name="Snow"/>
+		<tileset file="M_Shiro" name="Castle"/>
+		<tileset file="M_Shiro_Boss" name="Castle (Bossfight)"/>
+		<tileset file="M_Shiro_Yogan" name="Castle (Lava)"/>
+		<tileset file="M_SkyTower" name="Sky Bricks"/>
+		<tileset file="M_Sora" name="Bonus"/>
+		<tileset file="M_Suichu" name="Underwater"/>
+		<tileset file="M_Toride" name="Tower"/>
+		<tileset file="M_Toride_Blue" name="Tower (Underwater)"/>
+		<tileset file="M_Toride_Red" name="Tower (Lava)"/>
+		<tileset file="M_Totempole" name="Totem Poles"/>
+		<tileset file="M_WarpZone" name="Cannon"/>
+		<tileset file="S1_Iseki" name="Desert Deco 2"/>
+		<tileset file="S1_Kanaami" name="Fences"/>
+		<tileset file="S1_Kinoko" name="Mushrooms/Sky"/>
+		<tileset file="S1_Kinoko_Snow" name="Snowy Mushrooms"/>
+		<tileset file="S1_Kori" name="Ice"/>
+		<tileset file="S1_Obake_Room" name="Ghost House Deco"/>
+		<tileset file="S1_Obake_Soto" name="Ghost House Exterior Deco"/>
+		<tileset file="S1_Rail_Black" name="Black Rails"/>
+		<tileset file="S1_Rail_Gray" name="Grey Rails"/>
+		<tileset file="S1_Rail_Gray_Mae" name="Grey Rails"/>
+		<tileset file="S1_Rail_White" name="White Rails"/>
+		<tileset file="S1_Sabaku" name="Desert Deco 1"/>
+		<tileset file="S1_SkyTower" name="Sky Brick Deco"/>
+		<tileset file="S1_Suichu" name="Underwater Deco"/>
+		<tileset file="S1_Toride" name="Castle Wall/Fence"/>
+		<tileset file="S2_Assist" name="Various decoration tiles"/>
+		<tileset file="S2_Kanaami" name="Fences"/>
+		<tileset file="S2_Kinoko_variation" name="Mushrooms"/>
+		<tileset file="S2_Obake_Room" name="Ghost House Deco"/>
+		<tileset file="S2_Obake_Soto" name="Ghost House Exterior Deco"/>
+		<tileset file="S2_Rail_Black" name="Black Rails"/>
+		<tileset file="S2_Rail_Gray" name="Grey Rails"/>
+		<tileset file="S2_Rail_White" name="White Rails"/>
+		<tileset file="S2_Sabaku" name="Desert Deco 1"/>
+	</group>
+</tilesets>

@@ -2,9 +2,9 @@
 #define LOCATIONEDITORWIDGET_H
 
 #include "objects.h"
+#include "sortabletreewidget.h"
 
 #include <QWidget>
-#include <QListWidget>
 #include <QSpinBox>
 #include <QUndoStack>
 
@@ -21,13 +21,15 @@ signals:
     void selectedLocChanged(Object* loc);
 
 private slots:
-    void handleLocationListIndexChange(QListWidgetItem *item);
+    void handleLocationListIndexChange(QTreeWidgetItem *item);
     void handleIDChange(int idVal);
 
 private:
-    QListWidget* locationList;
+    SortableTreeWidget* locationList;
     QWidget* edits;
     QSpinBox* id;
+
+    void changeEvent(QEvent* event);
 
     void updateList();
     void updateInfo();

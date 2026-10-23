@@ -1,5 +1,6 @@
 #include "tileseteditorwindow.h"
 #include "ui_tileseteditorwindow.h"
+#include "tilesetlist.h"
 
 #include <QDebug>
 #include <QPaintEvent>
@@ -12,6 +13,8 @@
 #include <QInputDialog>
 #include <QDialogButtonBox>
 #include <QListWidget>
+#include <QDataStream>
+#include <QTimer>
 
 TilesetEditorWindow::TilesetEditorWindow(WindowBase *parent, Tileset *tileset) :
     WindowBase(parent),
@@ -43,6 +46,9 @@ TilesetEditorWindow::TilesetEditorWindow(WindowBase *parent, Tileset *tileset) :
     ui->actionSetTilesetSlot->setIcon(QIcon(basePath + "edit_slot.png"));
     ui->actionShowObjectMarkers->setIcon(QIcon(basePath + "marker_red.png"));
     ui->actionToggleCollision->setIcon(QIcon(basePath + "toggle_collision.png"));
+    ui->actionZoom_In->setIcon(QIcon(basePath + "zoomin.png"));
+    ui->actionZoom_Out->setIcon(QIcon(basePath + "zoomout.png"));
+    ui->actionZoom_100->setIcon(QIcon(basePath + "zoom100.png"));
 
     // Setup Status Bar
     editStatus = new QLabel(this);
@@ -52,10 +58,16 @@ TilesetEditorWindow::TilesetEditorWindow(WindowBase *parent, Tileset *tileset) :
     tilesetPicker = new TilesetPicker(tileset, this);
 
     ui->tilesetPicker->setWidget(tilesetPicker);
+    tilesetPicker->attachViewport(ui->tilesetPicker->viewport());
     tilesetPicker->setBGColor(settings->getColor("tspColor"));
 
     connect(tilesetPicker, SIGNAL(selectedTileChanged(int, int)), this, SLOT(updateSelectedTile(int, int)));
+    connect(tilesetPicker, SIGNAL(selectedTilesChanged(QList<int>)), this, SLOT(updateSelectedTiles(QList<int>)));
     connect(tilesetPicker, SIGNAL(selectedOvTileChanged(int)), this, SLOT(updateSelectedOvTile(int)));
+
+    connect(ui->actionZoom_In, &QAction::triggered, tilesetPicker, &TilesetPicker::zoomIn);
+    connect(ui->actionZoom_Out, &QAction::triggered, tilesetPicker, &TilesetPicker::zoomOut);
+    connect(ui->actionZoom_100, &QAction::triggered, tilesetPicker, &TilesetPicker::resetZoom);
 
     tilesetPicker->setTilesetImage(tileset->getImage());
 
@@ -71,8 +83,9 @@ TilesetEditorWindow::TilesetEditorWindow(WindowBase *parent, Tileset *tileset) :
     objectEditor = new ObjectEditor(tileset, this);
     connect(this, SIGNAL(selectedObjectChanged(int)), objectEditor, SLOT(selectedObjectChanged(int)));
     connect(objectEditor, SIGNAL(updateSelTileLabel(QString)), this, SLOT(setSelTileData(QString)));
-    connect(tilesetPicker, SIGNAL(selectedTileChanged(int, int)), objectEditor, SLOT(selectedPaintTileChanged(int, int)));
-    connect(objectEditor, SIGNAL(tilesetChanged()), this, SLOT(updateObjectEditor()));
+    connect(tilesetPicker, SIGNAL(selectedTilesChanged(QList<int>)), objectEditor, SLOT(selectedPaintTilesChanged(QList<int>)));
+    connect(objectEditor, &ObjectEditor::tilesetChanged, this, &TilesetEditorWindow::updateUnsavedStatus);
+    connect(objectEditor, &ObjectEditor::tilesetChanged, this, &TilesetEditorWindow::updateObjectEditor);
     ui->objectEditor->insertWidget(1, objectEditor);
     ui->actionShowObjectMarkers->setChecked(true);
 
@@ -83,10 +96,21 @@ TilesetEditorWindow::TilesetEditorWindow(WindowBase *parent, Tileset *tileset) :
 
     this->adjustSize();
 
+    ui->mainSplitter->setStretchFactor(0, 2);
+    ui->mainSplitter->setStretchFactor(1, 1);
+    ui->mainSplitter->setSizes(QList<int>() << 442 << 640);
+    ui->tabWidget->setMaximumWidth(760);
+
     hideHorizEdits(true);
     hideVertEdits(true);
 
     editStatus->setText(tr("Ready!"));
+
+    savedTilesetState = tilesetState();
+
+    QTimer* statusTimer = new QTimer(this);
+    connect(statusTimer, &QTimer::timeout, this, &TilesetEditorWindow::updateUnsavedStatus);
+    statusTimer->start(250);
 }
 
 TilesetEditorWindow::~TilesetEditorWindow()
@@ -167,9 +191,18 @@ void TilesetEditorWindow::updateSelectedTile(int tileTL, int tileBR)
 
     ui->selectedTileLabel->setText(tr("Selected Tile: (%1, %2) ID : (%3)").arg(xpos).arg(ypos).arg(tileID));
 
+    updatingSelection = true;
+
     updateHex();
     updateBehavior();
     updateComboBoxes();
+
+    updatingSelection = false;
+}
+
+void TilesetEditorWindow::updateSelectedTiles(QList<int> tiles)
+{
+    selectedTiles = QSet<int>(tiles.constBegin(), tiles.constEnd());
 }
 
 void TilesetEditorWindow::updateSelectedOvTile(int ovTile)
@@ -543,11 +576,11 @@ void TilesetEditorWindow::setObectBehavior()
 
     if (obj.rows[0].slopeFlags != 0 && slopeFlag)
     {
-        quint8 slopeType = obj.rows[0].slopeFlags & 15;
-        if (slopeType == 0) ui->oBehaviorComboBox->setCurrentIndex(4);
-        else if (slopeType == 1) ui->oBehaviorComboBox->setCurrentIndex(5);
-        else if (slopeType == 2) ui->oBehaviorComboBox->setCurrentIndex(6);
-        else if (slopeType == 3) ui->oBehaviorComboBox->setCurrentIndex(7);
+        quint8 slopeType = obj.rows[0].slopeFlags & SlopeDirectionMask;
+        if (slopeType == SlopeDirectionUp) ui->oBehaviorComboBox->setCurrentIndex(4);
+        else if (slopeType == SlopeDirectionDown) ui->oBehaviorComboBox->setCurrentIndex(5);
+        else if (slopeType == SlopeDirectionUpsideDown) ui->oBehaviorComboBox->setCurrentIndex(6);
+        else if (slopeType == SlopeDirectionUpsideUp) ui->oBehaviorComboBox->setCurrentIndex(7);
         return;
     }
 
@@ -643,11 +676,11 @@ void TilesetEditorWindow::on_actionToggleCollision_toggled(bool value)
 
 void TilesetEditorWindow::setBehaviorByte(int byte, quint8 value)
 {
-    for (int i = selectedTileTL; i <= selectedTileBR; i++)
-    {
-        if (i % 21 >= selectedTileTL % 21  && i % 21 <= selectedTileBR % 21)
-            tileset->setBehaviorByte(i, byte, value);
-    }
+    if (updatingSelection)
+        return;
+
+    for (int i : selectedTiles)
+        tileset->setBehaviorByte(i, byte, value);
 }
 
 void TilesetEditorWindow::on_hexLineEdit_textEdited(const QString &text)
@@ -1088,7 +1121,7 @@ void TilesetEditorWindow::on_actionImportImageWithPadding_triggered()
 
 void TilesetEditorWindow::on_actionImportImageReplaceSelection_triggered()
 {
-    if (selectedTileTL == -1 || selectedTileBR == -1)
+    if (selectedTiles.isEmpty())
     {
         QMessageBox::information(this, tr("CoinKiller"), tr("Select one or more tiles in the tileset picker first."), QMessageBox::Ok);
         return;
@@ -1121,7 +1154,7 @@ void TilesetEditorWindow::on_actionImportImageReplaceSelection_triggered()
 
     qApp->processEvents();
 
-    tileset->setImageRegion(inputImg, selectedTileTL, selectedTileBR, quality, dither);
+    tileset->setImageRegion(inputImg, selectedTiles.values(), quality, dither);
 
     tilesetPicker->setTilesetImage(tileset->getImage());
     setupObjectsModel(true);
@@ -1142,8 +1175,106 @@ void TilesetEditorWindow::on_actionSetBackgroundColor_triggered()
 
 void TilesetEditorWindow::on_actionSave_triggered()
 {
+    int slot = TilesetList::slotForFileName(tileset->getName());
+    if (slot != -1)
+        tileset->setSlot(slot);
+
     tileset->save();
+    savedTilesetState = tilesetState();
+    unsavedChanges = false;
     editStatus->setText(tr("Changes Saved"));
+}
+
+QByteArray TilesetEditorWindow::tilesetState()
+{
+    QByteArray state;
+    QDataStream stream(&state, QIODevice::WriteOnly);
+
+    stream << tileset->getSlot();
+
+    for (int i = 0; i < 441; i++)
+    {
+        for (int b = 0; b < 8; b++)
+            stream << (quint8)tileset->getBehaviorByte(i, b);
+
+        stream << (quint16)tileset->getOverlayTile(i) << (quint16)tileset->getOverlayTileSlot(i);
+    }
+
+    int numObjects = tileset->getNumObjects();
+    stream << numObjects;
+
+    for (int o = 0; o < numObjects; o++)
+    {
+        ObjectDef* obj = tileset->getObjectDef(o);
+
+        stream << obj->width << obj->height << obj->randomisation << obj->unkFlag
+               << obj->yRepeatStart << obj->yRepeatEnd;
+        stream << (quint32)obj->rows.size();
+
+        for (int r = 0; r < obj->rows.size(); r++)
+        {
+            ObjectRow& row = obj->rows[r];
+
+            stream << row.slopeFlags << row.xRepeatStart << row.xRepeatEnd;
+            stream << (quint32)row.data.size();
+
+            for (int d = 0; d < row.data.size(); d++)
+                stream << (quint8)row.data[d];
+        }
+    }
+
+    QImage& image = tileset->getImage();
+    stream << image.width() << image.height() << (quint32)image.format();
+    stream.writeRawData((const char*)image.constBits(), (int)image.sizeInBytes());
+
+    return state;
+}
+
+void TilesetEditorWindow::updateUnsavedStatus()
+{
+    if (!isVisible())
+        return;
+
+    bool unsaved = tilesetState() != savedTilesetState;
+
+    if (unsaved == unsavedChanges)
+        return;
+
+    unsavedChanges = unsaved;
+    editStatus->setText(unsaved ? tr("Unsaved Changes") : tr("Changes Saved"));
+}
+
+int TilesetEditorWindow::showSaveDialog()
+{
+    QMessageBox message(this);
+    message.setWindowTitle(tr("Unsaved Changes"));
+    message.setText(tr("Do you want to save your changes?"));
+    message.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
+
+    QSpacerItem* spacer = new QSpacerItem(400, 0, QSizePolicy::Minimum, QSizePolicy::Expanding);
+    QGridLayout* layout = qobject_cast<QGridLayout*>(message.layout());
+    layout->addItem(spacer, layout->rowCount(), 0, 1, layout->columnCount());
+
+    int exitCode = message.exec();
+
+    if (exitCode == QMessageBox::Save)
+        on_actionSave_triggered();
+
+    return exitCode;
+}
+
+void TilesetEditorWindow::closeEvent(QCloseEvent *event)
+{
+    if (tilesetState() != savedTilesetState)
+    {
+        if (showSaveDialog() == QMessageBox::Cancel)
+        {
+            event->ignore();
+            return;
+        }
+    }
+
+    WindowBase::closeEvent(event);
 }
 
 QWidget* hline()

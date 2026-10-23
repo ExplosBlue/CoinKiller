@@ -17,7 +17,7 @@ public:
 
     void setTextureEtc1(quint32 entryIndex, QImage& img, bool alpha, uint quality = 1, bool dither = false);
 
-    void setTextureEtc1Region(quint32 entryIndex, QImage& img, QRect region, uint quality = 1, bool dither = false);
+    void setTextureEtc1Region(quint32 entryIndex, QImage& img, const QList<QRect>& regions, uint quality = 1, bool dither = false);
 
     void rebuild();
 

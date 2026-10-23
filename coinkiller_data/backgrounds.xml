@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<backgrounds>
+	<group name="Retail">
+		<background file="Kaigan" name="Beach"/>
+		<background file="Kaigan_Naname" name="Beach (Higher)"/>
+		<background file="Boss_Normal" name="Bossfight"/>
+		<background file="Boss_Buibui" name="Bossfight (Reznor)"/>
+		<background file="Boss_Iggy" name="Bossfight (Iggy)"/>
+		<background file="Boss_Lemmy" name="Bossfight (Lemmy)"/>
+		<background file="Boss_Ludwig" name="Bossfight (Ludwig)"/>
+		<background file="Boss_Morton" name="Bossfight (Morton)"/>
+		<background file="Boss_Wendy" name="Bossfight (Wendy)"/>
+		<background file="Koopa_Last" name="Bowser Bossfight"/>
+		<background file="Koopa" name="Bowser's Castle"/>
+		<background file="Shiro" name="Castle"/>
+		<background file="Shiro_Yogan" name="Castle (Lava)"/>
+		<background file="Shiro_Suichu" name="Castle (Underwater)"/>
+		<background file="Chika" name="Cave"/>
+		<background file="Sabaku_Chika" name="Cave (Desert)"/>
+		<background file="Cave" name="Cave (Ice)"/>
+		<background file="Iseki_Chika" name="Cave (Pyramid)"/>
+		<background file="Sabaku" name="Desert"/>
+		<background file="Obake" name="Ghost House"/>
+		<background file="Obake_Low" name="Ghost House 2"/>
+		<background file="Obake_Soto" name="Ghostly Forest"/>
+		<background file="Nohara" name="Grassland"/>
+		<background file="Nohara_Suichu" name="Grassland (Lake)"/>
+		<background file="Nohara_Night" name="Grassland (Night)"/>
+		<background file="Nohara_Castle" name="Grassland (Peach's Castle)"/>
+		<background file="Nohara_Endroll" name="Grassland (Peach's Castle, Credits)"/>
+		<background file="Iseki_Kori" name="Ice Cave"/>
+		<background file="Jungle" name="Jungle"/>
+		<background file="Jungle_Kaigan" name="Jungle (Beach)"/>
+		<background file="Kinopio_Normal" name="Mushroom House (Grassland)"/>
+		<background file="Kinopio_W2" name="Mushroom House (Desert)"/>
+		<background file="Kinopio_W3" name="Mushroom House (Beach)"/>
+		<background file="Kinopio_W3B" name="Mushroom House (Jungle)"/>
+		<background file="Kinopio_W4" name="Mushroom House (Snow)"/>
+		<background file="Kinopio_W5" name="Mushroom House (Sky)"/>
+		<background file="Kinopio_W6" name="Mushroom House (Volcanoes)"/>
+		<background file="Kinopio_W7" name="Mushroom House (Pink Stars)"/>
+		<background file="Kinopio_W8" name="Mushroom House (Green Stars)"/>
+		<background file="Kinopio_W9" name="Mushroom House (Stars)"/>
+		<background file="Rainbow" name="Rainbows"/>
+		<background file="Sora_Shita" name="Sky"/>
+		<background file="Sora_Block" name="Sky (Blocks)"/>
+		<background file="Sora_Block_Ue" name="Sky (Blocks, Higher)"/>
+		<background file="Sora" name="Sky (Hills)"/>
+		<background file="Sora_Ue" name="Sky (Hills, Higher)"/>
+		<background file="Sora_Night" name="Sky (Hills, Night)"/>
+		<background file="Sora_Simple" name="Sky (Lower clouds)"/>
+		<background file="Gake" name="Sky (Mountains)"/>
+		<background file="Gake_Ice" name="Sky (Mountains, Ice)"/>
+		<background file="Gake_Evening" name="Sky (Mountains, Sunset)"/>
+		<background file="Gake_Evening_Ue" name="Sky (Mountains, Sunset, Higher)"/>
+		<background file="Sora_Kinoko" name="Sky (Mushrooms)"/>
+		<background file="Sora_Kinoko_Ue" name="Sky (Mushrooms, Higher)"/>
+		<background file="Sora_KinokoSnow" name="Sky (Snowy Mushrooms)"/>
+		<background file="KinokoSnow_Ue" name="Sky (Snow Mushrooms, Higher)"/>
+		<background file="Sora_Totempole" name="Sky (Totems)"/>
+		<background file="Sora_TotempoleB" name="Sky (Totems, Yellow)"/>
+		<background file="SkyTower" name="Sky (Towers)"/>
+		<background file="SkyTower_Ue" name="Sky (Towers, Higher)"/>
+		<background file="NaNameYama_Kori" name="SMW Mountains"/>
+		<background file="Setsugen" name="Snow"/>
+		<background file="Toride" name="Tower"/>
+		<background file="Toride_Yogan" name="Tower (Lava)"/>
+		<background file="Toride_Blue" name="Tower (Blue)"/>
+		<background file="Toride_Suichu" name="Tower (Underwater)"/>
+		<background file="Suichu" name="Underwater"/>
+		<background file="Kazan_soto" name="Volcano"/>
+		<background file="Kazan_Ue" name="Volcano (Higher)"/>
+		<background file="Kazan_Shita" name="Volcano (Inside)"/>
+		<background file="WarpZone_A" name="Warpzone (Grassland)"/>
+		<background file="WarpZone_B" name="Warpzone (Jungle)"/>
+		<background file="WarpZone_C" name="Warpzone (Pink Stars)"/>
+		<background file="WarpZone_D" name="Warpzone (Green Stars)"/>
+		<background file="WarpZone_E" name="Warpzone (Northern lights)"/>
+	</group>
+</backgrounds>

@@ -2,12 +2,69 @@
 #include "objects.h"
 #include "imagecache.h"
 
+#include <QCache>
 #include <QPainter>
 #include <QPainterPath>
+
+struct TransformCacheKey
+{
+    qint64 pixmap;
+    qreal m11, m12, m13, m21, m22, m23, m31, m32, m33;
+
+    bool operator==(const TransformCacheKey &other) const
+    {
+        return pixmap == other.pixmap &&
+               m11 == other.m11 && m12 == other.m12 && m13 == other.m13 &&
+               m21 == other.m21 && m22 == other.m22 && m23 == other.m23 &&
+               m31 == other.m31 && m32 == other.m32 && m33 == other.m33;
+    }
+};
+
+static size_t qHash(const TransformCacheKey &key, size_t seed)
+{
+    return qHashMulti(seed, key.pixmap, key.m11, key.m12, key.m13,
+                      key.m21, key.m22, key.m23, key.m31, key.m32, key.m33);
+}
+
+static QCache<TransformCacheKey, QPixmap> transformCache(64 * 1024 * 1024);
+
+static QPixmap transformedPixmap(const QPixmap &image, const QTransform &transform)
+{
+    if (image.isNull())
+        return image;
+
+    const TransformCacheKey key{ image.cacheKey(), transform.m11(), transform.m12(), transform.m13(),
+                                 transform.m21(), transform.m22(), transform.m23(),
+                                 transform.m31(), transform.m32(), transform.m33() };
+
+    if (const QPixmap *cached = transformCache.object(key))
+        return *cached;
+
+    QPixmap result = image.transformed(transform);
+    transformCache.insert(key, new QPixmap(result), int(result.width() * result.height() * 4));
+    return result;
+}
+
+bool ObjectRenderer::smoothZooming = false;
+
+QHash<const Sprite*, ObjectRenderer*> SpriteRenderer::rendererCache;
+
+void SpriteRenderer::invalidateCache()
+{
+    qDeleteAll(rendererCache);
+    rendererCache.clear();
+}
 
 SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
 {
     this->spr = spr;
+
+    auto cached = rendererCache.constFind(spr);
+    if (cached != rendererCache.constEnd())
+    {
+        ret = cached.value();
+        return;
+    }
 
     switch (spr->getid()) {
     case 1: // Water Flow For Pipe
@@ -794,12 +851,13 @@ SpriteRenderer::SpriteRenderer(const Sprite *spr, Tileset *tilesets[])
         ret = new RoundedRectRenderer(spr, QString("%1").arg(spr->getid()), QColor(0,90,150,150));
         break;
     }
+
+    rendererCache.insert(spr, ret);
 }
 
 void SpriteRenderer::render(QPainter *painter, QRect *drawrect)
 {
     ret->render(painter, drawrect);
-    delete ret;
 }
 
 NormalImageRenderer::NormalImageRenderer(const Object *obj, QString filename)
@@ -816,7 +874,42 @@ NormalImageRenderer::NormalImageRenderer(QRect rect, QString filename)
 
 void NormalImageRenderer::render(QPainter* painter, QRect *)
 {
-    painter->drawPixmap(rect, ImageCache::getInstance()->get(SpriteImg, name));
+    QPixmap img = ImageCache::getInstance()->get(SpriteImg, name);
+    if (rect.isEmpty())
+        return;
+
+    qreal scale = 1.0;
+    QTransform trans = painter->transform();
+    if (trans.m11() > 0.0 && qAbs(trans.m11() - trans.m22()) < 0.001 &&
+        qAbs(trans.m12()) < 0.001 && qAbs(trans.m21()) < 0.001)
+        scale = trans.m11() * painter->device()->devicePixelRatioF();
+
+    if (scale <= 1.001)
+    {
+        painter->drawPixmap(rect, img);
+        return;
+    }
+
+    QSize cacheSize(qRound(rect.width()*scale), qRound(rect.height()*scale));
+    const bool zooming = ObjectRenderer::isSmoothZooming();
+    const qreal tolerance = zooming ? 0.25 : 0.001;
+    if (scaledCache.isNull() || qAbs(scaledCacheScale - scale) > tolerance ||
+        (scaledCacheSize != cacheSize && !zooming))
+    {
+        scaledCache = QPixmap(cacheSize);
+        scaledCache.setDevicePixelRatio(cacheSize.width() / qreal(rect.width()));
+        scaledCache.fill(Qt::transparent);
+
+        QPainter cachePainter(&scaledCache);
+        cachePainter.setRenderHint(QPainter::SmoothPixmapTransform,
+                                   painter->testRenderHint(QPainter::SmoothPixmapTransform));
+        cachePainter.drawPixmap(QRect(QPoint(0, 0), rect.size()), img);
+
+        scaledCacheSize = cacheSize;
+        scaledCacheScale = scale;
+    }
+
+    painter->drawPixmap(rect.topLeft(), scaledCache);
 }
 
 
@@ -830,18 +923,54 @@ RoundedRectRenderer::RoundedRectRenderer(const Object *obj, QString text, QColor
 
 void RoundedRectRenderer::render(QPainter *painter, QRect *)
 {
+    static const QFont labelFont("Arial", 7, QFont::Normal);
+
     QRect rect(obj->getx()+obj->getOffsetX(), obj->gety()+obj->getOffsetY(), obj->getwidth(), obj->getheight());
+    if (rect.width() <= 0 || rect.height() <= 0)
+        return;
 
-    painter->setPen(QColor(0,0,0));
+    if (painter->transform().m11() > 1.0)
+    {
+        painter->setPen(QColor(0,0,0));
 
-    QPainterPath path;
-    path.addRoundedRect(rect, 2.0, 2.0);
-    painter->fillPath(path, color);
-    painter->drawPath(path);
+        QPainterPath path;
+        path.addRoundedRect(rect, 2.0, 2.0);
+        painter->fillPath(path, color);
+        painter->drawPath(path);
 
-    painter->setFont(QFont("Arial", 7, QFont::Normal));
-    painter->drawText(rect, text, align);
+        painter->setFont(labelFont);
+        painter->drawText(rect, text, align);
 
+        painter->setPen(Qt::NoPen);
+        return;
+    }
+
+    qreal dpr = painter->device()->devicePixelRatioF();
+    QSize cachePixels(qRound(rect.width()*dpr), qRound(rect.height()*dpr));
+
+    if (cache.isNull() || cache.size() != cachePixels || cacheDpr != dpr)
+    {
+        cache = QPixmap(cachePixels);
+        cache.setDevicePixelRatio(dpr);
+        cache.fill(Qt::transparent);
+
+        QPainter cachePainter(&cache);
+        cachePainter.setRenderHint(QPainter::Antialiasing);
+
+        QRect localRect(QPoint(0, 0), rect.size());
+        QPainterPath path;
+        path.addRoundedRect(localRect, 2.0, 2.0);
+        cachePainter.setPen(QColor(0,0,0));
+        cachePainter.fillPath(path, color);
+        cachePainter.drawPath(path);
+        cachePainter.setFont(labelFont);
+        cachePainter.drawText(localRect, text, align);
+
+        cacheDpr = dpr;
+    }
+
+    painter->drawPixmap(rect.topLeft(), cache);
+    painter->setFont(labelFont);
     painter->setPen(Qt::NoPen);
 }
 
@@ -863,8 +992,12 @@ void CircleRenderer::render(QPainter *painter, QRect *)
     painter->setPen(color);
     painter->drawEllipse(ellipse);
 
-    painter->setFont(QFont("Arial", 7, QFont::Normal));
-    painter->drawText(ellipse, text, align);
+    if (painter->transform().m11() >= 0.5)
+    {
+        static const QFont labelFont("Arial", 7, QFont::Normal);
+        painter->setFont(labelFont);
+        painter->drawText(ellipse, text, align);
+    }
 
     painter->setPen(Qt::NoPen);
 }
@@ -898,7 +1031,9 @@ void MovIndicatorRenderer::render(QPainter *painter)
     else if (!vertical && endX == startX)
         return;
 
-    for (int i = 0;  i <= 1; i++)
+    bool lowZoom = painter->transform().m11() < 0.5;
+
+    for (int i = lowZoom ? 1 : 0;  i <= 1; i++)
     {
         if (i == 1)
             painter->setPen(fill);
@@ -946,7 +1081,7 @@ QPixmap rotateAroundPoint(QPixmap image, QPointF curPos, QPointF anchor, qreal a
     QPointF rotAnchor(qCos(angleRads + a) * dist, qSin(angleRads + a) * dist);
     rotAnchor += center;
 
-    QPixmap rotImage = image.transformed(QTransform().rotateRadians(angleRads));
+    QPixmap rotImage = transformedPixmap(image, QTransform().rotateRadians(angleRads));
 
     QPointF rotCenter(rotImage.width() / 2, rotImage.height() / 2);
     QPointF offset = rotCenter - center;
@@ -972,16 +1107,16 @@ void PipeFlowRenderer::render(QPainter *painter, QRect *)
     switch (spr->getNybble(11))
     {
         case 1:
-            air = air.transformed(QTransform().rotate(180));
-            bubbles = bubbles.transformed(QTransform().rotate(180));
+            air = transformedPixmap(air, QTransform().rotate(180));
+            bubbles = transformedPixmap(bubbles, QTransform().rotate(180));
             break;
         case 2:
-            air = air.transformed(QTransform().rotate(90));
-            bubbles = bubbles.transformed(QTransform().rotate(90));
+            air = transformedPixmap(air, QTransform().rotate(90));
+            bubbles = transformedPixmap(bubbles, QTransform().rotate(90));
             break;
         case 3:
-            air = air.transformed(QTransform().rotate(-90));
-            bubbles = bubbles.transformed(QTransform().rotate(-90));
+            air = transformedPixmap(air, QTransform().rotate(-90));
+            bubbles = transformedPixmap(bubbles, QTransform().rotate(-90));
             break;
         default:
             break;
@@ -1077,97 +1212,80 @@ TileGodRenderer::TileGodRenderer(const Sprite *spr, Tileset *tileset)
     this->tileset = tileset;
 }
 
-void TileGodRenderer::render(QPainter *painter, QRect *)
+void TileGodRenderer::render(QPainter *painter, QRect *drawrect)
 {
     QRect sprrect(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight());
+    const QRect visible = drawrect ? sprrect.intersected(*drawrect) : sprrect;
+
+    if (visible.isEmpty())
+        return;
 
     if ((spr->getNybble(9) % 2) == 0)
     {
         QBrush b(Qt::BDiagPattern);
         b.setColor(QColor(25, 25, 25));
 
-        painter->fillRect(sprrect, b);
+        painter->fillRect(visible, b);
 
         painter->setPen(QPen(Qt::black));
     }
-
     else
     {
         if (tileset == nullptr)
-            painter->fillRect(sprrect, QColor(200, 0, 0, 120));
+            painter->fillRect(visible, QColor(200, 0, 0, 120));
         else
         {
-            QPixmap pix(spr->getwidth(), spr->getheight());
-            pix.fill(QColor(0,0,0,0));
-            QPainter tempPainter(&pix);
-
-            TileGrid tileGrid;
-            tileGrid[0xFFFFFFFF] = 1;
-
-            tempPainter.setOpacity(0.5);
             int tileId = tileIds[0];
 
             if (spr->getNybble(8) < 12)
                 tileId = tileIds[spr->getNybble(8)];
 
+            const int tileCols = spr->getwidth() / 20;
+            const int tileRows = spr->getheight() / 20;
+            const int xStart = qMax(0, (visible.left() - sprrect.left()) / 20);
+            const int xEnd = qMin(tileCols, (visible.right() - sprrect.left()) / 20 + 1);
+            const int yStart = qMax(0, (visible.top() - sprrect.top()) / 20);
+            const int yEnd = qMin(tileRows, (visible.bottom() - sprrect.top()) / 20 + 1);
 
-            for (int x = 0; x < spr->getwidth()/20; x++)
-                for (int y = 0; y < spr->getheight()/20; y++)
+            TileGrid tileGrid;
+            tileGrid[0xFFFFFFFF] = 1;
+
+            painter->save();
+            painter->setOpacity(painter->opacity() * 0.5);
+            painter->translate(sprrect.left(), sprrect.top());
+
+            for (int x = xStart; x < xEnd; x++)
+            {
+                for (int y = yStart; y < yEnd; y++)
                 {
                     if (spr->getNybble(7) == 1)
                     {
-                        if (x % 2 != 0) // row odd
+                        if (x % 2 != 0)
                         {
-                            if (y % 2 != 0 ) // column odd
-                            {
-                                tileset->drawTile(tempPainter, tileGrid, tileId, x, y, 1, 0);
-                            }
+                            if (y % 2 != 0)
+                                tileset->drawTile(*painter, tileGrid, tileId, x, y, 1, 0);
                         }
-                        else // row even
-                        {
-                            if (y % 2 == 0) // column even
-                            {
-                                tileset->drawTile(tempPainter, tileGrid, tileId, x, y, 1, 0);
-                            }
-                        }
+                        else if (y % 2 == 0)
+                            tileset->drawTile(*painter, tileGrid, tileId, x, y, 1, 0);
                     }
                     else if (spr->getNybble(7) == 2)
                     {
-                        if (x % 2 != 0) // row odd
+                        if (x % 2 != 0)
                         {
-                            if (y % 2 == 0 ) // column even
-                            {
-                                tileset->drawTile(tempPainter, tileGrid, tileId, x, y, 1, 0);
-                            }
+                            if (y % 2 == 0)
+                                tileset->drawTile(*painter, tileGrid, tileId, x, y, 1, 0);
                         }
-                        else // row even
-                        {
-                            if (y % 2 != 0) // column odd
-                            {
-                                tileset->drawTile(tempPainter, tileGrid, tileId, x, y, 1, 0);
-                            }
-                        }
+                        else if (y % 2 != 0)
+                            tileset->drawTile(*painter, tileGrid, tileId, x, y, 1, 0);
                     }
                     else
-                    {
-                        tileset->drawTile(tempPainter, tileGrid, tileId, x, y, 1, 0);
-                    }
+                        tileset->drawTile(*painter, tileGrid, tileId, x, y, 1, 0);
                 }
+            }
 
-
-            painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), pix);
+            painter->restore();
         }
     }
-
-    QPainterPath path;
-    path.addRoundedRect(sprrect, 2.0, 2.0);
-
-    painter->setPen(QPen(Qt::black));
-    painter->drawPath(path);
-
-    painter->drawRect(sprrect);
-
-    painter->setPen(Qt::NoPen);
 }
 
 // Sprite 20: Gold Block
@@ -1243,9 +1361,14 @@ void SpecialExitControllerRenderer::render(QPainter *painter, QRect *)
     painter->fillRect(sprRect, QColor(0,255,0,30));
     painter->setPen(Qt::green);
     painter->drawRect(sprRect);
-    painter->setPen(Qt::black);
-    painter->setFont(QFont("Arial", 8, QFont::Normal));
-    painter->drawText(sprRect.adjusted(2,2,15,0), "Warp");
+
+    if (painter->transform().m11() >= 0.5)
+    {
+        static const QFont labelFont("Arial", 8, QFont::Normal);
+        painter->setPen(Qt::black);
+        painter->setFont(labelFont);
+        painter->drawText(sprRect.adjusted(2,2,15,0), "Warp");
+    }
 
     painter->setPen(Qt::NoPen);
 }
@@ -1372,7 +1495,7 @@ void ArcLavaBubbleRenderer::render(QPainter *painter, QRect *)
     if (spr->getNybble(7) == 1)
     {
         painter->drawPixmap(spr->getx(), spr->gety()-80, 300, 300, arcPixmap.transformed(QTransform().scale(-1,1)));
-        painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), (ImageCache::getInstance()->get(SpriteImg, "arc_lavabubble.png")).transformed(QTransform().scale(-1,1)));
+        painter->drawPixmap(spr->getx()+spr->getOffsetX(), spr->gety()+spr->getOffsetY(), spr->getwidth(), spr->getheight(), transformedPixmap(ImageCache::getInstance()->get(SpriteImg, "arc_lavabubble.png"), QTransform().scale(-1,1)));
     }
     else
     {
@@ -1646,39 +1769,46 @@ FlagRenderer::FlagRenderer(const Sprite *spr)
 }
 void FlagRenderer::render(QPainter *painter, QRect *drawrect)
 {
+    static const QFont normalFont("Arial", 7, QFont::Normal);
+    static const QFont thinFont("Arial", 7, QFont::Thin);
+
     rect->render(painter, drawrect);
+
+    if (painter->transform().m11() < 0.5)
+    {
+        painter->setPen(Qt::NoPen);
+        return;
+    }
+
     QRect textRect(spr->getx()+2, spr->gety()+1, 16, 20);
 
     painter->setPen(QColor(0,0,0));
+    painter->setFont(normalFont);
 
     if(spr->getid() == 84) // Chainer
     {
         painter->drawText(textRect, "F", Qt::AlignLeft | Qt::AlignTop);
-        painter->setFont(QFont("Arial", 7, QFont::Thin));
+        painter->setFont(thinFont);
         painter->drawText(textRect, QString("Cha"), Qt::AlignLeft | Qt::AlignBottom);
     }
     else if(spr->getid() == 85) // Location
     {
         painter->drawText(textRect, "F", Qt::AlignLeft | Qt::AlignTop);
-        painter->setFont(QFont("Arial", 7, QFont::Normal));
         painter->drawText(textRect, QString("Loc"), Qt::AlignLeft | Qt::AlignBottom);
     }
     else if(spr->getid() == 86) // Zone Enter
     {
         painter->drawText(textRect, "F", Qt::AlignLeft | Qt::AlignTop);
-        painter->setFont(QFont("Arial", 7, QFont::Normal));
         painter->drawText(textRect, QString("Zon"), Qt::AlignLeft | Qt::AlignBottom);
     }
     else if(spr->getid() == 87) // Multi Chaner
     {
         painter->drawText(textRect, "F", Qt::AlignLeft | Qt::AlignTop);
-        painter->setFont(QFont("Arial", 7, QFont::Normal));
         painter->drawText(textRect, QString("Mch"), Qt::AlignLeft | Qt::AlignBottom);
     }
     else // Onscreen
     {
         painter->drawText(textRect, "F", Qt::AlignLeft | Qt::AlignTop);
-        painter->setFont(QFont("Arial", 7, QFont::Normal));
         painter->drawText(textRect, QString("Ons"), Qt::AlignLeft | Qt::AlignBottom);
     }
 
@@ -1719,25 +1849,25 @@ void FlipperRenderer::render(QPainter *painter, QRect *)
     switch (spr->getNybble(11))
     {
     case 1: // Left - Swing down
-        img  = img.transformed(QTransform().scale(-1,1));
+        img  = transformedPixmap(img, QTransform().scale(-1,1));
         break;
     case 2: // Right - Swing up
-        img  = img.transformed(QTransform().scale(1,-1));
+        img  = transformedPixmap(img, QTransform().scale(1,-1));
         break;
     case 3: // Left - Swing up
-        img  = img.transformed(QTransform().scale(-1,-1));
+        img  = transformedPixmap(img, QTransform().scale(-1,-1));
         break;
     case 4: // Up - Swing left
-        img  = img.transformed(QTransform().rotate(90).scale(-1,1));
+        img  = transformedPixmap(img, QTransform().rotate(90).scale(-1,1));
         break;
     case 5: // Down - Swing left
-        img  = img.transformed(QTransform().rotate(90));
+        img  = transformedPixmap(img, QTransform().rotate(90));
         break;
     case 6: // Up - Swing right
-        img  = img.transformed(QTransform().rotate(90).scale(-1,-1));
+        img  = transformedPixmap(img, QTransform().rotate(90).scale(-1,-1));
         break;
     case 7: // Down - Swing right
-        img  = img.transformed(QTransform().rotate(90).scale(1,-1));
+        img  = transformedPixmap(img, QTransform().rotate(90).scale(1,-1));
         break;
     default:
         break;
@@ -1856,7 +1986,7 @@ void BulletBillLauncherRenderer::render(QPainter *painter, QRect *)
 {
     if (spr->getNybble(4) == 1)
     {
-        painter->drawPixmap(spr->getx(), spr->gety()+spr->getheight()-40, 20, 40, ImageCache::getInstance()->get(SpriteImg, "bullet_bill_launcher.png").transformed(QTransform().scale(1,-1)));
+        painter->drawPixmap(spr->getx(), spr->gety()+spr->getheight()-40, 20, 40, transformedPixmap(ImageCache::getInstance()->get(SpriteImg, "bullet_bill_launcher.png"), QTransform().scale(1,-1)));
         for (int i = 0; i < spr->getNybble(10); i++) painter->drawPixmap(spr->getx(), spr->gety()+i*20, 20, 20, ImageCache::getInstance()->get(SpriteImg, "bullet_bill_launcher_middle.png"));
     }
     else
@@ -1887,7 +2017,7 @@ void BulletBillTurretRenderer::render(QPainter *painter, QRect *)
         if ((spr->getNybbleData(8, 9) & (1 << i)) == 0)
         {
             if (faceRight)
-                painter->drawPixmap(spr->getx(), spr->gety()-(i*20), 26, 20, ImageCache::getInstance()->get(SpriteImg, "bullet_bill_turret_head.png").transformed(QTransform().scale(-1,1)));
+                painter->drawPixmap(spr->getx(), spr->gety()-(i*20), 26, 20, transformedPixmap(ImageCache::getInstance()->get(SpriteImg, "bullet_bill_turret_head.png"), QTransform().scale(-1,1)));
             else
                 painter->drawPixmap(spr->getx()-6, spr->gety()-(i*20), 26, 20, ImageCache::getInstance()->get(SpriteImg, "bullet_bill_turret_head.png"));
         }
@@ -2159,7 +2289,7 @@ void BowserFlameRenderer::render(QPainter *painter, QRect *drawrect)
     if (spr->getNybble(8) == 1) filename = "bowser_flame_purple.png";
 
     QPixmap img = ImageCache::getInstance()->get(SpriteImg, filename);
-    if (spr->getNybble(10) == 1) img = img.transformed(QTransform().scale(-1, 1));
+    if (spr->getNybble(10) == 1) img = transformedPixmap(img, QTransform().scale(-1, 1));
 
     painter->drawPixmap(QRect(spr->getx() + spr->getOffsetX(), spr->gety() + spr->getOffsetY(), spr->getwidth(), spr->getheight()), img);
 }
@@ -3212,37 +3342,37 @@ void BobOmbCannonRenderer::render(QPainter *painter, QRect *)
     switch (spr->getNybble(10))
     {
     case 1:
-        img = img.transformed(QTransform().scale(1,-1));
+        img = transformedPixmap(img, QTransform().scale(1,-1));
         break;
     case 2:
-        img = img = ImageCache::getInstance()->get(SpriteImg, "cannon_angle.png");
+        img = ImageCache::getInstance()->get(SpriteImg, "cannon_angle.png");
         break;
     case 3: case 4:
-        img = img = ImageCache::getInstance()->get(SpriteImg, "cannon_angle.png");
-        img = img.transformed(QTransform().rotate(-90));
+        img = ImageCache::getInstance()->get(SpriteImg, "cannon_angle.png");
+        img = transformedPixmap(img, QTransform().rotate(-90));
         break;
     case 5:
-        img = img = ImageCache::getInstance()->get(SpriteImg, "cannon_angle.png");
-        img = img.transformed(QTransform().rotate(-90).scale(1,-1));
+        img = ImageCache::getInstance()->get(SpriteImg, "cannon_angle.png");
+        img = transformedPixmap(img, QTransform().rotate(-90).scale(1,-1));
         break;
     case 6: case 10: case 11:
-        img = img = ImageCache::getInstance()->get(SpriteImg, "cannon_straight.png");
-        img = img.transformed(QTransform().rotate(-90));
+        img = ImageCache::getInstance()->get(SpriteImg, "cannon_straight.png");
+        img = transformedPixmap(img, QTransform().rotate(-90));
         break;
     case 7: case 12: case 13:
-        img = img = ImageCache::getInstance()->get(SpriteImg, "cannon_straight.png");
-        img = img.transformed(QTransform().rotate(-90).scale(1,-1));
+        img = ImageCache::getInstance()->get(SpriteImg, "cannon_straight.png");
+        img = transformedPixmap(img, QTransform().rotate(-90).scale(1,-1));
         break;
     case 8:
-        img = img = ImageCache::getInstance()->get(SpriteImg, "cannon.png");
-        img = img.transformed(QTransform().rotate(-90));
+        img = ImageCache::getInstance()->get(SpriteImg, "cannon.png");
+        img = transformedPixmap(img, QTransform().rotate(-90));
         break;
     case 9:
-        img = img = ImageCache::getInstance()->get(SpriteImg, "cannon.png");
-        img = img.transformed(QTransform().rotate(-90).scale(1,-1));
+        img = ImageCache::getInstance()->get(SpriteImg, "cannon.png");
+        img = transformedPixmap(img, QTransform().rotate(-90).scale(1,-1));
         break;
     case 14: case 15:
-        img = img = ImageCache::getInstance()->get(SpriteImg, "cannon_straight.png");
+        img = ImageCache::getInstance()->get(SpriteImg, "cannon_straight.png");
         break;
     default:
         break;
@@ -3253,18 +3383,18 @@ void BobOmbCannonRenderer::render(QPainter *painter, QRect *)
         switch (spr->getNybble(10))
         {
         case 0: case 1:
-            img = img.transformed(QTransform().scale(-1,1));
+            img = transformedPixmap(img, QTransform().scale(-1,1));
             break;
         case 2:
-            img = img.transformed(QTransform().scale(-1,1).rotate(-90));
+            img = transformedPixmap(img, QTransform().scale(-1,1).rotate(-90));
             break;
         case 3:
-            img = img.transformed(QTransform().scale(-1,1).rotate(90));
+            img = transformedPixmap(img, QTransform().scale(-1,1).rotate(90));
             break;
         case 4: case 5: case 14: case 15:
             break;
         default:
-            img = img.transformed(QTransform().scale(1,-1));
+            img = transformedPixmap(img, QTransform().scale(1,-1));
             break;
         }
     }
@@ -4354,16 +4484,22 @@ void EntranceRenderer::render(QPainter *painter, QRect *drawrect)
     QRect textRect(entr->getx()+entr->getOffsetX()+2, entr->gety()+entr->getOffsetY()+1, entr->getwidth()-4, entr->getheight());
     QRect imgRect(entr->getx()+entr->getOffsetX(), entr->gety()+entr->getOffsetY(), 20, 20);
 
+    bool showText = painter->transform().m11() >= 0.5;
+    auto drawEntranceText = [&](const QString& text) {
+        if (showText)
+            painter->drawText(textRect, text, Qt::AlignLeft | Qt::AlignBottom);
+    };
+
     painter->setPen(QColor(0,0,0));
 
     switch (entr->getEntrType())
     {
     case 0: case 11: case 12: case 13: case 14:
-        painter->drawText(textRect, "N", Qt::AlignLeft | Qt::AlignBottom);
+        drawEntranceText("N");
         painter->drawPixmap(imgRect, ImageCache::getInstance()->get(EntranceImg, "normal.png"));
         break;
     case 1:
-        painter->drawText(textRect, "C", Qt::AlignLeft | Qt::AlignBottom);
+        drawEntranceText("C");
         painter->drawPixmap(imgRect, ImageCache::getInstance()->get(EntranceImg, "normal.png"));
         break;
     case 2:
@@ -4382,58 +4518,63 @@ void EntranceRenderer::render(QPainter *painter, QRect *drawrect)
         painter->drawPixmap(imgRect, ImageCache::getInstance()->get(EntranceImg, "pipe_right.png"));
         break;
     case 7:
-        painter->drawText(textRect, "F", Qt::AlignLeft | Qt::AlignBottom);
+        drawEntranceText("F");
         painter->drawPixmap(imgRect, ImageCache::getInstance()->get(EntranceImg, "down.png"));
         break;
     case 8:
-        painter->drawText(textRect, "G", Qt::AlignLeft | Qt::AlignBottom);
+        drawEntranceText("G");
         painter->drawPixmap(imgRect, ImageCache::getInstance()->get(EntranceImg, "down.png"));
         break;
     case 9:
-        painter->drawText(textRect, "S", Qt::AlignLeft | Qt::AlignBottom);
+        drawEntranceText("S");
         painter->drawPixmap(imgRect, ImageCache::getInstance()->get(EntranceImg, "normal.png"));
         break;
     case 10:
-        painter->drawText(textRect, "S", Qt::AlignLeft | Qt::AlignBottom);
+        drawEntranceText("S");
         painter->drawPixmap(imgRect, ImageCache::getInstance()->get(EntranceImg, "swimming.png"));
         break;
     case 15:
         painter->drawPixmap(imgRect, ImageCache::getInstance()->get(EntranceImg, "boss_door_entrance.png"));
         break;
     case 20:
-        painter->drawText(textRect, "J", Qt::AlignLeft | Qt::AlignBottom);
+        drawEntranceText("J");
         painter->drawPixmap(imgRect, ImageCache::getInstance()->get(EntranceImg, "up.png"));
         break;
     case 21:
-        painter->drawText(textRect, "V", Qt::AlignLeft | Qt::AlignBottom);
+        drawEntranceText("V");
         painter->drawPixmap(imgRect, ImageCache::getInstance()->get(EntranceImg, "up.png"));
         break;
     case 23: case 25: case 26:
-        painter->drawText(textRect, "B", Qt::AlignLeft | Qt::AlignBottom);
+        drawEntranceText("B");
         painter->drawPixmap(imgRect, ImageCache::getInstance()->get(EntranceImg, "normal.png"));
         break;
     case 24:
-        painter->drawText(textRect, "J", Qt::AlignLeft | Qt::AlignBottom);
+        drawEntranceText("J");
         painter->drawPixmap(imgRect, ImageCache::getInstance()->get(EntranceImg, "left.png"));
         break;
     case 27:
         painter->drawPixmap(imgRect, ImageCache::getInstance()->get(EntranceImg, "door_entrance.png"));
         break;
     case 30:
-        painter->drawText(textRect, "W", Qt::AlignLeft | Qt::AlignBottom);
+        drawEntranceText("W");
         painter->drawPixmap(imgRect, ImageCache::getInstance()->get(EntranceImg, "normal.png"));
         break;
     case 31:
-        painter->drawText(textRect, "W", Qt::AlignLeft | Qt::AlignBottom);
+        drawEntranceText("W");
         painter->drawPixmap(imgRect, ImageCache::getInstance()->get(EntranceImg, "left.png"));
         break;
-    default:painter->drawText(textRect, "?", Qt::AlignLeft | Qt::AlignBottom);
+    default: drawEntranceText("?");
         painter->drawPixmap(imgRect, ImageCache::getInstance()->get(EntranceImg, "unknown.png"));
         break;
     }
 
-    painter->setFont(QFont("Arial", 7, QFont::Normal));
-    painter->drawText(textRect, QString("%1").arg(entr->getid()), Qt::AlignLeft | Qt::AlignTop);
+    if (showText)
+    {
+        static const QFont idFont("Arial", 7, QFont::Normal);
+        painter->setFont(idFont);
+        painter->drawText(textRect, QString("%1").arg(entr->getid()), Qt::AlignLeft | Qt::AlignTop);
+    }
+
     painter->setPen(Qt::NoPen);
 }
 
@@ -4448,7 +4589,70 @@ VCameraLimitRenderer::VCameraLimitRenderer(int leftX, int rightX, int yPos, int 
     this->isBelow = isBelow;
 }
 
-void VCameraLimitRenderer::render(QPainter *painter, QRect *)
+static QPixmap rotatedCameraArrow(int rotation)
+{
+    static QHash<int, QPixmap> arrows;
+    auto it = arrows.constFind(rotation);
+    if (it != arrows.constEnd())
+        return it.value();
+
+    QPixmap arrow = ImageCache::getInstance()->get(SpriteImg, "camlimit.png");
+    if (rotation != 0)
+        arrow = transformedPixmap(arrow, QTransform().rotate(rotation));
+    arrows.insert(rotation, arrow);
+    return arrow;
+}
+
+static void drawClippedCameraLimitLine(QPainter* painter, int x1, int y1, int x2, int y2, const QRect* drawrect)
+{
+    if (!drawrect)
+    {
+        painter->drawLine(x1, y1, x2, y2);
+        return;
+    }
+
+    if (x1 == x2)
+    {
+        if (x1 < drawrect->left()-2 || x1 > drawrect->right()+2)
+            return;
+
+        int lo = qMin(y1, y2);
+        int hi = qMax(y1, y2);
+        lo = qMax(lo, drawrect->top());
+        hi = qMin(hi, drawrect->bottom());
+        if (lo > hi)
+            return;
+
+        if (y1 <= y2)
+            painter->drawLine(x1, lo, x1, hi);
+        else
+            painter->drawLine(x1, hi, x1, lo);
+        return;
+    }
+
+    if (y1 == y2)
+    {
+        if (y1 < drawrect->top()-2 || y1 > drawrect->bottom()+2)
+            return;
+
+        int lo = qMin(x1, x2);
+        int hi = qMax(x1, x2);
+        lo = qMax(lo, drawrect->left());
+        hi = qMin(hi, drawrect->right());
+        if (lo > hi)
+            return;
+
+        if (x1 <= x2)
+            painter->drawLine(lo, y1, hi, y1);
+        else
+            painter->drawLine(hi, y1, lo, y1);
+        return;
+    }
+
+    painter->drawLine(x1, y1, x2, y2);
+}
+
+void VCameraLimitRenderer::render(QPainter *painter, QRect *drawrect)
 {
     QColor dark(100,0,0,200);
     QColor light(220,0,0,150);
@@ -4456,7 +4660,7 @@ void VCameraLimitRenderer::render(QPainter *painter, QRect *)
     QPen normalPen(light, 2, Qt::SolidLine, Qt::FlatCap);
     QPen permiablePen(light, 2, Qt::DashDotLine, Qt::FlatCap);
 
-    QPixmap arrow = ImageCache::getInstance()->get(SpriteImg, "camlimit.png");
+    QPixmap arrow = rotatedCameraArrow(isBelow ? 180 : 0);
 
     if (!isBelow)
         yPos = yPos+20;
@@ -4477,7 +4681,7 @@ void VCameraLimitRenderer::render(QPainter *painter, QRect *)
         painter->setPen(normalPen);
     }
 
-    painter->drawLine(leftX+20, yPos, rightX, yPos);
+    drawClippedCameraLimitLine(painter, leftX+20, yPos, rightX, yPos, drawrect);
 
     // Draw Offset Line
     if (yRenderOffset != 0)
@@ -4485,10 +4689,8 @@ void VCameraLimitRenderer::render(QPainter *painter, QRect *)
         normalPen.setColor(dark);
         painter->setPen(normalPen);
 
-        if (isBelow)
-            painter->drawLine(leftX, yPos-yRenderOffset, rightX+20, yPos-yRenderOffset);
-        else
-            painter->drawLine(leftX, yPos+yRenderOffset, rightX+20, yPos+yRenderOffset);
+        int offsetY = isBelow ? yPos-yRenderOffset : yPos+yRenderOffset;
+        drawClippedCameraLimitLine(painter, leftX, offsetY, rightX+20, offsetY, drawrect);
     }
 
     // Draw Arrows
@@ -4506,12 +4708,11 @@ void VCameraLimitRenderer::render(QPainter *painter, QRect *)
     if (isBelow)
     {
         // Draw Down-facing Arrow
-        arrow = arrow.transformed(QTransform().rotate(180));
-
         for (int i = leftX + offset; i <= rightX - offset; i+=60)
         {
             imgRect = QRect(i, yPos-yRenderOffset, 20, 20);
-            painter->drawPixmap(imgRect, arrow);
+            if (!drawrect || imgRect.intersects(*drawrect))
+                painter->drawPixmap(imgRect, arrow);
         }
     }
     else
@@ -4520,7 +4721,8 @@ void VCameraLimitRenderer::render(QPainter *painter, QRect *)
         for (int i = leftX + offset; i <= rightX - offset; i+=60)
         {
             imgRect = QRect(i, yPos+yRenderOffset-20, 20, 20);
-            painter->drawPixmap(imgRect, arrow);
+            if (!drawrect || imgRect.intersects(*drawrect))
+                painter->drawPixmap(imgRect, arrow);
         }
     }
 
@@ -4538,7 +4740,7 @@ HCameraLimitRenderer::HCameraLimitRenderer(int topY, int bottomY, int xPos, int 
     this->isRight = isRight;
 }
 
-void HCameraLimitRenderer::render(QPainter *painter, QRect *)
+void HCameraLimitRenderer::render(QPainter *painter, QRect *drawrect)
 {
     QColor dark(100,0,0,200);
     QColor light(220,0,0,150);
@@ -4546,7 +4748,7 @@ void HCameraLimitRenderer::render(QPainter *painter, QRect *)
     QPen normalPen(light, 2, Qt::SolidLine, Qt::FlatCap);
     QPen permiablePen(light, 2, Qt::DashDotLine, Qt::FlatCap);
 
-    QPixmap arrow = ImageCache::getInstance()->get(SpriteImg, "camlimit.png");
+    QPixmap arrow = rotatedCameraArrow(isRight ? 90 : -90);
 
     if (!isRight)
         xPos = xPos+20;
@@ -4567,7 +4769,7 @@ void HCameraLimitRenderer::render(QPainter *painter, QRect *)
         painter->setPen(normalPen);
     }
 
-    painter->drawLine(xPos, bottomY, xPos, topY+20);
+    drawClippedCameraLimitLine(painter, xPos, bottomY, xPos, topY+20, drawrect);
 
     // Draw Offset Line
     if (xRenderOffset != 0)
@@ -4575,10 +4777,8 @@ void HCameraLimitRenderer::render(QPainter *painter, QRect *)
         normalPen.setColor(dark);
         painter->setPen(normalPen);
 
-        if (isRight)
-            painter->drawLine(xPos-xRenderOffset, bottomY+20, xPos-xRenderOffset, topY);
-        else
-            painter->drawLine(xPos+xRenderOffset, bottomY+20, xPos+xRenderOffset, topY);
+        int offsetX = isRight ? xPos-xRenderOffset : xPos+xRenderOffset;
+        drawClippedCameraLimitLine(painter, offsetX, bottomY+20, offsetX, topY, drawrect);
     }
 
     // Draw Direction Arrows
@@ -4596,23 +4796,21 @@ void HCameraLimitRenderer::render(QPainter *painter, QRect *)
     if (isRight)
     {
         // Draw Right-facing Arrows
-        arrow = arrow.transformed(QTransform().rotate(90));
-
         for (int i = topY + offset; i <= bottomY - offset; i+=60)
         {
             imgRect = QRect(xPos-xRenderOffset, i, 20, 20);
-            painter->drawPixmap(imgRect, arrow);
+            if (!drawrect || imgRect.intersects(*drawrect))
+                painter->drawPixmap(imgRect, arrow);
         }
     }
     else
     {
         // Draw Left-Facing Arrows
-        arrow = arrow.transformed(QTransform().rotate(-90));
-
         for (int i = topY + offset; i <= bottomY - offset; i+=60)
         {
             imgRect = QRect(xPos+xRenderOffset-20, i, 20, 20);
-            painter->drawPixmap(imgRect, arrow);
+            if (!drawrect || imgRect.intersects(*drawrect))
+                painter->drawPixmap(imgRect, arrow);
         }
     }
 
@@ -4693,6 +4891,7 @@ void LiquidRenderer::renderTranslucent(QPainter *painter, QRect *drawrect)
 void LiquidRenderer::drawLiquid(bool transparent, int yOffset, bool topless)
 {
     painter->save();
+    painter->setPen(Qt::NoPen);
 
     if (transparent)
     {

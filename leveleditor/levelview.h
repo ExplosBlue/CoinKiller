@@ -27,11 +27,17 @@
 #include <QGestureEvent>
 #include <QPinchGesture>
 #include <QNativeGestureEvent>
+#include <QPoint>
+#include <QPointF>
+#include <QElapsedTimer>
+#include <QVector>
 
 #include "filesystem/filesystem.h"
 #include "level.h"
 #include "tileset.h"
 #include "editmanager.h"
+
+class QTimer;
 
 class LevelView : public QWidget
 {
@@ -40,14 +46,23 @@ public:
     explicit LevelView(QWidget *parent, Level *level, QUndoStack *undoStack);
     ~LevelView();
 
-    void setZoom(float zoom) { this->zoom = zoom; setMinimumSize(4096*20*zoom, 4096*20*zoom); setMaximumSize(4096*20*zoom, 4096*20*zoom); update(); }
+    static constexpr float MinZoom = 0.3f;
+    static constexpr float MaxZoom = 4.0f;
+
+    float getZoom() const { return zoom; }
+    void setZoom(float zoom);
+
+    void zoomTo(float newZoom);
+    void zoomBy(int steps);
+    static float steppedZoom(float from, int steps);
+
     void toggleGrid(bool toggle) { grid = toggle; update(); }
     void toggleCheckerboard(bool toggle) { checkerboard = toggle; update(); }
     void toggleRenderLiquids(bool toggle) { renderLiquids = toggle; update(); }
     void toggleRenderControllers(bool toggle) { renderControllers = toggle; update(); }
     void toggleRenderCameraLimits(bool toggle) { renderCameraLimits = toggle; update(); }
-    void toggle3DOverlay(bool toggle) { render3DOverlay = toggle; update(); }
-    void toggle2DTile(bool toggle) { render2DTile = toggle; update(); }
+    void toggle3DOverlay(bool toggle) { render3DOverlay = toggle; invalidateRenderCaches(); update(); }
+    void toggle2DTile(bool toggle) { render2DTile = toggle; invalidateRenderCaches(); update(); }
 
     qint8 saveLevel();
     void copy();
@@ -65,11 +80,10 @@ public:
     EditManager* editManagerPtr() { return editManager; }
 
 signals:
-    void scrollTo(int x, int y);
+    void scrollTo(float x, float y);
     void updateMinimap(QRect drawrect);
     void updateMinimapBounds();
     void updateCtrlabel(QString text);
-    void zoomLevelChanged(float zoom);
 
 public slots:
     void selectObj(Object* obj);
@@ -77,6 +91,7 @@ public slots:
     void screenshot(QRect rect);
 
     void requestUpdate();
+    void onLevelScrolled();
 
 protected:
     bool event(QEvent *) Q_DECL_OVERRIDE;
@@ -84,27 +99,43 @@ protected:
     void mousePressEvent(QMouseEvent *) Q_DECL_OVERRIDE;
     void mouseReleaseEvent(QMouseEvent *) Q_DECL_OVERRIDE;
     void mouseMoveEvent(QMouseEvent *) Q_DECL_OVERRIDE;
-    void moveEvent(QMoveEvent *) Q_DECL_OVERRIDE;
     void keyPressEvent(QKeyEvent *) Q_DECL_OVERRIDE;
     void wheelEvent(QWheelEvent *) Q_DECL_OVERRIDE;
 
 private:
 
-    void paint(QPainter& painter, QRect rect, float zoomLvl, bool selections);
+    void paint(QPainter& painter, QRect rect, QRect viewport, float zoomLvl, bool selections);
     void handleWheelZoom(QWheelEvent* evt);
     void handleWheelScroll(QWheelEvent* evt);
     void handlePinchZoom(QPinchGesture* gesture);
     void handleNativeZoom(QNativeGestureEvent* evt);
+    void invalidateRenderCaches();
+    QRect visibleRect() const;
+    QList<QRect> pinnedZoneLabelRects() const;
+    QPointF viewportTopLeft() const;
+    void scrollToPos(const QPointF& pos);
+    void startAnimationTimer(QTimer* timer);
+    void stopScrollAnimations();
+    QPointF clampScroll(const QPointF& pos) const;
+    void startSmoothScroll(float dx, float dy);
+    void smoothScrollStep();
+    void startMomentum();
+    void startInertia(const QPointF& velocity, qreal decel, qreal damping);
+    void inertiaStep();
+    void startSmoothZoom(float targetZoom, const QPointF& focalPoint);
+    void finishSmoothZoom();
+    void smoothZoomStep();
+
+    void applyZoom(float newZoom, const QPointF& focalPoint);
+    QPointF viewportCenter() const;
 
     Level* level;
 
     QUndoStack *undoStack;
 
     QRect drawrect;
+    QList<QRect> lastPinnedLabelRects;
     float zoom;
-
-    int dragX;
-    int dragY;
 
     EditManager* editManager;
 
@@ -122,6 +153,39 @@ private:
     QColor backgroundColor;
 
     bool updatePending = false;
+
+    QPointF panTarget;
+
+    QTimer* smoothScrollTimer;
+    QPointF smoothScrollTarget;
+    QPointF lastSmoothScrollPos;
+
+    QTimer* inertiaTimer;
+    QPointF inertiaVelocity;
+    QPointF inertiaPos;
+    qreal inertiaDecel;
+    qreal inertiaDamping;
+    QElapsedTimer inertiaClock;
+
+    struct PanSample
+    {
+        qint64 time;
+        QPointF position;
+    };
+
+    QPointF panLastGlobal;
+    QVector<PanSample> panSamples;
+    qint64 panLastMoveTime = 0;
+    QElapsedTimer panClock;
+
+    QTimer* scrollMomentumTimer;
+    QPointF scrollVelocity;
+    bool scrollFromTouchpad = false;
+    QElapsedTimer scrollEventClock;
+
+    QTimer* smoothZoomTimer;
+    float smoothZoomTarget;
+    QPointF smoothZoomFocalOffset;
 
     int scrollAccumulator;
 };

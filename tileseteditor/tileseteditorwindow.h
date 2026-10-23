@@ -26,12 +26,14 @@ class TilesetEditorWindow : public WindowBase
 public:
     explicit TilesetEditorWindow(WindowBase *parent, Tileset *tileset);
     ~TilesetEditorWindow();
+    void closeEvent(QCloseEvent *event);
 
 signals:
     void selectedObjectChanged(int objNbr);
 
 public slots:
     void updateSelectedTile(int tileTL, int tileBR);
+    void updateSelectedTiles(QList<int> tiles);
     void updateSelectedOvTile(int ovTile);
     void setSelTileData(QString text);
     void updateObjectEditor();
@@ -130,6 +132,10 @@ private:
     int selectedTileTL;
     int selectedTileBR;
 
+    QSet<int> selectedTiles;
+
+    bool updatingSelection = false;
+
     int selectedSpecialBehavior;
     int selectedParameter;
 
@@ -164,6 +170,13 @@ private:
     SettingsManager* settings;
 
     QLabel* editStatus;
+
+    QByteArray savedTilesetState;
+    bool unsavedChanges = false;
+
+    void updateUnsavedStatus();
+    QByteArray tilesetState();
+    int showSaveDialog();
 
     void changeEvent(QEvent* event);
 };

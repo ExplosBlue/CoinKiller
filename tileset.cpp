@@ -16,22 +16,25 @@
 */
 
 #include "tileset.h"
+#include "tilesetlist.h"
 #include "game.h"
 #include "imagecache.h"
+#include "objectrenderer.h"
 
-#include <utility>
+#include <QSet>
 
 Tileset::Tileset(Game *game, QString name)
 {
     this->game = game;
     this->name = name;
 
-    //qDebug("LOAD TILESET %s", name.toStdString().c_str());
+
 
     archive = new SarcFilesystem(game->fs->openFile("/Unit/"+name+".sarc"));
     ctpk = new Ctpk(archive->openFile("/BG_tex/"+name+".ctpk"));
 
     texImage = ctpk->getTexture((quint32)0);
+    texPixmap = QPixmap::fromImage(texImage);
 
     if (name.startsWith("J_"))
         drawOverrides = true;
@@ -54,8 +57,6 @@ Tileset::Tileset(Game *game, QString name)
         quint8 randomisation = objindex->read8();
         quint8 crap = objindex->read8();
 
-        //qDebug("OBJECT %d -- %04X %dx%d %02X %02X", o, offset, width, height, crap1, crap2);
-
         ObjectDef* obj = new ObjectDef();
         obj->width = width;
         obj->height = height;
@@ -65,21 +66,22 @@ Tileset::Tileset(Game *game, QString name)
         if (crap != 0)
             qDebug() << "Found unkFlag value != 0:" << crap << "for Object" << o;
 
-        //obj->xRepeatStart = 0xFF;
         obj->yRepeatStart = 0xFF;
 
-        obj->slopeY = obj->height; // failsafe default
-
         // data format:
-        // [optional slope marker, bit7 set]
-        // [repeat] [Tile#] 02
-        // FE -> next line
-        // FF -> end
-
-        // repeat:
-        // 01 -> repeat X
-        // 02 -> repeat Y (in NSMBDS, flag for first tile applies to whole line, maybe same here?)
-        // 04 -> slope thing (used for slope second row)
+        // [marker] [flags] [tile] [slot] ...
+        // 0xFE -> next row
+        // 0xFF -> end
+        //
+        // markers:
+        // 0x80-0x83, 0x90-0x93 -> slope type (first row)
+        // 0x84 -> section 1 start
+        // 0x85 -> section 2 start
+        //
+        // flags:
+        // 0x01 -> repeat X
+        // 0x02 -> repeat Y
+        // 0x04 -> slope base tile
 
         quint8 b;
         objdata->seek(offset);
@@ -87,10 +89,8 @@ Tileset::Tileset(Game *game, QString name)
         int curx = 0, cury = 0;
 
         ObjectRow* row = new ObjectRow();
-        row->slopeFlags = 0;
-        row->xRepeatStart = 0xFF;
         bool xrepeat = false;
-        int shittyxrepeat = 0;
+        int flag4State = 0;
         bool yrepeat = false;
 
         for (;;)
@@ -108,43 +108,36 @@ Tileset::Tileset(Game *game, QString name)
                 delete row;
 
                 row = new ObjectRow();
-                row->slopeFlags = 0;
-                row->xRepeatStart = 0xFF;
                 xrepeat = false;
-                shittyxrepeat = 0;
+                flag4State = 0;
 
                 curx = 0;
                 cury++;
                 continue;
             }
 
-            if (b & 0x80) // slope shit
+            if (b & 0x80) // slope marker
             {
-                if (b == 0x84) // checkme
-                    obj->slopeY = cury;
-
                 row->slopeFlags = b;
                 b = objdata->read8();
             }
 
-
             if (b & 0x04)
             {
-                if (shittyxrepeat == 2)
+                if (flag4State == 2)
                 {
-                    shittyxrepeat = 3;
+                    flag4State = 3;
                     row->xRepeatEnd = curx;
                 }
-                else if (!shittyxrepeat)
-                    shittyxrepeat = 1;
+                else if (!flag4State)
+                    flag4State = 1;
             }
-            else if (shittyxrepeat == 1)
+            else if (flag4State == 1)
             {
-                shittyxrepeat = 2;
+                flag4State = 2;
                 row->xRepeatStart = curx;
                 row->xRepeatEnd = width; // failsafe
             }
-
 
             if ((b & 0x01) && !xrepeat)
             {
@@ -193,8 +186,31 @@ Tileset::Tileset(Game *game, QString name)
     objindex->close();
     delete objindex;
 
-    if (objectDefs.size() > 0)
-        slot = (objectDefs[0]->rows[0].data[2] & 6) >> 1;
+    slot = TilesetList::slotForFileName(name);
+
+    if (slot == -1)
+    {
+        slot = 0;
+        bool foundSlot = false;
+
+        for (int o = 0; o < objectDefs.size() && !foundSlot; o++)
+        {
+            ObjectDef& obj = *objectDefs[o];
+
+            for (int r = 0; r < obj.rows.size() && !foundSlot; r++)
+            {
+                for (int t = 0; t < obj.rows[r].data.size(); t += 3)
+                {
+                    if (obj.rows[r].data[t+1] == 0 && (obj.rows[r].data[t+2] & 6) == 0)
+                        continue;
+
+                    slot = (obj.rows[r].data[t+2] & 6) >> 1;
+                    foundSlot = true;
+                    break;
+                }
+            }
+        }
+    }
 
     // parse behaviors
     FileBase* behaviorsFile = archive->openFile("BG_chk/d_bgchk_" + name + ".bin");
@@ -231,11 +247,45 @@ Tileset::~Tileset()
 }
 
 
+void Tileset::clearScaledTiles()
+{
+    scaledTiles.clear();
+    scaledTilesScale = 1.0;
+}
+
+const QPixmap& Tileset::getScaledTile(int num, qreal scale)
+{
+    const qreal tolerance = ObjectRenderer::isSmoothZooming() ? 0.35 : 0.001;
+    if (qAbs(scale / scaledTilesScale - 1.0) > tolerance)
+    {
+        scaledTiles.clear();
+        scaledTilesScale = scale;
+    }
+
+    auto it = scaledTiles.constFind(num);
+    if (it != scaledTiles.constEnd())
+        return it.value();
+
+    QRect rsrc(2 + ((num%21)*24), 2 + ((num/21)*24), 20, 20);
+    int size = qMax(1, qRound(20.0 * scale));
+    QImage tile = texImage.copy(rsrc).scaled(size, size, Qt::IgnoreAspectRatio, Qt::FastTransformation);
+    QPixmap pixmap = QPixmap::fromImage(tile);
+    pixmap.setDevicePixelRatio(size / 20.0);
+
+    return scaledTiles.insert(num, pixmap).value();
+}
+
 // x and y in tile coords
 void Tileset::drawTile(QPainter& painter, TileGrid& grid, int num, int x, int y, float zoom, int item)
 {
+    drawTile(painter, grid, num, x, y, zoom, item, grid.value(0xFFFFFFFF));
+}
+
+void Tileset::drawTile(QPainter& painter, TileGrid& grid, int num, int x, int y, float zoom, int item, quint8 gridLayer)
+{
     quint32 gridid = x | (y<<16);
-    if (grid[gridid] == grid[0xFFFFFFFF])
+    auto gridIt = grid.constFind(gridid);
+    if (gridIt != grid.constEnd() && gridIt.value() == gridLayer)
         return;
 
     int tsize = (int)(20*zoom);
@@ -243,6 +293,16 @@ void Tileset::drawTile(QPainter& painter, TileGrid& grid, int num, int x, int y,
     y *= tsize;
 
     QRect rdst(x, y, tsize, tsize);
+
+    qreal tileScale = 1.0;
+    if (tsize == 20)
+    {
+        QTransform trans = painter.transform();
+        if (trans.m11() > 0.0 && qAbs(trans.m11() - trans.m22()) < 0.001 &&
+            qAbs(trans.m12()) < 0.001 && qAbs(trans.m21()) < 0.001)
+            tileScale = trans.m11() * painter.device()->devicePixelRatioF();
+    }
+    bool useScaled = tileScale > 1.001;
 
     if (drawOverrides)
     {
@@ -257,17 +317,28 @@ void Tileset::drawTile(QPainter& painter, TileGrid& grid, int num, int x, int y,
 
     if (draw2D)
     {
-        QRect rsrc(2 + ((num%21)*24), 2 + ((num/21)*24), 20, 20);
-        painter.drawImage(rdst, texImage, rsrc);
+        if (useScaled)
+            painter.drawPixmap(rdst, getScaledTile(num, tileScale));
+        else
+        {
+            QRect rsrc(2 + ((num%21)*24), 2 + ((num/21)*24), 20, 20);
+            painter.drawPixmap(rdst, texPixmap, rsrc);
+        }
     }
 
     if (draw3D && (getOverlayTile(num) !=0))
     {
-        QRect overlaysrc(2 + ((getOverlayTile(num)%21)*24), 2 + ((getOverlayTile(num)/21)*24), 20, 20);
-        painter.drawImage(rdst, texImage, overlaysrc);
+        int overlay = getOverlayTile(num);
+        if (useScaled)
+            painter.drawPixmap(rdst, getScaledTile(overlay, tileScale));
+        else
+        {
+            QRect overlaysrc(2 + ((overlay%21)*24), 2 + ((overlay/21)*24), 20, 20);
+            painter.drawPixmap(rdst, texPixmap, overlaysrc);
+        }
     }
 
-    grid[gridid] = grid[0xFFFFFFFF];
+    grid.insert(gridid, gridLayer);
 
     // Draw Overlays
     if (behaviors[num][0] == 0 && behaviors[num][2] == 1) // Beanstalk Stopper
@@ -327,63 +398,60 @@ void Tileset::drawTile(QPainter& painter, TileGrid& grid, int num, int x, int y,
     }
 }
 
-void Tileset::drawRow(QPainter& painter, TileGrid& grid, ObjectDef& def, ObjectRow& row, int x, int y, int w, float zoom)
+template<typename F>
+static void forEachRowCell(const ObjectRow& row, int w, F fn)
 {
-    int sx = 0, dx = 0;
     int end = row.data.length()/3;
+    if (end <= 0 || w <= 0)
+        return;
 
-    if (row.xRepeatStart != 0xFF)
+    int dx = 0;
+
+    if (row.xRepeatStart != 0xFF && row.xRepeatStart < end)
     {
-        // with repeat
         int rstart = row.xRepeatStart;
-        int rend = w - (def.width - row.xRepeatEnd);
+        int repeatEnd = qMin((int)row.xRepeatEnd, end);
+        if (repeatEnd <= rstart)
+            repeatEnd = end;
+        int rend = w - (end - repeatEnd);
 
-        sx = 0;
+        int sx = 0;
         while (dx < rstart)
         {
-            if (row.data[sx*3 + 1] || (row.data[sx*3 + 2] & 6) >> 1) // Lame work arround
-                drawTile(painter, grid, row.data[sx*3 + 1], x+dx, y, zoom, (row.data[sx*3 + 2] & 120) >> 3);
-
+            fn(sx, dx);
             dx++;
             sx++;
-            if (sx >= row.xRepeatStart)
+            if (sx >= rstart)
                 sx = 0;
         }
 
-        sx = row.xRepeatStart;
+        sx = rstart;
         while (dx < rend)
         {
-            if (row.data[sx*3 + 1] || (row.data[sx*3 + 2] & 6) >> 1) // Lame work arround
-                drawTile(painter, grid, row.data[sx*3 + 1], x+dx, y, zoom, (row.data[sx*3 + 2] & 120) >> 3);
-
+            fn(sx, dx);
             dx++;
             sx++;
-            if (sx >= row.xRepeatEnd)
-                sx = row.xRepeatStart;
+            if (sx >= repeatEnd)
+                sx = rstart;
         }
 
-        sx = row.xRepeatEnd;
+        sx = qMin(repeatEnd, end - 1);
         while (dx < w)
         {
-            if (row.data[sx*3 + 1] || (row.data[sx*3 + 2] & 6) >> 1) // Lame work arround
-                drawTile(painter, grid, row.data[sx*3 + 1], x+dx, y, zoom, (row.data[sx*3 + 2] & 120) >> 3);
-
+            fn(sx, dx);
             dx++;
             sx++;
             if (sx >= end)
-                sx = row.xRepeatEnd;
+                sx = qMin(repeatEnd, end - 1);
         }
     }
     else
     {
-        // without repeat
-
-        sx = 0;
-        while (dx < w)
+        int drawEnd = (row.data[0] == 4) ? qMin(w, end) : w;
+        int sx = 0;
+        while (dx < drawEnd)
         {
-            if (row.data[sx*3 + 1] || (row.data[sx*3 + 2] & 6) >> 1) // Lame work arround
-                drawTile(painter, grid, row.data[sx*3 + 1], x+dx, y, zoom, (row.data[sx*3 + 2] & 120) >> 3);
-
+            fn(sx, dx);
             dx++;
             sx++;
             if (sx >= end)
@@ -392,12 +460,510 @@ void Tileset::drawRow(QPainter& painter, TileGrid& grid, ObjectDef& def, ObjectR
     }
 }
 
-void Tileset::drawObject(QPainter& painter, TileGrid& grid, int num, int x, int y, int w, int h, float zoom)
+template<typename F>
+static void forEachRowCellRange(const ObjectRow& row, int w, int dxStart, int dxEnd, F fn)
+{
+    int end = row.data.length()/3;
+    if (end <= 0 || w <= 0)
+        return;
+
+    dxStart = qMax(dxStart, 0);
+    dxEnd = qMin(dxEnd, w);
+    if (dxStart >= dxEnd)
+        return;
+
+    if (row.xRepeatStart != 0xFF && row.xRepeatStart < end)
+    {
+        int rstart = row.xRepeatStart;
+        int repeatEnd = qMin((int)row.xRepeatEnd, end);
+        if (repeatEnd <= rstart)
+            repeatEnd = end;
+        int rend = w - (end - repeatEnd);
+        int thirdStart = qMax(rstart, rend);
+
+        for (int dx = dxStart; dx < dxEnd; dx++)
+        {
+            int sx;
+            if (dx < rstart)
+                sx = dx;
+            else if (dx < rend)
+                sx = rstart + (dx-rstart) % (repeatEnd-rstart);
+            else
+                sx = repeatEnd + (dx-thirdStart) % (end-repeatEnd);
+            fn(sx, dx);
+        }
+    }
+    else
+    {
+        int drawEnd = (row.data[0] == 4) ? qMin(w, end) : w;
+        dxEnd = qMin(dxEnd, drawEnd);
+        if (dxStart >= dxEnd)
+            return;
+
+        int sx = dxStart % end;
+        for (int dx = dxStart; dx < dxEnd; dx++)
+        {
+            fn(sx, dx);
+            if (++sx >= end)
+                sx = 0;
+        }
+    }
+}
+
+template<typename F>
+static void forEachSlopeTile(const ObjectDef& def, int w, int h, F fn)
+{
+    if (def.rows.isEmpty())
+        return;
+
+    quint8 slopeflag = def.rows[0].slopeFlags;
+
+    if (!(slopeflag & 0x80) || slopeflag == SlopeSection1 || slopeflag == SlopeSection2)
+        return;
+
+    QList<int> sections[3];
+    int section = 0;
+
+    for (int r = 0; r < def.rows.size(); r++)
+    {
+        quint8 flags = def.rows[r].slopeFlags;
+
+        if (flags == SlopeSection1)
+            section = 1;
+        else if (flags == SlopeSection2)
+            section = 2;
+
+        sections[section].append(r);
+    }
+
+    int secW[3] = {0, 0, 0};
+    int secH[3] = {0, 0, 0};
+
+    for (int s = 0; s < 3; s++)
+    {
+        secH[s] = sections[s].size();
+
+        for (int r : sections[s])
+            secW[s] = qMax(secW[s], def.rows[r].data.size() / 3);
+    }
+
+    if (secW[0] <= 0 || secH[0] <= 0)
+        return;
+
+    int w0 = secW[0], h0 = secH[0];
+    int w1 = secW[1], h1 = secH[1];
+    int h2 = secH[2];
+
+    auto normRow = [&](int s, int rowNbr)
+    {
+        int n = sections[s].size();
+        return ((rowNbr % n) + n) % n;
+    };
+
+    auto emitTile = [&](int s, int rowNbr, int col, int px, int py)
+    {
+        if (sections[s].isEmpty() || px < 0 || px >= w || py >= h)
+            return;
+
+        int flatRow = sections[s][normRow(s, rowNbr)];
+        int rowW = def.rows[flatRow].data.size() / 3;
+
+        if (col < 0 || col >= rowW)
+            return;
+
+        fn(flatRow, col, px, py);
+    };
+
+    auto emitRow = [&](int s, int rowNbr, int px, int py, int rowWidth)
+    {
+        if (sections[s].isEmpty() || px < 0 || py >= h || rowWidth <= 0)
+            return;
+
+        int flatRow = sections[s][normRow(s, rowNbr)];
+        const ObjectRow& row = def.rows[flatRow];
+
+        forEachRowCell(row, qMin(rowWidth, w - px), [&](int col, int dx)
+        {
+            fn(flatRow, col, px + dx, py);
+        });
+    };
+
+    auto drawSlopeUpSide = [&](int cx, int cy)
+    {
+        for (int r = 0; r < h0; r++)
+        {
+            int ty = cy - r;
+            if (ty < 0) break;
+
+            for (int c = 0; c < w0; c++)
+            {
+                if (cx + c >= w) break;
+                emitTile(0, h0 - 1 - r, c, cx + c, ty);
+            }
+        }
+
+        if (cx + w0 < w && h2 > 0)
+        {
+            for (int r = 0; r < h0; r++)
+            {
+                int ty = cy - r;
+                if (ty < 0) break;
+
+                emitRow(2, h2 - 1 - r, cx + w0, ty, w - cx - w0);
+            }
+        }
+
+        if (cx > 0 && h1 > 0)
+        {
+            for (int r = 0; r < h0; r++)
+            {
+                int ty = cy - r;
+                if (ty < 0) break;
+
+                emitRow(1, h1 - 1 - r, 0, ty, qMin(cx, w));
+            }
+        }
+    };
+
+    auto drawSlopeDownSide = [&](int cx, int cy)
+    {
+        for (int r = 0; r < h0; r++)
+        {
+            int ty = cy - r;
+            if (ty < 0) break;
+
+            for (int c = 0; c < w0; c++)
+            {
+                if (cx + c >= w) break;
+                emitTile(0, h0 - 1 - r, c, cx + c, ty);
+            }
+        }
+
+        if (cx > 0 && h2 > 0)
+        {
+            for (int r = 0; r < h0; r++)
+            {
+                int ty = cy - r;
+                if (ty < 0) break;
+
+                int rowNbr = h2 - 1 - r;
+                int rowW = def.rows[sections[2][normRow(2, rowNbr)]].data.size() / 3;
+
+                for (int c = 0; c < cx && c < w; c++)
+                {
+                    int col = rowW - cx + c;
+                    if (col < 0 || col >= rowW) continue;
+                    emitTile(2, rowNbr, col, c, ty);
+                }
+            }
+        }
+
+        if (cx + w0 < w && h1 > 0)
+        {
+            for (int r = 0; r < h0; r++)
+            {
+                int ty = cy - r;
+                if (ty < 0) break;
+
+                emitRow(1, h1 - 1 - r, cx + w0, ty, w - cx - w0);
+            }
+        }
+    };
+
+    auto drawSlopeUpsideDownSide = [&](int cx, int cy)
+    {
+        for (int r = 0; r < h0; r++)
+        {
+            int ty = cy + r;
+            if (ty >= h) break;
+
+            for (int c = 0; c < w0; c++)
+            {
+                if (cx + c >= w) break;
+                emitTile(0, r, c, cx + c, ty);
+            }
+        }
+
+        if (cx + w0 < w && h2 > 0)
+        {
+            for (int r = 0; r < h0; r++)
+            {
+                int ty = cy + r;
+                if (ty >= h) break;
+
+                emitRow(2, r, cx + w0, ty, w - cx - w0);
+            }
+        }
+
+        if (cx > 0 && h1 > 0)
+        {
+            for (int r = 0; r < h0; r++)
+            {
+                int ty = cy + r;
+                if (ty >= h) break;
+
+                emitRow(1, r, 0, ty, qMin(cx, w));
+            }
+        }
+    };
+
+    auto drawSlopeUpsideUpSide = [&](int cx, int cy)
+    {
+        for (int r = 0; r < h0; r++)
+        {
+            int ty = cy + r;
+            if (ty >= h) break;
+
+            for (int c = 0; c < w0; c++)
+            {
+                if (cx + c >= w) break;
+                emitTile(0, r, c, cx + c, ty);
+            }
+        }
+
+        if (cx + w0 < w && h1 > 0)
+        {
+            for (int r = 0; r < h0; r++)
+            {
+                int ty = cy + r;
+                if (ty >= h) break;
+
+                emitRow(1, r, cx + w0, ty, w - cx - w0);
+            }
+        }
+
+        if (cx > 0 && h2 > 0)
+        {
+            for (int r = 0; r < h0; r++)
+            {
+                int ty = cy + r;
+                if (ty >= h) break;
+
+                int rowNbr = normRow(2, r);
+                int rowW = def.rows[sections[2][rowNbr]].data.size() / 3;
+
+                for (int c = 0; c < cx && c < w; c++)
+                {
+                    int col = rowW - cx + c;
+                    if (col < 0 || col >= rowW) continue;
+                    emitTile(2, rowNbr, col, c, ty);
+                }
+            }
+        }
+    };
+
+    auto drawSlopeUpBase = [&](int cx, int cy)
+    {
+        if (cx + w1 <= w && h1 > 0)
+        {
+            for (int r = 0; r < h1; r++)
+            {
+                int ty = cy - (h1 - 1 - r);
+                if (ty < 0) break;
+
+                emitRow(1, r, cx, ty, w1);
+            }
+        }
+
+        if (w >= cx + w0)
+        {
+            for (int r = 0; r < h0; r++)
+            {
+                int ty = cy - h1 - r;
+                if (ty < 0) break;
+
+                for (int c = 0; c < w0; c++)
+                {
+                    if (cx + c >= w) break;
+                    emitTile(0, h0 - 1 - r, c, cx + c, ty);
+                }
+            }
+        }
+
+        if (cx + w0 < w && h2 > 0)
+        {
+            for (int r = 0; r < h0; r++)
+            {
+                int ty = cy - h1 - r;
+                if (ty < 0) break;
+
+                emitRow(2, h2 - 1 - r, cx + w0, ty, w0);
+            }
+        }
+    };
+
+    auto drawSlopeDownBase = [&](int cx, int cy)
+    {
+        if (w >= cx + w0)
+        {
+            for (int r = 0; r < h0; r++)
+            {
+                int ty = cy + r;
+                if (ty >= h) break;
+
+                for (int c = 0; c < w0; c++)
+                {
+                    if (cx + c >= w) break;
+                    emitTile(0, r, c, cx + c, ty);
+                }
+            }
+        }
+
+        if (w1 + cx <= w && h1 > 0)
+        {
+            for (int r = 0; r < h1; r++)
+            {
+                int ty = cy + h0 + r;
+                if (ty >= h) break;
+
+                emitRow(1, r, cx, ty, w1);
+            }
+        }
+    };
+
+    auto drawSlopeUpsideDownBase = [&](int cx, int cy)
+    {
+        if (w >= cx + w0)
+        {
+            for (int r = 0; r < h0; r++)
+            {
+                int ty = cy + h1 + r;
+                if (ty >= h) break;
+
+                for (int c = 0; c < w0; c++)
+                {
+                    if (cx + c >= w) break;
+                    emitTile(0, r, c, cx + c, ty);
+                }
+            }
+        }
+
+        if (cx + w0 <= w && h1 > 0)
+        {
+            for (int r = 0; r < h1; r++)
+            {
+                int ty = cy + r;
+                if (ty >= h) break;
+
+                emitRow(1, r, cx, ty, w1);
+            }
+        }
+
+        if (cx + w0 <= w && h2 > 0)
+        {
+            for (int r = 0; r < h0; r++)
+            {
+                int ty = cy + r;
+                if (ty >= h) break;
+
+                emitRow(2, r, cx + w0, ty, w1);
+            }
+        }
+    };
+
+    auto drawSlopeUpsideUpBase = [&](int cx, int cy)
+    {
+        if (w1 + cx <= w && h1 > 0)
+        {
+            for (int r = 0; r < h1; r++)
+            {
+                int ty = cy - h0 - (h1 - 1 - r);
+                if (ty < 0) break;
+
+                emitRow(1, r, cx, ty, w1);
+            }
+        }
+
+        if (w >= cx + w0)
+        {
+            for (int r = 0; r < h0; r++)
+            {
+                int ty = cy - r;
+                if (ty < 0) break;
+
+                for (int c = 0; c < w0; c++)
+                {
+                    if (cx + c >= w) break;
+                    emitTile(0, h0 - 1 - r, c, cx + c, ty);
+                }
+            }
+        }
+    };
+
+    switch (slopeflag)
+    {
+    case SlopeUpSide:
+        for (int cx = 0, cy = h - 1; cy >= 0; cx += w0, cy -= h0)
+            drawSlopeUpSide(cx, cy);
+        break;
+    case SlopeDownSide:
+        for (int cx = w - w0, cy = h - 1; cy >= 0; cx -= w0, cy -= h0)
+            drawSlopeDownSide(cx, cy);
+        break;
+    case SlopeUpsideDownSide:
+        for (int cx = 0, cy = 0; cy < h; cx += w0, cy += h0)
+            drawSlopeUpsideDownSide(cx, cy);
+        break;
+    case SlopeUpsideUpSide:
+        for (int cx = w - w0, cy = 0; cy < h; cx -= w0, cy += h0)
+            drawSlopeUpsideUpSide(cx, cy);
+        break;
+    case SlopeUpBase:
+        for (int cx = 0, cy = h - 1; cy >= 0; cx += w0, cy -= h0)
+            drawSlopeUpBase(cx, cy);
+        break;
+    case SlopeDownBase:
+        for (int cx = 0, cy = 0; cy < h; cx += w0, cy += h0)
+            drawSlopeDownBase(cx, cy);
+        break;
+    case SlopeUpsideDownBase:
+        for (int cx = 0, cy = 0; cy < h; cx += w0, cy += h0)
+            drawSlopeUpsideDownBase(cx, cy);
+        break;
+    case SlopeUpsideUpBase:
+        for (int cx = 0, cy = h - 1; cy >= 0; cx += w0, cy -= h0)
+            drawSlopeUpsideUpBase(cx, cy);
+        break;
+    default:
+        break;
+    }
+}
+
+void Tileset::drawRow(QPainter& painter, TileGrid& grid, const ObjectRow& row, int x, int y, int w, float zoom, quint8 gridLayer, const QRect& clip)
+{
+    if (clip.isValid() && (y < clip.top() || y > clip.bottom()))
+        return;
+
+    int dxStart = 0;
+    int dxEnd = w;
+    if (clip.isValid())
+    {
+        dxStart = qMax(0, clip.left() - x);
+        dxEnd = qMin(w, clip.right() - x + 1);
+    }
+
+    forEachRowCellRange(row, w, dxStart, dxEnd, [&](int col, int dx)
+    {
+        if (row.data[col*3 + 1] || (row.data[col*3 + 2] & 6) >> 1) // skip empty tiles
+            drawTile(painter, grid, row.data[col*3 + 1], x + dx, y, zoom, (row.data[col*3 + 2] & 120) >> 3, gridLayer);
+    });
+}
+
+void Tileset::drawObject(QPainter& painter, TileGrid& grid, int num, int x, int y, int w, int h, float zoom, const QRect& clip)
 {
     if (num >= objectDefs.size())
     {
-        for (int xx = 0; xx < w; xx++)
-            for (int yy = 0; yy < h; yy++)
+        int xStart = 0, xEnd = w, yStart = 0, yEnd = h;
+        if (clip.isValid())
+        {
+            xStart = qMax(0, clip.left() - x);
+            xEnd = qMin(w, clip.right() - x + 1);
+            yStart = qMax(0, clip.top() - y);
+            yEnd = qMin(h, clip.bottom() - y + 1);
+        }
+
+        for (int xx = xStart; xx < xEnd; xx++)
+            for (int yy = yStart; yy < yEnd; yy++)
                 painter.drawPixmap(QRect((x+xx)*20, (y+yy)*20, 20, 20), ImageCache::getInstance()->get(TileOverride, "error.png"));
 
         return;
@@ -405,61 +971,43 @@ void Tileset::drawObject(QPainter& painter, TileGrid& grid, int num, int x, int 
 
     ObjectDef& def = *objectDefs[num];
 
-    //qDebug("RENDER OBJ %d | %d %d | %d,%d %d,%d\n", num, def.rows.length(), 4646445, x, y, w, h);
+    if (def.rows.isEmpty())
+        return;
 
-    if (def.rows[0].slopeFlags & 0x80)
+    quint8 gridLayer = grid.value(0xFFFFFFFF);
+
+    quint8 slopeflag = def.rows[0].slopeFlags;
+    if ((slopeflag & 0x80) && slopeflag != SlopeSection1 && slopeflag != SlopeSection2)
     {
-        // slope junk
-
-        // slope 00: start from bottom-left (top-right?? checkme)
-        // slope 01: start from top-left
-        // slope 02: same as 00, reverse Y
-        // slope 03: same as 01, reverse Y
-        // FIXME: not proper! it swaps top and bottom blocks, instead of reversing Y
-
-        quint8 slopeflag = def.rows[0].slopeFlags;
-
-        int cury, yinc;
-        if (slopeflag & 0x01)
+        forEachSlopeTile(def, w, h, [&](int rowIdx, int col, int px, int py)
         {
-            cury = 0;
-            yinc = def.slopeY;
-        }
-        else
-        {
-            cury = h - def.height;
-            yinc = -def.slopeY;
-        }
-// This causes heavy lagging in huge levels
-//qDebug("SLOPE Y %d %02X %d/%d", def.slopeY, slopeflag, def.width, def.height);
-        int curx = 0;
-        while (curx < w)
-        {
-            if ((curx+def.width) > w)
-                break;
+            int tx = x + px;
+            int ty = y + py;
+            if (clip.isValid() && (tx < clip.left() || tx > clip.right() || ty < clip.top() || ty > clip.bottom()))
+                return;
 
-            for (int by = 0; by < def.height; by++)
-            {
-                ObjectRow& row = def.rows[by];
+            ObjectRow& row = def.rows[rowIdx];
 
-                int tiley = cury+by;
-                if (slopeflag & 0x02) tiley = h - 1 - tiley;
-
-                if (tiley < 0 || tiley >= h)
-                    break;
-
-                drawRow(painter, grid, def, row, x+curx, y+tiley, def.width, zoom);
-            }
-
-            curx += def.width;
-            cury += yinc;
-        }
+            if (row.data[col*3 + 1] || (row.data[col*3 + 2] & 6) >> 1)
+                drawTile(painter, grid, row.data[col*3 + 1], tx, ty, zoom, (row.data[col*3 + 2] & 120) >> 3, gridLayer);
+        });
 
         return;
     }
 
     int sy = 0, dy = 0;
     int end = def.rows.length();
+
+    int dyStart = 0;
+    int dyEnd = h;
+    if (clip.isValid())
+    {
+        dyStart = qMax(0, clip.top() - y);
+        dyEnd = qMin(h, clip.bottom() - y + 1);
+    }
+
+    if (dyStart >= dyEnd)
+        return;
 
     if (def.yRepeatStart != 0xFF)
     {
@@ -468,56 +1016,84 @@ void Tileset::drawObject(QPainter& painter, TileGrid& grid, int num, int x, int 
         int rstart = def.yRepeatStart;
         int rend = h - (def.height - def.yRepeatEnd);
 
-        sy = 0;
-        while (dy < rstart)
+        dy = dyStart;
+        if (dy < rstart)
         {
-            ObjectRow& row = def.rows[sy];
-            drawRow(painter, grid, def, row, x, y+dy, w, zoom);
-
-            dy++;
-            sy++;
-            if (sy >= def.yRepeatStart)
-                sy = 0;
+            sy = dy % (def.yRepeatStart > 0 ? def.yRepeatStart : 1);
+            while (dy < rstart && dy < dyEnd)
+            {
+                if (sy < def.rows.length() && sy < def.yRepeatStart)
+                {
+                    ObjectRow& row = def.rows[sy];
+                    drawRow(painter, grid, row, x, y+dy, w, zoom, gridLayer, clip);
+                }
+                dy++;
+                sy++;
+                if (sy >= def.yRepeatStart)
+                    sy = 0;
+            }
         }
 
-        sy = def.yRepeatStart;
-        while (dy < rend)
+        dy = qMax(dy, rstart);
+        if (dy < rend && dy < dyEnd)
         {
-            ObjectRow& row = def.rows[sy];
-            drawRow(painter, grid, def, row, x, y+dy, w, zoom);
-
-            dy++;
-            sy++;
-            if (sy >= def.yRepeatEnd)
+            sy = def.yRepeatStart + (dy - rstart) % (def.yRepeatEnd > def.yRepeatStart ? (def.yRepeatEnd - def.yRepeatStart) : 1);
+            if (sy >= def.yRepeatEnd && def.yRepeatEnd > def.yRepeatStart)
                 sy = def.yRepeatStart;
+            while (dy < rend && dy < dyEnd)
+            {
+                if (sy < def.rows.length() && sy >= def.yRepeatStart && sy < def.yRepeatEnd)
+                {
+                    ObjectRow& row = def.rows[sy];
+                    drawRow(painter, grid, row, x, y+dy, w, zoom, gridLayer, clip);
+                }
+                dy++;
+                sy++;
+                if (sy >= def.yRepeatEnd)
+                    sy = def.yRepeatStart;
+            }
         }
 
-        sy = def.yRepeatEnd;
-        while (dy < h)
+        dy = qMax(dy, rend);
+        if (dy < h && dy < dyEnd)
         {
-            ObjectRow& row = def.rows[sy];
-            drawRow(painter, grid, def, row, x, y+dy, w, zoom);
-
-            dy++;
-            sy++;
+            sy = def.yRepeatEnd + (dy - rend) % (end > def.yRepeatEnd ? (end - def.yRepeatEnd) : 1);
             if (sy >= end)
                 sy = def.yRepeatEnd;
+            while (dy < h && dy < dyEnd)
+            {
+                if (sy < def.rows.length())
+                {
+                    ObjectRow& row = def.rows[sy];
+                    drawRow(painter, grid, row, x, y+dy, w, zoom, gridLayer, clip);
+                }
+                dy++;
+                sy++;
+                if (sy >= end)
+                    sy = def.yRepeatEnd;
+            }
         }
     }
     else
     {
         // without repeat
 
-        sy = 0;
-        while (dy < h)
+        if (dyStart < dyEnd)
         {
-            ObjectRow& row = def.rows[sy];
-            drawRow(painter, grid, def, row, x, y+dy, w, zoom);
-
-            dy++;
-            sy++;
-            if (sy >= end)
-                sy = 0;
+            dy = dyStart;
+            sy = end > 0 ? dyStart % end : 0;
+            while (dy < dyEnd)
+            {
+                if (sy < def.rows.length())
+                {
+                    ObjectRow& row = def.rows[sy];
+                    drawRow(painter, grid, row, x, y+dy, w, zoom, gridLayer, clip);
+                }
+                dy++;
+                sy++;
+                if (sy >= end)
+                    sy = 0;
+            }
         }
     }
 }
@@ -533,15 +1109,63 @@ void Tileset::setBehaviorByte(int tile, int byte, quint8 value)
     behaviors[tile][byte] = value;
 }
 
+bool Tileset::getObjectCell(int objNbr, int x, int y, int& row, int& col)
+{
+    const ObjectDef& def = *objectDefs[objNbr];
+    row = y;
+    col = x;
+
+    if (def.rows.isEmpty())
+        return false;
+
+    quint8 flags = def.rows[0].slopeFlags;
+    if (!(flags & 0x80) || flags == SlopeSection1 || flags == SlopeSection2)
+    {
+        if (row < 0 || row >= def.rows.size())
+            return false;
+
+        int rowW = def.rows[row].data.size()/3;
+        return col >= 0 && col < rowW;
+    }
+
+    bool found = false;
+    bool foundVisible = false;
+    forEachSlopeTile(def, def.width, def.height, [&](int rowIdx, int colIdx, int px, int py)
+    {
+        if (px != x || py != y)
+            return;
+
+        const ObjectRow& r = def.rows[rowIdx];
+        bool visible = r.data[colIdx*3 + 1] || (r.data[colIdx*3 + 2] & 6) >> 1;
+
+        if (visible || !foundVisible)
+        {
+            row = rowIdx;
+            col = colIdx;
+            found = true;
+            foundVisible = visible;
+        }
+    });
+
+    return found;
+}
+
 quint8 Tileset::getData(int objNbr, int x, int y, int byte)
 {
-    ObjectDef& def = *objectDefs[objNbr];
-    return def.rows[y].data[x*3 + byte];
+    int row, col;
+    if (!getObjectCell(objNbr, x, y, row, col))
+        return 0;
+
+    return objectDefs[objNbr]->rows[row].data[col*3 + byte];
 }
 
 void Tileset::setData(int objNbr, int x, int y, int byte, int value)
 {
-    objectDefs[objNbr]->rows[y].data[x*3 + byte] = value;
+    int row, col;
+    if (!getObjectCell(objNbr, x, y, row, col))
+        return;
+
+    objectDefs[objNbr]->rows[row].data[col*3 + byte] = value;
 }
 
 QImage& Tileset::getImage()
@@ -553,6 +1177,8 @@ void Tileset::setImage(QImage &img, uint quality, bool dither)
 {
     ctpk->setTextureEtc1(0, img, true, quality, dither);
     texImage = ctpk->getTexture((quint32)0);
+    texPixmap = QPixmap::fromImage(texImage);
+    clearScaledTiles();
 }
 
 static void paintPaddedTile(QImage& dst, const QImage& sheet, int i, int tilew)
@@ -581,32 +1207,35 @@ static void paintPaddedTile(QImage& dst, const QImage& sheet, int i, int tilew)
     p.end();
 }
 
-void Tileset::setImageRegion(QImage &sheet, int tileTL, int tileBR, uint quality, bool dither)
+void Tileset::setImageRegion(QImage &sheet, const QList<int> &tiles, uint quality, bool dither)
 {
-    if (tileTL < 0 || tileBR < 0)
-        return;
+    QSet<int> selected;
 
-    int x0Tile = tileTL % 21;
-    int y0Tile = tileTL / 21;
-    int x1Tile = tileBR % 21;
-    int y1Tile = tileBR / 21;
+    for (int tile : tiles)
+    {
+        if (tile >= 0 && tile < 441)
+            selected.insert(tile);
+    }
 
-    if (x1Tile < x0Tile) std::swap(x0Tile, x1Tile);
-    if (y1Tile < y0Tile) std::swap(y0Tile, y1Tile);
-
-    if (x0Tile < 0 || y0Tile < 0 || x1Tile > 20 || y1Tile > 20)
+    if (selected.isEmpty())
         return;
 
     QImage newImg = texImage.copy();
 
-    for (int y = y0Tile; y <= y1Tile; y++)
-        for (int x = x0Tile; x <= x1Tile; x++)
-            paintPaddedTile(newImg, sheet, y * 21 + x, 21);
+    QList<QRect> regions;
+    regions.reserve(selected.size());
 
-    QRect pxRect(x0Tile * 24, y0Tile * 24, (x1Tile - x0Tile + 1) * 24, (y1Tile - y0Tile + 1) * 24);
+    for (int tile : selected)
+    {
+        paintPaddedTile(newImg, sheet, tile, 21);
 
-    ctpk->setTextureEtc1Region(0, newImg, pxRect, quality, dither);
+        regions.append(QRect(tile % 21 * 24, tile / 21 * 24, 24, 24));
+    }
+
+    ctpk->setTextureEtc1Region(0, newImg, regions, quality, dither);
     texImage = ctpk->getTexture((quint32)0);
+    texPixmap = QPixmap::fromImage(texImage);
+    clearScaledTiles();
 }
 
 void Tileset::save()
@@ -661,7 +1290,7 @@ void Tileset::save()
             if (objectDefs[o]->rows[r].slopeFlags != 0)
                 dataSize++;
             dataSize += objectDefs[o]->rows[r].data.size();
-            dataSize++; // 0xEF
+            dataSize++; // 0xFE
         }
         dataSize++; // 0xFF
     }
@@ -711,11 +1340,8 @@ void Tileset::addObject(int objNbr)
     obj->randomisation = 0;
     obj->unkFlag = 0;
     obj->yRepeatStart = 0xFF;
-    obj->slopeY = obj->height;
 
     ObjectRow* row = new ObjectRow();
-    row->slopeFlags = 0;
-    row->xRepeatStart = 0xFF;
     row->data.append(0x00); // no repeating
     row->data.append(0x00); // make it use no tile
     row->data.append(0x00); // make it blank
@@ -786,7 +1412,6 @@ void Tileset::resizeObject(int objNbr, int width, int height)
             for (int i = 0; i < hDelta; i++)
             {
                 ObjectRow* row = new ObjectRow();
-                row->slopeFlags = 0;    // TODO: Handle properly
                 for (int j = 0; j < obj.rows[0].data.size(); j++)
                     row->data.append(0x00);
                 obj.rows.append(*row);
@@ -816,6 +1441,10 @@ void Tileset::setSlot(int slot)
                     obj.rows[r].data[t+2] = (obj.rows[r].data[t+2] & 249) | slot << 1;
         }
     }
+
+    for (int i = 0; i < 441; i++)
+        if (getOverlayTile(i) != 0)
+            overlays3D[i] = (overlays3D[i] & 61951) | (slot << 9);
 }
 
 quint16 Tileset::getOverlayTile(int selTile)
@@ -891,14 +1520,14 @@ void Tileset::setObjectBehavior(int selObj, int type, int hStart, int hEnd, int 
 
     if (type >= 4 && type <= 7) // Slope
     {
-        obj.rows[0].slopeFlags = 144 + type-4;
+        obj.rows[0].slopeFlags = quint8(SlopeUpBase + (type - 4));
 
         if (obj.rows.size() < 2)
             return;
 
         for (int r = 1; r < obj.rows.size(); r++)
         {
-            obj.rows[r].slopeFlags = 132;
+            obj.rows[r].slopeFlags = (r == 1) ? SlopeSection1 : SlopeNone;
 
             for (int d = 0; d < obj.rows[r].data.size(); d += 3)
                 obj.rows[r].data[d] = 4;

@@ -2,6 +2,8 @@
 #include "settingsmanager.h"
 
 #include <QHash>
+#include <QFile>
+#include <QDir>
 
 class CourseItem : public QStandardItem
 {
@@ -20,11 +22,13 @@ public:
 Game::Game(const QString& path)
 {
     this->fs = new ExternalFilesystem(path);
+    this->tilesetList = new TilesetList(fs);
     this->path = path;
 }
 
 Game::~Game()
 {
+    delete tilesetList;
     delete fs;
 }
 
@@ -134,8 +138,9 @@ QStandardItemModel* Game::getCourseModel()
             if (!re.match(filename, 0, QRegularExpression::NormalMatch).hasMatch())
                 continue;
 
-            QString worldNum = filename.split(".")[0].split("-")[0];
-            QString levelNum = filename.split(".")[0].split("-")[1];
+            const QStringList nameParts = filename.split(".")[0].split("-");
+            const QString worldNum = nameParts.at(0);
+            const QString levelNum = nameParts.at(1);
 
             QString worldName = worldNames.value(worldNum.toInt());
 
@@ -185,77 +190,49 @@ QStandardItemModel* Game::getTilesetModel()
     headers << QObject::tr("Tileset") << QObject::tr("Filename");
     model->setHorizontalHeaderLabels(headers);
 
-    QFile inputFile(SettingsManager::getInstance()->dataPath("tilesetnames.txt"));
-    if (!inputFile.open(QIODevice::ReadOnly))
-        return model;
+    const QString suiteNames[4] = {
+        QObject::tr("Standard"),
+        QObject::tr("Stage"),
+        QObject::tr("Background"),
+        QObject::tr("Interactive")
+    };
 
-    QHash<QString, QString> defaultNames;
-
-    QTextStream in(&inputFile);
-    in.setEncoding(QStringConverter::Utf8);
-    while (!in.atEnd())
+    for (const TilesetGroup& group : tilesetList->groups())
     {
-       QStringList parts = in.readLine().split(':');
+        QStandardItem* groupItem = new QStandardItem(group.name);
 
-       if (parts.length() < 2)
-           break;
-
-       defaultNames.insert(parts[0], parts[1]);
-    }
-    inputFile.close();
-
-    QStandardItem* standardSuite = new QStandardItem(QObject::tr("Standard"));
-    QStandardItem* stageSuite = new QStandardItem(QObject::tr("Stage"));
-    QStandardItem* backgroundSuite = new QStandardItem(QObject::tr("Background"));
-    QStandardItem* interactiveSuite = new QStandardItem(QObject::tr("Interactive"));
-    model->appendRow(standardSuite);
-    model->appendRow(stageSuite);
-    model->appendRow(backgroundSuite);
-    model->appendRow(interactiveSuite);
-
-    model->setItem(0, 1, new QStandardItem());
-    model->setItem(1, 1, new QStandardItem());
-    model->setItem(2, 1, new QStandardItem());
-    model->setItem(3, 1, new QStandardItem());
-
-    QList<QString> tilesetfiles;
-    fs->directoryContents("/Unit", QDir::Files, tilesetfiles);
-
-    for (int i = 0; i < tilesetfiles.length(); i++)
-    {
-        QString fileName = tilesetfiles[i];
-        fileName.chop(5);
-
-        QString tilesetname;
-
-        tilesetname = defaultNames.value(fileName, fileName);
-
-        QList<QStandardItem*> items;
-
-        QStandardItem* tileset = new QStandardItem(tilesetname);
-        tileset->setData(fileName);
-        items.append(tileset);
-
-        QStandardItem* fileNameItem = new QStandardItem(fileName);
-        fileNameItem->setData(fileName);
-        items.append(fileNameItem);
-
-        if (fileName.startsWith("J_"))
+        for (int slot = 0; slot < 4; slot++)
         {
-            standardSuite->appendRow(items);
+            QStandardItem* suiteItem = new QStandardItem(suiteNames[slot]);
+
+            for (const TilesetEntry& entry : group.allTilesets())
+            {
+                if (!TilesetList::matchesSlot(entry.fileName, slot))
+                    continue;
+
+                QList<QStandardItem*> items;
+
+                QStandardItem* tileset = new QStandardItem(entry.name);
+                tileset->setData(entry.fileName);
+                items.append(tileset);
+
+                QStandardItem* fileNameItem = new QStandardItem(entry.fileName);
+                fileNameItem->setData(entry.fileName);
+                items.append(fileNameItem);
+
+                suiteItem->appendRow(items);
+            }
+
+            if (suiteItem->rowCount() > 0)
+                groupItem->appendRow(suiteItem);
+            else
+                delete suiteItem;
         }
-        else if (fileName.startsWith("M_"))
-        {
-            stageSuite->appendRow(items);
-        }
-        else if (fileName.startsWith("S1_"))
-        {
-            backgroundSuite->appendRow(items);
-        }
-        else if (fileName.startsWith("S2_"))
-        {
-            interactiveSuite->appendRow(items);
-        }
+
+        if (groupItem->rowCount() > 0)
+            model->appendRow(groupItem);
+        else
+            delete groupItem;
     }
 
     return model;
@@ -270,10 +247,6 @@ QStandardItemModel* Game::getTilesetModel(int id, bool includeNoneItem)
     headers << QObject::tr("Tileset")<< QObject::tr("Filename");
 
     model->setHorizontalHeaderLabels(headers);
-
-    QFile inputFile(SettingsManager::getInstance()->getFilePath("tilesetnames.txt"));
-    if (!inputFile.open(QIODevice::ReadOnly))
-        return model;
 
     if (includeNoneItem)
     {
@@ -291,43 +264,21 @@ QStandardItemModel* Game::getTilesetModel(int id, bool includeNoneItem)
     }
 
     QHash<QString, QString> defaultNames;
-
-    QTextStream in(&inputFile);
-    while (!in.atEnd())
-    {
-       QStringList parts = in.readLine().split(':');
-
-       if (parts.length() < 2)
-           break;
-
-       defaultNames.insert(parts[0], parts[1]);
-    }
-    inputFile.close();
+    for (const TilesetGroup& group : tilesetList->groups())
+        for (const TilesetEntry& entry : group.allTilesets())
+            defaultNames.insert(entry.fileName, entry.name);
 
     QList<QString> tilesetfiles;
     fs->directoryContents("/Unit", QDir::Files, tilesetfiles);
 
     for (int i = 0; i < tilesetfiles.length(); i++)
     {
-        QString fileName = tilesetfiles[i];
-        fileName.chop(5);
+        QString fileName = TilesetList::stripExtension(tilesetfiles[i]);
 
-        if (id == 0 && !fileName.startsWith("J_")){
-           continue;
-        }
-        else if (id == 1 && !fileName.startsWith("M_")){
-           continue;
-        }
-        else if (id == 2 && !fileName.startsWith("S1_")){
-           continue;
-        }
-        else if (id == 3 && !fileName.startsWith("S2_")){
-           continue;
-        }
+        if (!TilesetList::matchesSlot(fileName, id))
+            continue;
 
-        QString tilesetname;
-
-        tilesetname = defaultNames.value(fileName, fileName);
+        QString tilesetname = defaultNames.value(fileName, fileName);
 
         QList<QStandardItem*> items;
 

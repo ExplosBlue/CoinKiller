@@ -52,6 +52,46 @@ void writePadding(QDataStream& out, quint64 position)
         writeZeroBytes(out, padding);
 }
 
+template <typename PackBlock>
+void packBlocks(quint32 total, PackBlock packBlock)
+{
+    if (total == 0)
+        return;
+
+    const quint32 hwThreads = static_cast<quint32>(std::thread::hardware_concurrency());
+    const quint32 threadCount = std::clamp<quint32>(hwThreads, 1, total);
+
+    if (total == 1 || threadCount == 1)
+    {
+        for (quint32 idx = 0; idx < total; ++idx)
+            packBlock(idx);
+
+        return;
+    }
+
+    std::atomic<quint32> nextBlock{0};
+
+    std::vector<std::thread> workers;
+    workers.reserve(threadCount);
+
+    for (quint32 w = 0; w < threadCount; ++w)
+    {
+        workers.emplace_back([&]() {
+            for (;;)
+            {
+                const quint32 idx = nextBlock.fetch_add(1, std::memory_order_relaxed);
+                if (idx >= total)
+                    return;
+
+                packBlock(idx);
+            }
+        });
+    }
+
+    for (auto& worker : workers)
+        worker.join();
+}
+
 }
 
 Etc1::Etc1PackParams Ctpk::makePackParams(uint quality, bool dither)
@@ -556,35 +596,7 @@ void Ctpk::setTextureEtc1(quint32 entryIndex, QImage& img, bool alpha, uint qual
         std::memcpy(dst, blockData + 8, sizeof(quint64));
     };
 
-    const quint32 hwThreads = static_cast<quint32>(std::thread::hardware_concurrency());
-    const quint32 threadCount = std::clamp<quint32>(hwThreads, 1, totalBlocks);
-
-    if (totalBlocks <= 1 || threadCount == 1)
-    {
-        for (quint32 idx = 0; idx < totalBlocks; ++idx)
-            packBlock(idx);
-    }
-    else
-    {
-        std::atomic<quint32> nextBlock{0};
-
-        std::vector<std::thread> workers;
-        workers.reserve(threadCount);
-        for (quint32 w = 0; w < threadCount; ++w)
-        {
-            workers.emplace_back([&]() {
-                for (;;)
-                {
-                    const quint32 idx = nextBlock.fetch_add(1, std::memory_order_relaxed);
-                    if (idx >= totalBlocks) return;
-                    packBlock(idx);
-                }
-            });
-        }
-
-        for (auto& thread : workers)
-            thread.join();
-    }
+    packBlocks(totalBlocks, packBlock);
 
     file->open();
     file->seek(texSectionOffset + entry->dataOffset);
@@ -593,7 +605,7 @@ void Ctpk::setTextureEtc1(quint32 entryIndex, QImage& img, bool alpha, uint qual
     file->close();
 }
 
-void Ctpk::setTextureEtc1Region(quint32 entryIndex, QImage& img, QRect region, uint quality, bool dither)
+void Ctpk::setTextureEtc1Region(quint32 entryIndex, QImage& img, const QList<QRect>& regions, uint quality, bool dither)
 {
     assert(entryIndex < numEntries);
 
@@ -602,40 +614,67 @@ void Ctpk::setTextureEtc1Region(quint32 entryIndex, QImage& img, QRect region, u
     assert(img.width() == static_cast<int>(entry->width));
     assert(img.height() == static_cast<int>(entry->height));
 
-    Etc1::Etc1PackParams pack_params = makePackParams(quality, dither);
-
+    const int texWidth = static_cast<int>(entry->width);
+    const int texHeight = static_cast<int>(entry->height);
     const quint32 tilesX = entry->width / 8;
 
-    // Clamp the region to the texture and expand it to whole 4x4 ETC1 blocks
-    const int rx0 = std::max(0, region.x());
-    const int ry0 = std::max(0, region.y());
-    const int rx1 = std::min(static_cast<int>(entry->width),  region.x() + region.width());
-    const int ry1 = std::min(static_cast<int>(entry->height), region.y() + region.height());
-    if (rx1 <= rx0 || ry1 <= ry0)
+    std::vector<quint32> blocks;
+
+    for (const QRect& region : regions)
+    {
+        const int rx0 = std::max(0, region.x());
+        const int ry0 = std::max(0, region.y());
+        const int rx1 = std::min(texWidth, region.x() + region.width());
+        const int ry1 = std::min(texHeight, region.y() + region.height());
+
+        if (rx1 <= rx0 || ry1 <= ry0)
+            continue;
+
+        for (int by = ry0 / 4; by <= (ry1 - 1) / 4; by++)
+        {
+            for (int bx = rx0 / 4; bx <= (rx1 - 1) / 4; bx++)
+            {
+                const quint32 tx = bx / 2;
+                const quint32 ty = by / 2;
+                const quint32 t = (bx & 1) | ((by & 1) << 1);
+                blocks.push_back((ty * tilesX + tx) * 4 + t);
+            }
+        }
+    }
+
+    if (blocks.empty())
         return;
 
-    const int bx0 = rx0 / 4;
-    const int by0 = ry0 / 4;
-    const int bx1 = (rx1 - 1) / 4;
-    const int by1 = (ry1 - 1) / 4;
+    std::sort(blocks.begin(), blocks.end());
+    blocks.erase(std::unique(blocks.begin(), blocks.end()), blocks.end());
+
+    Etc1::Etc1PackParams pack_params = makePackParams(quality, dither);
+
+    std::vector<quint8> output(blocks.size() * 16, 0);
+
+    packBlocks(static_cast<quint32>(blocks.size()), [&](quint32 i) {
+        const quint32 idx = blocks[i];
+        const quint32 t = idx & 3;
+        const quint32 rem = idx >> 2;
+        const int x = static_cast<int>((rem % tilesX) * 8) + static_cast<int>(t & 1) * 4;
+        const int y = static_cast<int>((rem / tilesX) * 8) + static_cast<int>(t >> 1) * 4;
+
+        packEtc1Block16(img, x, y, pack_params, &output[static_cast<size_t>(i) * 16]);
+    });
 
     file->open();
 
-    for (int by = by0; by <= by1; by++)
+    size_t start = 0;
+    while (start < blocks.size())
     {
-        for (int bx = bx0; bx <= bx1; bx++)
-        {
-            const quint32 tx = bx / 2;
-            const quint32 ty = by / 2;
-            const quint32 t = (bx & 1) | ((by & 1) << 1);
-            const quint32 idx = (ty * tilesX + tx) * 4 + t;
+        size_t end = start;
+        while (end + 1 < blocks.size() && blocks[end + 1] == blocks[end] + 1)
+            end++;
 
-            quint8 blockData[16];
-            packEtc1Block16(img, bx * 4, by * 4, pack_params, blockData);
+        file->seek(texSectionOffset + entry->dataOffset + static_cast<qint64>(blocks[start]) * 16);
+        file->writeData(&output[start * 16], static_cast<quint64>(end - start + 1) * 16);
 
-            file->seek(texSectionOffset + entry->dataOffset + static_cast<qint64>(idx) * 16);
-            file->writeData(blockData, sizeof(blockData));
-        }
+        start = end + 1;
     }
 
     file->close();

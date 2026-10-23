@@ -3,19 +3,29 @@
 
 #include "objects.h"
 #include "level.h"
+#include "sortabletreewidget.h"
+#include "backgroundlist.h"
 
 #include <QWidget>
 #include <QListWidget>
+#include <QTreeWidget>
 #include <QFrame>
 #include <QSpinBox>
 #include <QComboBox>
 #include <QCheckBox>
 #include <QLabel>
+#include <QLineEdit>
+#include <QListWidget>
+#include <QMap>
 #include <QScrollArea>
 #include <QCheckBox>
+#include <QSplitter>
+#include <QStackedWidget>
 #include <QPushButton>
+#include <QToolButton>
 #include <QDialog>
 #include <QGroupBox>
+#include <QStyledItemDelegate>
 #include <QUndoStack>
 
 class BgPreview : public QLabel
@@ -23,10 +33,36 @@ class BgPreview : public QLabel
     Q_OBJECT
 public:
     BgPreview(QWidget *parent = nullptr);
+    QSize sizeHint() const override;
+    QSize minimumSizeHint() const override;
     void resizeEvent(QResizeEvent *) override;
     void setBg(QPixmap bg);
 private:
     QPixmap bg;
+};
+
+class BackgroundThumbnailDelegate : public QStyledItemDelegate
+{
+    Q_OBJECT
+public:
+    explicit BackgroundThumbnailDelegate(QObject *parent = nullptr);
+
+    void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
+};
+
+class BackgroundThumbnailList : public QListWidget
+{
+    Q_OBJECT
+public:
+    explicit BackgroundThumbnailList(QWidget *parent = nullptr);
+
+    void relayoutItems();
+
+    void setContentMargins(int left, int right);
+    QMargins contentMargins() const;
+
+protected:
+    void resizeEvent(QResizeEvent *event) override;
 };
 
 class ZoneBackgroundWidget : public QDialog
@@ -42,6 +78,19 @@ signals:
 
 private:
     void loadBackgrounds();
+    void populateGroups();
+    void populateChoices();
+    void populateThumbnails();
+    void applyFilter();
+    void setSelectionEnabled(bool enabled);
+
+    QList<BackgroundEntry> currentGroupEntries() const;
+    QListWidgetItem* backgroundItemById(int id) const;
+    QSize thumbnailTileSize() const;
+    void updateThumbnailGrid();
+    void setThumbnailView(bool enabled);
+
+    bool eventFilter(QObject* watched, QEvent* event) override;
 
     void updateBgPreview();
 
@@ -52,15 +101,23 @@ private:
 
     QGroupBox* settingsGroup;
     QSpinBox* backgroundId;
-    QComboBox* background;
-    QMap<QString, QString> backgrounds;
+    QList<BackgroundGroup> backgroundGroups;
+
+    QComboBox* groupCombo;
+    QToolButton* thumbnailToggleBtn;
+    QLineEdit* selectFilter;
+    QTreeWidget* selectList;
+    BackgroundThumbnailList* thumbnailList;
+    QStackedWidget* selectStack;
     BgPreview* backgroundPreview;
+
     QSpinBox* xPos;
     QSpinBox* yPos;
     QComboBox* parallaxMode;
 
     QList<ZoneBackground*> *zoneBgs;
-    ZoneBackground* editBg;
+    ZoneBackground* editBg = nullptr;
+    QMap<QString, QString> backgroundNames;
 
     void updateList();
     void updateInfo();
@@ -68,13 +125,19 @@ private:
     bool editingABg = false;
     bool handleChanges = true;
 
+    static bool thumbnailView;
+
     QUndoStack *undoStack;
     Level *level;
 
 private slots:
     void handleBackgroundListIndexChange(QListWidgetItem* item);
     void handleBackgroundListDoubleClick(QListWidgetItem* item);
-    void handleBackgroundChange(QString text);
+    void handleGroupChange();
+    void handleSelectListClicked(QTreeWidgetItem* item, int column);
+    void handleThumbnailClicked(QListWidgetItem* item);
+    void handleViewToggle();
+    void handleSelectFilterChange(const QString& text);
     void handleParallaxModeChange(int val);
     void handleXPosChanged(int val);
     void handleYPosChanged(int val);
@@ -151,7 +214,7 @@ signals:
     void screenshot(QRect);
 
 private:
-    QListWidget* zoneList;
+    SortableTreeWidget* zoneList;
 
     QPushButton* selectContentsBtn;
     QPushButton* screenshotBtn;
@@ -164,13 +227,14 @@ private:
     QMap<int, QPair<int, QString>> musicIds;
     QSpinBox* unk1;
 
-    QSpinBox* boundingId;
+    QComboBox* boundingId;
     QPushButton* editBounding;
     ZoneBoundingWidget* boundingWidget;
 
-    QSpinBox* backgroundId;
+    QComboBox* backgroundId;
     QPushButton* editBackground;
     ZoneBackgroundWidget* backgroundWidget;
+    QMap<QString, QString> backgroundNames;
 
     QGroupBox* cameraFlagGroup;
     QCheckBox* camFlag1;
@@ -190,6 +254,8 @@ private:
 
     void updateList();
     void updateInfo();
+    void populateBoundingIds();
+    void populateBackgroundIds();
 
     bool editingAZone = false;
     bool handleChanges = true;
@@ -198,7 +264,7 @@ private:
     Level *level;
 
 private slots:
-    void handleZoneListIndexChange(QListWidgetItem* item);
+    void handleZoneListIndexChange(QTreeWidgetItem* item);
     void handleIDChange(int idVal);
     void handleProgPathIDChange(int ppIDVal);
     void handleMusicIDChange(QString text);
@@ -209,6 +275,8 @@ private slots:
     void handleScreenshotClicked();
     void handleBoundingIDChange(int val);
     void handleBackgroundIDChange(int val);
+    void handleBoundingIdComboChange();
+    void handleBackgroundIdComboChange();
     void handleEditBoundingClicked();
     void handleEditBackgroundClicked();
 };

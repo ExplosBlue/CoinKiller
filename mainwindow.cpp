@@ -31,6 +31,10 @@
 #include <QLineEdit>
 #include <QRegularExpression>
 #include <QRegularExpressionValidator>
+#include <QShortcut>
+#include <QKeyEvent>
+#include <QMenu>
+#include <QDir>
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
@@ -42,6 +46,7 @@
 #include "newtilesetdialog.h"
 #include "newleveldialog.h"
 #include "spritedata.h"
+#include "spritedatadialog.h"
 #include "filedownloader.h"
 
 MainWindow::MainWindow(WindowBase *parent) :
@@ -88,11 +93,47 @@ void MainWindow::initialiseUi()
     connect(ui->actionAbout,             &QAction::triggered, this, &MainWindow::showAboutDialog);
     connect(ui->actionSarcExplorer,      &QAction::triggered, this, &MainWindow::openSarcExplorer);
 
+    recentMenu = new QMenu(tr("Recent"), this);
+
+    QAction* beforeRecent = nullptr;
+    bool afterLoad = false;
+    for (QAction* action : ui->menuFile->actions())
+    {
+        if (afterLoad)
+        {
+            beforeRecent = action;
+            break;
+        }
+
+        if (action == ui->actionLoadUnpackedROMFS)
+            afterLoad = true;
+    }
+
+    if (beforeRecent != nullptr)
+        ui->menuFile->insertMenu(beforeRecent, recentMenu);
+    else
+        ui->menuFile->addMenu(recentMenu);
+
+    updateRecentMenu();
+
     connect(ui->levelList, &QTreeView::clicked,       this, &MainWindow::levelListSelectedIndexChanged);
     connect(ui->levelList, &QTreeView::doubleClicked, this, &MainWindow::openLevelFromListIndex);
 
     connect(ui->tilesetList, &QTreeView::clicked,       this, &MainWindow::tilesetListSelectedIndexChanged);
     connect(ui->tilesetList, &QTreeView::doubleClicked, this, &MainWindow::openTilesetFromListIndex);
+
+    connect(ui->levelFilterEdit,   &QLineEdit::textChanged, this, &MainWindow::filterLevelList);
+    connect(ui->tilesetFilterEdit, &QLineEdit::textChanged, this, &MainWindow::filterTilesetList);
+    connect(ui->tilesetGroupCombo, &QComboBox::currentIndexChanged, this, [this](int) {
+        filterTilesetList(ui->tilesetFilterEdit->text());
+    });
+
+    ui->levelFilterEdit->setVisible(false);
+    ui->levelList->installEventFilter(this);
+    ui->tilesetList->installEventFilter(this);
+
+    QShortcut* findShortcut = new QShortcut(QKeySequence::Find, this);
+    connect(findShortcut, &QShortcut::activated, this, &MainWindow::showFilterBox);
 
     connect(ui->addLevelBtn,    &QPushButton::clicked, this, &MainWindow::addLevel);
     connect(ui->removeLevelBtn, &QPushButton::clicked, this, &MainWindow::removeLevel);
@@ -101,6 +142,7 @@ void MainWindow::initialiseUi()
     connect(ui->removeTilesetBtn, &QPushButton::clicked, this, &MainWindow::removeTileset);
 
     connect(ui->updateSpriteData, &QPushButton::clicked, this, &MainWindow::updateSpriteData);
+    connect(ui->spriteDataSettingsButton, &QToolButton::clicked, this, &MainWindow::showSpriteDataSettings);
 
     connect(ui->darkModeCheckbox,  &QCheckBox::toggled, this, &MainWindow::setDarkMode);
     connect(ui->maximisedCheckbox, &QCheckBox::toggled, this, &MainWindow::setShouldStartMaximized);
@@ -119,15 +161,15 @@ void MainWindow::initialiseUi()
 
     settings->setupLanguageSelector(ui->languageSelector);
 
+    bool loadedLast = false;
+
     if (settings->get("loadLastOnStart", false).toBool() && !settings->getLastRomFSPath().isEmpty())
-    {
-        loadGame(settings->getLastRomFSPath());
+        loadedLast = loadGame(settings->getLastRomFSPath());
+
+    if (loadedLast)
         ui->actionShowROMFSDir->setEnabled(true);
-    }
     else
-    {
         setGameLoaded(false);
-    }
 
     connect(&fileSystemWatcher, &QFileSystemWatcher::directoryChanged, this, &MainWindow::handleWatchedDirectoryChanged);
 }
@@ -151,7 +193,7 @@ void MainWindow::checkSpriteDataVersion()
         message.exec();
 
         this->setEnabled(false);
-        FileDownloader::download(QUrl("https://smbnext.net/spritedb/spritexml.php"), this, SLOT(sdDownloadFinished(QNetworkReply::NetworkError, const QByteArray&, const QUrl&)));
+        FileDownloader::download(QUrl(settings->getSpriteDataUrl()), this, SLOT(sdDownloadFinished(QNetworkReply::NetworkError, const QByteArray&, const QUrl&)));
     }
 }
 
@@ -165,19 +207,13 @@ void MainWindow::loadLevelList()
     }
 
     ui->levelList->setModel(courseModel);
+
+    filterLevelList(ui->levelFilterEdit->text());
 }
 
 
 void MainWindow::loadTilesetList()
 {
-    const int oldRowCount = ui->tilesetList->model() != nullptr
-        ? ui->tilesetList->model()->rowCount()
-        : 0;
-
-    QVector<bool> expanded;
-    for (int i = 0; i < oldRowCount; i++)
-        expanded.append(ui->tilesetList->isExpanded(ui->tilesetList->model()->index(i, 0)));
-
     QStandardItemModel *tilesetModel = game->getTilesetModel();
     tilesetModel->setParent(this);
 
@@ -186,9 +222,160 @@ void MainWindow::loadTilesetList()
     }
 
     ui->tilesetList->setModel(tilesetModel);
+    ui->tilesetList->expandAll();
 
-    for (int i = 0; i < qMin(expanded.size(), tilesetModel->rowCount()); i++)
-        ui->tilesetList->setExpanded(tilesetModel->index(i, 0), expanded[i]);
+    populateTilesetGroupFilter();
+
+    filterTilesetList(ui->tilesetFilterEdit->text());
+}
+
+void MainWindow::filterLevelList(const QString &text)
+{
+    applyTreeFilter(ui->levelList, QModelIndex(), text, false);
+
+    if (!text.isEmpty())
+        ui->levelList->expandAll();
+}
+
+void MainWindow::filterTilesetList(const QString &text)
+{
+    applyTreeFilter(ui->tilesetList, QModelIndex(), text, false, true);
+
+    const QString group = ui->tilesetGroupCombo->currentData().toString();
+    QAbstractItemModel *model = ui->tilesetList->model();
+
+    if (!group.isEmpty() && model != nullptr)
+    {
+        for (int row = 0; row < model->rowCount(QModelIndex()); row++)
+        {
+            QModelIndex index = model->index(row, 0, QModelIndex());
+
+            if (index.data(Qt::DisplayRole).toString() != group)
+                ui->tilesetList->setRowHidden(row, QModelIndex(), true);
+        }
+    }
+
+    if (!text.isEmpty() || !group.isEmpty())
+        ui->tilesetList->expandAll();
+}
+
+void MainWindow::populateTilesetGroupFilter()
+{
+    const QString currentGroup = ui->tilesetGroupCombo->currentData().toString();
+
+    ui->tilesetGroupCombo->blockSignals(true);
+    ui->tilesetGroupCombo->clear();
+    ui->tilesetGroupCombo->addItem(tr("All"), QString());
+
+    QAbstractItemModel *model = ui->tilesetList->model();
+
+    if (model != nullptr)
+    {
+        for (int row = 0; row < model->rowCount(QModelIndex()); row++)
+        {
+            QString name = model->index(row, 0, QModelIndex()).data(Qt::DisplayRole).toString();
+            ui->tilesetGroupCombo->addItem(name, name);
+        }
+    }
+
+    int index = ui->tilesetGroupCombo->findData(currentGroup);
+    ui->tilesetGroupCombo->setCurrentIndex(index > 0 ? index : 0);
+    ui->tilesetGroupCombo->blockSignals(false);
+}
+
+bool MainWindow::applyTreeFilter(QTreeView *view, const QModelIndex &parent, const QString &filter, bool parentMatched, bool matchOnlyLeaves)
+{
+    QAbstractItemModel *model = view->model();
+
+    if (model == nullptr)
+        return false;
+
+    bool anyVisible = false;
+
+    for (int row = 0; row < model->rowCount(parent); row++)
+    {
+        QModelIndex index = model->index(row, 0, parent);
+
+        bool selfMatch;
+        if (filter.isEmpty())
+        {
+            selfMatch = true;
+        }
+        else if (matchOnlyLeaves)
+        {
+            bool isLeaf = model->rowCount(index) == 0;
+            QModelIndex filenameIndex = model->index(row, 1, parent);
+
+            selfMatch = isLeaf
+                    && (index.data(Qt::DisplayRole).toString().contains(filter, Qt::CaseInsensitive)
+                        || filenameIndex.data(Qt::DisplayRole).toString().contains(filter, Qt::CaseInsensitive));
+        }
+        else
+        {
+            selfMatch = index.data(Qt::DisplayRole).toString().contains(filter, Qt::CaseInsensitive);
+        }
+
+        bool force = parentMatched || selfMatch;
+
+        bool childVisible = applyTreeFilter(view, index, filter, force, matchOnlyLeaves);
+        bool visible = force || childVisible;
+
+        view->setRowHidden(row, parent, !visible);
+
+        if (visible)
+            anyVisible = true;
+    }
+
+    return anyVisible;
+}
+
+void MainWindow::showFilterBox()
+{
+    if (ui->tabWidget->currentWidget() == ui->tab_tilesets)
+    {
+        ui->tilesetFilterEdit->setVisible(true);
+        ui->tilesetFilterEdit->setFocus();
+        ui->tilesetFilterEdit->selectAll();
+    }
+    else
+    {
+        ui->levelFilterEdit->setVisible(true);
+        ui->levelFilterEdit->setFocus();
+        ui->levelFilterEdit->selectAll();
+    }
+}
+
+bool MainWindow::eventFilter(QObject* watched, QEvent* event)
+{
+    if (event->type() == QEvent::KeyPress && (watched == ui->levelList || watched == ui->tilesetList))
+    {
+        QLineEdit* target = (watched == ui->levelList) ? ui->levelFilterEdit : ui->tilesetFilterEdit;
+        QKeyEvent* keyEvent = static_cast<QKeyEvent*>(event);
+
+        if (!(keyEvent->modifiers() & (Qt::ControlModifier | Qt::AltModifier | Qt::MetaModifier)))
+        {
+            const QString text = keyEvent->text();
+
+            if (!text.isEmpty() && text.at(0).isPrint())
+            {
+                target->setVisible(true);
+                target->setText(target->text() + text);
+                target->setFocus();
+                return true;
+            }
+
+            if (keyEvent->key() == Qt::Key_Backspace && !target->text().isEmpty())
+            {
+                const QString current2 = target->text();
+                target->setVisible(true);
+                target->setText(current2.left(current2.size() - 1));
+                target->setFocus();
+                return true;
+            }
+        }
+    }
+
+    return QMainWindow::eventFilter(watched, event);
 }
 
 void MainWindow::changeEvent(QEvent* event)
@@ -196,6 +383,7 @@ void MainWindow::changeEvent(QEvent* event)
     if (event->type() == QEvent::LanguageChange)
     {
         ui->retranslateUi(this);
+        updateRecentMenu();
 
         if (gameLoaded)
         {
@@ -233,9 +421,14 @@ void MainWindow::showAboutDialog()
     msgBox.exec();
 }
 
-void MainWindow::loadGame(const QString& path)
+bool MainWindow::loadGame(const QString& path)
 {
+    if (!QDir(path).exists())
+        return false;
+
     settings->setLastRomFSPath(path);
+    settings->addRecentROMFS(path);
+    updateRecentMenu();
 
     game = new Game(path);
 
@@ -257,6 +450,65 @@ void MainWindow::loadGame(const QString& path)
         << path + "/Unit/";
 
     fileSystemWatcher.addPaths(watchPaths);
+
+    return true;
+}
+
+void MainWindow::updateRecentMenu()
+{
+    if (recentMenu == nullptr)
+        return;
+
+    recentMenu->clear();
+    recentMenu->setTitle(tr("Recent"));
+
+    QStringList recents = settings->getExistingRecentROMFS();
+
+    if (recents.isEmpty())
+    {
+        QAction* emptyAction = recentMenu->addAction(tr("<empty>"));
+        emptyAction->setEnabled(false);
+        return;
+    }
+
+    for (const QString& path : recents)
+    {
+        QAction* recentAction = recentMenu->addAction(path);
+        recentAction->setData(path);
+        connect(recentAction, &QAction::triggered, this, &MainWindow::openRecentROMFS);
+    }
+
+    recentMenu->addSeparator();
+
+    QAction* clearAction = recentMenu->addAction(tr("Clear History"));
+    connect(clearAction, &QAction::triggered, this, &MainWindow::clearRecentROMFS);
+}
+
+void MainWindow::openRecentROMFS()
+{
+    QAction* action = qobject_cast<QAction*>(sender());
+    if (action == nullptr)
+        return;
+
+    QString path = action->data().toString();
+    if (path.isEmpty())
+        return;
+
+    if (!loadGame(path))
+    {
+        QMessageBox::critical(this, "CoinKiller", tr("This directory does not exist."));
+        settings->removeRecentROMFS(path);
+        updateRecentMenu();
+        return;
+    }
+
+    ui->actionShowROMFSDir->setEnabled(true);
+}
+
+void MainWindow::clearRecentROMFS()
+{
+    settings->clearRecentROMFS();
+    updateRecentMenu();
 }
 
 void MainWindow::loadUnpackedROMFS()
@@ -320,7 +572,7 @@ bool MainWindow::checkForMissingFiles()
     << "spritecategories.xml"
     << "spritedata.xml"
     << "tilebehaviors.xml"
-    << "tilesetnames.txt";
+    << "tilesets.xml";
 
     QList<int> missingFilesIds;
 
@@ -365,7 +617,13 @@ void MainWindow::updateSpriteData()
 
     this->setEnabled(false);
 
-    FileDownloader::download(QUrl("https://smbnext.net/spritedb/spritexml.php"), this, SLOT(sdDownloadFinished(QNetworkReply::NetworkError, const QByteArray&, const QUrl&)));
+    FileDownloader::download(QUrl(settings->getSpriteDataUrl()), this, SLOT(sdDownloadFinished(QNetworkReply::NetworkError, const QByteArray&, const QUrl&)));
+}
+
+void MainWindow::showSpriteDataSettings()
+{
+    SpriteDataDialog dialog(this);
+    dialog.exec();
 }
 
 void MainWindow::sdDownloadFinished(QNetworkReply::NetworkError error, const QByteArray& data, const QUrl& url)
@@ -525,7 +783,7 @@ void MainWindow::duplicateTileset()
 
     int sourceSlot = tilesetSlotFromPrefix(selTsName);
 
-    NewTilesetDialog ntd(this, settings, selTsName + "_copy", sourceSlot, tr("Duplicate Tileset..."));
+    NewTilesetDialog ntd(this, settings, stripTilesetPrefix(selTsName) + "_copy", sourceSlot, tr("Duplicate Tileset..."));
     int result = ntd.exec();
 
     if (result != QDialog::Accepted)

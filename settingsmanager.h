@@ -40,6 +40,9 @@ public:
     void setupLanguageSelector(QListWidget* selector);
     QString getFilePath(QString file);
 
+    QString getSpriteDataUrl() { return settings.value("SpriteDataUrl", SPRITEDATA_URL_DEFAULT).toString(); }
+    void setSpriteDataUrl(const QString& url) { settings.setValue("SpriteDataUrl", url); }
+
     QString getLastRomFSPath() { return settings.value("LastRomFSPath", "").toString(); }
     void setLastRomFSPath(QString dirpath) { settings.setValue("LastRomFSPath", dirpath); }
 
@@ -48,6 +51,12 @@ public:
 
     QString getLastSarcExpPath() { return settings.value("LastSarcExpPath", "").toString(); }
     void setLastSarcExpPath(QString dirpath) { settings.setValue("LastSarcExpPath", dirpath); }
+
+    QStringList getRecentROMFS() { return settings.value("RecentROMFS").toStringList(); }
+    QStringList getExistingRecentROMFS();
+    void addRecentROMFS(const QString& dirpath);
+    void removeRecentROMFS(const QString& dirpath);
+    void clearRecentROMFS() { settings.remove("RecentROMFS"); }
 
     QVariant get(const QString &key, const QVariant &defaultValue = QVariant());
     void set(const QString &key, const QVariant &value);
@@ -69,6 +78,8 @@ public:
 
     bool getLEShowStatusbar();
     void setLEShowStatusbar(const bool &value);
+
+    static constexpr auto SPRITEDATA_URL_DEFAULT = "https://spritedb.smbnext.net/spritexml.php";
 
     // Defaults - Level Editor
     static constexpr QColor LE_WINDOW_COLOR_DEFAULT = QColor(119, 136, 153);

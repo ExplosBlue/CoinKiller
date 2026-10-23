@@ -122,6 +122,22 @@
         <source>Entrance %1: %2 (X: %3, Y: %4)</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Entrance ID</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Position</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>(X: %1, Y: %2)</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>EventEditorWidget</name>
@@ -505,7 +521,15 @@ The level will automatically save afterwards and therefore the deletion of this 
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Location %1: (X: %2, Y: %3) (W: %4, H: %5)</source>
+        <source>Location ID</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Position</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>(X: %1, Y: %2) (W: %3, H: %4)</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -695,6 +719,10 @@ Connection to %1 failed!</source>
         <source>Spritedata.xml is outdated, CoinKiller will now attempt to update it.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>All</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>NewLevelDialog</name>
@@ -847,6 +875,18 @@ Check the notes of whatever sprite is paired to this path to see how to use this
         <source>Node: %1</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Path ID</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Position</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>(X: %1, Y: %2)</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ProgressPathEditorWidget</name>
@@ -864,6 +904,18 @@ Check the notes of whatever sprite is paired to this path to see how to use this
             <numerusform>Progress Path %1: %n Node</numerusform>
             <numerusform>Progress Path %1: %n Nodes</numerusform>
         </translation>
+    </message>
+    <message>
+        <source>Progress Path ID</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Position</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>(X: %1, Y: %2)</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1088,6 +1140,18 @@ Check the notes of whatever sprite is paired to this path to see how to use this
         <source>Path ID: %1</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Position</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>(X: %1, Y: %2)</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>TilesetChooser</name>
@@ -1110,6 +1174,30 @@ Check the notes of whatever sprite is paired to this path to see how to use this
 </context>
 <context>
     <name>TilesetEditorWindow</name>
+    <message>
+        <source>Zoom In</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ctrl++</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Zoom Out</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ctrl+-</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Zoom 100%</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ctrl+0</source>
+        <translation type="unfinished"></translation>
+    </message>
     <message>
         <source>Selected Tile</source>
         <translation type="unfinished"></translation>
@@ -1436,6 +1524,14 @@ We can not help you finding that file, but the filename should be enough to do s
         <source>Toolbar</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Unsaved Changes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Do you want to save your changes?</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>TilesetPalette</name>
@@ -1453,6 +1549,10 @@ We can not help you finding that file, but the filename should be enough to do s
     </message>
     <message>
         <source>Object: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 - %2</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1518,11 +1618,19 @@ We can not help you finding that file, but the filename should be enough to do s
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Background %1</source>
+        <source>Background %1 - %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Background: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Toggle list and thumbnail view</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>CoinKiller - Select Background</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1604,6 +1712,10 @@ A value of 0 requires the player to be &gt;5 tiles away from the bottom before t
         <source>Bounding: %1</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>CoinKiller - Edit Boundings</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ZoneEditorWidget</name>
@@ -1648,11 +1760,19 @@ A value of 0 requires the player to be &gt;5 tiles away from the bottom before t
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Open Bounding Editor</source>
+        <source>Edit Boundings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Open Background Editor</source>
+        <source>Edit Backgrounds</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>(%1, %2)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1: %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1669,6 +1789,18 @@ A value of 0 requires the player to be &gt;5 tiles away from the bottom before t
     </message>
     <message>
         <source>No Background With That ID Exists.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Zone ID</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Position</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>(X: %1, Y: %2) (W: %3, H: %4)</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
