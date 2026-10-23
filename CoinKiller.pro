@@ -104,6 +104,7 @@ SOURCES += \
     sarcexplorerwindow.cpp \
     settingsmanager.cpp \
     spritedata.cpp \
+    spritedatadialog.cpp \
     tileset.cpp \
     unitsconvert.cpp
 
@@ -169,6 +170,7 @@ HEADERS += \
     settingsmanager.h \
     shit.h \
     spritedata.h \
+    spritedatadialog.h \
     tileset.h \
     unitsconvert.h \
     windowbase.h
@@ -180,7 +182,8 @@ FORMS += \
     mainwindow.ui \
     newleveldialog.ui \
     newtilesetdialog.ui \
-    sarcexplorerwindow.ui
+    sarcexplorerwindow.ui \
+    spritedatadialog.ui
 
 TRANSLATIONS += \
     resource/translations/English.ts \
