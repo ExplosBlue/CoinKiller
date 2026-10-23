@@ -14,7 +14,14 @@ public:
     ObjectRenderer() {}
     ObjectRenderer(Object *) {}
     virtual ~ObjectRenderer() {}
+
     virtual void render(QPainter *, QRect *) {}
+
+    static void setSmoothZooming(bool smooth) { smoothZooming = smooth; }
+    static bool isSmoothZooming() { return smoothZooming; }
+
+private:
+    static bool smoothZooming;
 };
 
 class SpriteRenderer: public ObjectRenderer

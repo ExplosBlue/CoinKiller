@@ -19,7 +19,6 @@
 #include "game.h"
 #include "objects.h"
 #include "unitsconvert.h"
-#include "is.h"
 
 #include <QFile>
 #include <QMessageBox>
@@ -809,21 +808,17 @@ void Level::add(QList<Object *> objs)
 
 void Level::add(Object *obj)
 {
-    if (is<BgdatObject*>(obj))
-    {
-        BgdatObject* bgdatobj = dynamic_cast<BgdatObject*>(obj);
+    if (auto* bgdatobj = dynamic_cast<BgdatObject*>(obj))
         objects[bgdatobj->getLayer()].append(bgdatobj);
-    }
-    else if (is<Sprite*>(obj))
-        sprites.append(dynamic_cast<Sprite*>(obj));
-    else if (is<Entrance*>(obj))
-        entrances.append(dynamic_cast<Entrance*>(obj));
-    else if (is<Zone*>(obj))
-        zones.append(dynamic_cast<Zone*>(obj));
-    else if (is<Location*>(obj))
-        locations.append(dynamic_cast<Location*>(obj));
+    else if (auto* sprite = dynamic_cast<Sprite*>(obj))
+        sprites.append(sprite);
+    else if (auto* entrance = dynamic_cast<Entrance*>(obj))
+        entrances.append(entrance);
+    else if (auto* zone = dynamic_cast<Zone*>(obj))
+        zones.append(zone);
+    else if (auto* location = dynamic_cast<Location*>(obj))
+        locations.append(location);
 }
-
 
 void Level::move(QList<Object*> objs, int deltax, int deltay)
 {
@@ -856,68 +851,38 @@ void Level::move(QList<Object*> objs, int deltax, int deltay)
 }
 void Level::raise(Object* obj)
 {
-    if (is<BgdatObject*>(obj))
-    {
-        BgdatObject* bgdat = dynamic_cast<BgdatObject*>(obj);
+    if (auto* bgdat = dynamic_cast<BgdatObject*>(obj))
         objects[bgdat->getLayer()].move(objects[bgdat->getLayer()].indexOf(bgdat), objects[bgdat->getLayer()].size()-1);
-    }
-    else if (is<Sprite*>(obj))
-    {
-        Sprite* spr = dynamic_cast<Sprite*>(obj);
+    else if (auto* spr = dynamic_cast<Sprite*>(obj))
         sprites.move(sprites.indexOf(spr), sprites.size()-1);
-    }
-    else if (is<Location*>(obj))
-    {
-        Location* loc = dynamic_cast<Location*>(obj);
+    else if (auto* loc = dynamic_cast<Location*>(obj))
         locations.move(locations.indexOf(loc), locations.size()-1);
-    }
-    else if (is<Entrance*>(obj))
-    {
-        Entrance* entr = dynamic_cast<Entrance*>(obj);
+    else if (auto* entr = dynamic_cast<Entrance*>(obj))
         entrances.move(entrances.indexOf(entr), entrances.size()-1);
-    }
-    else if (is<Zone*>(obj))
-    {
-        Zone* zone = dynamic_cast<Zone*>(obj);
+    else if (auto* zone = dynamic_cast<Zone*>(obj))
         zones.move(zones.indexOf(zone), zones.size()-1);
-    }
-    else if (is<PathNode*>(obj))
+    else if (auto* pathNode = dynamic_cast<PathNode*>(obj))
     {
-        Path* path = dynamic_cast<PathNode*>(obj)->getParentPath();
+        Path* path = pathNode->getParentPath();
         paths.move(paths.indexOf(path), paths.size()-1);
     }
 }
 
 void Level::lower(Object *obj)
 {
-    if (is<BgdatObject*>(obj))
-    {
-        BgdatObject* bgdat = dynamic_cast<BgdatObject*>(obj);
+    if (auto* bgdat = dynamic_cast<BgdatObject*>(obj))
         objects[bgdat->getLayer()].move(objects[bgdat->getLayer()].indexOf(bgdat), 0);
-    }
-    else if (is<Sprite*>(obj))
-    {
-        Sprite* spr = dynamic_cast<Sprite*>(obj);
+    else if (auto* spr = dynamic_cast<Sprite*>(obj))
         sprites.move(sprites.indexOf(spr), 0);
-    }
-    else if (is<Location*>(obj))
-    {
-        Location* loc = dynamic_cast<Location*>(obj);
+    else if (auto* loc = dynamic_cast<Location*>(obj))
         locations.move(locations.indexOf(loc), 0);
-    }
-    else if (is<Entrance*>(obj))
-    {
-        Entrance* entr = dynamic_cast<Entrance*>(obj);
+    else if (auto* entr = dynamic_cast<Entrance*>(obj))
         entrances.move(entrances.indexOf(entr), 0);
-    }
-    else if (is<Zone*>(obj))
-    {
-        Zone* zone = dynamic_cast<Zone*>(obj);
+    else if (auto* zone = dynamic_cast<Zone*>(obj))
         zones.move(zones.indexOf(zone), 0);
-    }
-    else if (is<PathNode*>(obj))
+    else if (auto* pathNode = dynamic_cast<PathNode*>(obj))
     {
-        Path* path = dynamic_cast<PathNode*>(obj)->getParentPath();
+        Path* path = pathNode->getParentPath();
         paths.move(paths.indexOf(path), 0);
     }
 }

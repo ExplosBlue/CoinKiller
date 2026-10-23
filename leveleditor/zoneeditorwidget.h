@@ -125,6 +125,8 @@ private:
     bool editingABg = false;
     bool handleChanges = true;
 
+    static bool thumbnailView;
+
     QUndoStack *undoStack;
     Level *level;
 

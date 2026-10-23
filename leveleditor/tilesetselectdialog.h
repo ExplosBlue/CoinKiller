@@ -10,6 +10,7 @@
 #include <QStandardItemModel>
 
 #include "game.h"
+#include "tilesetlist.h"
 
 class TilesetSelectionDialog : public QDialog
 {
@@ -36,6 +37,7 @@ private:
     QList<TilesetEntry> matchingEntries(const QList<TilesetEntry>& entries) const;
     void sortTilesets(int column);
     void applySort();
+    QTreeWidgetItem* findTilesetItem(const QString& fileName) const;
     void loadPreview(const QString& fileName);
     void clearPreview();
 

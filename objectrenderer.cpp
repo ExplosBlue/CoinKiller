@@ -1,5 +1,4 @@
 #include "objectrenderer.h"
-#include "is.h"
 #include "objects.h"
 #include "imagecache.h"
 
@@ -7,8 +6,6 @@
 #include <QPainter>
 #include <QPainterPath>
 
-namespace
-{
 struct TransformCacheKey
 {
     qint64 pixmap;
@@ -23,15 +20,15 @@ struct TransformCacheKey
     }
 };
 
-size_t qHash(const TransformCacheKey &key, size_t seed)
+static size_t qHash(const TransformCacheKey &key, size_t seed)
 {
     return qHashMulti(seed, key.pixmap, key.m11, key.m12, key.m13,
                       key.m21, key.m22, key.m23, key.m31, key.m32, key.m33);
 }
 
-QCache<TransformCacheKey, QPixmap> transformCache(64 * 1024 * 1024);
+static QCache<TransformCacheKey, QPixmap> transformCache(64 * 1024 * 1024);
 
-QPixmap transformedPixmap(const QPixmap &image, const QTransform &transform)
+static QPixmap transformedPixmap(const QPixmap &image, const QTransform &transform)
 {
     if (image.isNull())
         return image;
@@ -47,7 +44,8 @@ QPixmap transformedPixmap(const QPixmap &image, const QTransform &transform)
     transformCache.insert(key, new QPixmap(result), int(result.width() * result.height() * 4));
     return result;
 }
-}
+
+bool ObjectRenderer::smoothZooming = false;
 
 QHash<const Sprite*, ObjectRenderer*> SpriteRenderer::rendererCache;
 
@@ -893,7 +891,7 @@ void NormalImageRenderer::render(QPainter* painter, QRect *)
     }
 
     QSize cacheSize(qRound(rect.width()*scale), qRound(rect.height()*scale));
-    const bool zooming = RenderState::smoothZooming;
+    const bool zooming = ObjectRenderer::isSmoothZooming();
     const qreal tolerance = zooming ? 0.25 : 0.001;
     if (scaledCache.isNull() || qAbs(scaledCacheScale - scale) > tolerance ||
         (scaledCacheSize != cacheSize && !zooming))

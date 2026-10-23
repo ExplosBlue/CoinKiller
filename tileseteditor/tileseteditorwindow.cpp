@@ -1,5 +1,6 @@
 #include "tileseteditorwindow.h"
 #include "ui_tileseteditorwindow.h"
+#include "tilesetlist.h"
 
 #include <QDebug>
 #include <QPaintEvent>

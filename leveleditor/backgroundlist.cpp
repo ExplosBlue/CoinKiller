@@ -7,14 +7,12 @@
 #include <QFileInfo>
 #include <QTextStream>
 
-namespace {
-
-QString backgroundDisplayNameFromFile(const QString& fileName)
+static QString backgroundDisplayNameFromFile(const QString& fileName)
 {
     return QString(fileName).replace('_', ' ');
 }
 
-bool parseBackgroundsXml(const QString& path, QList<BackgroundGroup>& groups)
+static bool parseBackgroundsXml(const QString& path, QList<BackgroundGroup>& groups)
 {
     QFile file(path);
     if (!file.open(QIODevice::ReadOnly))
@@ -56,7 +54,7 @@ bool parseBackgroundsXml(const QString& path, QList<BackgroundGroup>& groups)
     return true;
 }
 
-void buildNameFileGroup(QList<BackgroundGroup>& groups)
+static void buildNameFileGroup(QList<BackgroundGroup>& groups)
 {
     QFile file(SettingsManager::getInstance()->dataPath("backgrounds/backgroundnames.txt"));
     if (!file.open(QIODevice::ReadOnly))
@@ -91,7 +89,7 @@ void buildNameFileGroup(QList<BackgroundGroup>& groups)
         groups.append(group);
 }
 
-QStringList existingBackgrounds()
+static QStringList existingBackgrounds()
 {
     QDir backgroundsFolder(SettingsManager::getInstance()->dataPath("backgrounds"));
     backgroundsFolder.setFilter(QDir::Files);
@@ -108,8 +106,6 @@ QStringList existingBackgrounds()
     }
 
     return existingFiles;
-}
-
 }
 
 QString BackgroundList::stripExtension(const QString& fileName)

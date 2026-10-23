@@ -15,7 +15,6 @@
     with CoinKiller. If not, see http://www.gnu.org/licenses/.
 */
 
-#include "is.h"
 #include "leveleditorwindow.h"
 #include "levelview.h"
 #include "unitsconvert.h"
@@ -41,9 +40,6 @@
 #include <QRegion>
 #include <QHash>
 #include <cmath>
-
-
-bool RenderState::smoothZooming = false;
 
 static qreal elapsedSeconds(QElapsedTimer& clock)
 {
@@ -234,7 +230,7 @@ LevelView::LevelView(QWidget *parent, Level *level, QUndoStack *undoStack) :
 
 LevelView::~LevelView()
 {
-    RenderState::smoothZooming = false;
+    ObjectRenderer::setSmoothZooming(false);
     SpriteRenderer::invalidateCache();
     delete editManager;
 }
@@ -1392,10 +1388,10 @@ void LevelView::finishSmoothZoom()
 {
     smoothZoomTimer->stop();
 
-    if (!RenderState::smoothZooming)
+    if (!ObjectRenderer::isSmoothZooming())
         return;
 
-    RenderState::smoothZooming = false;
+    ObjectRenderer::setSmoothZooming(false);
 
     for (Tileset* tileset : level->tilesets)
     {
@@ -1417,7 +1413,7 @@ void LevelView::startSmoothZoom(float targetZoom, const QPointF& focalPoint)
     if (smoothZoomTimer->isActive() || qFuzzyCompare(smoothZoomTarget, zoom))
         return;
 
-    RenderState::smoothZooming = true;
+    ObjectRenderer::setSmoothZooming(true);
     startAnimationTimer(smoothZoomTimer);
 }
 

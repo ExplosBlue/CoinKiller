@@ -1,7 +1,6 @@
 #include "editmanager.h"
 #include "unitsconvert.h"
 #include "settingsmanager.h"
-#include "is.h"
 
 #include "commands/editorcommands.h"
 #include "commands/spritecommands.h"
@@ -86,9 +85,8 @@ void EditManager::mouseDown(int x, int y, Qt::MouseButtons buttons, Qt::Keyboard
             Object* oldNode = selectedObjects[0];
             selectedObjects.clear();
 
-            if (is<PathNode*>(oldNode))
+            if (auto* oldPNode = dynamic_cast<PathNode*>(oldNode))
             {
-                PathNode* oldPNode = dynamic_cast<PathNode*>(oldNode);
                 Path* parentPath = oldPNode->getParentPath();
                 PathNode* newNode = new PathNode(toNext10(x), toNext10(y), parentPath);
                 quint32 index = parentPath->getIndexOfNode(oldPNode);
@@ -102,10 +100,10 @@ void EditManager::mouseDown(int x, int y, Qt::MouseButtons buttons, Qt::Keyboard
             }
             else
             {
-                ProgressPathNode* oldPNode = dynamic_cast<ProgressPathNode*>(oldNode);
-                ProgressPath* parentPath = oldPNode->getParentPath();
+                ProgressPathNode* oldProgressNode = dynamic_cast<ProgressPathNode*>(oldNode);
+                ProgressPath* parentPath = oldProgressNode->getParentPath();
                 ProgressPathNode* newNode = new ProgressPathNode(toNext10(x), toNext10(y), parentPath);
-                quint32 index = parentPath->getIndexOfNode(oldPNode);
+                quint32 index = parentPath->getIndexOfNode(oldProgressNode);
 
                 if (mouseAct.pAdd == AddAfter) {
                     index += 1;
@@ -708,10 +706,8 @@ void EditManager::render(QPainter *painter, const QRect &clip)
     {
         const QRect objectRect(obj->getx()+obj->getOffsetX(), obj->gety()+obj->getOffsetY(), obj->getwidth(), obj->getheight());
 
-        if (is<Sprite*>(obj) && !static_cast<Sprite*>(obj)->getSelectionRects()->empty())
+        if (auto* spr = dynamic_cast<Sprite*>(obj); spr && !spr->getSelectionRects()->empty())
         {
-            Sprite* spr = static_cast<Sprite*>(obj);
-
             foreach (QRect rect, *spr->getSelectionRects())
                 addSelectionRect(QRect(obj->getx() + rect.x(), obj->gety() + rect.y(), rect.width(), rect.height()));
         }
@@ -769,7 +765,7 @@ void EditManager::render(QPainter *painter, const QRect &clip)
     {
         Object* node = selectedObjects[0];
 
-        if (is<PathNode*>(node) || is<ProgressPathNode*>(node))
+        if (dynamic_cast<PathNode*>(node) || dynamic_cast<ProgressPathNode*>(node))
         {
             painter->setRenderHint(QPainter::Antialiasing, true);
             painter->setPen(QPen(Qt::black));
@@ -900,30 +896,30 @@ void EditManager::cloneObjects(QList<Object *> objects)
 
     foreach (Object* o, objects)
     {
-        if (is<BgdatObject*>(o)) {
-            BgdatObject *obj = new BgdatObject(dynamic_cast<BgdatObject*>(o));
+        if (auto* bgdat = dynamic_cast<BgdatObject*>(o)) {
+            BgdatObject* obj = new BgdatObject(bgdat);
             undoStack->push(new Commands::LevelCmd::InsertBgdatObj(level, obj));
             selectedObjects.append(obj);
         }
-        if (is<Sprite*>(o)) {
-            Sprite *spr = new Sprite(dynamic_cast<Sprite*>(o));
+        else if (auto* sprite = dynamic_cast<Sprite*>(o)) {
+            Sprite* spr = new Sprite(sprite);
             undoStack->push(new Commands::LevelCmd::InsertSprite(level, spr));
             selectedObjects.append(spr);
         }
-        if (is<Entrance*>(o)) {
-            Entrance *entr = new Entrance(dynamic_cast<Entrance*>(o));
+        else if (auto* entrance = dynamic_cast<Entrance*>(o)) {
+            Entrance* entr = new Entrance(entrance);
             undoStack->push(new Commands::LevelCmd::InsertEntrance(level, entr));
             selectedObjects.append(entr);
         }
-        if (is<Location*>(o)) {
-            Location *loc = new Location(dynamic_cast<Location*>(o));
+        else if (auto* location = dynamic_cast<Location*>(o)) {
+            Location* loc = new Location(location);
             undoStack->push(new Commands::LevelCmd::InsertLocation(level, loc));
             selectedObjects.append(loc);
         }
-        if (is<Zone*>(o)) {
-            Zone *zone = new Zone(dynamic_cast<Zone*>(o));
-            undoStack->push(new Commands::LevelCmd::InsertZone(level, zone));
-            selectedObjects.append(zone);
+        else if (auto* zone = dynamic_cast<Zone*>(o)) {
+            Zone* z = new Zone(zone);
+            undoStack->push(new Commands::LevelCmd::InsertZone(level, z));
+            selectedObjects.append(z);
         }
     }
 
@@ -938,16 +934,16 @@ EditManager::mouseAction EditManager::getActionAtPos(int x, int y)
     {
         Object* node = selectedObjects[0];
 
-        if (is<PathNode*>(node))
+        if (auto* pathNode = dynamic_cast<PathNode*>(node))
         {
-            updatePathInsertAction(dynamic_cast<PathNode*>(node), x, y, act);
+            updatePathInsertAction(pathNode, x, y, act);
 
             if (act.pAdd != AddNone)
                 return act;
         }
-        else if (is<ProgressPathNode*>(node))
+        else if (auto* progressPathNode = dynamic_cast<ProgressPathNode*>(node))
         {
-            updatePathInsertAction(dynamic_cast<ProgressPathNode*>(node), x, y, act);
+            updatePathInsertAction(progressPathNode, x, y, act);
 
             if (act.pAdd != AddNone)
                 return act;
@@ -978,8 +974,11 @@ EditManager::mouseAction EditManager::getActionAtPos(int x, int y)
                 act.vert = ResizeNone;
             else act.drag = false;
 
-            if (act.hor == ResizeNone && act.vert == ResizeNone && is<Zone*>(o) && !dynamic_cast<Zone*>(o)->clickDetection(x, y))
-                act.drag = false;
+            if (act.hor == ResizeNone && act.vert == ResizeNone)
+            {
+                if (auto* zone = dynamic_cast<Zone*>(o); zone && !zone->clickDetection(x, y))
+                    act.drag = false;
+            }
         }
         else
         {
@@ -1033,7 +1032,7 @@ void EditManager::updateSelectionBounds()
 
         if (o->isResizable())
         {
-            if (is<Zone*>(o))
+            if (dynamic_cast<Zone*>(o))
             {
                 if (o->getwidth() - 400 < minSizeX) minSizeX = o->getwidth() - 400;
                 if (o->getheight() - 240 < minSizeY) minSizeY = o->getheight() - 240;
@@ -1045,7 +1044,7 @@ void EditManager::updateSelectionBounds()
             }
         }
 
-        if (is<BgdatObject*>(o))
+        if (dynamic_cast<BgdatObject*>(o))
             selectionHasBGDats = true;
     }
 }
@@ -1112,34 +1111,20 @@ void EditManager::deleteSelection()
     undoStack->beginMacro(tr("Deleted %1 Object(s)").arg(selectedObjects.count()));
     foreach (Object* obj, selectedObjects)
     {
-        if (is<BgdatObject*>(obj))
-        {
-            undoStack->push(new Commands::LevelCmd::DeleteBgdatObject(level, dynamic_cast<BgdatObject*>(obj)));
-        }
-        else if (is<Sprite*>(obj))
-        {
-            undoStack->push(new Commands::LevelCmd::DeleteSprite(level, dynamic_cast<Sprite*>(obj)));
-        }
-        else if (is<Entrance*>(obj))
-        {
-            undoStack->push(new Commands::LevelCmd::DeleteEntrance(level, dynamic_cast<Entrance*>(obj)));
-        }
-        else if (is<Zone*>(obj))
-        {
-            undoStack->push(new Commands::LevelCmd::DeleteZone(level, dynamic_cast<Zone*>(obj)));
-        }
-        else if (is<Location*>(obj))
-        {
-            undoStack->push(new Commands::LevelCmd::DeleteLocation(level, dynamic_cast<Location*>(obj)));
-        }
-        else if (is<PathNode*>(obj))
-        {
-            undoStack->push(new Commands::LevelCmd::DeletePathNode(level, dynamic_cast<PathNode*>(obj)));
-        }
-        else if (is<ProgressPathNode*>(obj))
-        {
-            undoStack->push(new Commands::LevelCmd::DeleteProgressPathNode(level, dynamic_cast<ProgressPathNode*>(obj)));
-        }
+        if (auto* bgdat = dynamic_cast<BgdatObject*>(obj))
+            undoStack->push(new Commands::LevelCmd::DeleteBgdatObject(level, bgdat));
+        else if (auto* sprite = dynamic_cast<Sprite*>(obj))
+            undoStack->push(new Commands::LevelCmd::DeleteSprite(level, sprite));
+        else if (auto* entrance = dynamic_cast<Entrance*>(obj))
+            undoStack->push(new Commands::LevelCmd::DeleteEntrance(level, entrance));
+        else if (auto* zone = dynamic_cast<Zone*>(obj))
+            undoStack->push(new Commands::LevelCmd::DeleteZone(level, zone));
+        else if (auto* location = dynamic_cast<Location*>(obj))
+            undoStack->push(new Commands::LevelCmd::DeleteLocation(level, location));
+        else if (auto* pathNode = dynamic_cast<PathNode*>(obj))
+            undoStack->push(new Commands::LevelCmd::DeletePathNode(level, pathNode));
+        else if (auto* progressPathNode = dynamic_cast<ProgressPathNode*>(obj))
+            undoStack->push(new Commands::LevelCmd::DeleteProgressPathNode(level, progressPathNode));
     }
     undoStack->endMacro();
 
@@ -1191,9 +1176,8 @@ void EditManager::copy()
 
     foreach (Object* obj, selectedObjects)
     {
-        if (is<PathNode*>(obj))
+        if (auto* pathNode = dynamic_cast<PathNode*>(obj))
         {
-            PathNode* pathNode = dynamic_cast<PathNode*>(obj);
             Path* parentPath = pathNode->getParentPath();
 
             if (paths.empty())
@@ -1222,9 +1206,8 @@ void EditManager::copy()
                 }
             }
         }
-        else if (is<ProgressPathNode*>(obj))
+        else if (auto* progPathNode = dynamic_cast<ProgressPathNode*>(obj))
         {
-            ProgressPathNode* progPathNode = dynamic_cast<ProgressPathNode*>(obj);
             ProgressPath* parentPath = progPathNode->getParentPath();
 
             if (progPaths.empty())
@@ -1427,11 +1410,8 @@ void EditManager::raiseLayer()
     undoStack->beginMacro(tr("Raised Layer of %1 Object(s)").arg(selectedObjects.count()));
     foreach (Object* obj, selectedObjects)
     {
-        if (!is<BgdatObject*>(obj)) {
-            continue;
-        }
-
-        undoStack->push(new Commands::LevelCmd::RaiseBgdatLayer(level, dynamic_cast<BgdatObject*>(obj)));
+        if (auto* bgdat = dynamic_cast<BgdatObject*>(obj))
+            undoStack->push(new Commands::LevelCmd::RaiseBgdatLayer(level, bgdat));
     }
     undoStack->endMacro();
 }
@@ -1447,11 +1427,8 @@ void EditManager::lowerLayer()
     undoStack->beginMacro(tr("Lowered Layer of %1 Object(s)").arg(selectedObjects.count()));
     foreach (Object* obj, selectedObjects)
     {
-        if (!is<BgdatObject*>(obj)) {
-            continue;
-        }
-
-        undoStack->push(new Commands::LevelCmd::LowerBgdatLayer(level, dynamic_cast<BgdatObject*>(obj)));
+        if (auto* bgdat = dynamic_cast<BgdatObject*>(obj))
+            undoStack->push(new Commands::LevelCmd::LowerBgdatLayer(level, bgdat));
     }
     undoStack->endMacro();
 }
@@ -1483,8 +1460,7 @@ void EditManager::swapSelectedBgdatObjects()
     QList<BgdatObject*> swappableObjects;
 
     foreach (Object* o, selectedObjects) {
-        if(is<BgdatObject*>(o)) {
-            BgdatObject* obj = dynamic_cast<BgdatObject*>(o);
+        if (auto* obj = dynamic_cast<BgdatObject*>(o)) {
             if (obj->getObjID() != selObject || obj->getTsID() != selTileset) {
                 swappableObjects.append(obj);
             }
@@ -1514,8 +1490,7 @@ void EditManager::swapSelectedSprites()
     QList<Sprite*> swappableSprites;
 
     foreach (Object* o, selectedObjects) {
-        if(is<Sprite*>(o)) {
-            Sprite* spr = dynamic_cast<Sprite*>(o);
+        if (auto* spr = dynamic_cast<Sprite*>(o)) {
             if (spr->getid() != selSprite) {
                 swappableSprites.append(spr);
             }

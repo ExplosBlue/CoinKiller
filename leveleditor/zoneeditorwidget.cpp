@@ -603,11 +603,8 @@ void ZoneEditorWidget::handleEditBackgroundClicked()
 
 
 // Zone Background Widget
-namespace {
 
-bool g_backgroundThumbnailView = true;
-
-}
+bool ZoneBackgroundWidget::thumbnailView = true;
 
 BackgroundThumbnailDelegate::BackgroundThumbnailDelegate(QObject *parent) :
     QStyledItemDelegate(parent)
@@ -803,7 +800,7 @@ ZoneBackgroundWidget::ZoneBackgroundWidget(QList<ZoneBackground*> *backgrounds, 
     loadBackgrounds();
     setSelectionEnabled(false);
 
-    setThumbnailView(g_backgroundThumbnailView);
+    setThumbnailView(thumbnailView);
 
     updateList();
     updateInfo();
@@ -1120,12 +1117,12 @@ void ZoneBackgroundWidget::handleThumbnailClicked(QListWidgetItem* item)
 
 void ZoneBackgroundWidget::handleViewToggle()
 {
-    setThumbnailView(!g_backgroundThumbnailView);
+    setThumbnailView(!thumbnailView);
 }
 
 void ZoneBackgroundWidget::setThumbnailView(bool enabled)
 {
-    g_backgroundThumbnailView = enabled;
+    thumbnailView = enabled;
 
     selectStack->setCurrentIndex(enabled ? 1 : 0);
 }

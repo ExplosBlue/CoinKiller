@@ -3,6 +3,7 @@
 
 #include "filesystem/filesystem.h"
 #include "tileset.h"
+#include "tilesetlist.h"
 #include "levelmanager.h"
 
 #include <QStandardItemModel>

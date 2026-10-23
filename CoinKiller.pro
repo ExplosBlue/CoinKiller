@@ -106,6 +106,7 @@ SOURCES += \
     spritedata.cpp \
     spritedatadialog.cpp \
     tileset.cpp \
+    tilesetlist.cpp \
     unitsconvert.cpp
 
 HEADERS += \
@@ -158,7 +159,6 @@ HEADERS += \
     filedownloader.h \
     game.h \
     imagecache.h \
-    is.h \
     level.h \
     levelmanager.h \
     mainwindow.h \
@@ -172,6 +172,7 @@ HEADERS += \
     spritedata.h \
     spritedatadialog.h \
     tileset.h \
+    tilesetlist.h \
     unitsconvert.h \
     windowbase.h
 

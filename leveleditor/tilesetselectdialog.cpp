@@ -10,30 +10,6 @@
 #include <QKeyEvent>
 #include <QHeaderView>
 
-namespace {
-
-QTreeWidgetItem* findTilesetItem(QTreeWidget* tree, const QString& fileName)
-{
-    QList<QTreeWidgetItem*> stack;
-    for (int i = 0; i < tree->topLevelItemCount(); i++)
-        stack.append(tree->topLevelItem(i));
-
-    while (!stack.isEmpty())
-    {
-        QTreeWidgetItem* item = stack.takeFirst();
-
-        if (item->data(0, Qt::UserRole).toString() == fileName)
-            return item;
-
-        for (int i = 0; i < item->childCount(); i++)
-            stack.append(item->child(i));
-    }
-
-    return nullptr;
-}
-
-}
-
 TilesetSelectionDialog::TilesetSelectionDialog(Game* game, int slot, const QString& currentTileset, int currentObjectCount, QWidget* parent) :
     QDialog(parent),
     game(game),
@@ -192,7 +168,7 @@ void TilesetSelectionDialog::populateTilesets()
     QTreeWidgetItem* rowToSelect = tilesetList->topLevelItem(0);
     if (!currentTileset.isEmpty())
     {
-        QTreeWidgetItem* found = findTilesetItem(tilesetList, currentTileset);
+        QTreeWidgetItem* found = findTilesetItem(currentTileset);
         if (found != nullptr)
             rowToSelect = found;
     }
@@ -204,6 +180,26 @@ void TilesetSelectionDialog::populateTilesets()
     tilesetChanged(tilesetList->currentItem(), nullptr);
     applyFilter();
     applySort();
+}
+
+QTreeWidgetItem* TilesetSelectionDialog::findTilesetItem(const QString& fileName) const
+{
+    QList<QTreeWidgetItem*> stack;
+    for (int i = 0; i < tilesetList->topLevelItemCount(); i++)
+        stack.append(tilesetList->topLevelItem(i));
+
+    while (!stack.isEmpty())
+    {
+        QTreeWidgetItem* item = stack.takeFirst();
+
+        if (item->data(0, Qt::UserRole).toString() == fileName)
+            return item;
+
+        for (int i = 0; i < item->childCount(); i++)
+            stack.append(item->child(i));
+    }
+
+    return nullptr;
 }
 
 void TilesetSelectionDialog::sortTilesets(int column)

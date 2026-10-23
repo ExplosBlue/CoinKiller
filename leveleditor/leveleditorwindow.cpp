@@ -15,7 +15,6 @@
 #include "leveleditorwindow.h"
 #include "ui_leveleditorwindow.h"
 
-#include "is.h"
 
 #include "settingsmanager.h"
 #include "settingsdialog.h"
@@ -491,41 +490,41 @@ void LevelEditorWindow::handleSelectionChanged(Object* obj)
 {
     deselect();
 
-    if (is<BgdatObject*>(obj))
+    if (auto* bgdat = dynamic_cast<BgdatObject*>(obj))
     {
         toolboxTabs->setCurrentIndex(1);
-        tilesetPalette->select(dynamic_cast<BgdatObject*>(obj));
+        tilesetPalette->select(bgdat);
     }
-    else if (is<Sprite*>(obj))
+    else if (auto* sprite = dynamic_cast<Sprite*>(obj))
     {
         toolboxTabs->setCurrentIndex(2);
-        spriteEditor->select(dynamic_cast<Sprite*>(obj));
-        spriteEditor->spriteDataEditorPtr()->select(dynamic_cast<Sprite*>(obj));
+        spriteEditor->select(sprite);
+        spriteEditor->spriteDataEditorPtr()->select(sprite);
     }
-    if (is<Entrance*>(obj))
+    else if (auto* entrance = dynamic_cast<Entrance*>(obj))
     {
         toolboxTabs->setCurrentIndex(3);
-        entranceEditor->select(dynamic_cast<Entrance*>(obj));
+        entranceEditor->select(entrance);
     }
-    else if (is<Zone*>(obj))
+    else if (auto* zone = dynamic_cast<Zone*>(obj))
     {
         toolboxTabs->setCurrentIndex(4);
-        zoneEditor->select(dynamic_cast<Zone*>(obj));
+        zoneEditor->select(zone);
     }
-    else if (is<Location*>(obj))
+    else if (auto* location = dynamic_cast<Location*>(obj))
     {
         toolboxTabs->setCurrentIndex(5);
-        locationEditor->select(dynamic_cast<Location*>(obj));
+        locationEditor->select(location);
     }
-    else if (is<PathNode*>(obj))
+    else if (auto* pathNode = dynamic_cast<PathNode*>(obj))
     {
         toolboxTabs->setCurrentIndex(6);
-        pathEditor->select(dynamic_cast<PathNode*>(obj));
+        pathEditor->select(pathNode);
     }
-    else if (is<ProgressPathNode*>(obj))
+    else if (auto* progressPathNode = dynamic_cast<ProgressPathNode*>(obj))
     {
         toolboxTabs->setCurrentIndex(7);
-        progPathEditor->select(dynamic_cast<ProgressPathNode*>(obj));
+        progPathEditor->select(progressPathNode);
     }
 }
 

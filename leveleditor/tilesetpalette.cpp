@@ -9,6 +9,7 @@
 #include <QSpacerItem>
 
 #include "tilesetselectdialog.h"
+#include "tilesetlist.h"
 #include "commands/levelcommands.h"
 
 TilesetPalette::TilesetPalette(Level* level, EditManager* editManager, Game* game, QUndoStack *undoStack, QWidget *parent) :
